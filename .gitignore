@@ -30,6 +30,10 @@
 *.out
 *.app
 
+# Directories
+build/*
+bin/*
+
 
 ### Intellij ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
@@ -90,10 +94,14 @@ crashlytics-build.properties
 .Trash-*
 
 
+### OS X ###
+.DS_Store
+
+
 ### CMake ###
 CMakeCache.txt
 CMakeFiles
-Makefile
+#Makefile
 cmake_install.cmake
 install_manifest.txt
 

@@ -1,8 +1,8 @@
 ########################################################################
 # CMake build script for Google Test.
 #
-# To run the tests for Google Test itself on Linux, use 'make sample' or
-# ctest.  You can select which tests to run using 'ctest -R regex'.
+# To run the test for Google Test itself on Linux, use 'make sample' or
+# ctest.  You can select which test to run using 'ctest -R regex'.
 # For more options, run 'ctest --help'.
 
 # BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
@@ -16,7 +16,7 @@ option(
   "Use shared (DLL) run-time lib even when Google Test is built as static lib."
   OFF)
 
-option(gtest_build_tests "Build all of gtest's own tests." OFF)
+option(gtest_build_tests "Build all of gtest's own test." OFF)
 
 option(gtest_build_samples "Build gtest's sample programs." OFF)
 
@@ -61,7 +61,7 @@ link_directories(${gtest_BINARY_DIR}/src)
 
 ########################################################################
 #
-# Defines the gtest & gtest_main libraries.  User tests should link
+# Defines the gtest & gtest_main libraries.  User test should link
 # with one of them.
 
 # Google Test libraries.  We build them using more strict warnings than what
@@ -73,7 +73,7 @@ target_link_libraries(gtest_main gtest)
 
 ########################################################################
 #
-# Samples on how to link user tests with gtest or gtest_main.
+# Samples on how to link user test with gtest or gtest_main.
 #
 # They are not built by default.  To build them, set the
 # gtest_build_samples option to ON.  You can do it by running ccmake
@@ -94,22 +94,22 @@ endif()
 
 ########################################################################
 #
-# Google Test's own tests.
+# Google Test's own test.
 #
 # You can skip this section if you aren't interested in testing
 # Google Test itself.
 #
-# The tests are not built by default.  To build them, set the
+# The test are not built by default.  To build them, set the
 # gtest_build_tests option to ON.  You can do it by running ccmake
 # or specifying the -Dgtest_build_tests=ON flag when running cmake.
 
 if (gtest_build_tests)
-  # This must be set in the root directory for the tests to be run by
+  # This must be set in the root directory for the test to be run by
   # 'make sample' or ctest.
   enable_testing()
 
   ############################################################
-  # C++ tests built with standard compiler flags.
+  # C++ test built with standard compiler flags.
 
   cxx_test(gtest-death-test_test gtest_main)
   cxx_test(gtest_environment_test gtest)
@@ -140,7 +140,7 @@ if (gtest_build_tests)
   cxx_test(gtest-unittest-api_test gtest)
 
   ############################################################
-  # C++ tests built with non-standard compiler flags.
+  # C++ test built with non-standard compiler flags.
 
   # MSVC 7.1 does not support STL with exceptions disabled.
   if (NOT MSVC OR MSVC_VERSION GREATER 1310)
@@ -189,7 +189,7 @@ if (gtest_build_tests)
   endif()
 
   ############################################################
-  # Python tests.
+  # Python test.
 
   cxx_executable(gtest_break_on_failure_unittest_ test gtest)
   py_test(gtest_break_on_failure_unittest)
