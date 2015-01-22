@@ -31,9 +31,6 @@ main: build/Record.o build/Comparison.o build/ComparisonEngine.o build/Schema.o 
 bin/test.out: build/Record.o build/Comparison.o build/ComparisonEngine.o build/Schema.o build/File.o build/DBFile.o build/y.tab.o build/lex.yy.o buid/test.o
 	$(CC) -o bin/test.out build/Record.o build/Comparison.o buld/ComparisonEngine.o build/Schema.o build/File.o build/DBFile.o build/y.tab.o build/lex.yy.o build/test.o $(lfl)
 
-build/utest.o: src/utest.cc $(GTEST_HEADERS)
-	$(CC) $(CPPFLAGS) $(CXXFLAGS) -o build/utest.o -c src/utest.cc
-
 build/test.o: src/test.cc
 	$(CC) -g -c -I include -o build/test.o src/test.cc
 
@@ -70,8 +67,11 @@ build/lex.yy.o: src/Lexer.l
 
 
 ###### Test Build ######
-utest: build/utest.o lib/gtest_main.a
+utest: build/DBFile.o build/utest.o lib/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o bin/$@
+
+build/utest.o: src/utest.cc $(GTEST_HEADERS)
+	$(CC) $(CPPFLAGS) $(CXXFLAGS) -I include -o build/utest.o -c src/utest.cc
 
 build/gtest-all.o : $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \

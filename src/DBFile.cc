@@ -26,6 +26,7 @@ void DBFile::MoveFirst () {
 }
 
 int DBFile::Close () {
+  return 0;
 }
 
 void DBFile::Add (Record &rec) {
