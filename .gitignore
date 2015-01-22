@@ -33,6 +33,7 @@
 # Directories
 build/*
 bin/*
+data/10M
 
 
 ### Intellij ###
@@ -104,4 +105,3 @@ CMakeFiles
 #Makefile
 cmake_install.cmake
 install_manifest.txt
-

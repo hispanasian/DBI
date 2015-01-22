@@ -10,31 +10,31 @@ extern "C" {
 
 extern struct AndList *final;
 
-int main () {
+int cnf_parse () {
 
 	// try to parse the CNF
 	cout << "Enter in your CNF: ";
-  	if (yyparse() != 0) {
+  if (yyparse() != 0) {
 		cout << "Can't parse your CNF.\n";
 		exit (1);
 	}
 
 	// suck up the schema from the file
-	Schema lineitem ("catalog", "lineitem");
+	Schema lineitem ("data/catalog", "lineitem");
 
-	// grow the CNF expression from the parse tree 
+	// grow the CNF expression from the parse tree
 	CNF myComparison;
 	Record literal;
 	myComparison.GrowFromParseTree (final, &lineitem, literal);
-	
+
 	// print out the comparison to the screen
 	myComparison.Print ();
 
 	// now open up the text file and start procesing it
-        FILE *tableFile = fopen ("/cise/tmp/dbi_sp11/DATA/10M/lineitem.tbl", "r");
+  FILE *tableFile = fopen ("data/10M/lineitem.tbl", "r");
 
-        Record temp;
-        Schema mySchema ("catalog", "lineitem");
+  Record temp;
+  Schema mySchema ("data/catalog", "lineitem");
 
 	//char *bits = literal.GetBits ();
 	//cout << " numbytes in rec " << ((int *) bits)[0] << endl;
@@ -44,7 +44,7 @@ int main () {
 	// the CNF expression that was typed in
 	int counter = 0;
 	ComparisonEngine comp;
-        while (temp.SuckNextRecord (&mySchema, tableFile) == 1) {
+  while (temp.SuckNextRecord (&mySchema, tableFile) == 1) {
 		counter++;
 		if (counter % 10000 == 0) {
 			cerr << counter << "\n";
@@ -53,8 +53,17 @@ int main () {
 		if (comp.Compare (&temp, &literal, &myComparison))
                 	temp.Print (&mySchema);
 
-        }
+    }
 
 }
 
+int experiment() {
+	File file;
+	file.Open(0, "data/test");
+	file.Close();
+}
 
+int main () {
+	experiment();
+	//cnf_parse();
+}
