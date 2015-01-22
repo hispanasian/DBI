@@ -6,6 +6,7 @@
 #include "ComparisonEngine.h"
 #include "DBFile.h"
 #include "Defs.h"
+#include <iostream>
 
 // stub file .. replace it with your own DBFile.cc
 
@@ -30,6 +31,8 @@ int DBFile::Close () {
 }
 
 void DBFile::Add (Record &rec) {
+  std::cout << "Hey!" << std::endl;
+  rec.Project(0,0,0);
 }
 
 int DBFile::GetNext (Record &fetchme) {

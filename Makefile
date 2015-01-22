@@ -2,13 +2,19 @@ CC = g++ -O2 -Wno-deprecated
 
 # Flags passed to the C++ compiler.
 CXXFLAGS += -g -Wall -Wextra -pthread
-CPPFLAGS += -isystem $(GTEST_DIR)/include
+CPPFLAGS += -isystem $(GTEST_DIR)/include -isystem $(GMOCK_DIR)/include
 
 # GoogleTest Vars
 GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 GTEST_DIR = lib/gtest-1.7.0
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
-$(GTEST_DIR)/include/gtest/internal/*.h
+								$(GTEST_DIR)/include/gtest/internal/*.h
+GMOCK_DIR = lib/gmock-1.7.0
+GMOCK_HEADERS = $(GMOCK_DIR)/include/gmock/*.h \
+								$(GMOCK_DIR)/include/gmock/internal/*.h \
+								$(GTEST_HEADERS)
+GMOCK_SRCS_ = $(GMOCK_DIR)/src/*.cc $(GMOCK_HEADERS)
+
 
 # Bison/Flex stuff
 tag = -i
@@ -67,7 +73,7 @@ build/lex.yy.o: src/Lexer.l
 
 
 ###### Test Build ######
-utest: build/DBFile.o build/utest.o lib/gtest_main.a
+utest: build/Schema.o build/Record.o build/DBFile.o build/utest.o lib/gtest_main.a lib/gmock_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o bin/$@
 
 build/utest.o: src/utest.cc $(GTEST_HEADERS)
@@ -85,6 +91,20 @@ lib/gtest.a : build/gtest-all.o
 	$(AR) $(ARFLAGS) $@ $^
 
 lib/gtest_main.a : build/gtest-all.o build/gtest_main.o
+	$(AR) $(ARFLAGS) $@ $^
+
+build/gmock-all.o : $(GMOCK_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) -I$(GMOCK_DIR) $(CXXFLAGS) \
+	-c -o $@ $(GMOCK_DIR)/src/gmock-all.cc
+
+build/gmock_main.o : $(GMOCK_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) -I$(GMOCK_DIR) $(CXXFLAGS) \
+	-c -o $@ $(GMOCK_DIR)/src/gmock_main.cc
+
+lib/gmock.a : build/gmock-all.o build/gtest-all.o
+	$(AR) $(ARFLAGS) $@ $^
+
+lib/gmock_main.a : build/gmock-all.o build/gtest-all.o build/gmock_main.o
 	$(AR) $(ARFLAGS) $@ $^
 
 
