@@ -16,6 +16,12 @@ tag = -i
 
 ifdef linux
 tag = -n
+lin_flag = -lfl
+sed = sed $(tag) $(SRCDIR)/y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/"
+endif
+
+ifeq "$(OSTYPE)" "darwin"
+tag = -n
 endif
 
 PARSING := $(BUILDDIR)/y.tab.o $(BUILDDIR)/lex.yy.o
@@ -23,7 +29,7 @@ MAINS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o
 
 main: $(filter-out $(MAINS),$(OBJECTS)) $(PARSING) $(BUILDDIR)/main.o
 	@echo " Linking..."
-	$(CC) -o $(TARGET) $(LIB) $^ -lfl 
+	$(CC) -o $(TARGET) $(LIB) $^ $(lin_flag) 
 
 #$(TARGET): $(filter-out $(BUILDDIR)/test.o,$(OBJECTS))
 #	@echo " Linking..."
@@ -42,7 +48,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 $(BUILDDIR)/y.tab.o: $(SRCDIR)/Parser.y
 	(cd $(SRCDIR);yacc -d Parser.y)
 	mv $(SRCDIR)/y.tab.h $(INCLUDEDIR)
-	sed $(tag) $(SRCDIR)/y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/"
+	$(sed)
 	$(CC) $(INC) -c -o $@ $(SRCDIR)/y.tab.c
 	
 $(BUILDDIR)/lex.yy.o: $(SRCDIR)/Lexer.l
