@@ -1,77 +1,64 @@
 CC = g++ -O2 -Wno-deprecated 
-# CC := clang --analyze # and comment out the linker last line for sanity
-SRCDIR := src
-BUILDDIR := build
-LIBDIR := lib
-INCLUDEDIR := include
-TARGETDIR := bin
-TARGET := bin/main
-
-SRCEXT := cc
-SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
-OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
-CFLAGS := -g # -Wall
-INC := -I include
 
 tag = -i
 
 ifdef linux
 tag = -n
-lin_flag = -lfl
-sed = sed $(tag) $(SRCDIR)/y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/"
+flex_lib = -lfl
+sed = sed -n src/y.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/“ 
 endif
 
+# Check if on OS X
 ifeq "$(OSTYPE)" "darwin"
 tag = -n
 endif
 
-PARSING := $(BUILDDIR)/y.tab.o $(BUILDDIR)/lex.yy.o
-MAINS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o
+main: build/Record.o build/Comparison.o build/ComparisonEngine.o build/Schema.o build/File.o build/y.tab.o build/lex.yy.o build/main.o
+	$(CC) -o bin/main build/Record.o build/Comparison.o build/ComparisonEngine.o build/Schema.o build/File.o build/y.tab.o build/lex.yy.o build/main.o $(lfl)
 
-main: $(filter-out $(MAINS),$(OBJECTS)) $(PARSING) $(BUILDDIR)/main.o
-	@echo " Linking..."
-	@mkdir -p $(TARGETDIR)
-	$(CC) -o $(TARGET) $(LIB) $^ $(lin_flag) 
-
-#$(TARGET): $(filter-out $(BUILDDIR)/test.o,$(OBJECTS))
-#	@echo " Linking..."
-#	@mkdir -p $(TARGETDIR)
-#	@echo " $(CC) $^ -o $(TARGET)"; $(CC) $^ -o $(BUILDDIR)/$(TARGET)
-
-#$(TARGET): $(OBJECTS)
-#	@echo " Linking..."
-#	@mkdir -p $(TARGETDIR)
-#	@echo " $(CC) $^ -o $(TARGET) $(LIB)"; $(CC) $^ -o $(TARGET) $(LIB)
-
-# compile cc files
-$(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
-	@mkdir -p $(BUILDDIR)
-	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
-
-# Compile Bison and Flex files
-$(BUILDDIR)/y.tab.o: $(SRCDIR)/Parser.y
-	(cd $(SRCDIR);yacc -d Parser.y)
-	mv $(SRCDIR)/y.tab.h $(INCLUDEDIR)
-	$(sed)
-	$(CC) $(INC) -c -o $@ $(SRCDIR)/y.tab.c
+bin/test.out: build/Record.o build/Comparison.o build/ComparisonEngine.o build/Schema.o build/File.o build/DBFile.o build/y.tab.o build/lex.yy.o buid/test.o
+	$(CC) -o bin/test.out build/Record.o build/Comparison.o buld/ComparisonEngine.o build/Schema.o build/File.o build/DBFile.o build/y.tab.o build/lex.yy.o build/test.o $(lfl)
 	
-$(BUILDDIR)/lex.yy.o: $(SRCDIR)/Lexer.l
-	(cd $(SRCDIR);lex Lexer.l)
-	$(CC) $(INC) -c -o $@ $(SRCDIR)/lex.yy.c
+build/test.o: src/test.cc
+	$(CC) -g -c -I include -o build/test.o src/test.cc 
 
-clean:
-	@echo " Cleaning..."; 
-	@echo " $(RM) -r $(BUILDDIR) $(TARGET)"; $(RM) -r $(BUILDDIR) $(TARGET)
-	rm -f $(SRCDIR)/y.tab.c
-	rm -f $(SRCDIR)/lex.yy.c
-	rm -f $(INCLUDEDIR)/y.tab.h
+build/main.o: src/main.cc
+	$(CC) -g -c -I Include -o build/main.o src/main.cc
+	
+build/Comparison.o: src/Comparison.cc
+	$(CC) -g -c -I include -o build/Comparison.o src/Comparison.cc
+	
+build/ComparisonEngine.o: src/ComparisonEngine.cc
+	$(CC) -g -c -I include -o build/ComparisonEngine.o src/ComparisonEngine.cc
+	
+build/DBFile.o: src/DBFile.cc
+	$(CC) -g -c -I include -o build/DBFile.o src/DBFile.cc
 
-# Tests
-tester:
-	$(CC) $(CFLAGS) test/tester.cpp $(INC) $(LIB) -o bin/tester
+build/File.o: src/File.cc
+	$(CC) -g -c -I include -o build/File.o src/File.cc
 
-# Spikes
-ticket:
-	$(CC) $(CFLAGS) spikes/ticket.cpp $(INC) $(LIB) -o bin/ticket
+build/Record.o: src/Record.cc
+	$(CC) -g -c -I include -o build/Record.o src/Record.cc
 
-.PHONY: clean
+build/Schema.o: src/Schema.cc
+	$(CC) -g -c -I include -o build/Schema.o src/Schema.cc
+	
+build/y.tab.o: src/Parser.y
+	(cd src;yacc -d Parser.y)
+	$(sed)
+	(mv src/y.tab.h include)
+	g++ -c -I include -o build/y.tab.o src/y.tab.c
+
+build/lex.yy.o: src/Lexer.l
+	(cd src;lex  Lexer.l)
+	gcc  -c -I include -o build/lex.yy.o src/lex.yy.c
+
+clean: 
+	rm -f *.o
+	rm -f build/*
+	rm -f bin/*
+	rm -f *.out
+	rm -f src/y.tab.c
+	rm -f src/lex.yy.c
+	rm -f src/y.tab.h
+	rm -f include/y.tab.h
