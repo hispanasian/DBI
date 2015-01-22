@@ -76,8 +76,8 @@ build/lex.yy.o: src/Lexer.l
 utest: build/Schema.o build/Record.o build/DBFile.o build/utest.o lib/gtest_main.a lib/gmock_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o bin/$@
 
-build/utest.o: src/utest.cc $(GTEST_HEADERS)
-	$(CC) $(CPPFLAGS) $(CXXFLAGS) -I include -o build/utest.o -c src/utest.cc
+build/utest.o: test/utest.cc $(GTEST_HEADERS)
+	$(CC) $(CPPFLAGS) $(CXXFLAGS) -I include -o build/utest.o -c $<
 
 build/gtest-all.o : $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
