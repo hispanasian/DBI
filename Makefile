@@ -4,6 +4,7 @@ SRCDIR := src
 BUILDDIR := build
 LIBDIR := lib
 INCLUDEDIR := include
+TARGETDIR := bin
 TARGET := bin/main
 
 SRCEXT := cc
@@ -29,14 +30,17 @@ MAINS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o
 
 main: $(filter-out $(MAINS),$(OBJECTS)) $(PARSING) $(BUILDDIR)/main.o
 	@echo " Linking..."
+	@mkdir -p $(TARGETDIR)
 	$(CC) -o $(TARGET) $(LIB) $^ $(lin_flag) 
 
 #$(TARGET): $(filter-out $(BUILDDIR)/test.o,$(OBJECTS))
 #	@echo " Linking..."
+#	@mkdir -p $(TARGETDIR)
 #	@echo " $(CC) $^ -o $(TARGET)"; $(CC) $^ -o $(BUILDDIR)/$(TARGET)
 
 #$(TARGET): $(OBJECTS)
 #	@echo " Linking..."
+#	@mkdir -p $(TARGETDIR)
 #	@echo " $(CC) $^ -o $(TARGET) $(LIB)"; $(CC) $^ -o $(TARGET) $(LIB)
 
 # compile cc files
