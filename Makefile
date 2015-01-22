@@ -1,14 +1,16 @@
 CC = g++ -O2 -Wno-deprecated
-GTEST_DIR = lib/gtest-1.7.0
-GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
-$(GTEST_DIR)/include/gtest/internal/*.h
-CPPFLAGS += -isystem $(GTEST_DIR)/include
 
 # Flags passed to the C++ compiler.
 CXXFLAGS += -g -Wall -Wextra -pthread
+CPPFLAGS += -isystem $(GTEST_DIR)/include
 
+# GoogleTest Vars
+GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
+GTEST_DIR = lib/gtest-1.7.0
+GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
+$(GTEST_DIR)/include/gtest/internal/*.h
 
-
+# Bison/Flex stuff
 tag = -i
 
 ifdef linux
@@ -22,30 +24,12 @@ ifeq "$(OSTYPE)" "darwin"
 tag = -n
 endif
 
-GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
-
-gtest-all.o : $(GTEST_SRCS_)
-	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
-		$(GTEST_DIR)/src/gtest-all.cc
-
-gtest_main.o : $(GTEST_SRCS_)
-	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
-		$(GTEST_DIR)/src/gtest_main.cc
-
-gtest.a : gtest-all.o
-	$(AR) $(ARFLAGS) $@ $^
-
-gtest_main.a : gtest-all.o gtest_main.o
-	$(AR) $(ARFLAGS) $@ $^
-
+###### Main Build ######
 main: build/Record.o build/Comparison.o build/ComparisonEngine.o build/Schema.o build/File.o build/y.tab.o build/lex.yy.o build/main.o
 	$(CC) -o bin/main build/Record.o build/Comparison.o build/ComparisonEngine.o build/Schema.o build/File.o build/y.tab.o build/lex.yy.o build/main.o $(lfl)
 
 bin/test.out: build/Record.o build/Comparison.o build/ComparisonEngine.o build/Schema.o build/File.o build/DBFile.o build/y.tab.o build/lex.yy.o buid/test.o
 	$(CC) -o bin/test.out build/Record.o build/Comparison.o buld/ComparisonEngine.o build/Schema.o build/File.o build/DBFile.o build/y.tab.o build/lex.yy.o build/test.o $(lfl)
-
-utest: build/utest.o gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o bin/$@
 
 build/utest.o: src/utest.cc $(GTEST_HEADERS)
 	$(CC) $(CPPFLAGS) $(CXXFLAGS) -o build/utest.o -c src/utest.cc
@@ -84,6 +68,27 @@ build/lex.yy.o: src/Lexer.l
 	(cd src;lex  Lexer.l)
 	gcc  -c -I include -o build/lex.yy.o src/lex.yy.c
 
+
+###### Test Build ######
+utest: build/utest.o lib/gtest_main.a
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o bin/$@
+
+build/gtest-all.o : $(GTEST_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
+		-o $@ $(GTEST_DIR)/src/gtest-all.cc
+
+build/gtest_main.o : $(GTEST_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
+		-o $@ $(GTEST_DIR)/src/gtest_main.cc
+
+lib/gtest.a : build/gtest-all.o
+	$(AR) $(ARFLAGS) $@ $^
+
+lib/gtest_main.a : build/gtest-all.o build/gtest_main.o
+	$(AR) $(ARFLAGS) $@ $^
+
+
+###### Clean ######
 clean:
 	rm -f *.o
 	rm -f build/*
