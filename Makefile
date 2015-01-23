@@ -40,6 +40,7 @@ endif
 
 ###### Main Build ######
 # Build main
+.PHONY: main
 main: $(OBJECTS) $(BUILDDIR)/main.o
 	$(CC) -o $(TARGETDIR)/main $^ $(lfl)
 
@@ -68,7 +69,7 @@ $(BUILDDIR)/lex.yy.o: $(SRCDIR)/Lexer.l
 TESTDIR := test
 TEST_SOURCES := $(shell find $(TESTDIR) -type f -name *.$(SRCEXT))
 ALL_TEST_OBJECTS := $(patsubst $(TESTDIR)/%,$(BUILDDIR)/%,$(TEST_SOURCES:.$(SRCEXT)=.o))
-TESTS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o
+TESTS := $(BUILDDIR)/test.o
 
 # Objects excluding Test
 TEST_OBJECTS := $(filter-out $(TESTS),$(ALL_TEST_OBJECTS)) $(PARSING)
@@ -84,9 +85,14 @@ GMOCK_HEADERS = $(GMOCK_DIR)/include/gmock/*.h \
 								$(GTEST_HEADERS)
 GMOCK_SRCS_ = $(GMOCK_DIR)/src/*.cc $(GMOCK_HEADERS)
 GTESTLIBS := $(LIBDIR)/gtest_main.a $(LIBDIR)/gmock_main.a
+GTEST := $(LIBDIR)/gtest.a
+GTEST_MAIN := $(LIBDIR)/gtest_main.a
+GMOCK := $(LIBDIR)/gmock.a
+GMOCK_MAIN := $(LIBDIR)/gmock_main.a
 
 
 ###### Test Builds ######
+.PHONY: utest
 utest: $(OBJECTS) $(TEST_OBJECTS) $(BUILDDIR)/utest.o $(GTESTLIBS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $(TARGETDIR)/$@
 
@@ -124,14 +130,23 @@ $(LIBDIR)/gmock.a : $(BUILDDIR)/gmock-all.o $(BUILDDIR)/gtest-all.o
 $(LIBDIR)/gmock_main.a : $(BUILDDIR)/gmock-all.o $(BUILDDIR)/gtest-all.o $(BUILDDIR)/gmock_main.o
 	$(AR) $(ARFLAGS) $@ $^
 
-
 ###### Clean ######
+.PHONY: clean
 clean:
+	rm -f $(ALL_OBJECTS)
+	rm -f $(ALL_TEST_OBJECTS)
+	rm -f $(TARGETDIR)/*
+	rm -f $(SRCDIR)/y.tab.c
+	rm -f $(SRCDIR)/lex.yy.c
+	rm -f $(SRCDIR)/y.tab.h
+	rm -f $(SRCDIR)/y.tab.h
+	rm -f $(BUILDDIR)/lex.yy.o
+	rm -f $(BUILDDIR)/y.tab.o
+
+.PHONY: deep-clean
+deep-clean: clean
 	rm -f *.o
-	rm -f build/*
-	rm -f bin/*
 	rm -f *.out
-	rm -f src/y.tab.c
-	rm -f src/lex.yy.c
-	rm -f src/y.tab.h
-	rm -f include/y.tab.h
+	rm -f $(BUILDDIR)/*.o
+	rm -f $(BUILDDIR)/*.out
+	rm -f $(LIBDIR)/*.a
