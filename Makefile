@@ -1,3 +1,4 @@
+### Remember to add new mains to the MAINS variable
 CC = g++ -O2 -Wno-deprecated
 
 # Vars
