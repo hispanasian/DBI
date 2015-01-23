@@ -30,7 +30,7 @@ public:
     MOCK_METHOD1(GetFirst, int(Record *firstOne));
     //virtual int Append (Record *addMe);
     MOCK_METHOD1(Append, int(Record *addMe));
-    virtual void EmptyItOut ();
+    //virtual void EmptyItOut ();
     MOCK_METHOD0(EmptyItOut, void());
 };
 
@@ -42,6 +42,6 @@ public:
     MOCK_METHOD2(GetPage, void(Page *putItHere, off_t whichPage));
     //virtual void AddPage (Page *addMe, off_t whichPage);
     MOCK_METHOD2(AddPage, void(Page *addMe, off_t whichPage));
-    virtual int Close ();
-    MOCK_METHOD0(Close, void());
+    //virtual int Close ();
+    MOCK_METHOD0(Close, int());
 };
