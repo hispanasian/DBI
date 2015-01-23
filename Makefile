@@ -66,23 +66,29 @@ $(BUILDDIR)/lex.yy.o: $(SRCDIR)/Lexer.l
 ########## Testing ##########
 # Test Vars
 TESTDIR := test
+TEST_SOURCES := $(shell find $(TESTDIR) -type f -name *.$(SRCEXT))
+ALL_TEST_OBJECTS := $(patsubst $(TESTDIR)/%,$(BUILDDIR)/%,$(TEST_SOURCES:.$(SRCEXT)=.o))
+TESTS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o
+
+# Objects excluding Test
+TEST_OBJECTS := $(filter-out $(TESTS),$(ALL_TEST_OBJECTS)) $(PARSING)
 
 # GoogleTest Vars
 GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 GTEST_DIR = lib/gtest-1.7.0
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
-$(GTEST_DIR)/include/gtest/internal/*.h
+								$(GTEST_DIR)/include/gtest/internal/*.h
 GMOCK_DIR = lib/gmock-1.7.0
 GMOCK_HEADERS = $(GMOCK_DIR)/include/gmock/*.h \
-$(GMOCK_DIR)/include/gmock/internal/*.h \
-$(GTEST_HEADERS)
+								$(GMOCK_DIR)/include/gmock/internal/*.h \
+								$(GTEST_HEADERS)
 GMOCK_SRCS_ = $(GMOCK_DIR)/src/*.cc $(GMOCK_HEADERS)
 GTESTLIBS := $(LIBDIR)/gtest_main.a $(LIBDIR)/gmock_main.a
 
 
 ###### Test Builds ######
-utest: $(OBJECTS) $(TARGETDIR)/utest.o $(GTESTLIBS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o bin/$@
+utest: $(OBJECTS) $(TEST_OBJECTS) $(BUILDDIR)/utest.o $(GTESTLIBS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $(TARGETDIR)/$@
 
 # Compile tests cc files
 $(BUILDDIR)/%.o: $(TESTDIR)/%.$(SRCEXT) $(GTEST_HEADERS)
