@@ -106,3 +106,8 @@ CMakeFiles
 #Makefile
 cmake_install.cmake
 install_manifest.txt
+
+### Generated Bison/Flex files ###
+include/y.tab.h
+src/lex.yy.c
+src/y.tab.c
