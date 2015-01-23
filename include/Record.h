@@ -39,17 +39,17 @@ public:
 
 	// suck the contents of the record fromMe into this; note that after
 	// this call, fromMe will no longer have anything inside of it
-	void Consume (Record *fromMe);
+	virtual void Consume (Record *fromMe);
 
 	// make a copy of the record fromMe; note that this is far more
 	// expensive (requiring a bit-by-bit copy) than Consume, which is
 	// only a pointer operation
-	void Copy (Record *copyMe);
+	virtual void Copy (Record *copyMe);
 
 	// reads the next record from a pointer to a text file; also requires
 	// that the schema be given; returns a 0 if there is no data left or
 	// if there is an error and returns a 1 otherwise
-	int SuckNextRecord (Schema *mySchema, FILE *textFile);
+	virtual int SuckNextRecord (Schema *mySchema, FILE *textFile);
 
 	// this projects away various attributes...
 	// the array attsToKeep should be sorted, and lists all of the attributes
@@ -59,12 +59,12 @@ public:
 
 	// takes two input records and creates a new record by concatenating them;
 	// this is useful for a join operation
-	void MergeRecords (Record *left, Record *right, int numAttsLeft,
+	virtual void MergeRecords (Record *left, Record *right, int numAttsLeft,
 		int numAttsRight, int *attsToKeep, int numAttsToKeep, int startOfRight);
 
 	// prints the contents of the record; this requires
 	// that the schema also be given so that the record can be interpreted
-	void Print (Schema *mySchema);
+	virtual void Print (Schema *mySchema);
 };
 
 #endif
