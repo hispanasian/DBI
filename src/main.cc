@@ -64,6 +64,6 @@ int experiment() {
 }
 
 int main () {
-	experiment();
-	//cnf_parse();
+	//experiment();
+	cnf_parse();
 }

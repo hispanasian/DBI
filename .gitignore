@@ -33,7 +33,8 @@
 # Directories
 build/*
 bin/*
-data/10M
+data/*
+!data/catalog # Esception for data/catalog
 
 
 ### Intellij ###

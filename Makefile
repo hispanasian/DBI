@@ -1,20 +1,27 @@
 CC = g++ -O2 -Wno-deprecated
 
+# Vars
+SRCDIR := src
+BUILDDIR := build
+LIBDIR := lib
+INCLUDEDIR := include
+TARGETDIR := bin
+
+SRCEXT := cc
+SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
+ALL_OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
+CFLAGS := -g # -Wall
+LIB := -L lib
+INC := -I include
+PARSING := $(BUILDDIR)/y.tab.o $(BUILDDIR)/lex.yy.o
+MAINS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o
+
+# Objects excluding main
+OBJECTS := $(filter-out $(MAINS),$(ALL_OBJECTS)) $(PARSING)
+
 # Flags passed to the C++ compiler.
 CXXFLAGS += -g -Wall -Wextra -pthread
 CPPFLAGS += -isystem $(GTEST_DIR)/include -isystem $(GMOCK_DIR)/include
-
-# GoogleTest Vars
-GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
-GTEST_DIR = lib/gtest-1.7.0
-GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
-								$(GTEST_DIR)/include/gtest/internal/*.h
-GMOCK_DIR = lib/gmock-1.7.0
-GMOCK_HEADERS = $(GMOCK_DIR)/include/gmock/*.h \
-								$(GMOCK_DIR)/include/gmock/internal/*.h \
-								$(GTEST_HEADERS)
-GMOCK_SRCS_ = $(GMOCK_DIR)/src/*.cc $(GMOCK_HEADERS)
-
 
 # Bison/Flex stuff
 tag = -i
@@ -31,80 +38,83 @@ tag = -n
 endif
 
 ###### Main Build ######
-main: build/Record.o build/Comparison.o build/ComparisonEngine.o build/Schema.o build/File.o build/y.tab.o build/lex.yy.o build/main.o
-	$(CC) -o bin/main build/Record.o build/Comparison.o build/ComparisonEngine.o build/Schema.o build/File.o build/y.tab.o build/lex.yy.o build/main.o $(lfl)
+# Build main
+main: $(OBJECTS) $(BUILDDIR)/main.o
+	$(CC) -o $(TARGETDIR)/main $^ $(lfl)
 
-bin/test.out: build/Record.o build/Comparison.o build/ComparisonEngine.o build/Schema.o build/File.o build/DBFile.o build/y.tab.o build/lex.yy.o buid/test.o
-	$(CC) -o bin/test.out build/Record.o build/Comparison.o buld/ComparisonEngine.o build/Schema.o build/File.o build/DBFile.o build/y.tab.o build/lex.yy.o build/test.o $(lfl)
+# build/test.o: src/test.cc
+	# 	$(CC) -g -c -I include -o build/test.o src/test.cc
 
-build/test.o: src/test.cc
-	$(CC) -g -c -I include -o build/test.o src/test.cc
+# Compile cc files
+$(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
+	@mkdir -p $(BUILDDIR)
+	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
-build/main.o: src/main.cc
-	$(CC) -g -c -I include -o build/main.o src/main.cc
-
-build/Comparison.o: src/Comparison.cc
-	$(CC) -g -c -I include -o build/Comparison.o src/Comparison.cc
-
-build/ComparisonEngine.o: src/ComparisonEngine.cc
-	$(CC) -g -c -I include -o build/ComparisonEngine.o src/ComparisonEngine.cc
-
-build/DBFile.o: src/DBFile.cc
-	$(CC) -g -c -I include -o build/DBFile.o src/DBFile.cc
-
-build/File.o: src/File.cc
-	$(CC) -g -c -I include -o build/File.o src/File.cc
-
-build/Record.o: src/Record.cc
-	$(CC) -g -c -I include -o build/Record.o src/Record.cc
-
-build/Schema.o: src/Schema.cc
-	$(CC) -g -c -I include -o build/Schema.o src/Schema.cc
-
-build/y.tab.o: src/Parser.y
-	(cd src;yacc -d Parser.y)
+# Compile Flex/Bison files
+$(BUILDDIR)/y.tab.o: $(SRCDIR)/Parser.y
+	(cd $(SRCDIR);yacc -d Parser.y)
 	$(sed)
-	(mv src/y.tab.h include)
-	g++ -c -I include -o build/y.tab.o src/y.tab.c
+	(mv $(SRCDIR)/y.tab.h $(INCLUDEDIR))
+	g++ $(CFLAGS) $(INC) -c -o $@ $(SRCDIR)/y.tab.c
 
-build/lex.yy.o: src/Lexer.l
-	(cd src;lex  Lexer.l)
-	gcc  -c -I include -o build/lex.yy.o src/lex.yy.c
+$(BUILDDIR)/lex.yy.o: $(SRCDIR)/Lexer.l
+	(cd $(SRCDIR);lex  Lexer.l)
+	gcc $(CFLAGS) $(INC) -c -o $@ $(SRCDIR)/lex.yy.c
 
 
-###### Test Build ######
-utest: build/Schema.o build/Record.o build/DBFile.o build/utest.o lib/gtest_main.a lib/gmock_main.a
+########## Testing ##########
+# Test Vars
+TESTDIR := test
+
+# GoogleTest Vars
+GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
+GTEST_DIR = lib/gtest-1.7.0
+GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
+$(GTEST_DIR)/include/gtest/internal/*.h
+GMOCK_DIR = lib/gmock-1.7.0
+GMOCK_HEADERS = $(GMOCK_DIR)/include/gmock/*.h \
+$(GMOCK_DIR)/include/gmock/internal/*.h \
+$(GTEST_HEADERS)
+GMOCK_SRCS_ = $(GMOCK_DIR)/src/*.cc $(GMOCK_HEADERS)
+GTESTLIBS := $(LIBDIR)/gtest_main.a $(LIBDIR)/gmock_main.a
+
+
+###### Test Builds ######
+utest: $(OBJECTS) $(TARGETDIR)/utest.o $(GTESTLIBS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o bin/$@
 
-build/utest.o: test/utest.cc $(GTEST_HEADERS)
-	$(CC) $(CPPFLAGS) $(CXXFLAGS) -I include -o build/utest.o -c $<
+# Compile tests cc files
+$(BUILDDIR)/%.o: $(TESTDIR)/%.$(SRCEXT) $(GTEST_HEADERS)
+	@mkdir -p $(BUILDDIR)
+	$(CC) $(CPPFLAGS) $(CXXFLAGS) $(INC) -c -o $@ $<
 
-build/gtest-all.o : $(GTEST_SRCS_)
+# Create GTest and GMock libs
+$(BUILDDIR)/gtest-all.o : $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
 		-o $@ $(GTEST_DIR)/src/gtest-all.cc
 
-build/gtest_main.o : $(GTEST_SRCS_)
+$(BUILDDIR)/gtest_main.o : $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
 		-o $@ $(GTEST_DIR)/src/gtest_main.cc
 
-lib/gtest.a : build/gtest-all.o
+$(LIBDIR)/gtest.a : $(BUILDDIR)/gtest-all.o
 	$(AR) $(ARFLAGS) $@ $^
 
-lib/gtest_main.a : build/gtest-all.o build/gtest_main.o
+$(LIBDIR)/gtest_main.a : $(BUILDDIR)/gtest-all.o $(BUILDDIR)/gtest_main.o
 	$(AR) $(ARFLAGS) $@ $^
 
-build/gmock-all.o : $(GMOCK_SRCS_)
+$(BUILDDIR)/gmock-all.o : $(GMOCK_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) -I$(GMOCK_DIR) $(CXXFLAGS) \
 	-c -o $@ $(GMOCK_DIR)/src/gmock-all.cc
 
-build/gmock_main.o : $(GMOCK_SRCS_)
+$(BUILDDIR)/gmock_main.o : $(GMOCK_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) -I$(GMOCK_DIR) $(CXXFLAGS) \
 	-c -o $@ $(GMOCK_DIR)/src/gmock_main.cc
 
-lib/gmock.a : build/gmock-all.o build/gtest-all.o
+$(LIBDIR)/gmock.a : $(BUILDDIR)/gmock-all.o $(BUILDDIR)/gtest-all.o
 	$(AR) $(ARFLAGS) $@ $^
 
-lib/gmock_main.a : build/gmock-all.o build/gtest-all.o build/gmock_main.o
+$(LIBDIR)/gmock_main.a : $(BUILDDIR)/gmock-all.o $(BUILDDIR)/gtest-all.o $(BUILDDIR)/gmock_main.o
 	$(AR) $(ARFLAGS) $@ $^
 
 
