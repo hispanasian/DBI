@@ -1,6 +1,7 @@
 #include <gmock/gmock.h>
 #include "Record.h"
 #include "File.h"
+#include "RawFile.h"
 
 class MockRecord: public Record {
 public:
@@ -61,5 +62,5 @@ public:
 //    virtual bool Append(std::string value);
     MOCK_METHOD1(Append, bool(std::string value));
 //    virtual bool Truncate();
-    MOCK_METHOD(Truncate, bool());
+    MOCK_METHOD0(Truncate, bool());
 };
