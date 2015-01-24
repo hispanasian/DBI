@@ -1,5 +1,5 @@
 ### Remember to add new mains to the MAINS variable
-CC = g++ -O2 -Wno-deprecated
+CC = g++ -Wno-deprecated #-O2
 
 # Vars
 SRCDIR := src
@@ -15,7 +15,7 @@ CFLAGS := -g # -Wall
 LIB := -L lib
 INC := -I include
 PARSING := $(BUILDDIR)/y.tab.o $(BUILDDIR)/lex.yy.o
-MAINS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o
+MAINS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o $(BUILDDIR)/driver.o
 
 # Objects excluding main
 OBJECTS := $(filter-out $(MAINS),$(ALL_OBJECTS)) $(PARSING)
@@ -39,13 +39,19 @@ tag = -n
 endif
 
 ###### Main Build ######
+# Build all
+.PHONY: all
+all: main driver test
+
 # Build main
 .PHONY: main
 main: $(OBJECTS) $(BUILDDIR)/main.o
 	$(CC) -o $(TARGETDIR)/main $^ $(lfl)
 
-# build/test.o: src/test.cc
-	# 	$(CC) -g -c -I include -o build/test.o src/test.cc
+# Build driver
+.PHONY: driver
+driver: $(OBJECTS) $(BUILDDIR)/driver.o
+	$(CC) -o $(TARGETDIR)/driver $^ $(lfl)
 
 # Compile cc files
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
@@ -92,8 +98,8 @@ GMOCK_MAIN := $(LIBDIR)/gmock_main.a
 
 
 ###### Test Builds ######
-.PHONY: utest
-utest: $(OBJECTS) $(TEST_OBJECTS) $(BUILDDIR)/utest.o $(GTESTLIBS)
+.PHONY: test
+test: $(OBJECTS) $(TEST_OBJECTS) $(BUILDDIR)/test.o $(GTESTLIBS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $(TARGETDIR)/$@
 
 # Compile tests cc files

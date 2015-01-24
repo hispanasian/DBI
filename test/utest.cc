@@ -14,8 +14,3 @@ TEST(DBFile, Test) {
 
   f.Add(mr);
 }
-
-int main(int argc, char** argv) {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
