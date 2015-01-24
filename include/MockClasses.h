@@ -45,3 +45,21 @@ public:
     //virtual int Close ();
     MOCK_METHOD0(Close, int());
 };
+
+class MockRawFile: public RawFile {
+public:
+//    virtual bool Open(std::string fname);
+    MOCK_METHOD1(Open, bool(std::string fname));
+//    virtual bool Close();
+    MOCK_METHOD0(Close, bool());
+//    virtual int Read(void* buf, size_t count);
+    MOCK_METHOD2(Read, int(void* buf, size_t count));
+//    virtual int Write(const void* buf, size_t count);
+    MOCK_METHOD2(Write, int(const void* buf, size_t count));
+//    virtual std::string ReadLine();
+    MOCK_METHOD0(ReadLine,  std::string());
+//    virtual bool Append(std::string value);
+    MOCK_METHOD1(Append, bool(std::string value));
+//    virtual bool Truncate();
+    MOCK_METHOD(Truncate, bool());
+};
