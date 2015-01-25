@@ -1,34 +1,31 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef DBCONFIG_H
+#define DBCONFIG_H
 
 #include <iosfwd>
 #include <map>
 #include "RawFile.h"
 
-class Config {
+class DBConfig {
 private:
-    RawFile file;
     std::map<std::string, std::string> map;
-    bool changed;
 
 public:
-    Config();
-    Config(RawFile file);
-    virtual ~Config();
+    DBConfig();
+    virtual ~DBConfig();
 
     /**
-    * Open the config file located at fname.
-    * @param fname  The name of the file holding the config
-    * @return       True if the file opened successfully.
+    * Takes open file, builds a map based on the contents, and closes it. This function assumes
+    * that file is at the beginning.
+    * @param file   The RawFile with config information
+    * @return       True if the file was opened, read, and closed successfully.
     */
-    virtual bool Open(std::string fname);
+    virtual bool Read(RawFile &file);
 
     /**
-    * If there has been a change (a new key added), over-write the RawFile used by this config
-    * and then close the RawFile.
-    * @return   True if the file closed without issue.
+    * Writes the internal map to file.
+    * @return   True if the file opened, was written to, and closed successfully.
     */
-    virtual bool Close();
+    virtual bool Write(RawFile &file);
 
     /**
     * Add a key-value to the Config.
@@ -45,4 +42,4 @@ public:
     virtual std::string GetKey(std::string key);
 };
 
-#endif CONFIG_H
+#endif DBCONFIG_H
