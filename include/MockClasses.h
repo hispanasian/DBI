@@ -2,7 +2,7 @@
 #include "Record.h"
 #include "File.h"
 #include "RawFile.h"
-#include "Config.h"
+#include "DBConfig.h"
 
 class MockRecord: public Record {
 public:
@@ -66,12 +66,12 @@ public:
     MOCK_METHOD0(Truncate, bool());
 };
 
-class MockConfig: public Config {
+class MockConfig: public DBConfig {
 public:
-//    virtual bool Open(std::string fname);
-    MOCK_METHOD1(Open, bool(std::string fname));
-//    virtual bool Close();
-    MOCK_METHOD0(Close, bool());
+//    virtual bool Read(RawFile file);
+    MOCK_METHOD1(Read, bool(RawFile &file));
+//    virtual bool Write(RawFile file);
+    MOCK_METHOD1(Write, bool(RawFile &file));
 //    virtual void AddKey(std::string key, std::string value);
     MOCK_METHOD2(AddKey, void(std::string key, std::string value));
 //    virtual std::string GetKey(std::string key);

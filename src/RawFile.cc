@@ -1,4 +1,8 @@
 #include "../include/RawFile.h"
+#include <iostream>
+
+RawFile::~RawFile() {
+}
 
 bool RawFile::Open(std::string fname) {
     return false;
