@@ -13,6 +13,8 @@ private:
 public:
     RawFile();
     virtual ~RawFile();
+    virtual ~RawFile();
+
     virtual bool Open(std::string fname);
     virtual bool Close();
     virtual int Read(void* buf, size_t count);
