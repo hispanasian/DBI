@@ -42,6 +42,7 @@ bool DBConfig::Write(RawFile &file) {
     return success;
     file.Truncate();
     // Let's assume that file is at the beginning
+
     return false;
     // Let's assume that file is at the beginning
     // TODO: Update to deal with lseek so this assumption isn't made.
