@@ -89,7 +89,6 @@ public:
     MOCK_METHOD0(Clear, void());
 };
 
-
 class MockDBFile: public DBFile {
 //	virtual int Create (char *fpath, fType file_type, void *startup);
 	MOCK_METHOD3(Create, int(char *fpath, fType file_type, void *startup));
