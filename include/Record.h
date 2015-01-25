@@ -35,7 +35,7 @@ private:
 
 public:
 	Record ();
-	~Record();
+	virtual ~Record();
 
 	// suck the contents of the record fromMe into this; note that after
 	// this call, fromMe will no longer have anything inside of it
