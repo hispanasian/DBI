@@ -4,6 +4,7 @@
 #include "RawFile.h"
 #include "DBFile.h"
 #include "Config.h"
+#include "DBConfig.h"
 
 class MockRecord: public Record {
 public:

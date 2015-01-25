@@ -9,6 +9,7 @@ DBConfig::DBConfig() {}
 DBConfig::~DBConfig() {}
 
 bool DBConfig::Read(RawFile &file) {
+<<<<<<< HEAD
     bool success = true;
     std::string line;
     std::string empty = "";
@@ -40,6 +41,14 @@ bool DBConfig::Write(RawFile &file) {
 
     success = file.Close() && success;
     return success;
+=======
+    file.Truncate();
+    return false;
+}
+
+bool DBConfig::Write(RawFile &file) {
+    return false;
+>>>>>>> finally! had to pass RawFile by reference to DBConfigs functions in order to get the mock tests working
 }
 
 void DBConfig::AddKey(string key, string value) {
@@ -58,6 +67,7 @@ void DBConfig::AddKey(string key, string value) {
 }
 
 std::string DBConfig::GetKey(string key) {
+<<<<<<< HEAD
     string value;
     try {
         value = map.at(key);
@@ -66,3 +76,7 @@ std::string DBConfig::GetKey(string key) {
     }
     return value;
 }
+=======
+    return "";
+}
+>>>>>>> finally! had to pass RawFile by reference to DBConfigs functions in order to get the mock tests working
