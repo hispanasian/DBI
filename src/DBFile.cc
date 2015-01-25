@@ -14,6 +14,10 @@ DBFile::DBFile () {
 
 }
 
+DBFile::~DBFile () {
+
+}
+
 int DBFile::Create (char *f_path, fType f_type, void *startup) {
 }
 
