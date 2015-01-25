@@ -62,6 +62,8 @@ TEST_F(DBConfigTest, Read2) {
                 WillOnce(Return("kit=kat"));
         EXPECT_CALL(file, ReadLine()).
                 WillOnce(Return(""));
+        EXPECT_CALL(file, Close()).
+                WillOnce(Return(true));
     }
     EXPECT_EQ(true, config.Read(file));
     EXPECT_EQ(false, Map().empty());
@@ -76,17 +78,109 @@ TEST_F(DBConfigTest, Read2) {
 }
 
 /**
-* DBConfig should only call RawFile::Close on file when there have been no changes.
+* DBCofnig::Read should return false if Close returns false.
 */
-TEST(DBConfig, Close1) {
+TEST_F(DBConfigTest, Read3) {
     MockRawFile file;
+    {
+        InSequence seq;
+        EXPECT_CALL(file, ReadLine()).
+                WillOnce(Return(""));
+        EXPECT_CALL(file, Close()).
+                WillOnce(Return(false));
+    }
+    EXPECT_EQ(false, config.Read(file));
 }
 
 /**
-* DBConfig should first write changes made to file when it has made a change, after which it should
-* close file.
+* DBConfig::Read should return false if it encounters a line that does not match the format:
+* "key=value".
 */
-TEST(DBConfig, Close2) {
+TEST_F(DBConfigTest, Read4) {
+    MockRawFile file;
+    {
+        InSequence seq;
+        /* Some valid lines */
+        EXPECT_CALL(file, ReadLine()).
+                WillOnce(Return("key=val"));
+        EXPECT_CALL(file, ReadLine()).
+                WillOnce(Return("good=not bad")); // Spaces!
+        /* Invalid line */
+        EXPECT_CALL(file, ReadLine()).
+                WillOnce(Return("invalid"));
+        EXPECT_CALL(file, Close()).
+                WillOnce(Return(true));
+    }
 
+    EXPECT_EQ(false, config.Read(file));
 }
 
+/**
+* DBConfig::Read should return true if it encounters multiple keys. It should over-write the old
+* key in the file.
+*/
+TEST_F(DBConfigTest, Read5) {
+    MockRawFile file;
+    {
+        InSequence seq;
+        EXPECT_CALL(file, ReadLine()).
+                WillOnce(Return("a=A"));
+        EXPECT_CALL(file, ReadLine()).
+                WillOnce(Return("yes=no"));
+        EXPECT_CALL(file, ReadLine()).
+                WillOnce(Return("check=good"));
+        EXPECT_CALL(file, ReadLine()).
+                WillOnce(Return("check=bad"));
+        EXPECT_CALL(file, ReadLine()).
+                WillOnce(Return("no=yes"));
+        EXPECT_CALL(file, ReadLine()).
+                WillOnce(Return(""));
+        EXPECT_CALL(file, Close()).
+                WillOnce(Return(true));
+    }
+
+    EXPECT_EQ(true, config.Read(file));
+    EXPECT_EQ(false, Map().empty());
+    EXPECT_EQ(4, Map().size());
+
+    std::string A("A");
+    std::string no("no");
+    std::string good("good");
+    std::string yes("yes");
+    EXPECT_EQ(0, A.compare(Map()["a"]));
+    EXPECT_EQ(0, no.compare(Map()["yes"]));
+    EXPECT_EQ(0, good.compare(Map()["check"]));
+    EXPECT_EQ(0, yes.compare(Map()["no"]));
+}
+
+/**
+* DBConfig::Read should not fail if it finds an extra '=' character. The first '=' character will
+* act as the delimiter for key,value and any remaining '=' characters will be used as part of val.
+*/
+TEST_F(DBConfigTest, Read6) {
+    MockRawFile file;
+    {
+        InSequence seq;
+        EXPECT_CALL(file, ReadLine()).
+                WillOnce(Return("non=sense"));
+        EXPECT_CALL(file, ReadLine()).
+                WillOnce(Return("this=is=dumb"));
+        EXPECT_CALL(file, ReadLine()).
+                WillOnce(Return("not=dumb"));
+        EXPECT_CALL(file, ReadLine()).
+                WillOnce(Return(""));
+        EXPECT_CALL(file, Close()).
+                WillOnce(Return(true));
+    }
+
+    EXPECT_EQ(true, config.Read(file));
+    EXPECT_EQ(false, Map().empty());
+    EXPECT_EQ(3, Map().size());
+
+    std::string sense("sense");
+    std::string isDumb("is=dumb");
+    std::string dumb("dumb");
+    EXPECT_EQ(0, sense.compare(Map()["non"]));
+    EXPECT_EQ(0, isDumb.compare(Map()["this"]));
+    EXPECT_EQ(0, dumb.compare(Map()["not"]));
+}

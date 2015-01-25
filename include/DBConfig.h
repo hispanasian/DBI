@@ -16,7 +16,10 @@ public:
 
     /**
     * Takes open file, builds a map based on the contents, and closes it. This function assumes
-    * that file is at the beginning.
+    * that file is at the beginning. DBConfig expects every line to be of the format: "key=value".
+    * If there is an invalid line, Read will return false. Any data obtained during Read should be
+    * considered not-safe to use. If Read encounters multiple keys with the same value, Read will
+    * keep the first key in the file.
     * @param file   The RawFile with config information
     * @return       True if the file was opened, read, and closed successfully.
     */
