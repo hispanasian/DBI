@@ -9,7 +9,8 @@ DBConfig::DBConfig() {}
 DBConfig::~DBConfig() {}
 
 bool DBConfig::Read(RawFile &file) {
-    file.Truncate();
+    // Let's assume that file is at the beginning
+
     return false;
 }
 
