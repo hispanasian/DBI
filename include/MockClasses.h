@@ -87,7 +87,6 @@ public:
     MOCK_METHOD2(ReplaceKey, void(std::string key, std::string value));
 };
 
-
 class MockDBFile: public DBFile {
 //	virtual int Create (char *fpath, fType file_type, void *startup);
 	MOCK_METHOD3(Create, int(char *fpath, fType file_type, void *startup));
