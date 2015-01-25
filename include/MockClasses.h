@@ -2,6 +2,7 @@
 #include "Record.h"
 #include "File.h"
 #include "RawFile.h"
+#include "Config.h"
 
 class MockRecord: public Record {
 public:
@@ -65,4 +66,16 @@ public:
     MOCK_METHOD0(Truncate, bool());
 //    virtual void LSeek(off_t offset);
     MOCK_METHOD1(LSeek, void(off_t offset));
+};
+
+class MockConfig: public Config {
+public:
+//    virtual bool Open(std::string fname);
+    MOCK_METHOD1(Open, bool(std::string fname));
+//    virtual bool Close();
+    MOCK_METHOD0(Close, bool());
+//    virtual void AddKey(std::string key, std::string value);
+    MOCK_METHOD2(AddKey, void(std::string key, std::string value));
+//    virtual std::string GetKey(std::string key);
+    MOCK_METHOD1(GetKey, std::string(std::string key));
 };

@@ -35,7 +35,6 @@ int DBFile::Close () {
 }
 
 void DBFile::Add (Record &rec) {
-  std::cout << "Hey!" << std::endl;
   rec.Project(0,0,0);
 }
 

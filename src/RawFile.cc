@@ -39,4 +39,3 @@ int RawFile::Write(const void *buf, size_t count) {
 void RawFile::LSeek(off_t offset) {
 
 };
-
