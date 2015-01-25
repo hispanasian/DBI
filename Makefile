@@ -11,7 +11,7 @@ TARGETDIR := bin
 SRCEXT := cc
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 ALL_OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
-CFLAGS := -g # -Wall
+CFLAGS := -g -Wall
 LIB := -L lib
 INC := -I include
 PARSING := $(BUILDDIR)/y.tab.o $(BUILDDIR)/lex.yy.o
