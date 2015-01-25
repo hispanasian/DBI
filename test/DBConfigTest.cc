@@ -2,19 +2,36 @@
 #include <gmock/gmock.h>
 #include "../include/DBConfig.h"
 #include "../include/MockClasses.h"
+#include <map>
 
 using ::testing::_;
 using ::testing::Return;
 
 /**
-* DBConfig should only call RawFile::Open on file.
+* Fixture for DBConfig that provides access to map.
 */
-TEST(DBConfig, Read) {
-    MockRawFile file;
-    //EXPECT_CALL(file, Truncate());
-    //EXPECT_CALL(file, Open(_))
-            //.WillOnce(Return(true));
+class DBConfigTest: public ::testing::Test {
+public:
     DBConfig config;
+    map<std::string,std::string> getMap();
+protected:
+    //virtual void SetUp() {}
+    //virtual void TearDown() {}
+};
+
+/**
+* Returns the map of config
+*/
+map<std::string,std::string> DBConfigTest::getMap() {
+    return config.map;
+}
+
+/**
+* DBConfig::Read should take an open RawFile that has no contents and
+*/
+TEST_F(DBConfigTest, Read1) {
+    MockRawFile file;
+
     EXPECT_EQ(true, config.Read(file));
 }
 
