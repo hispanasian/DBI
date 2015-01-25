@@ -17,4 +17,4 @@ public:
     virtual bool Truncate();
 };
 
-#endif RAWFILE_H
+#endif
