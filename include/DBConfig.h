@@ -7,7 +7,6 @@
 #include <stdexcept>
 
 class DBConfig {
-friend class DBConfigTest;
 private:
     std::map<std::string, std::string> map;
 
