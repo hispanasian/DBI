@@ -1,35 +1,35 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include "../include/Config.h"
+#include "../include/DBConfig.h"
 #include "../include/MockClasses.h"
 
 using ::testing::_;
 using ::testing::Return;
 
 /**
-* Config should only call RawFile::Open on file.
+* DBConfig should only call RawFile::Open on file.
 */
-TEST(Config, Open) {
+TEST(DBConfig, Read) {
     MockRawFile file;
-    Config config(file);
-    EXPECT_CALL(file, Truncate());
+    //EXPECT_CALL(file, Truncate());
     //EXPECT_CALL(file, Open(_))
             //.WillOnce(Return(true));
-    //EXPECT_EQ(true, config.Open("some/path"));
+    DBConfig config;
+    EXPECT_EQ(true, config.Read(file));
 }
 
 /**
-* Config should only call RawFile::Close on file when there have been no changes.
+* DBConfig should only call RawFile::Close on file when there have been no changes.
 */
-TEST(Config, Close1) {
+TEST(DBConfig, Close1) {
     MockRawFile file;
 }
 
 /**
-* Config should first write changes made to file when it has made a change, after which it should
+* DBConfig should first write changes made to file when it has made a change, after which it should
 * close file.
 */
-TEST(Config, Close2) {
+TEST(DBConfig, Close2) {
 
 }
 

@@ -28,3 +28,14 @@ std::string DBConfig::GetKey(string key) {
 
 void DBConfig::ReplaceKey(string key, string value) {
 }
+
+bool DBConfig::Write(RawFile &file) {
+    return false;
+}
+
+void DBConfig::AddKey(string key, string value) {
+}
+
+std::string DBConfig::GetKey(string key) {
+    return "";
+}
