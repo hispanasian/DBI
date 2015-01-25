@@ -1,5 +1,5 @@
 ### Remember to add new mains to the MAINS variable
-CC = g++ -Wno-deprecated #-O2
+CC = g++ -Wno-deprecated -w #-O2
 
 # Vars
 SRCDIR := src
@@ -21,7 +21,7 @@ MAINS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o $(BUILDDIR)/driver.o
 OBJECTS := $(filter-out $(MAINS),$(ALL_OBJECTS)) $(PARSING)
 
 # Flags passed to the C++ compiler.
-CXXFLAGS += -g -Wall -Wextra -pthread
+CXXFLAGS += -g -Wall -Wextra -pthread -w
 CPPFLAGS += -isystem $(GTEST_DIR)/include -isystem $(GMOCK_DIR)/include
 
 # Bison/Flex stuff
