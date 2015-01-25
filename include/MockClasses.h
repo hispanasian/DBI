@@ -3,6 +3,7 @@
 #include "File.h"
 #include "RawFile.h"
 #include "DBFile.h"
+#include "Config.h"
 
 class MockRecord: public Record {
 public:
@@ -74,6 +75,10 @@ public:
     MOCK_METHOD1(Read, bool(RawFile &file));
 //    virtual bool Write(RawFile file);
     MOCK_METHOD1(Write, bool(RawFile &file));
+//    virtual bool Open(std::string fname);
+    MOCK_METHOD1(Open, bool(std::string fname));
+//    virtual bool Close();
+    MOCK_METHOD0(Close, bool());
 //    virtual void AddKey(std::string key, std::string value);
     MOCK_METHOD2(AddKey, void(std::string key, std::string value));
 //    virtual std::string GetKey(std::string key);
