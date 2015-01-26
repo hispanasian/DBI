@@ -24,7 +24,7 @@ bool DBConfig::Read(RawFile &file) {
         else {
             key = line.substr(0, delim);
             val = line.substr(delim + 1, line.length() + 1);
-            map.insert(std::pair<std::string, std::string>(key, val));
+            map.insert(pair<string, string>(key, val));
         }
     }
     success = file.Close() && success;
@@ -32,7 +32,14 @@ bool DBConfig::Read(RawFile &file) {
 }
 
 bool DBConfig::Write(RawFile &file) {
-    return false;
+    bool success = file.Truncate();
+
+    for(std::map<string, string>::iterator it = map.begin(); success && it != map.end(); it++) {
+        success = file.Append(it->first + "=" + it->second + "\n");
+    }
+
+    success = file.Close() && success;
+    return success;
 }
 
 void DBConfig::AddKey(string key, string value) {

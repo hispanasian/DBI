@@ -7,6 +7,7 @@
 using ::testing::_;
 using ::testing::Return;
 using ::testing::InSequence;
+using ::testing::Sequence;
 
 /**
 * Fixture for DBConfig that provides access to map.
@@ -14,7 +15,7 @@ using ::testing::InSequence;
 class DBConfigTest: public ::testing::Test {
 public:
     DBConfig config;
-    map<std::string,std::string> Map();
+    map<std::string,std::string>& Map();
 protected:
     //virtual void SetUp() {}
     //virtual void TearDown() {}
@@ -23,7 +24,7 @@ protected:
 /**
 * Returns the map of config
 */
-map<std::string,std::string> DBConfigTest::Map() {
+map<std::string,std::string>& DBConfigTest::Map() {
     return config.map;
 }
 
@@ -183,4 +184,137 @@ TEST_F(DBConfigTest, Read6) {
     EXPECT_EQ(0, sense.compare(Map()["non"]));
     EXPECT_EQ(0, isDumb.compare(Map()["this"]));
     EXPECT_EQ(0, dumb.compare(Map()["not"]));
+}
+
+/**
+* DBConfig::Write should first call Truncate on RawFile followed by a number of Appends equal to
+* the number of elements in Map and lastly Close. This should also add anew line after every string
+* when calling RawFile::Append.
+*/
+TEST_F(DBConfigTest, Write1) {
+    MockRawFile file;
+    Map().insert(std::pair<std::string, std::string>("key", "val"));
+    Map().insert(std::pair<std::string, std::string>("get", "stuffed"));
+    Map().insert(std::pair<std::string, std::string>("one", "liners"));
+
+    Sequence s1, s2, s3;
+    EXPECT_CALL(file, Truncate()).
+            InSequence(s1, s2, s3).
+            WillOnce(Return(true));
+    /* Not sure which order these should appear in */
+    EXPECT_CALL(file, Append("key=val\n")).
+            InSequence(s1).
+            WillOnce(Return(true));
+    EXPECT_CALL(file, Append("get=stuffed\n")).
+            InSequence(s2).
+            WillOnce(Return(true));
+    EXPECT_CALL(file, Append("one=liners\n")).
+            InSequence(s3).
+            WillOnce(Return(true));
+    /* Must happen after The previous 3 calls */
+    EXPECT_CALL(file, Close()).
+            InSequence(s1, s2, s3).
+            WillOnce(Return(true));
+
+    EXPECT_EQ(true, config.Write(file));
+}
+
+/**
+* DBConfig::Write should return false if Append returns false at any point in time and
+* DBConfig::Write should stop writing to file as soon as Append returns false. DBConfig should also
+* attempt to close file afterwards.
+*/
+TEST_F(DBConfigTest, Write2) {
+    MockRawFile file;
+    Map().insert(std::pair<std::string, std::string>("key", "val"));
+    Map().insert(std::pair<std::string, std::string>("get", "stuffed"));
+    Map().insert(std::pair<std::string, std::string>("one", "liners"));
+
+    {
+        InSequence seq;
+        EXPECT_CALL(file, Truncate()).
+                WillOnce(Return(true));
+        EXPECT_CALL(file, Append(_)).
+                WillOnce(Return(true));
+        EXPECT_CALL(file, Append(_)).
+                WillOnce(Return(false));
+        EXPECT_CALL(file, Close()).
+                WillOnce(Return(true));
+    }
+
+    EXPECT_EQ(false, config.Write(file));
+}
+
+/**
+* DBConfig::Write should return false if RawFile::Close returns false.
+*/
+TEST_F(DBConfigTest, Write3) {
+    MockRawFile file;
+    Map().insert(std::pair<std::string, std::string>("key", "val"));
+    Map().insert(std::pair<std::string, std::string>("get", "stuffed"));
+    Map().insert(std::pair<std::string, std::string>("one", "liners"));
+
+    Sequence s1, s2, s3;
+    EXPECT_CALL(file, Truncate()).
+            InSequence(s1, s2, s3).
+            WillOnce(Return(true));
+    /* Not sure what order these will appear in */
+    EXPECT_CALL(file, Append("key=val\n")).
+            InSequence(s1).
+            WillOnce(Return(true));
+    EXPECT_CALL(file, Append("get=stuffed\n")).
+            InSequence(s2).
+            WillOnce(Return(true));
+    EXPECT_CALL(file, Append("one=liners\n")).
+            InSequence(s3).
+            WillOnce(Return(true));
+    /* Must occur after the previous 3 calls */
+    EXPECT_CALL(file, Close()).
+            InSequence(s1, s2, s3).
+            WillOnce(Return(false));
+
+    EXPECT_EQ(false, config.Write(file));
+}
+
+/**
+* DBConfig::Write should return false if file.Truncate returns false. DBConfig should not try to
+* append anything to file but it should also try to close the file.
+*/
+TEST_F(DBConfigTest, Write4) {
+    MockRawFile file;
+    Map().insert(std::pair<std::string, std::string>("key", "val"));
+    Map().insert(std::pair<std::string, std::string>("get", "stuffed"));
+    Map().insert(std::pair<std::string, std::string>("one", "liners"));
+
+    {
+        InSequence seq;
+        EXPECT_CALL(file, Truncate()).
+                WillOnce(Return(false));
+        EXPECT_CALL(file, Close()).
+                WillOnce(Return(true));
+    }
+
+    EXPECT_EQ(false, config.Write(file));
+}
+
+/**
+* DBConfig::Write should return false if file.Truncate returns false. DBConfig should not try to
+* append anything to file but it should also try to close the file. It should still return false if
+* file.Close also returns false.
+*/
+TEST_F(DBConfigTest, Write5) {
+    MockRawFile file;
+    Map().insert(std::pair<std::string, std::string>("key", "val"));
+    Map().insert(std::pair<std::string, std::string>("get", "stuffed"));
+    Map().insert(std::pair<std::string, std::string>("one", "liners"));
+
+    {
+        InSequence seq;
+        EXPECT_CALL(file, Truncate()).
+                WillOnce(Return(false));
+        EXPECT_CALL(file, Close()).
+                WillOnce(Return(false));
+    }
+
+    EXPECT_EQ(false, config.Write(file));
 }
