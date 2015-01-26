@@ -87,12 +87,15 @@ void DBConfig::AddKey(string key, string value) {
 
 std::string DBConfig::GetKey(string key) {
     string value;
+<<<<<<< HEAD
     try {
         value = map.at(key);
     } catch(out_of_range e) {
         value = "";
     }
     return value;
+=======
+>>>>>>> Implemented and tested DBConfig::AddKey
 
     try {
         value = map.at(key);
@@ -101,3 +104,4 @@ std::string DBConfig::GetKey(string key) {
     }
     return value;
 }
+
