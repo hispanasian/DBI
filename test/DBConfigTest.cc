@@ -28,6 +28,10 @@ map<std::string,std::string>& DBConfigTest::Map() {
     return config.map;
 }
 
+/***************************************************************
+ ************************** Unit tests *************************
+ ***************************************************************/
+
 /**
 * DBConfig::Read should take an open RawFile that has no contents (or simply an un-opened RawFile),
 * read it once (via readline) and then Close the file. If Close poses no problem, then Read return
@@ -461,4 +465,40 @@ TEST_F(DBConfigTest, GetKey2) {
     std::string value = "";
     EXPECT_EQ(0, value.compare(config.GetKey("key")));
     EXPECT_EQ(0, Map().size());
+}
+
+/***************************************************************
+ ********************** Integration tests **********************
+ ***************************************************************/
+/**
+ * DBConfigTest should correctly write to a file.
+ */
+TEST_F(DBConfigTest, IntegrationTest1) {
+	RawFile file;
+	file.Open("jkdlkjfslkdjfsdf");
+	config.AddKey("test","val");
+	config.Write(file);
+
+	FILE *check = fopen("jkdlkjfslkdjfsdf", "r");
+	char space[200];
+	fscanf(check, "%s", space);
+	EXPECT_EQ(0, strcmp("test=val", space));
+	fclose(check);
+	remove("jkdlkjfslkdjfsdf");
+}
+
+/**
+ * DBConfigTest should correctly read from a file.
+ */
+TEST_F(DBConfigTest, IntegrationTest2) {
+	FILE * check = fopen("jkdlkjfslkdjfsdf", "w+");
+	fprintf (check, "key=val");
+	fclose(check);
+	RawFile file;
+	file.Open("jkdlkjfslkdjfsdf");
+	EXPECT_EQ(true, config.Read(file));
+	string val = "val";
+	EXPECT_EQ(0, val.compare(config.GetKey("key")));
+	file.Close();
+	remove("jkdlkjfslkdjfsdf");
 }
