@@ -55,7 +55,11 @@ TEST_F(DBConfigTest, Read1) {
 /**
 * DBConfig::Read should take an open RawFile that starts at the beginning with 3 elements correctly
 * formatted and add them to map. It should then add them to the map and finally close the file and
+<<<<<<< HEAD
 * return true. It should also call RawFile::LSeek(0) to read from the beginning.
+=======
+* return true.
+>>>>>>> db0bbe975309bddab09ebdf3d05852e680ea232e
 */
 TEST_F(DBConfigTest, Read2) {
     MockRawFile file;
@@ -236,7 +240,6 @@ TEST_F(DBConfigTest, Write1) {
 }
 
 /**
-* DBConfig::Write should return false if Append returns false at any point in time and
 * DBConfig::Write should stop writing to file as soon as Append returns false. DBConfig should also
 * attempt to close file afterwards. It should also call RawFile::LSeek(0) after truncate to write
 * at the beginning.
