@@ -93,3 +93,10 @@ std::string DBConfig::GetKey(string key) {
     }
     return value;
 }
+    try {
+        value = map.at(key);
+    } catch(out_of_range e) {
+        value = "";
+    }
+    return value;
+}
