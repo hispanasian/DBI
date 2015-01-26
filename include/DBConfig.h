@@ -4,6 +4,7 @@
 #include <iosfwd>
 #include <map>
 #include "RawFile.h"
+#include <stdexcept>
 
 class DBConfig {
 friend class DBConfigTest;
@@ -33,7 +34,9 @@ public:
     virtual bool Write(RawFile &file);
 
     /**
-    * Add a key-value to the Config.
+    * Add a key-value to the Config. Neither key nor value may contain the '\r' or \n\ characters.
+    * Furthermore, key cannot contain the '=' character. If any of these characters are found, an
+    * exception will be thrown.
     * @param key    The key associated with value.
     * @param value  The value being mapped to by key.
     */
@@ -45,6 +48,17 @@ public:
     * @return       The value associated with key or an empty string if no key was found.
     */
     virtual std::string GetKey(std::string key);
+};
+
+/********************* Exceptions *********************/
+class IllegalKeyException: public std::runtime_error {
+public:
+    IllegalKeyException(std::string m = "Illegal characters were used in the key.") : std::runtime_error(m) { }
+};
+
+class IllegalValueException: public std::runtime_error {
+public:
+    IllegalValueException(std::string m = "Illegal characters were used in the value.") : std::runtime_error(m) { }
 };
 
 #endif DBCONFIG_H

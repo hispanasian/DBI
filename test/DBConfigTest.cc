@@ -318,3 +318,110 @@ TEST_F(DBConfigTest, Write5) {
 
     EXPECT_EQ(false, config.Write(file));
 }
+
+/**
+* DBConfig::AddKey should add a key-value pair to DBConfig::map when AddKey is called.
+*/
+TEST_F(DBConfigTest, AddKey1) {
+    config.AddKey("key", "val");
+    config.AddKey("this", "is");
+    config.AddKey("a", "test");
+
+    EXPECT_EQ(false, Map().empty());
+    EXPECT_EQ(3, Map().size());
+
+    std::string val("val");
+    std::string is("is");
+    std::string test("test");
+    EXPECT_EQ(0, val.compare(Map()["key"]));
+    EXPECT_EQ(0, is.compare(Map()["this"]));
+    EXPECT_EQ(0, test.compare(Map()["a"]));
+}
+
+/**ma
+* DBConfig::AddKey should not overwrite an existing key
+*/
+TEST_F(DBConfigTest, AddKey2) {
+    config.AddKey("key", "val");
+    config.AddKey("key", "this cant happen");
+    config.AddKey("a", "test");
+
+    EXPECT_EQ(false, Map().empty());
+    EXPECT_EQ(2, Map().size());
+
+    std::string val("val");
+    std::string test("test");
+    EXPECT_EQ(0, val.compare(Map()["key"]));
+    EXPECT_EQ(0, test.compare(Map()["a"]));
+}
+
+/**
+* DBConfig::AddKey should throw an exception if the key contains the '=' character
+*/
+TEST_F(DBConfigTest, AddKey3) {
+    config.AddKey("key", "val");
+    ASSERT_THROW(config.AddKey("not=valid", "invalid"), IllegalKeyException);
+
+    EXPECT_EQ(false, Map().empty());
+    EXPECT_EQ(1, Map().size());
+
+    std::string val("val");
+    EXPECT_EQ(0, val.compare(Map()["key"]));
+}
+
+/**
+* DBConfig::AddKey should throw an exception if the key contains the '\n' character
+*/
+TEST_F(DBConfigTest, AddKey4) {
+    config.AddKey("key", "val");
+    ASSERT_THROW(config.AddKey("not\n", "invalid"), IllegalKeyException);
+
+    EXPECT_EQ(false, Map().empty());
+    EXPECT_EQ(1, Map().size());
+
+    std::string val("val");
+    EXPECT_EQ(0, val.compare(Map()["key"]));
+}
+
+/**
+* DBConfig::AddKey should throw an exception if the key contains the '\r' character
+*/
+TEST_F(DBConfigTest, AddKey5) {
+    config.AddKey("key", "val");
+    ASSERT_THROW(config.AddKey("not\r", "invalid"), IllegalKeyException);
+
+    EXPECT_EQ(false, Map().empty());
+    EXPECT_EQ(1, Map().size());
+
+    std::string val("val");
+    EXPECT_EQ(0, val.compare(Map()["key"]));
+}
+
+/**
+* DBConfig::AddKey should throw an exception if the value contains the '\n' character
+*/
+TEST_F(DBConfigTest, AddKey6) {
+    config.AddKey("key", "val");
+    ASSERT_THROW(config.AddKey("not", "invalid\n"), IllegalValueException);
+
+    EXPECT_EQ(false, Map().empty());
+    EXPECT_EQ(1, Map().size());
+
+    std::string val("val");
+    EXPECT_EQ(0, val.compare(Map()["key"]));
+}
+
+/**
+* DBConfig::AddKey should throw an exception if the key contains the '\r' character
+*/
+TEST_F(DBConfigTest, AddKey7) {
+    config.AddKey("key", "val");
+    ASSERT_THROW(config.AddKey("not", "invalid\r"), IllegalValueException);
+
+    EXPECT_EQ(false, Map().empty());
+    EXPECT_EQ(1, Map().size());
+
+    std::string val("val");
+    EXPECT_EQ(0, val.compare(Map()["key"]));
+}
+
