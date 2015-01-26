@@ -9,8 +9,6 @@ DBConfig::DBConfig() {}
 DBConfig::~DBConfig() {}
 
 bool DBConfig::Read(RawFile &file) {
-    // Let's assume that file is at the beginning
-    // TODO: Update to deal with lseek so this assumption isn't made.
     bool success = true;
     std::string line;
     std::string empty = "";
@@ -18,6 +16,7 @@ bool DBConfig::Read(RawFile &file) {
     std::string val;
     int delim;
 
+    file.LSeek(0); // Go to the beginning of the file
     while(success && empty.compare(line = file.ReadLine()) != 0) {
         delim = line.find_first_of("=");
         if(delim == string::npos) success = false;
@@ -33,6 +32,7 @@ bool DBConfig::Read(RawFile &file) {
 
 bool DBConfig::Write(RawFile &file) {
     bool success = file.Truncate();
+    if(success) file.LSeek(0); // Go to the beginning of the file
 
     for(std::map<string, string>::iterator it = map.begin(); success && it != map.end(); it++) {
         success = file.Append(it->first + "=" + it->second + "\n");
