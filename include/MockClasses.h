@@ -63,4 +63,6 @@ public:
     MOCK_METHOD1(Append, bool(std::string value));
 //    virtual bool Truncate();
     MOCK_METHOD0(Truncate, bool());
+//    virtual void LSeek(off_t offset);
+    MOCK_METHOD1(LSeek, void(off_t offset));
 };
