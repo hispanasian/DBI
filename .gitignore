@@ -111,3 +111,6 @@ install_manifest.txt
 include/y.tab.h
 src/lex.yy.c
 src/y.tab.c
+.cproject
+.project
+.settings/
