@@ -10,6 +10,9 @@ RawFile::~RawFile() {
 	}
 }
 
+RawFile::~RawFile() {
+}
+
 bool RawFile::Open(std::string fname) {
 	// TODO: check for file existence
 	filename = fname;
