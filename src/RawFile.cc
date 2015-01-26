@@ -1,6 +1,10 @@
 #include "../include/RawFile.h"
 #include <iostream>
 
+RawFile::RawFile() {
+
+}
+
 RawFile::~RawFile() {
 }
 
