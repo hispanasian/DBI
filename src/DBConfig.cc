@@ -101,14 +101,3 @@ std::string DBConfig::GetKey(string key) {
     }
     return value;
 }
-
-bool DBConfig::Write(RawFile &file) {
-    return false;
-}
-
-void DBConfig::AddKey(string key, string value) {
-}
-
-std::string DBConfig::GetKey(string key) {
-    return "";
-}
