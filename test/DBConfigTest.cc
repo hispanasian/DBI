@@ -425,3 +425,22 @@ TEST_F(DBConfigTest, AddKey7) {
     EXPECT_EQ(0, val.compare(Map()["key"]));
 }
 
+/**
+* DBConfig::GetKey should return the value with an associated key if it exists
+*/
+TEST_F(DBConfigTest, GetKey1) {
+    Map().insert(pair<string, string>("key", "value"));
+    std::string value = "value";
+
+    EXPECT_EQ(0, value.compare(config.GetKey("key")));
+}
+
+/**
+* DBConfig::GetKey should return "" if a key does not exist and it should not add the non-existent
+* key to map.
+*/
+TEST_F(DBConfigTest, GetKey2) {
+    std::string value = "";
+    EXPECT_EQ(0, value.compare(config.GetKey("key")));
+    EXPECT_EQ(0, Map().size());
+}
