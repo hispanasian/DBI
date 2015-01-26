@@ -15,8 +15,7 @@ public:
     virtual std::string ReadLine();
     virtual bool Append(std::string value);
     virtual bool Truncate();
-    virtual void LSeek(offset);
-    virtual off_t LSeek(off_t offset, int whence);
+    virtual void LSeek(off_t offset);
 };
 
 #endif
