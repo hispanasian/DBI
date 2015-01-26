@@ -43,6 +43,18 @@ bool DBConfig::Write(RawFile &file) {
 }
 
 void DBConfig::AddKey(string key, string value) {
+    // Validate key. key cannot contain '\r', '\n' or '='
+    if(key.find("=") != string::npos ||
+            key.find("\r") != string::npos ||
+            key.find("\n") != string::npos) {
+        throw IllegalKeyException();
+    }
+
+    // Validate value. value cannot contain '\r' or '\n'
+    if(value.find("\r") != string::npos || value.find("\n") != string::npos) {
+        throw IllegalValueException();
+    }
+    map.insert(pair<string, string>(key, value));
 }
 
 std::string DBConfig::GetKey(string key) {
