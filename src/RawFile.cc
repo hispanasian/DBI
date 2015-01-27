@@ -72,5 +72,5 @@ bool RawFile::Truncate() {
 }
 
 void RawFile::LSeek(off_t offset) {
-
+	fseek(file, offset, SEEK_SET);
 };
