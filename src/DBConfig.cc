@@ -82,3 +82,7 @@ void DBConfig::ReplaceKey(string key, string value) {
 	map.erase(key);
 	map.insert(pair<string, string>(key, value));
 }
+
+void DBConfig::Clear() {
+
+}

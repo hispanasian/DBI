@@ -85,6 +85,8 @@ public:
     MOCK_METHOD1(GetKey, std::string(std::string key));
 //    virtual std::string ReplaceKey(std::string key, std::string value);
     MOCK_METHOD2(ReplaceKey, void(std::string key, std::string value));
+//    virtual void Clear();
+    MOCK_METHOD0(Clear, void());
 };
 
 class MockDBFile: public DBFile {
