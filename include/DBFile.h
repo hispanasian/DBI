@@ -7,6 +7,8 @@
 #include "File.h"
 #include "Comparison.h"
 #include "ComparisonEngine.h"
+#include "RawFile.h"
+#include "DBConfig.h"
 
 typedef enum {heap, sorted, tree} fType;
 
@@ -18,7 +20,11 @@ private:
 	off_t curPage;
 	File &file;
 	File myFile;
-	DBFile(File &file); // Strictly for Testing.
+	RawFile &rfile;
+	RawFile myRFile;
+	DBConfig &config;
+	DBConfig myConfig;
+	DBFile(File &file, RawFile &rfile, DBConfig &config); // Strictly for Testing.
 public:
 	DBFile ();
     virtual ~DBFile();

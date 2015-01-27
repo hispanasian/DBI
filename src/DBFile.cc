@@ -13,11 +13,12 @@
 
 // stub file .. replace it with your own DBFile.cc
 
-DBFile::DBFile (): file(myFile) {
+DBFile::DBFile (): file(myFile), rfile(myRFile), config(myConfig) {
 	curPage = 0;
 }
 
-DBFile::DBFile (File &other): file(other) {
+DBFile::DBFile (File &otherFile, RawFile &otherRFile, DBConfig &otherConfig):
+		file(otherFile), rfile(otherRFile), config(otherConfig) {
 	curPage = 0;
 }
 
