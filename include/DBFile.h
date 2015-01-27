@@ -52,7 +52,7 @@ public:
 	virtual void Load (Schema &myschema, char *loadpath);
 
 	/**
-	 * Moves the pointer from the current record to the next record.
+	 * Moves the pointer from the current record to the first record.
 	 */
 	virtual void MoveFirst ();
 
