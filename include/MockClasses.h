@@ -2,7 +2,7 @@
 #include "Record.h"
 #include "File.h"
 #include "RawFile.h"
-#include "DBConfig.h"
+#include "DBFile.h"
 
 class MockRecord: public Record {
 public:
@@ -68,7 +68,7 @@ public:
     MOCK_METHOD1(LSeek, void(off_t offset));
 };
 
-class MockConfig: public DBConfig {
+class MockDBConfig: public DBConfig {
 public:
 //    virtual bool Read(RawFile file);
     MOCK_METHOD1(Read, bool(RawFile &file));
@@ -78,4 +78,26 @@ public:
     MOCK_METHOD2(AddKey, void(std::string key, std::string value));
 //    virtual std::string GetKey(std::string key);
     MOCK_METHOD1(GetKey, std::string(std::string key));
+};
+
+
+class MockDBFile: public DBFile {
+//	virtual int Create (char *fpath, fType file_type, void *startup);
+	MOCK_METHOD3(Create, int(char *fpath, fType file_type, void *startup));
+//	virtual int Open (char *fpath);
+	MOCK_METHOD1(Open, int(char *fpath));
+//	virtual int Close ();
+	MOCK_METHOD0(Close, int());
+
+//	virtual void Load (Schema &myschema, char *loadpath);
+	MOCK_METHOD2(Load, void(Schema &myschema, char *loadpath));
+
+//	virtual void MoveFirst ();
+	MOCK_METHOD0(MoveFirst, void());
+//	virtual void Add (Record &addme);
+	MOCK_METHOD1(Add, void(Record &addme));
+//	virtual int GetNext (Record &fetchme);
+	MOCK_METHOD1(GetNext, int(Record &fetchme));
+//	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal);
+	MOCK_METHOD3(GetNext, int(Record &fetchme, CNF &cnf, Record &literal));
 };
