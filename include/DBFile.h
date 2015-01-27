@@ -89,5 +89,7 @@ public:
 	 * @return			0 if there is no valid record to be returned.
 	 */
 	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal);
+
+	bool FileExists(const std::string &fname);
 };
 #endif

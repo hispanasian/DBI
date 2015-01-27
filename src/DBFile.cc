@@ -74,7 +74,7 @@ int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
  * @param name	The name of the file
  * @return True if the file exists
  */
-inline bool FileExists(const std::string& file) {
+bool DBFile::FileExists(const std::string& file) {
   struct stat buffer;
   return (stat (file.c_str(), &buffer) == 0);
 }

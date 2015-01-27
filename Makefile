@@ -1,5 +1,5 @@
 ### Remember to add new mains to the MAINS variable
-CC = g++ -Wno-deprecated #-O2
+CC = g++ -Wno-deprecated -w #-O2
 
 # Vars
 SRCDIR := src

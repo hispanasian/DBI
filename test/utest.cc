@@ -10,7 +10,7 @@ TEST(DBFile, Test) {
   MockRecord mr;
   ASSERT_EQ(0, f.Close());
 
-  EXPECT_CALL(mr, Project(_,_,_));
+//  EXPECT_CALL(mr, Project(_,_,_));
 
   f.Add(mr);
 }
