@@ -8,7 +8,6 @@ class RawFile {
 public:
     RawFile();
     virtual ~RawFile();
-    virtual ~RawFile();
 
     virtual bool Open(std::string fname);
     virtual bool Close();
