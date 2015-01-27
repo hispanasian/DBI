@@ -28,16 +28,21 @@ DBFile::~DBFile () {
 
 int DBFile::Create (char *f_path, fType f_type, void *startup) {
 	int success = 1;
-//	// Only create a file if one does not currently exists (nor its header)
-//	if(!FileExists(f_path) && !FileExists(strcat(f_path, ".header"))) success = 0;
-//	else {
-//		DBConfig config;
-//		RawFile file;
-//		success = file.Open(f_path + ".header");
-//		config.AddKey("fType", "heap");
-//		config.Write(file);
-//
-//	}
+	// Only create a file if one does not currently exists (nor its header)
+	if(FileExists(f_path) ||
+			FileExists(strcat(f_path, ".header")) ||
+			f_path == NULL) success = 0;
+	else {
+		file.Open(0, strcat(f_path, ".header"));
+		config.AddKey("fType", "heap");
+		config.Write(file);
+
+		// Remove the file and header if there were any problems
+		if(success == 0) {
+			remove(f_path);
+			remove(strcat(f_path, ".header"));
+		}
+	}
 
 	return success;
 }
