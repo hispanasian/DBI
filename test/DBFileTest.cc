@@ -9,8 +9,12 @@ public:
 	DBFile file;
 	off_t CurPage();
 	File GetFile();
-}
+};
 
 off_t DBFileTest::CurPage() { return file.curPage; }
 
 File DBFileTest::GetFile() { return file.file; }
+
+TEST_F(DBFileTest, Create1) {
+
+}

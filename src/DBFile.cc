@@ -14,7 +14,7 @@
 // stub file .. replace it with your own DBFile.cc
 
 DBFile::DBFile () {
-
+	curPage = 0;
 }
 
 DBFile::~DBFile () {
@@ -22,25 +22,14 @@ DBFile::~DBFile () {
 }
 
 int DBFile::Create (char *f_path, fType f_type, void *startup) {
-	int success = 1;
-	// Only create a file if one does not currently exists (nor its header)
-	if(!FileExists(f_path) && !FileExists(strcat(f_path, ".header"))) success = 0;
-	else {
-		DBConfig config;
-		RawFile file;
-		success = file.Open(f_path + ".header");
-		config.AddKey("fType", "heap");
-		config.Write(file);
-
-	}
-
-	return success;
+	return 0;
 }
 
 void DBFile::Load (Schema &f_schema, char *loadpath) {
 }
 
 int DBFile::Open (char *f_path) {
+	return 0;
 }
 
 void DBFile::MoveFirst () {
@@ -51,14 +40,14 @@ int DBFile::Close () {
 }
 
 void DBFile::Add (Record &rec) {
-  std::cout << "Hey!" << std::endl;
-  rec.Project(0,0,0);
 }
 
 int DBFile::GetNext (Record &fetchme) {
+	return 0;
 }
 
 int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
+	return 0;
 }
 
 /**
