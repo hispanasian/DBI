@@ -68,6 +68,19 @@ public:
     MOCK_METHOD1(LSeek, void(off_t offset));
 };
 
+class MockDBConfig: public DBConfig {
+public:
+//    virtual bool Read(RawFile file);
+    MOCK_METHOD1(Read, bool(RawFile &file));
+//    virtual bool Write(RawFile file);
+    MOCK_METHOD1(Write, bool(RawFile &file));
+//    virtual void AddKey(std::string key, std::string value);
+    MOCK_METHOD2(AddKey, void(std::string key, std::string value));
+//    virtual std::string GetKey(std::string key);
+    MOCK_METHOD1(GetKey, std::string(std::string key));
+};
+
+
 class MockDBFile: public DBFile {
 //	virtual int Create (char *fpath, fType file_type, void *startup);
 	MOCK_METHOD3(Create, int(char *fpath, fType file_type, void *startup));

@@ -7,8 +7,10 @@ using ::testing::_;
 
 class DBFileTest: public ::testing::Test {
 public:
-	MockFile mock;
-	DBFile file = DBFile(mock);
+	MockFile mockFile;
+	MockDBConfig config;
+	MockRawFile rfile;
+	DBFile file = DBFile(mockFile, rfile, config);
 	off_t CurPage();
 	File GetFile();
 };
