@@ -7,7 +7,6 @@
 #include "DBFile.h"
 #include "Defs.h"
 #include <iostream>
-#include <sys/stat.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -27,23 +26,49 @@ DBFile::~DBFile () {
 }
 
 int DBFile::Create (char *f_path, fType f_type, void *startup) {
-	int success = 1;
-	// Only create a file if one does not currently exists (nor its header)
-	if(FileExists(f_path) ||
-			FileExists(strcat(f_path, ".header")) ||
-			f_path == NULL) success = 0;
-	else {
-		file.Open(0, strcat(f_path, ".header"));
-		config.AddKey("fType", "heap");
-		config.Write(file);
+	bool success = true;
+	config.Clear(); // Obligatory clear
 
-		// Remove the file and header if there were any problems
-		if(success == 0) {
-			remove(f_path);
-			remove(strcat(f_path, ".header"));
+	if(f_path == NULL) success = false;
+	else {
+		// Create header path
+		std::string buf(f_path);
+		buf.append(".header");
+		char *header = (char *)buf.c_str(); // watch out... make sure casting off the const-ness does not cause problems
+
+		if(f_path == NULL ||
+				FileExists(f_path) ||
+				FileExists(header) ) {
+			success = 0;
+		}
+		else {
+			switch (f_type) {
+			case heap:
+				config.AddKey("fType", "heap");
+				break;
+			case sorted:
+				config.AddKey("fType", "sorted");
+				break;
+			case tree:
+				config.AddKey("fType", "tree");
+				break;
+			}
+			file.Open(0, f_path);
+
+			// If the preceeding operation failed, do not perform the succeeding op... yes, this looks funky
+			if(file.Close() != 0) success = true; // file.Close should return 0 meaning there are 0 pages
+			success = success && rfile.Open(header);
+			success = success && config.Write(rfile);
+			success = success && rfile.Close();
+			// Remove the file and header and undo any changes made to the config if there were any
+			// problems
+			if(!success) {
+				remove(f_path);
+				remove(header);
+				config.Clear(); // Clear any changes made if there was a failure
+			}
 		}
 	}
-
 	return success;
 }
 
@@ -71,15 +96,4 @@ int DBFile::GetNext (Record &fetchme) {
 
 int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
 	return 0;
-}
-
-/**
- * Checks if a file located at path exists. This code was stolen from:
- * http://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
- * @param name	The name of the file
- * @return True if the file exists
- */
-bool DBFile::FileExists(const std::string& file) {
-  struct stat buffer;
-  return (stat (file.c_str(), &buffer) == 0);
 }
