@@ -19,4 +19,4 @@ public:
     virtual void LSeek(off_t offset);
 };
 
-#endif
+#endif RAWFILE_H

@@ -1,4 +1,4 @@
-#include "Record.h"
+#include "../include/Record.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -67,7 +67,7 @@ int Record :: SuckNextRecord (Schema *mySchema, FILE *textFile) {
 			len++;
 		}
 
-		// set up the pointer to the current attribute in the record
+		// set up the pointer to the current attribute in the rec ord
 		((int *) recSpace)[i + 1] = currentPosInRec;
 
 		// null terminate the string

@@ -1,6 +1,6 @@
 
 #include <iostream>
-#include "Record.h"
+#include "../include/Record.h"
 #include <stdlib.h>
 using namespace std;
 
