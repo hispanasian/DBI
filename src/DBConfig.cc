@@ -28,3 +28,7 @@ std::string DBConfig::GetKey(string key) {
 
 void DBConfig::ReplaceKey(string key, string value) {
 }
+
+void DBConfig::Clear() {
+
+}

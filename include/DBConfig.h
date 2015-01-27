@@ -55,6 +55,11 @@ public:
      * @param value	The new value to be mapped at key.
      */
     virtual void ReplaceKey(std::string key, std::string value);
+
+    /**
+     * Removes all the mapped elements in DBConfig.
+     */
+    virtual void Clear();
 };
 
 /********************* Exceptions *********************/
