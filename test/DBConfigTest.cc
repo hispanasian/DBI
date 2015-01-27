@@ -562,6 +562,27 @@ TEST_F(DBConfigTest, ReplaceKey7) {
     EXPECT_EQ(0, val.compare(Map()["key"]));
 }
 
+/**
+* DBConfig::Clear should remove all the elements in map.
+*/
+TEST_F(DBConfigTest, Clear1) {
+	Map().insert(pair<string, string>("key", "val"));
+	Map().insert(pair<string, string>("key2", "val"));
+	Map().insert(pair<string, string>("key3", "val"));
+	Map().insert(pair<string, string>("key4", "val"));
+
+    config.Clear();
+    EXPECT_EQ(0, Map().size());
+}
+
+/**
+* DBConfig::Clear should not crash attempting to clear an empty map.
+*/
+TEST_F(DBConfigTest, Clear2) {
+    config.Clear();
+    EXPECT_EQ(0, Map().size());
+}
+
 /***************************************************************
  ********************** Integration tests **********************
  ***************************************************************/
