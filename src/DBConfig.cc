@@ -84,5 +84,5 @@ void DBConfig::ReplaceKey(string key, string value) {
 }
 
 void DBConfig::Clear() {
-
+	map.clear();
 }
