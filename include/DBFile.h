@@ -16,7 +16,9 @@ class DBFile {
 friend class DBFileTest;
 private:
 	off_t curPage;
-	File file;
+	File &file;
+	File myFile;
+	DBFile(File &file); // Strictly for Testing.
 public:
 	DBFile ();
     virtual ~DBFile();
@@ -81,15 +83,5 @@ public:
 	 * @return			0 if there is no valid record to be returned.
 	 */
 	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal);
-
-private:
-		int Create (char *fpath, fType file_type, void *startup, File file);
-		int Open (char *fpath, File file);
-		int Close (File file);
-		void Load (Schema &myschema, char *loadpath, File file);
-		void MoveFirst (File file);
-		void Add (Record &addme, File file);
-		int GetNext (Record &fetchme, File file);
-		int GetNext (Record &fetchme, CNF &cnf, Record &literal, File file);
 };
 #endif
