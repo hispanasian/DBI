@@ -21,21 +21,32 @@ DBFile::~DBFile () {
 
 }
 
-int DBFile::Create (char *f_path, fType f_type, void *startup) {
+int DBFile::Create (char *f_path, fType f_type, void *startup) {return Create(f_path, f_type, startup, file); }
+
+int DBFile::Create (char *f_path, fType f_type, void *startup, File file) {
 	return 0;
 }
 
-void DBFile::Load (Schema &f_schema, char *loadpath) {
+void DBFile::Load (Schema &f_schema, char *loadpath) { Load(f_schema, loadpath, file); }
+
+void DBFile::Load (Schema &f_schema, char *loadpath, File file) {
+
 }
 
-int DBFile::Open (char *f_path) {
+int DBFile::Open (char *f_path) { return Open(f_path, file); }
+
+int DBFile::Open (char *f_path, File file) {
 	return 0;
 }
 
-void DBFile::MoveFirst () {
+void DBFile::MoveFirst () { MoveFirst(file); }
+
+void DBFile::MoveFirst (File file) {
 }
 
-int DBFile::Close () {
+int DBFile::Close () { return Close(file); }
+
+int DBFile::Close (File file) {
   return 0;
 }
 
@@ -43,11 +54,15 @@ void DBFile::Add (Record &rec) {
 
 }
 
-int DBFile::GetNext (Record &fetchme) {
+int DBFile::GetNext (Record &fetchme) { return GetNext(fetchme, file); }
+
+int DBFile::GetNext (Record &fetchme, File file) {
 	return 0;
 }
 
-int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
+int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) { return GetNext(fetchme, cnf, literal, file); }
+
+int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal, File file) {
 	return 0;
 }
 
