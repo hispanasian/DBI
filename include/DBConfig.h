@@ -48,6 +48,13 @@ public:
     * @return       The value associated with key or an empty string if no key was found.
     */
     virtual std::string GetKey(std::string key);
+
+    /**
+     * Replaces the object mapped to key with value.
+     * @param key	The key that will map to value.
+     * @param value	The new value to be mapped at key.
+     */
+    virtual void ReplaceKey(std::string key, std::string value);
 };
 
 /********************* Exceptions *********************/
