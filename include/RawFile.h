@@ -7,7 +7,7 @@
 
 class RawFile {
 private:
-	FILE* file;
+	FILE* file = NULL;
 	char buffer[4096];
 	std::string filename;
 public:
