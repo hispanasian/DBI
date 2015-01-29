@@ -9,6 +9,7 @@
 #include "ComparisonEngine.h"
 #include "RawFile.h"
 #include "DBConfig.h"
+#include <sys/stat.h>
 
 typedef enum {heap, sorted, tree} fType;
 
@@ -90,4 +91,16 @@ public:
 	 */
 	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal);
 };
+
+/**
+ * Checks if a file located at path exists. This code was stolen from:
+ * http://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
+ * @param name	The name of the file
+ * @return True if the file exists
+ */
+inline bool FileExists(const std::string& name) {
+  struct stat buffer;
+  return (stat (name.c_str(), &buffer) == 0);
+}
+
 #endif
