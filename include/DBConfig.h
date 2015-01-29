@@ -16,8 +16,8 @@ public:
     virtual ~DBConfig();
 
     /**
-    * Takes open file, builds a map based on the contents, and closes it. This function assumes
-    * that file is at the beginning.
+    * Takes open file, builds a map based on the contents. This function assumes that file is at
+    * the beginning.
     * @param file   The RawFile with config information
     * @return       True if the file was opened, read, and closed successfully.
     */

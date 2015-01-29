@@ -11,9 +11,12 @@ RawFile::~RawFile() {
 }
 
 bool RawFile::Open(std::string fname) {
-	// TODO: check for file existence
 	filename = fname;
-	file = fopen(fname.c_str(), "r+");
+	std::string mode("r+");
+	if(!fileExists(fname.c_str())) {
+		mode = "w+";
+	}
+	file = fopen(fname.c_str(), mode.c_str());
 	return file != NULL;
 }
 
@@ -39,7 +42,8 @@ bool RawFile::ReadLine(std::string* line) {
 		int bytesRead = fread(buffer, 1, sizeof(buffer), file);
 		if(bytesRead == 0) {
 			// we've reached the end of the file
-			return false;
+			break;
+			// return false;
 		}
 		for(int i = 0; i < bytesRead; ++i) {
 			if(buffer[i] == '\n' || buffer[i] == '\r') {
@@ -57,7 +61,7 @@ bool RawFile::ReadLine(std::string* line) {
 	for(int i = 0; i < ss.str().size(); ++i) {
 		line->push_back(ss.str()[i]);
 	}
-	return true;
+	return ss.str().size() > 0;
 }
 
 bool RawFile::Append(std::string value) {
@@ -77,4 +81,8 @@ bool RawFile::Truncate() {
 
 void RawFile::LSeek(off_t offset) {
 	fseek(file, offset, SEEK_SET);
-};
+}
+
+bool RawFile::fileExists(const char* fileName) {
+	return access(fileName, F_OK) != -1;
+}

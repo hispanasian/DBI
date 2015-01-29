@@ -60,7 +60,7 @@ public:
 //    virtual int Write(const void* buf, size_t count);
     MOCK_METHOD2(Write, int(const void* buf, size_t count));
 //    virtual std::string ReadLine();
-    MOCK_METHOD0(ReadLine,  std::string());
+    MOCK_METHOD1(ReadLine,  bool(std::string*));
 //    virtual bool Append(std::string value);
     MOCK_METHOD1(Append, bool(std::string value));
 //    virtual bool Truncate();
