@@ -43,8 +43,8 @@ TEST_F(DBConfigTest, Read1) {
     {
         InSequence seq;
         EXPECT_CALL(file, LSeek(0));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return(""));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(Return(false));
         EXPECT_CALL(file, Close()).
                 WillOnce(Return(true));
     }
@@ -55,25 +55,28 @@ TEST_F(DBConfigTest, Read1) {
 /**
 * DBConfig::Read should take an open RawFile that starts at the beginning with 3 elements correctly
 * formatted and add them to map. It should then add them to the map and finally close the file and
-<<<<<<< HEAD
 * return true. It should also call RawFile::LSeek(0) to read from the beginning.
-=======
-* return true.
->>>>>>> db0bbe975309bddab09ebdf3d05852e680ea232e
 */
 TEST_F(DBConfigTest, Read2) {
     MockRawFile file;
     {
         InSequence seq;
         EXPECT_CALL(file, LSeek(0));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return("key=value"));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return("this=that"));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return("kit=kat"));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return(""));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(DoAll(
+                testing::SetArgPointee<0>("key=value"), Return(true)));
+
+        EXPECT_CALL(file, ReadLine(_)).
+            WillOnce(DoAll(
+            testing::SetArgPointee<0>("this=that"), Return(true)));
+
+        EXPECT_CALL(file, ReadLine(_)).
+            WillOnce(DoAll(
+            testing::SetArgPointee<0>("kit=kat"), Return(true)));
+
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(Return(false));
+
         EXPECT_CALL(file, Close()).
                 WillOnce(Return(true));
     }
@@ -98,8 +101,8 @@ TEST_F(DBConfigTest, Read3) {
     {
     	EXPECT_CALL(file, LSeek(0));
         InSequence seq;
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return(""));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(Return(false));
         EXPECT_CALL(file, Close()).
                 WillOnce(Return(false));
     }
@@ -116,13 +119,16 @@ TEST_F(DBConfigTest, Read4) {
         InSequence seq;
         EXPECT_CALL(file, LSeek(0));
         /* Some valid lines */
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return("key=val"));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return("good=not bad")); // Spaces!
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(DoAll(
+                testing::SetArgPointee<0>("key=val"), Return(true)));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(DoAll(
+                testing::SetArgPointee<0>("good=not bad"), Return(true)));
         /* Invalid line */
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return("invalid"));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(DoAll(
+                testing::SetArgPointee<0>("invalid"), Return(true)));
         EXPECT_CALL(file, Close()).
                 WillOnce(Return(true));
     }
@@ -139,18 +145,23 @@ TEST_F(DBConfigTest, Read5) {
     {
         InSequence seq;
         EXPECT_CALL(file, LSeek(0));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return("a=A"));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return("yes=no"));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return("check=good"));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return("check=bad"));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return("no=yes"));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return(""));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(DoAll(
+                testing::SetArgPointee<0>("a=A"), Return(true)));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(DoAll(
+                testing::SetArgPointee<0>("yes=no"), Return(true)));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(DoAll(
+                testing::SetArgPointee<0>("check=good"), Return(true)));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(DoAll(
+                testing::SetArgPointee<0>("check=bad"), Return(true)));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(DoAll(
+                testing::SetArgPointee<0>("no=yes"), Return(true)));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(Return(false));
         EXPECT_CALL(file, Close()).
                 WillOnce(Return(true));
     }
@@ -179,14 +190,17 @@ TEST_F(DBConfigTest, Read6) {
     {
         InSequence seq;
         EXPECT_CALL(file, LSeek(0));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return("non=sense"));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return("this=is=dumb"));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return("not=dumb"));
-        EXPECT_CALL(file, ReadLine()).
-                WillOnce(Return(""));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(DoAll(
+                testing::SetArgPointee<0>("non=sense"), Return(true)));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(DoAll(
+                testing::SetArgPointee<0>("this=is=dumb"), Return(true)));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(DoAll(
+                testing::SetArgPointee<0>("not=dumb"), Return(true)));
+        EXPECT_CALL(file, ReadLine(_)).
+                WillOnce(Return(false));
         EXPECT_CALL(file, Close()).
                 WillOnce(Return(true));
     }
@@ -614,6 +628,7 @@ TEST_F(DBConfigTest, IntegrationTest2) {
 	file.Open("jkdlkjfslkdjfsdf");
 	EXPECT_EQ(true, config.Read(file));
 	string val = "val";
+    cout << "Value of val: " << config.GetKey("key") << endl;
 	EXPECT_EQ(0, val.compare(config.GetKey("key")));
 	file.Close();
 	remove("jkdlkjfslkdjfsdf");

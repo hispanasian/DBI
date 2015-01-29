@@ -10,23 +10,23 @@ DBConfig::~DBConfig() {}
 
 bool DBConfig::Read(RawFile &file) {
     bool success = true;
-    std::string line;
-    std::string empty = "";
+    std::string* line = new std::string();
     std::string key;
     std::string val;
     int delim;
 
     file.LSeek(0); // Go to the beginning of the file
-    while(success && empty.compare(line = file.ReadLine()) != 0) {
-        delim = line.find_first_of("=");
+    while(success && file.ReadLine(line)) {
+        delim = line->find_first_of("=");
         if(delim == string::npos) success = false;
         else {
-            key = line.substr(0, delim);
-            val = line.substr(delim + 1, line.length() + 1);
+            key = line->substr(0, delim);
+            val = line->substr(delim + 1, line->length() + 1);
             map.insert(pair<string, string>(key, val));
         }
     }
     success = file.Close() && success;
+    delete line;
     return success;
 }
 
