@@ -42,7 +42,8 @@ bool RawFile::ReadLine(std::string* line) {
 		int bytesRead = fread(buffer, 1, sizeof(buffer), file);
 		if(bytesRead == 0) {
 			// we've reached the end of the file
-			return false;
+			break;
+			// return false;
 		}
 		for(int i = 0; i < bytesRead; ++i) {
 			if(buffer[i] == '\n' || buffer[i] == '\r') {
@@ -60,7 +61,7 @@ bool RawFile::ReadLine(std::string* line) {
 	for(int i = 0; i < ss.str().size(); ++i) {
 		line->push_back(ss.str()[i]);
 	}
-	return true;
+	return ss.str().size() > 0;
 }
 
 bool RawFile::Append(std::string value) {

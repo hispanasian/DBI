@@ -628,7 +628,6 @@ TEST_F(DBConfigTest, IntegrationTest2) {
 	file.Open("jkdlkjfslkdjfsdf");
 	EXPECT_EQ(true, config.Read(file));
 	string val = "val";
-    cout << "Value of val: " << config.GetKey("key") << endl;
 	EXPECT_EQ(0, val.compare(config.GetKey("key")));
 	file.Close();
 	remove("jkdlkjfslkdjfsdf");
