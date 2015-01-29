@@ -26,7 +26,7 @@ public:
     /**
     * Writes the internal map to file. Note that this function will overwrite anything in the
     * provided RawFile.
-    * @return   True if the file opened, was written to, and closed successfully.
+    * @return   True if the file is opened and written to successfully.
     */
     virtual bool Write(RawFile &file);
 

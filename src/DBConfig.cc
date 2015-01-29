@@ -36,8 +36,6 @@ bool DBConfig::Write(RawFile &file) {
     for(std::map<string, string>::iterator it = map.begin(); success && it != map.end(); it++) {
         success = file.Append(it->first + "=" + it->second + "\n");
     }
-
-    success = file.Close() && success;
     return success;
 }
 
