@@ -5,7 +5,7 @@
 
 using ::testing::_;
 
-TEST(DBFile, Test) {
+// TEST(DBFile, Test) {
   // DBFile f;
   // MockRecord mr;
   // ASSERT_EQ(0, f.Close());
@@ -13,4 +13,4 @@ TEST(DBFile, Test) {
   // EXPECT_CALL(mr, Project(_,_,_));
 
   // f.Add(mr);
-}
+// }

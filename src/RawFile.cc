@@ -11,6 +11,7 @@ RawFile::~RawFile() {
 }
 
 bool RawFile::Open(std::string fname) {
+	// TODO: check for file existence
 	filename = fname;
 	file = fopen(fname.c_str(), "r+");
 	return file != NULL;
