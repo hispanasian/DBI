@@ -36,7 +36,7 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 		// Create header path
 		std::string buf(f_path);
 		buf.append(".header");
-		char *header = (char *)buf.c_str(); // watch out... make sure casting off the const-ness does not cause problems
+		const char *header = buf.c_str();
 
 		if(f_path == NULL ||
 				FileExists(f_path) ||
@@ -80,7 +80,51 @@ void DBFile::Load (Schema &f_schema, char *loadpath) {
 }
 
 int DBFile::Open (char *f_path) {
-	return 0;
+	bool success = true;
+	bool rawOpen = false;
+
+
+
+	config.Clear(); // Obligatory clear
+
+	if(f_path == NULL) success = false;
+	else {
+		// Create header path
+		std::string buf(f_path);
+		buf.append(".header");
+		const char *header = buf.c_str();
+
+		if(!FileExists(f_path) || !FileExists(header)) success = false;
+		else {
+			// Begin
+			file.Open(1, f_path);
+			rawOpen = rfile.Open(header);
+			success = success && rawOpen;
+			success = success && config.Read(rfile);
+
+			if(success) {
+				const char * key = config.GetKey("fType").c_str();
+				if(strcmp("heap", key) == 0) {
+					// TODO: Implement
+				}
+				else if(strcmp("sorted", key) == 0) {
+					// TODO: Implement
+				}
+				else if(strcmp("tree", key) == 0) {
+					// TODO: Implement
+				}
+				else success = false;
+			}
+
+			if(!success) {
+				if(rawOpen) rfile.Close(); // Closing an unopened RawFile segfaults
+				file.Close();
+				config.Clear(); // Clear any changes made if there was a failure
+			}
+		}
+
+	}
+	return success;
 }
 
 void DBFile::MoveFirst () {
