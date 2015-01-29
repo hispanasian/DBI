@@ -27,19 +27,7 @@ DBFile::~DBFile () {
 }
 
 int DBFile::Create (char *f_path, fType f_type, void *startup) {
-	int success = 1;
-//	// Only create a file if one does not currently exists (nor its header)
-//	if(!FileExists(f_path) && !FileExists(strcat(f_path, ".header"))) success = 0;
-//	else {
-//		DBConfig config;
-//		RawFile file;
-//		success = file.Open(f_path + ".header");
-//		config.AddKey("fType", "heap");
-//		config.Write(file);
-//
-//	}
-
-	return success;
+	return 0;
 }
 
 void DBFile::Load (Schema &f_schema, char *loadpath) {
