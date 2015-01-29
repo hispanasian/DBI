@@ -3,6 +3,7 @@
 #include "File.h"
 #include "RawFile.h"
 #include "DBFile.h"
+#include "DBConfig.h"
 
 class MockRecord: public Record {
 public:
@@ -59,7 +60,7 @@ public:
 //    virtual int Write(const void* buf, size_t count);
     MOCK_METHOD2(Write, int(const void* buf, size_t count));
 //    virtual std::string ReadLine();
-    MOCK_METHOD0(ReadLine,  std::string());
+    MOCK_METHOD1(ReadLine,  bool(std::string*));
 //    virtual bool Append(std::string value);
     MOCK_METHOD1(Append, bool(std::string value));
 //    virtual bool Truncate();
@@ -74,6 +75,10 @@ public:
     MOCK_METHOD1(Read, bool(RawFile &file));
 //    virtual bool Write(RawFile file);
     MOCK_METHOD1(Write, bool(RawFile &file));
+//    virtual bool Open(std::string fname);
+    MOCK_METHOD1(Open, bool(std::string fname));
+//    virtual bool Close();
+    MOCK_METHOD0(Close, bool());
 //    virtual void AddKey(std::string key, std::string value);
     MOCK_METHOD2(AddKey, void(std::string key, std::string value));
 //    virtual std::string GetKey(std::string key);
@@ -83,7 +88,6 @@ public:
 //    virtual void Clear();
     MOCK_METHOD0(Clear, void());
 };
-
 
 class MockDBFile: public DBFile {
 //	virtual int Create (char *fpath, fType file_type, void *startup);

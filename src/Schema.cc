@@ -1,4 +1,4 @@
-#include "Schema.h"
+#include "../include/Schema.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>

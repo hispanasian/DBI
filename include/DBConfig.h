@@ -16,11 +16,8 @@ public:
     virtual ~DBConfig();
 
     /**
-    * Takes open file, builds a map based on the contents, and closes it. This function assumes
-    * that file is at the beginning. DBConfig expects every line to be of the format: "key=value".
-    * If there is an invalid line, Read will return false. Any data obtained during Read should be
-    * considered not-safe to use. If Read encounters multiple keys with the same value, Read will
-    * keep the first key in the file.
+    * Takes open file, builds a map based on the contents. This function assumes that file is at
+    * the beginning.
     * @param file   The RawFile with config information
     * @return       True if the file was opened, read, and closed successfully.
     */
@@ -29,7 +26,7 @@ public:
     /**
     * Writes the internal map to file. Note that this function will overwrite anything in the
     * provided RawFile.
-    * @return   True if the file opened, was written to, and closed successfully.
+    * @return   True if the file is opened and written to successfully.
     */
     virtual bool Write(RawFile &file);
 

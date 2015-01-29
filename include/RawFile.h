@@ -10,9 +10,11 @@ private:
 	FILE* file = NULL;
 	char buffer[4096];
 	std::string filename;
+	bool fileExists(const char* fileName);
 public:
     RawFile();
     virtual ~RawFile();
+
     virtual bool Open(std::string fname);
     virtual bool Close();
     virtual int Read(void* buf, size_t count);
@@ -23,4 +25,4 @@ public:
     virtual void LSeek(off_t offset);
 };
 
-#endif
+#endif RAWFILE_H
