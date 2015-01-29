@@ -10,12 +10,16 @@ using ::testing::_;
 using ::testing::Return;
 using ::testing::InSequence;
 using ::testing::Sequence;
+using ::testing::StrictMock;
+using ::testing::AtMost;
+using ::testing::AtLeast;
+using ::testing::ByRef;
 
 class DBFileTest: public ::testing::Test {
 public:
-	MockFile mockFile;
-	MockDBConfig config;
-	MockRawFile rfile;
+	StrictMock<MockFile> mockFile;
+	StrictMock<MockDBConfig> config;
+	StrictMock<MockRawFile> rfile;
 	DBFile file = DBFile(mockFile, rfile, config);
 	off_t CurPage();
 	File GetFile();
@@ -62,18 +66,12 @@ TEST_F(DBFileTest, CreateHeap) {
 			InSequence(s1, s2, s3);
 	EXPECT_CALL(mockFile, Open(0, path)).
 			InSequence(s1);
-	EXPECT_CALL(mockFile, Close()).
-			InSequence(s1).
-			WillOnce(Return(0));
 	EXPECT_CALL(rfile, Open(header)).
 			InSequence(s2).
 			WillOnce(Return(true));
 	EXPECT_CALL(config, AddKey("fType", "heap")).
 			InSequence(s3);
 	EXPECT_CALL(config, Write(_)).
-			InSequence(s2, s3).
-			WillOnce(Return(true));
-	EXPECT_CALL(rfile, Close()).
 			InSequence(s2, s3).
 			WillOnce(Return(true));
 
@@ -93,18 +91,12 @@ TEST_F(DBFileTest, CreateStorted) {
 				InSequence(s1, s2, s3);
 	EXPECT_CALL(mockFile, Open(0, path)).
 			InSequence(s1);
-	EXPECT_CALL(mockFile, Close()).
-			InSequence(s1).
-			WillOnce(Return(0));
 	EXPECT_CALL(rfile, Open(header)).
 			InSequence(s2).
 			WillOnce(Return(true));
 	EXPECT_CALL(config, AddKey("fType", "sorted")).
 			InSequence(s3);
 	EXPECT_CALL(config, Write(_)).
-			InSequence(s2, s3).
-			WillOnce(Return(true));
-	EXPECT_CALL(rfile, Close()).
 			InSequence(s2, s3).
 			WillOnce(Return(true));
 
@@ -125,18 +117,12 @@ TEST_F(DBFileTest, CreateTree) {
 				InSequence(s1, s2, s3);
 	EXPECT_CALL(mockFile, Open(0, path)).
 			InSequence(s1);
-	EXPECT_CALL(mockFile, Close()).
-			InSequence(s1).
-			WillOnce(Return(0));
 	EXPECT_CALL(rfile, Open(header)).
 			InSequence(s2).
 			WillOnce(Return(true));
 	EXPECT_CALL(config, AddKey("fType", "tree")).
 			InSequence(s3);
 	EXPECT_CALL(config, Write(_)).
-			InSequence(s2, s3).
-			WillOnce(Return(true));
-	EXPECT_CALL(rfile, Close()).
 			InSequence(s2, s3).
 			WillOnce(Return(true));
 
@@ -163,10 +149,10 @@ TEST_F(DBFileTest, Create1) {
 }
 
 /**
- * DBFile::Create should first check if a header exists before attempting to create it. If it exists,
- * exists, Create should exit with 0. It should also start off by clearing DBConfig. Should this
- * return 0, DBFile should NOT remove a file that existed before it was called. DBFile should also
- * clear config again if it returns 0.
+ * DBFile::Create should first check if a header exists before attempting to create it. If it
+ * exists, exists, Create should exit with 0. It should also start off by clearing DBConfig. Should
+ * this return 0, DBFile should NOT remove a file that existed before it was called. DBFile should
+ * also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create2) {
 	FILE *temp = fopen(header, "w");
@@ -197,7 +183,8 @@ TEST_F(DBFileTest, Create3) {
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
 
 	// Cleanup
-	remove(path);
+	remove(path);using ::testing::StrictMock;
+
 	remove(header);
 }
 
@@ -209,12 +196,33 @@ TEST_F(DBFileTest, Create3) {
  * DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create4) {
-	InSequence seq;
-	EXPECT_CALL(config, Clear());
+	Sequence s1, s2, s3;
+	EXPECT_CALL(config, Clear()).
+			InSequence(s1, s2, s3);
+
+	// s1
 	EXPECT_CALL(rfile, Open(header)).
+			InSequence(s1).
 			WillOnce(Return(false));
-	EXPECT_CALL(config, Clear());
+
+	// s2
+	EXPECT_CALL(config, AddKey(_,_)).
+			Times(AtLeast(0)).
+			InSequence(s2);
+	EXPECT_CALL(config, Clear()).
+			InSequence(s2);
+
+	// s3 (arbitrary call)
+	EXPECT_CALL(mockFile, Open(0, path)).
+			Times(AtMost(1)).
+			InSequence(s3);
+	EXPECT_CALL(mockFile, Close()).
+			Times(AtMost(1)).
+			InSequence(s3).
+			WillRepeatedly(Return(true));
+
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
+
 }
 
 /**
@@ -225,52 +233,30 @@ TEST_F(DBFileTest, Create4) {
  * DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create5) {
-	Sequence s1, s2;
-
-	EXPECT_CALL(config, Clear()).
-				InSequence(s1, s2);
-	EXPECT_CALL(rfile, Open(header)).
-			InSequence(s2).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, AddKey("fType", "tree")).
-			InSequence(s1);
-	EXPECT_CALL(config, Write(_)).
-			InSequence(s1, s2).
-			WillOnce(Return(false));
-	EXPECT_CALL(config, Clear()).
-					InSequence(s1, s2);
-
-	EXPECT_EQ(0, file.Create(path, tree, NULL));
-}
-
-/**
- * DBFile:Create should return 0 if RawFile::Close returns false. It should also start off by
- * clearing DBConfig. Should this return 0, DBFile also needs to remove any files it created. This
- * must be tested via integration testing. DBFile should also clear config again if it returns 0.
- */
-TEST_F(DBFileTest, Create6) {
 	Sequence s1, s2, s3;
 
 	EXPECT_CALL(config, Clear()).
-				InSequence(s1, s2, s3);
-	EXPECT_CALL(mockFile, Open(0, path)).
-			InSequence(s1);
-	EXPECT_CALL(mockFile, Close()).
-			InSequence(s1).
-			WillOnce(Return(0));
+			InSequence(s1, s2, s3);
 	EXPECT_CALL(rfile, Open(header)).
-			InSequence(s2).
+			InSequence(s1).
 			WillOnce(Return(true));
+	EXPECT_CALL(mockFile, Open(0, path)). // Arbitrary call
+			Times(AtMost(1)).
+			InSequence(s2);
 	EXPECT_CALL(config, AddKey("fType", "tree")).
 			InSequence(s3);
 	EXPECT_CALL(config, Write(_)).
-			InSequence(s2, s3).
-			WillOnce(Return(true));
-	EXPECT_CALL(rfile, Close()).
-			InSequence(s2, s3).
+			InSequence(s1, s2, s3).
 			WillOnce(Return(false));
 	EXPECT_CALL(config, Clear()).
-					InSequence(s1, s2, s3);
+			InSequence(s3);
+	EXPECT_CALL(rfile, Close()).
+			InSequence(s1).
+			WillOnce(Return(true));
+	EXPECT_CALL(mockFile, Close()). // Arbitrary Call
+			Times(AtMost(1)).
+			InSequence(s2).
+			WillRepeatedly(Return(true));
 
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
 }
@@ -280,16 +266,26 @@ TEST_F(DBFileTest, Create6) {
  * clearing DBConfig. Should this return 0, DBFile also needs to remove any files it created. This
  * must be tested via integration testing. DBFile should also clear config again if it returns 0.
  */
-TEST_F(DBFileTest, Create7) {
+TEST_F(DBFileTest, Create6) {
 	Sequence s1, s2, s3;
 
 	EXPECT_CALL(config, Clear()).
-				InSequence(s1, s2, s3);
+			InSequence(s1, s2, s3);
 	EXPECT_CALL(rfile, Open(header)).
 			InSequence(s2).
 			WillOnce(Return(false));
+	EXPECT_CALL(mockFile, Open(0, path)). // Arbitrary call
+			Times(AtMost(1)).
+			InSequence(s1);
+	EXPECT_CALL(mockFile, Close()).
+			Times(AtMost(1)).
+			InSequence(s1).
+			WillRepeatedly(Return(true));
+	EXPECT_CALL(config, AddKey(_,_)).
+			Times(AtLeast(0)).
+			InSequence(s3);
 	EXPECT_CALL(config, Clear()).
-					InSequence(s1, s2, s3);
+			InSequence(s1, s2);
 
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
 }
@@ -298,8 +294,22 @@ TEST_F(DBFileTest, Create7) {
  * DBFile::Create should return 0 if the provided path is null. It should also start off by
  * clearing DBConfig. DBFile should also clear config again if it returns 0.
  */
-TEST_F(DBFileTest, Create8) {
+TEST_F(DBFileTest, Create7) {
 	InSequence seq;
 	EXPECT_CALL(config, Clear());
 	EXPECT_EQ(0, file.Create(NULL, heap, NULL));
+}
+
+/**
+ * DBFile::Open should simply open a file if it exists along with it's header.
+ */
+TEST_F(DBFileTest, Open1) {
+	Sequence s1, s2;
+
+	// First Sequence
+//	EXPECT_CALL(mockFile, Open(1, path)).
+//			InSequence(s1);
+
+	// Second sequence
+
 }

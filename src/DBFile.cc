@@ -27,6 +27,8 @@ DBFile::~DBFile () {
 
 int DBFile::Create (char *f_path, fType f_type, void *startup) {
 	bool success = true;
+	bool rawOpen = false;
+
 	config.Clear(); // Obligatory clear
 
 	if(f_path == NULL) success = false;
@@ -56,13 +58,14 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 			file.Open(0, f_path);
 
 			// If the preceeding operation failed, do not perform the succeeding op... yes, this looks funky
-			if(file.Close() != 0) success = true; // file.Close should return 0 meaning there are 0 pages
-			success = success && rfile.Open(header);
+			rawOpen = rfile.Open(header);
+			success = success && rawOpen;
 			success = success && config.Write(rfile);
-			success = success && rfile.Close();
 			// Remove the file and header and undo any changes made to the config if there were any
 			// problems
 			if(!success) {
+				file.Close();
+				if(rawOpen) rfile.Close(); // Closing an unopened RawFile segfaults
 				remove(f_path);
 				remove(header);
 				config.Clear(); // Clear any changes made if there was a failure
