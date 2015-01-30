@@ -76,6 +76,7 @@ TEST_F(DBFileTest, CreateHeap) {
 			WillOnce(Return(true));
 
 	EXPECT_EQ(1, file.Create(path, heap, NULL));
+	EXPECT_EQ(0, CurPage());
 }
 
 /**
@@ -101,7 +102,7 @@ TEST_F(DBFileTest, CreateStorted) {
 			WillOnce(Return(true));
 
 	EXPECT_EQ(1, file.Create(path, sorted, NULL));
-
+	EXPECT_EQ(0, CurPage());
 }
 
 /**
@@ -127,6 +128,7 @@ TEST_F(DBFileTest, CreateTree) {
 			WillOnce(Return(true));
 
 	EXPECT_EQ(1, file.Create(path, tree, NULL));
+	EXPECT_EQ(0, CurPage());
 }
 
 /**
@@ -143,6 +145,7 @@ TEST_F(DBFileTest, Create1) {
 	InSequence seq;
 	EXPECT_CALL(config, Clear());
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
+	EXPECT_EQ(0, CurPage());
 
 	// Cleanup
 	remove(path);
@@ -161,6 +164,7 @@ TEST_F(DBFileTest, Create2) {
 	InSequence seq;
 	EXPECT_CALL(config, Clear());
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
+	EXPECT_EQ(0, CurPage());
 
 	// Cleanup
 	remove(header);
@@ -179,9 +183,9 @@ TEST_F(DBFileTest, Create3) {
 	fprintf(temp, "stuff");
 	fclose(temp);
 
-	InSequence seq;
 	EXPECT_CALL(config, Clear());
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
+	EXPECT_EQ(0, CurPage());
 
 	// Cleanup
 	remove(path);
@@ -222,7 +226,7 @@ TEST_F(DBFileTest, Create4) {
 			WillRepeatedly(Return(true));
 
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
-
+	EXPECT_EQ(0, CurPage());
 }
 
 /**
@@ -259,6 +263,7 @@ TEST_F(DBFileTest, Create5) {
 			WillRepeatedly(Return(true));
 
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
+	EXPECT_EQ(0, CurPage());
 }
 
 /**
@@ -288,6 +293,7 @@ TEST_F(DBFileTest, Create6) {
 			InSequence(s1, s2);
 
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
+	EXPECT_EQ(0, CurPage());
 }
 
 /**
@@ -298,6 +304,7 @@ TEST_F(DBFileTest, Create7) {
 	InSequence seq;
 	EXPECT_CALL(config, Clear());
 	EXPECT_EQ(0, file.Create(NULL, heap, NULL));
+	EXPECT_EQ(0, CurPage());
 }
 
 /**
@@ -332,6 +339,7 @@ TEST_F(DBFileTest, Open1) {
 			WillOnce(Return("heap"));
 
 	EXPECT_EQ(1, file.Open(path));
+	EXPECT_EQ(0, CurPage());
 
 	// Cleanup
 	remove(path);
@@ -369,6 +377,7 @@ TEST_F(DBFileTest, Open2) {
 			Times(AtMost(2));
 
 	EXPECT_EQ(0, file.Open(path));
+	EXPECT_EQ(0, CurPage());
 
 	// Cleanup
 	remove(path);
@@ -416,6 +425,7 @@ TEST_F(DBFileTest, Open3) {
 			InSequence(s4);
 
 	EXPECT_EQ(0, file.Open(path));
+	EXPECT_EQ(0, CurPage());
 
 	// Cleanup
 	remove(path);
@@ -465,6 +475,7 @@ TEST_F(DBFileTest, Open4) {
 			InSequence(s4);
 
 	EXPECT_EQ(0, file.Open(path));
+	EXPECT_EQ(0, CurPage());
 
 	// Cleanup
 	remove(path);
@@ -509,6 +520,7 @@ TEST_F(DBFileTest, Open5) {
 			Times(AtMost(2));
 
 	EXPECT_EQ(0, file.Open(path));
+	EXPECT_EQ(0, CurPage());
 
 	// Cleanup
 	remove(header);
@@ -540,6 +552,7 @@ TEST_F(DBFileTest, Open6) {
 		InSequence(s2);
 
 	EXPECT_EQ(0, file.Open(path));
+	EXPECT_EQ(0, CurPage());
 
 	// Cleanup
 	remove(path);
@@ -553,4 +566,5 @@ TEST_F(DBFileTest, Open7) {
 		Times(AtMost(1));
 
 	EXPECT_EQ(0, file.Open(NULL));
+	EXPECT_EQ(0, CurPage());
 }
