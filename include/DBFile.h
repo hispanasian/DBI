@@ -21,11 +21,13 @@ private:
 	off_t curPage;
 	File &file;
 	File myFile;
-	Page *page;
+	Page *page;		// This should be the page used to read
+	Page *buf;		// This should be the page used to add new records/reload records from (to page)
 	RawFile &rfile;
 	RawFile myRFile;
 	DBConfig &config;
 	DBConfig myConfig;
+	bool recordAdded;
 	DBFile(File &file, RawFile &rfile, DBConfig &config); // Strictly for Testing.
 public:
 	DBFile ();

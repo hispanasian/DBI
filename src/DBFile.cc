@@ -15,12 +15,15 @@
 DBFile::DBFile (): file(myFile), rfile(myRFile), config(myConfig) {
 	curPage = 0;
 	page = NULL;
+	buf = NULL;
+	recordAdded = false;
 }
 
 DBFile::DBFile (File &otherFile, RawFile &otherRFile, DBConfig &otherConfig):
 		file(otherFile), rfile(otherRFile), config(otherConfig) {
 	curPage = 0;
 	page = NULL;
+	buf = NULL;
 }
 
 DBFile::~DBFile () {
@@ -38,6 +41,8 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 	// Put page in a known state.
 	delete page;
 	page = NULL;
+	delete buf;
+	buf = NULL;
 
 	if(f_path == NULL) success = false;
 	else {
@@ -97,6 +102,8 @@ int DBFile::Open (char *f_path) {
 	// Put page in a known state.
 	delete page;
 	page = NULL;
+	delete buf;
+	buf = NULL;
 
 	if(f_path == NULL) success = false;
 	else {
@@ -142,7 +149,20 @@ void DBFile::MoveFirst () {
 }
 
 int DBFile::Close () {
-	return 0;
+	bool success = true;
+	if(recordAdded) file.AddPage(buf, curPage);
+	file.Close();
+
+	curPage = 0;	// Reset Page offset
+	config.Clear(); // Obligatory clear
+
+	// Put page in a known state.
+	delete page;
+	page = NULL;
+	delete buf;
+	buf = NULL;
+
+	return success;
 }
 
 void DBFile::Add (Record &rec) {
