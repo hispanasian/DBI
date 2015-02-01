@@ -20,7 +20,8 @@ public:
 	StrictMock<MockFile> mockFile;
 	StrictMock<MockDBConfig> config;
 	StrictMock<MockRawFile> rfile;
-	DBFile file = DBFile(mockFile, rfile, config);
+	StrictMock<MockPage> page;
+	DBFile file = DBFile(mockFile, page, rfile, config);
 	off_t CurPage();
 	File GetFile();
 	char *path = "asdasdasd";
