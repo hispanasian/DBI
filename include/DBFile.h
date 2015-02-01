@@ -21,11 +21,13 @@ private:
 	off_t curPage;
 	File &file;
 	File myFile;
+	Page &page;
+	Page myPage;
 	RawFile &rfile;
 	RawFile myRFile;
 	DBConfig &config;
 	DBConfig myConfig;
-	DBFile(File &file, RawFile &rfile, DBConfig &config); // Strictly for Testing.
+	DBFile(File &file, Page &page, RawFile &rfile, DBConfig &config); // Strictly for Testing.
 public:
 	DBFile ();
     virtual ~DBFile();
