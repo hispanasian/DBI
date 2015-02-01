@@ -21,6 +21,7 @@ private:
 	off_t curPage;
 	File &file;
 	File myFile;
+	Page *page;
 	RawFile &rfile;
 	RawFile myRFile;
 	DBConfig &config;

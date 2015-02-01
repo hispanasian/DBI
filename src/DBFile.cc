@@ -14,15 +14,18 @@
 
 DBFile::DBFile (): file(myFile), rfile(myRFile), config(myConfig) {
 	curPage = 0;
+	page = NULL;
 }
 
 DBFile::DBFile (File &otherFile, RawFile &otherRFile, DBConfig &otherConfig):
 		file(otherFile), rfile(otherRFile), config(otherConfig) {
 	curPage = 0;
+	page = NULL;
 }
 
 DBFile::~DBFile () {
-
+	delete page;
+	page = NULL;
 }
 
 int DBFile::Create (char *f_path, fType f_type, void *startup) {

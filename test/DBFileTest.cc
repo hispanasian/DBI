@@ -3,8 +3,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
-#include "MockClasses.h"
-#include "DBFile.h"
+#include "../include/MockClasses.h"
+#include "../include/DBFile.h"
+#include "../include/File.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -23,6 +24,8 @@ public:
 	DBFile file = DBFile(mockFile, rfile, config);
 	off_t CurPage();
 	File GetFile();
+	Page *GetPage();
+	void SetPage(Page &page);
 	char *path = "asdasdasd";
 	char *header = "asdasdasd.header";
 };
@@ -30,6 +33,13 @@ public:
 off_t DBFileTest::CurPage() { return file.curPage; }
 
 File DBFileTest::GetFile() { return file.file; }
+
+Page *DBFileTest::GetPage() { return file.page; }
+
+void DBFileTest::SetPage(Page &page) {
+	delete file.page;
+	file.page = &page;
+}
 
 /**
  * DBFile::FileExists should return false when no file named "asdasdasd" is found.
