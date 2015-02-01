@@ -23,14 +23,21 @@ public:
 	StrictMock<MockRawFile> rfile;
 	DBFile file = DBFile(mockFile, rfile, config);
 	off_t CurPage();
+	void SetCurPage(off_t offset);
 	File GetFile();
 	Page *GetPage();
 	void SetPage(Page &page);
+	Page *GetBuf();
+	void SetBuf(Page &page);
+	bool RecordAdded();
+	void SetRecordAdded(bool x);
 	char *path = "asdasdasd";
 	char *header = "asdasdasd.header";
 };
 
 off_t DBFileTest::CurPage() { return file.curPage; }
+
+void DBFileTest::SetCurPage(off_t offset) { file.curPage = offset; }
 
 File DBFileTest::GetFile() { return file.file; }
 
@@ -40,6 +47,17 @@ void DBFileTest::SetPage(Page &page) {
 	delete file.page;
 	file.page = &page;
 }
+
+Page *DBFileTest::GetBuf() { return file.buf; }
+
+void DBFileTest::SetBuf(Page &page) {
+	delete file.buf;
+	file.buf = &page;
+}
+
+bool DBFileTest::RecordAdded() { return file.recordAdded; }
+
+void DBFileTest::SetRecordAdded(bool x) { file.recordAdded = x; }
 
 /**
  * DBFile::FileExists should return false when no file named "asdasdasd" is found.
@@ -576,5 +594,38 @@ TEST_F(DBFileTest, Open7) {
 		Times(AtMost(1));
 
 	EXPECT_EQ(0, file.Open(NULL));
+	EXPECT_EQ(0, CurPage());
+}
+
+/**
+ * DBFile::Close should call File.Close, delete page, and set page to null. It should then return 1.
+ */
+TEST_F(DBFileTest, Close1) {
+	SetCurPage(5);
+	SetRecordAdded(false);
+
+	EXPECT_CALL(mockFile, Close());
+	EXPECT_CALL(config, Clear());
+
+	EXPECT_EQ(1, file.Close());
+	EXPECT_EQ(0, CurPage());
+}
+
+/**
+ * DBFile::Close should add page to File if a record has been added to the current page.
+ */
+TEST_F(DBFileTest, Close2) {
+	SetCurPage(4);
+	SetRecordAdded(true);
+
+	Sequence s1, s2;
+	EXPECT_CALL(mockFile, AddPage(_, 4)).
+			InSequence(s1);
+	EXPECT_CALL(mockFile, Close()).
+			InSequence(s1);
+	EXPECT_CALL(config, Clear()).
+			InSequence(s2);
+
+	EXPECT_EQ(1, file.Close());
 	EXPECT_EQ(0, CurPage());
 }

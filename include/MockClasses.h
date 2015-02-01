@@ -39,6 +39,8 @@ public:
 
 class MockFile: public File {
 public:
+//	virtual off_t GetLength ();
+	MOCK_METHOD0(GetLength, off_t());
     //virtual void Open (int length, char *fName);
     MOCK_METHOD2(Open, void(int length, char *fname));
     //virtual void GetPage (Page *putItHere, off_t whichPage);
