@@ -604,8 +604,18 @@ TEST_F(DBFileTest, Close1) {
 	SetCurPage(5);
 	SetRecordAdded(false);
 
+	Sequence s1, s2;
 	EXPECT_CALL(mockFile, Close());
-	EXPECT_CALL(config, Clear());
+
+	EXPECT_CALL(config, Write(_)).
+			InSequence(s1, s2).
+			WillOnce(Return(true));
+	EXPECT_CALL(config, Clear()).
+			InSequence(s1);
+	EXPECT_CALL(rfile, Close()).
+			InSequence(s2).
+			WillOnce(Return(true));
+
 
 	EXPECT_EQ(1, file.Close());
 	EXPECT_EQ(0, CurPage());
@@ -618,14 +628,72 @@ TEST_F(DBFileTest, Close2) {
 	SetCurPage(4);
 	SetRecordAdded(true);
 
-	Sequence s1, s2;
+	Sequence s1, s2, s3;
 	EXPECT_CALL(mockFile, AddPage(_, 4)).
 			InSequence(s1);
 	EXPECT_CALL(mockFile, Close()).
 			InSequence(s1);
+
+	EXPECT_CALL(config, Write(_)).
+			InSequence(s2, s3).
+			WillOnce(Return(true));
 	EXPECT_CALL(config, Clear()).
 			InSequence(s2);
+	EXPECT_CALL(rfile, Close()).
+			InSequence(s3).
+			WillOnce(Return(true));
 
 	EXPECT_EQ(1, file.Close());
+	EXPECT_EQ(0, CurPage());
+}
+
+/**
+ * DBFile::Close should add page to File if a record has been added to the current page. However,
+ * it should also return false if DBConfig::Write fails, but it should sitll close RawFile and
+ * clear config.
+ */
+TEST_F(DBFileTest, Close3) {
+	SetCurPage(4);
+	SetRecordAdded(false);
+
+	Sequence s1, s2, s3;
+	EXPECT_CALL(mockFile, Close()).
+			InSequence(s1);
+
+	EXPECT_CALL(config, Write(_)).
+			InSequence(s2, s3).
+			WillOnce(Return(false));
+	EXPECT_CALL(config, Clear()).
+			InSequence(s2);
+	EXPECT_CALL(rfile, Close()).
+			InSequence(s3).
+			WillOnce(Return(true));
+
+	EXPECT_EQ(0, file.Close());
+	EXPECT_EQ(0, CurPage());
+}
+
+/**
+ * DBFile::Close should add page to File if a record has been added to the current page. However,
+ * it should also return false if RawFile::Close fails.
+ */
+TEST_F(DBFileTest, Close4) {
+	SetCurPage(4);
+	SetRecordAdded(false);
+
+	Sequence s1, s2, s3;
+	EXPECT_CALL(mockFile, Close()).
+			InSequence(s1);
+
+	EXPECT_CALL(config, Write(_)).
+			InSequence(s2, s3).
+			WillOnce(Return(true));
+	EXPECT_CALL(config, Clear()).
+			InSequence(s2);
+	EXPECT_CALL(rfile, Close()).
+			InSequence(s3).
+			WillOnce(Return(false));
+
+	EXPECT_EQ(0, file.Close());
 	EXPECT_EQ(0, CurPage());
 }

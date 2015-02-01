@@ -153,6 +153,9 @@ int DBFile::Close () {
 	if(recordAdded) file.AddPage(buf, curPage);
 	file.Close();
 
+	success &= config.Write(rfile);
+	success &= rfile.Close();
+
 	curPage = 0;	// Reset Page offset
 	config.Clear(); // Obligatory clear
 
