@@ -15,15 +15,16 @@
 DBFile::DBFile (): file(myFile), rfile(myRFile), config(myConfig) {
 	curPage = 0;
 	page = NULL;
-	buf = NULL;
 	recordAdded = false;
+	recordRead = false;
 }
 
 DBFile::DBFile (File &otherFile, RawFile &otherRFile, DBConfig &otherConfig):
 		file(otherFile), rfile(otherRFile), config(otherConfig) {
 	curPage = 0;
 	page = NULL;
-	buf = NULL;
+	recordAdded = false;
+	recordRead = false;
 }
 
 DBFile::~DBFile () {
@@ -39,10 +40,8 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 	config.Clear(); // Obligatory clear
 
 	// Put page in a known state.
-	delete page;
-	page = NULL;
-	delete buf;
-	buf = NULL;
+	recordAdded = false;
+	recordRead = false;
 
 	if(f_path == NULL) success = false;
 	else {
@@ -100,10 +99,8 @@ int DBFile::Open (char *f_path) {
 	config.Clear(); // Obligatory clear
 
 	// Put page in a known state.
-	delete page;
-	page = NULL;
-	delete buf;
-	buf = NULL;
+	recordAdded = false;
+	recordRead = false;
 
 	if(f_path == NULL) success = false;
 	else {
@@ -146,11 +143,20 @@ int DBFile::Open (char *f_path) {
 }
 
 void DBFile::MoveFirst () {
+	// Check if any records were written to page.
+	if(recordAdded) file.AddPage(page, curPage);
+
+	file.GetPage(page, 0);
+	curPage = 0;
+
+	// Reset flags
+	recordAdded = false;
+	recordRead = false;
 }
 
 int DBFile::Close () {
 	bool success = true;
-	if(recordAdded) file.AddPage(buf, curPage);
+	if(recordAdded) file.AddPage(page, curPage);
 	file.Close();
 
 	success &= config.Write(rfile);
@@ -160,10 +166,8 @@ int DBFile::Close () {
 	config.Clear(); // Obligatory clear
 
 	// Put page in a known state.
-	delete page;
-	page = NULL;
-	delete buf;
-	buf = NULL;
+	recordAdded = false;
+	recordRead = false;
 
 	return success;
 }
