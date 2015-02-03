@@ -15,6 +15,11 @@ using ::testing::StrictMock;
 using ::testing::AtMost;
 using ::testing::AtLeast;
 using ::testing::ByRef;
+using ::testing::Pointee;
+using ::testing::NotNull;
+using ::testing::SetArgPointee;
+using ::testing::DoAll;
+using ::testing::Eq;
 
 class DBFileTest: public ::testing::Test {
 public:
@@ -31,6 +36,8 @@ public:
 	void SetBuf(Page &page);
 	bool RecordAdded();
 	void SetRecordAdded(bool x);
+	bool RecordRead();
+	void SetRecordRead(bool x);
 	char *path = "asdasdasd";
 	char *header = "asdasdasd.header";
 };
@@ -48,16 +55,13 @@ void DBFileTest::SetPage(Page &page) {
 	file.page = &page;
 }
 
-Page *DBFileTest::GetBuf() { return file.buf; }
-
-void DBFileTest::SetBuf(Page &page) {
-	delete file.buf;
-	file.buf = &page;
-}
-
 bool DBFileTest::RecordAdded() { return file.recordAdded; }
 
 void DBFileTest::SetRecordAdded(bool x) { file.recordAdded = x; }
+
+bool DBFileTest::RecordRead() { return file.recordRead; }
+
+void DBFileTest::SetRecordRead(bool x) { file.recordRead = x; }
 
 /**
  * DBFile::FileExists should return false when no file named "asdasdasd" is found.
@@ -105,6 +109,8 @@ TEST_F(DBFileTest, CreateHeap) {
 
 	EXPECT_EQ(1, file.Create(path, heap, NULL));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 }
 
 /**
@@ -131,6 +137,8 @@ TEST_F(DBFileTest, CreateStorted) {
 
 	EXPECT_EQ(1, file.Create(path, sorted, NULL));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 }
 
 /**
@@ -157,6 +165,8 @@ TEST_F(DBFileTest, CreateTree) {
 
 	EXPECT_EQ(1, file.Create(path, tree, NULL));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 }
 
 /**
@@ -174,6 +184,8 @@ TEST_F(DBFileTest, Create1) {
 	EXPECT_CALL(config, Clear());
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 
 	// Cleanup
 	remove(path);
@@ -193,6 +205,8 @@ TEST_F(DBFileTest, Create2) {
 	EXPECT_CALL(config, Clear());
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 
 	// Cleanup
 	remove(header);
@@ -214,6 +228,8 @@ TEST_F(DBFileTest, Create3) {
 	EXPECT_CALL(config, Clear());
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 
 	// Cleanup
 	remove(path);
@@ -255,6 +271,8 @@ TEST_F(DBFileTest, Create4) {
 
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 }
 
 /**
@@ -292,6 +310,8 @@ TEST_F(DBFileTest, Create5) {
 
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 }
 
 /**
@@ -322,6 +342,8 @@ TEST_F(DBFileTest, Create6) {
 
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 }
 
 /**
@@ -333,6 +355,8 @@ TEST_F(DBFileTest, Create7) {
 	EXPECT_CALL(config, Clear());
 	EXPECT_EQ(0, file.Create(NULL, heap, NULL));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 }
 
 /**
@@ -368,6 +392,8 @@ TEST_F(DBFileTest, Open1) {
 
 	EXPECT_EQ(1, file.Open(path));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 
 	// Cleanup
 	remove(path);
@@ -406,6 +432,8 @@ TEST_F(DBFileTest, Open2) {
 
 	EXPECT_EQ(0, file.Open(path));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 
 	// Cleanup
 	remove(path);
@@ -454,6 +482,8 @@ TEST_F(DBFileTest, Open3) {
 
 	EXPECT_EQ(0, file.Open(path));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 
 	// Cleanup
 	remove(path);
@@ -504,6 +534,8 @@ TEST_F(DBFileTest, Open4) {
 
 	EXPECT_EQ(0, file.Open(path));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 
 	// Cleanup
 	remove(path);
@@ -549,6 +581,8 @@ TEST_F(DBFileTest, Open5) {
 
 	EXPECT_EQ(0, file.Open(path));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 
 	// Cleanup
 	remove(header);
@@ -581,6 +615,8 @@ TEST_F(DBFileTest, Open6) {
 
 	EXPECT_EQ(0, file.Open(path));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 
 	// Cleanup
 	remove(path);
@@ -595,6 +631,8 @@ TEST_F(DBFileTest, Open7) {
 
 	EXPECT_EQ(0, file.Open(NULL));
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 }
 
 /**
@@ -619,6 +657,8 @@ TEST_F(DBFileTest, Close1) {
 
 	EXPECT_EQ(1, file.Close());
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 }
 
 /**
@@ -645,6 +685,8 @@ TEST_F(DBFileTest, Close2) {
 
 	EXPECT_EQ(1, file.Close());
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 }
 
 /**
@@ -671,6 +713,8 @@ TEST_F(DBFileTest, Close3) {
 
 	EXPECT_EQ(0, file.Close());
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 }
 
 /**
@@ -696,4 +740,93 @@ TEST_F(DBFileTest, Close4) {
 
 	EXPECT_EQ(0, file.Close());
 	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
+}
+
+/**
+ * DBFile::MoveFirst should Put ask File for the first Page and put it into buf and then copy it
+ * into page. It should then update curPage to 0.
+ */
+TEST_F(DBFileTest, MoveFirst1) {
+	SetCurPage(4);
+	SetRecordAdded(false);
+	StrictMock<MockPage> page;
+	SetPage(page);
+	char bits;
+
+//	Sequence s1;
+//	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
+//			InSequence(s1).
+//			WillOnce(SetArgPointee<0>((Page)buf));
+//	EXPECT_CALL(buf, ToBinary(_)).
+//			InSequence(s1).
+//			WillOnce(SetArgPointee<0>(bits));
+//	EXPECT_CALL(page, FromBinary(NotNull())).
+//			InSequence(s1).
+//			Times(1);
+
+	file.MoveFirst();
+	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
+}
+
+/**
+ * DBFile::MoveFirst should Put ask File for the first Page and put it into buf and then copy it
+ * into page even if the current page is already 0.
+ */
+TEST_F(DBFileTest, MoveFirst2) {
+	SetCurPage(0);
+	SetRecordAdded(false);
+	StrictMock<MockPage> page;
+	SetPage(page);
+	char bits;
+
+//
+//	Sequence s1;
+//	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
+//			InSequence(s1).
+//			WillOnce(SetArgPointee<0>((Page)buf));
+//	EXPECT_CALL(buf, ToBinary(_)).
+//			InSequence(s1).
+//			WillOnce(SetArgPointee<0>(bits));
+//	EXPECT_CALL(page, FromBinary(NotNull())).
+//			InSequence(s1).
+//			Times(1);
+
+	file.MoveFirst();
+	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
+}
+
+/**
+ * DBFile::MoveFirst should write any changes to disk if there were any.
+ */
+TEST_F(DBFileTest, MoveFirst3) {
+	SetCurPage(5);
+	SetRecordAdded(true);
+	StrictMock<MockPage> page;
+	SetPage(page);
+	char bits;
+
+//	Sequence s1;
+////	EXPECT_CALL(mockFile, AddPage(Pointee(AllOf(NotNull(), Eq(&bits))), 5)).
+////			InSequence(s1).
+////			Times(1);
+//	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
+//			InSequence(s1).
+//			WillOnce(SetArgPointee<0>((Page)buf));
+//	EXPECT_CALL(buf, ToBinary(_)).
+//			InSequence(s1).
+//			WillOnce(SetArgPointee<0>(bits));
+//	EXPECT_CALL(page, FromBinary(NotNull())).
+//			InSequence(s1).
+//			Times(1);
+
+	file.MoveFirst();
+	EXPECT_EQ(0, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(false, RecordAdded());
 }

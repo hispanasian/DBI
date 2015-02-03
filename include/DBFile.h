@@ -21,13 +21,13 @@ private:
 	off_t curPage;
 	File &file;
 	File myFile;
-	Page *page;		// This should be the page used to read
-	Page *buf;		// This should be the page used to add new records/reload records from (to page)
+	Page *page;
 	RawFile &rfile;
 	RawFile myRFile;
 	DBConfig &config;
 	DBConfig myConfig;
 	bool recordAdded;
+	bool recordRead;
 	DBFile(File &file, RawFile &rfile, DBConfig &config); // Strictly for Testing.
 public:
 	DBFile ();
@@ -65,7 +65,7 @@ public:
 	virtual void Load (Schema &myschema, char *loadpath);
 
 	/**
-	 * Moves the pointer from the current record to the first record.
+	 * Moves the pointer from the current record to the first record of the first page.
 	 */
 	virtual void MoveFirst ();
 
