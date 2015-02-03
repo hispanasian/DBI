@@ -40,8 +40,6 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 	config.Clear(); // Obligatory clear
 
 	// Put page in a known state.
-	delete page;
-	page = NULL;
 	recordAdded = false;
 	recordRead = false;
 
@@ -101,8 +99,6 @@ int DBFile::Open (char *f_path) {
 	config.Clear(); // Obligatory clear
 
 	// Put page in a known state.
-	delete page;
-	page = NULL;
 	recordAdded = false;
 	recordRead = false;
 
@@ -150,11 +146,8 @@ void DBFile::MoveFirst () {
 	// Check if any records were written to page.
 	if(recordAdded) file.AddPage(page, curPage);
 
-	// Prep for the new pages
-	delete page;
-	page = new Page();
-
 	file.GetPage(page, 0);
+	curPage = 0;
 }
 
 int DBFile::Close () {
@@ -169,8 +162,6 @@ int DBFile::Close () {
 	config.Clear(); // Obligatory clear
 
 	// Put page in a known state.
-	delete page;
-	page = NULL;
 	recordAdded = false;
 	recordRead = false;
 
