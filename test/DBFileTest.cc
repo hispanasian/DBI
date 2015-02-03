@@ -32,8 +32,7 @@ public:
 	File GetFile();
 	Page *GetPage();
 	void SetPage(Page &page);
-	Page *GetBuf();
-	void SetBuf(Page &page);
+	void SetPageNull();
 	bool RecordAdded();
 	void SetRecordAdded(bool x);
 	bool RecordRead();
@@ -54,6 +53,8 @@ void DBFileTest::SetPage(Page &page) {
 	delete file.page;
 	file.page = &page;
 }
+
+void DBFileTest::SetPageNull() { file.page = NULL; }
 
 bool DBFileTest::RecordAdded() { return file.recordAdded; }
 
@@ -745,60 +746,49 @@ TEST_F(DBFileTest, Close4) {
 }
 
 /**
- * DBFile::MoveFirst should Put ask File for the first Page and put it into buf and then copy it
- * into page. It should then update curPage to 0.
+ * DBFile::MoveFirst should ask File for the first (0th) Page and put it into page. It should then
+ * update curPage to 0.
  */
 TEST_F(DBFileTest, MoveFirst1) {
 	SetCurPage(4);
 	SetRecordAdded(false);
 	StrictMock<MockPage> page;
 	SetPage(page);
-	char bits;
 
-//	Sequence s1;
-//	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
-//			InSequence(s1).
-//			WillOnce(SetArgPointee<0>((Page)buf));
-//	EXPECT_CALL(buf, ToBinary(_)).
-//			InSequence(s1).
-//			WillOnce(SetArgPointee<0>(bits));
-//	EXPECT_CALL(page, FromBinary(NotNull())).
-//			InSequence(s1).
-//			Times(1);
+	Sequence s1;
+	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
+			Times(1).
+			InSequence(s1);
 
 	file.MoveFirst();
 	EXPECT_EQ(0, CurPage());
 	EXPECT_EQ(false, RecordRead());
 	EXPECT_EQ(false, RecordAdded());
+
+	SetPageNull();
 }
 
 /**
- * DBFile::MoveFirst should Put ask File for the first Page and put it into buf and then copy it
- * into page even if the current page is already 0.
+ * DBFile::MoveFirst should ask File for the first(0th) Page and put it into page even if the
+ * current page is already 0.
  */
 TEST_F(DBFileTest, MoveFirst2) {
 	SetCurPage(0);
 	SetRecordAdded(false);
 	StrictMock<MockPage> page;
 	SetPage(page);
-	char bits;
 
-//
-//	Sequence s1;
-//	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
-//			InSequence(s1).
-//			WillOnce(SetArgPointee<0>((Page)buf));
-//	EXPECT_CALL(buf, ToBinary(_)).
-//			InSequence(s1).
-//			WillOnce(SetArgPointee<0>(bits));
-//	EXPECT_CALL(page, FromBinary(NotNull())).
-//			InSequence(s1).
-//			Times(1);
+	Sequence s1;
+	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
+			Times(1).
+			InSequence(s1);
 
 	file.MoveFirst();
 	EXPECT_EQ(0, CurPage());
 	EXPECT_EQ(false, RecordRead());
 	EXPECT_EQ(false, RecordAdded());
+
+	SetPageNull();
 }
 
 /**
@@ -809,24 +799,19 @@ TEST_F(DBFileTest, MoveFirst3) {
 	SetRecordAdded(true);
 	StrictMock<MockPage> page;
 	SetPage(page);
-	char bits;
 
-//	Sequence s1;
-////	EXPECT_CALL(mockFile, AddPage(Pointee(AllOf(NotNull(), Eq(&bits))), 5)).
-////			InSequence(s1).
-////			Times(1);
-//	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
-//			InSequence(s1).
-//			WillOnce(SetArgPointee<0>((Page)buf));
-//	EXPECT_CALL(buf, ToBinary(_)).
-//			InSequence(s1).
-//			WillOnce(SetArgPointee<0>(bits));
-//	EXPECT_CALL(page, FromBinary(NotNull())).
-//			InSequence(s1).
-//			Times(1);
+	Sequence s1;
+	EXPECT_CALL(mockFile, AddPage(NotNull(), 5)).
+			Times(1).
+			InSequence(s1);
+	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
+			Times(1).
+			InSequence(s1);
 
 	file.MoveFirst();
 	EXPECT_EQ(0, CurPage());
 	EXPECT_EQ(false, RecordRead());
 	EXPECT_EQ(false, RecordAdded());
+
+	SetPageNull();
 }

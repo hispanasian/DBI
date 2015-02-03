@@ -148,6 +148,10 @@ void DBFile::MoveFirst () {
 
 	file.GetPage(page, 0);
 	curPage = 0;
+
+	// Reset flags
+	recordAdded = false;
+	recordRead = false;
 }
 
 int DBFile::Close () {
