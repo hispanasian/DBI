@@ -156,7 +156,7 @@ void DBFile::Add (Record &rec) {
 	if(!last->Append(&rec)) {
 		file.AddPage(last, lastIndex);
 		last->EmptyItOut();
-		if(last->Append(&rec)) throw std::runtime_error("rec exceeds the Page size");
+		if(!last->Append(&rec)) throw std::runtime_error("rec exceeds the Page size");
 		lastIndex++;
 	}
 }
