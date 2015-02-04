@@ -428,7 +428,7 @@ TEST_F(DBFileTest, Create7) {
 	EXPECT_CALL(config, Clear());
 	EXPECT_CALL(cursor, EmptyItOut());
 	EXPECT_CALL(last, EmptyItOut());
-	
+
 	EXPECT_EQ(0, file.Create(NULL, heap, NULL));
 	EXPECT_EQ(0, CursorIndex());
 	EXPECT_EQ(0, LastIndex());
@@ -449,11 +449,16 @@ TEST_F(DBFileTest, Open1) {
 	fprintf(temp, "stuff");
 	fclose(temp);
 
+	SetCursor(cursor);
+	SetLast(last);
+
 	Sequence s1, s2, s3;
 
 	// s1
 	EXPECT_CALL(mockFile, Open(1, path)).
-			InSequence(s1);
+			InSequence(s1);	
+	EXPECT_CALL(mockFile, GetLength()).
+			WillOnce(Return(0));
 
 	// s2
 	EXPECT_CALL(rfile, Open(header)).
@@ -467,15 +472,19 @@ TEST_F(DBFileTest, Open1) {
 	EXPECT_CALL(config, GetKey("fType")).
 			InSequence(s2).
 			WillOnce(Return("heap"));
+	EXPECT_CALL(mockFile, GetPage(_, _));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_EQ(1, file.Open(path));
 	EXPECT_EQ(0, CursorIndex());
-
-
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(path);
 	remove(header);
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -488,6 +497,9 @@ TEST_F(DBFileTest, Open2) {
 	temp = fopen(path, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
+
+	SetCursor(cursor);
+	SetLast(last);
 
 	Sequence s1, s2, s3;
 
@@ -508,14 +520,18 @@ TEST_F(DBFileTest, Open2) {
 	EXPECT_CALL(config, Clear()). // Arbitrary
 			Times(AtMost(2));
 
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Open(path));
 	EXPECT_EQ(0, CursorIndex());
-
-
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(path);
 	remove(header);
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -529,6 +545,9 @@ TEST_F(DBFileTest, Open3) {
 	temp = fopen(path, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
+
+	SetCursor(cursor);
+	SetLast(last);
 
 	Sequence s1, s2, s3, s4;
 
@@ -557,15 +576,18 @@ TEST_F(DBFileTest, Open3) {
 
 	EXPECT_CALL(config, Clear()). // Arbitrary
 			InSequence(s4);
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_EQ(0, file.Open(path));
 	EXPECT_EQ(0, CursorIndex());
-
-
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(path);
 	remove(header);
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -579,6 +601,9 @@ TEST_F(DBFileTest, Open4) {
 	temp = fopen(path, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
+
+	SetCursor(cursor);
+	SetLast(last);
 
 	Sequence s1, s2, s3, s4, s5;
 
@@ -609,15 +634,20 @@ TEST_F(DBFileTest, Open4) {
 
 	EXPECT_CALL(config, Clear()). // Arbitrary
 			InSequence(s4);
+	EXPECT_CALL(mockFile, GetLength());
+	EXPECT_CALL(mockFile, GetPage(_,_));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_EQ(0, file.Open(path));
 	EXPECT_EQ(0, CursorIndex());
-
-
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(path);
 	remove(header);
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -628,6 +658,9 @@ TEST_F(DBFileTest, Open5) {
 	FILE *temp = fopen(header, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
+
+	SetCursor(cursor);
+	SetLast(last);
 
 	Sequence s1, s2, s3, s4;
 
@@ -657,13 +690,18 @@ TEST_F(DBFileTest, Open5) {
 	EXPECT_CALL(config, Clear()).
 			Times(AtMost(2));
 
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
+
 	EXPECT_EQ(0, file.Open(path));
 	EXPECT_EQ(0, CursorIndex());
-
-
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(header);
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -674,6 +712,9 @@ TEST_F(DBFileTest, Open6) {
 	FILE *temp = fopen(path, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
+
+	SetCursor(cursor);
+	SetLast(last);
 
 	Sequence s1, s2;
 
@@ -691,26 +732,38 @@ TEST_F(DBFileTest, Open6) {
 		Times(AtMost(1)).
 		InSequence(s2);
 
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Open(path));
 	EXPECT_EQ(0, CursorIndex());
-
-
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(path);
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
  * DBFile::Open should return 0 if the path is null.
  */
 TEST_F(DBFileTest, Open7) {
+	SetCursor(cursor);
+	SetLast(last);
+
 	EXPECT_CALL(config, Clear()).
 		Times(AtMost(1));
 
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Open(NULL));
 	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
 
-
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
