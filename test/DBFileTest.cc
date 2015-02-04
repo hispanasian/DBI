@@ -758,73 +758,44 @@ TEST_F(DBFileTest, Close4) {
 
 /**
  * DBFile::MoveFirst should ask File for the first (0th) Page and put it into page. It should then
- * update lastIndex to 0.
+ * update lastIndex to 0. It should also write out the last page
  */
 TEST_F(DBFileTest, MoveFirst1) {
 	SetCursorIndex(4);
-
-	StrictMock<MockPage> cursor;
+	SetLastIndex(4);
 	SetCursor(cursor);
+	SetLast(last);
 
-	Sequence s1;
-	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
-			Times(1).
-			InSequence(s1);
+	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
+	EXPECT_CALL(mockFile, AddPage(&last, 4));
 
 	file.MoveFirst();
 	EXPECT_EQ(0, CursorIndex());
-
-
+	EXPECT_EQ(4, LastIndex());
 
 	SetCursorNull();
+	SetLastNull();
 }
 
 /**
  * DBFile::MoveFirst should ask File for the first(0th) Page and put it into page even if the
- * current page is already 0.
+ * current page is already 0. It should also write out the last page.
  */
 TEST_F(DBFileTest, MoveFirst2) {
 	SetCursorIndex(0);
-
-	StrictMock<MockPage> cursor;
+	SetLastIndex(4);
 	SetCursor(cursor);
+	SetLast(last);
 
-	Sequence s1;
-	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
-			Times(1).
-			InSequence(s1);
+	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
+	EXPECT_CALL(mockFile, AddPage(&last, 4));
 
 	file.MoveFirst();
 	EXPECT_EQ(0, CursorIndex());
-
-
-
-	SetCursorNull();
-}
-
-/**
- * DBFile::MoveFirst should write any changes to disk if there were any.
- */
-TEST_F(DBFileTest, MoveFirst3) {
-	SetCursorIndex(5);
-
-	StrictMock<MockPage> cursor;
-	SetCursor(cursor);
-
-	Sequence s1;
-	EXPECT_CALL(mockFile, AddPage(NotNull(), 5)).
-			Times(1).
-			InSequence(s1);
-	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
-			Times(1).
-			InSequence(s1);
-
-	file.MoveFirst();
-	EXPECT_EQ(0, CursorIndex());
-
-
+	EXPECT_EQ(4, LastIndex());
 
 	SetCursorNull();
+	SetLastNull();
 }
 
 /**

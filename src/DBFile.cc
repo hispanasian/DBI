@@ -136,7 +136,7 @@ int DBFile::Open (char *f_path) {
 void DBFile::MoveFirst () {
 	file.AddPage(last, lastIndex); // Write out last page
 	file.GetPage(cursor, 0);
-	lastIndex = 0;
+	cursorIndex = 0;
 }
 
 int DBFile::Close () {
