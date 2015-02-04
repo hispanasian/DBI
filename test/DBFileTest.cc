@@ -136,6 +136,8 @@ TEST_F(DBFileTest, CreateHeap) {
  */
 TEST_F(DBFileTest, CreateSorted) {
 	Sequence s1, s2, s3;
+	SetLast(last);
+	SetCursor(cursor);
 
 	EXPECT_CALL(config, Clear()).
 				InSequence(s1, s2, s3);
@@ -149,10 +151,15 @@ TEST_F(DBFileTest, CreateSorted) {
 	EXPECT_CALL(config, Write(_)).
 			InSequence(s2, s3).
 			WillOnce(Return(true));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 
 	EXPECT_EQ(1, file.Create(path, sorted, NULL));
 	EXPECT_EQ(0, CursorIndex());
 	EXPECT_EQ(0, LastIndex());
+	SetLastNull();
+	SetCursorNull();
 }
 
 /**
@@ -163,6 +170,8 @@ TEST_F(DBFileTest, CreateSorted) {
  */
 TEST_F(DBFileTest, CreateTree) {
 	Sequence s1, s2, s3;
+	SetLast(last);
+	SetCursor(cursor);
 
 	EXPECT_CALL(config, Clear()).
 				InSequence(s1, s2, s3);
@@ -176,9 +185,14 @@ TEST_F(DBFileTest, CreateTree) {
 	EXPECT_CALL(config, Write(_)).
 			InSequence(s2, s3).
 			WillOnce(Return(true));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_EQ(1, file.Create(path, tree, NULL));
 	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+	SetLastNull();
+	SetCursorNull();
 }
 
 /**
@@ -189,18 +203,25 @@ TEST_F(DBFileTest, CreateTree) {
  * clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create1) {
+	SetCursor(cursor);
+	SetLast(last);
+
 	FILE *temp = fopen(path, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
-	InSequence seq;
 	EXPECT_CALL(config, Clear());
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
 	EXPECT_EQ(0, CursorIndex());
-
+	EXPECT_EQ(0, LastIndex());
 
 
 	// Cleanup
 	remove(path);
+	SetLastNull();
+	SetCursorNull();
 }
 
 /**
@@ -210,18 +231,24 @@ TEST_F(DBFileTest, Create1) {
  * also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create2) {
+	SetCursor(cursor);
+	SetLast(last);
+
 	FILE *temp = fopen(header, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
-	InSequence seq;
 	EXPECT_CALL(config, Clear());
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
 	EXPECT_EQ(0, CursorIndex());
-
-
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(header);
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -230,22 +257,28 @@ TEST_F(DBFileTest, Create2) {
  * it was called. DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create3) {
+	SetCursor(cursor);
+	SetLast(last);
+
 	FILE *temp = fopen(header, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
 	temp = fopen(path, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_CALL(config, Clear());
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
 	EXPECT_EQ(0, CursorIndex());
-
-
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(path);
 	remove(header);
+	SetCursorNull();
+	SetLastNull();
 }
 
 
@@ -256,6 +289,9 @@ TEST_F(DBFileTest, Create3) {
  * DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create4) {
+	SetCursor(cursor);
+	SetLast(last);
+
 	Sequence s1, s2, s3;
 	EXPECT_CALL(config, Clear()).
 			InSequence(s1, s2, s3);
@@ -281,10 +317,15 @@ TEST_F(DBFileTest, Create4) {
 			InSequence(s3).
 			WillRepeatedly(Return(true));
 
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
 	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
 
-
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -295,6 +336,9 @@ TEST_F(DBFileTest, Create4) {
  * DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create5) {
+	SetCursor(cursor);
+	SetLast(last);
+
 	Sequence s1, s2, s3;
 
 	EXPECT_CALL(config, Clear()).
@@ -320,10 +364,16 @@ TEST_F(DBFileTest, Create5) {
 			InSequence(s2).
 			WillRepeatedly(Return(true));
 
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
 	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
 
 
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -332,6 +382,9 @@ TEST_F(DBFileTest, Create5) {
  * must be tested via integration testing. DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create6) {
+	SetCursor(cursor);
+	SetLast(last);
+
 	Sequence s1, s2, s3;
 
 	EXPECT_CALL(config, Clear()).
@@ -352,10 +405,15 @@ TEST_F(DBFileTest, Create6) {
 	EXPECT_CALL(config, Clear()).
 			InSequence(s1, s2);
 
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
 	EXPECT_EQ(0, CursorIndex());
-
-
+	EXPECT_EQ(0, LastIndex());	
+	
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -363,12 +421,19 @@ TEST_F(DBFileTest, Create6) {
  * clearing DBConfig. DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create7) {
-	InSequence seq;
+	SetCursor(cursor);
+	SetLast(last);
+
 	EXPECT_CALL(config, Clear());
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+	
 	EXPECT_EQ(0, file.Create(NULL, heap, NULL));
 	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
 
-
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
