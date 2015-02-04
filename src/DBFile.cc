@@ -173,6 +173,27 @@ int DBFile::Close () {
 }
 
 void DBFile::Add (Record &rec) {
+	if(recordRead) {
+		file.GetPage(page, curPage);
+		recordRead = false;
+	}
+	if(!page->Append(&rec)) {
+		if(recordAdded) {
+			file.AddPage(page, curPage); // Write out any changes
+			recordAdded = false;
+		}
+		if(curPage + 1 < file.GetLength()) { // Not the last Page
+			curPage = file.GetLength() - 1;
+			file.GetPage(page, curPage);
+			Add(rec); // Add to last Page
+		}
+		else { // last page is full
+			page->EmptyItOut();
+			curPage++;
+			Add(rec); // Add to new Page
+		}
+	}
+	recordAdded = true;
 }
 
 int DBFile::GetNext (Record &fetchme) {

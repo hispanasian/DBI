@@ -70,7 +70,11 @@ public:
 	virtual void MoveFirst ();
 
 	/**
-	 * Adds addme to a file and consumes addme.
+	 * Adds addme to a file and consumes addme. If the current page is not the last page, Add will
+	 * attempt to put the record into the current Page. If this fails, it will attempt to put it
+	 * into the last Page. If that too is full, it will make a new Page and add the Page to the
+	 * end of the file. The goal here is to not read n files from disk just to put a new Record
+	 * into a file.
 	 * @param addme	The Record being added to DBFile
 	 */
 	virtual void Add (Record &addme);

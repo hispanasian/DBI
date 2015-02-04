@@ -815,3 +815,273 @@ TEST_F(DBFileTest, MoveFirst3) {
 
 	SetPageNull();
 }
+
+/**
+ * DBFile::Add should, if this is the first record being added and the Page can hold more records,
+ * add the Record to the page and set the added flag to true
+ */
+TEST_F(DBFileTest, Add1) {
+	SetCurPage(5);
+	SetRecordAdded(false);
+	SetRecordRead(false);
+	StrictMock<MockPage> page;
+	SetPage(page);
+	StrictMock<MockRecord> record;
+
+	Sequence s1;
+	EXPECT_CALL(page, Append(&record)).
+			InSequence(s1).
+			WillOnce(Return(1));
+
+	file.Add(record);
+	EXPECT_EQ(5, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(true, RecordAdded());
+
+	SetPageNull();
+}
+
+/**
+ * DBFile::Add should, if the Page has been read before, get the Page located at currentPage from
+ * File and write to the newly obtained Page.
+ */
+TEST_F(DBFileTest, Add2) {
+	SetCurPage(5);
+	SetRecordAdded(false);
+	SetRecordRead(true);
+	StrictMock<MockPage> page;
+	SetPage(page);
+	Record record;
+
+	Sequence s1;
+	EXPECT_CALL(mockFile, GetPage(&page, 5)).
+			Times(1).
+			InSequence(s1);
+	EXPECT_CALL(page, Append(&record)).
+			InSequence(s1).
+			WillOnce(Return(1));
+
+	file.Add(record);
+	EXPECT_EQ(5, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(true, RecordAdded());
+
+	SetPageNull();
+}
+
+/**
+ * DBFile::Add should, if the page has been written to before, simply write to the page.
+ */
+TEST_F(DBFileTest, Add3) {
+	SetCurPage(5);
+	SetRecordAdded(true);
+	SetRecordRead(false);
+	StrictMock<MockPage> page;
+	SetPage(page);
+	StrictMock<MockRecord> record;
+
+	Sequence s1;
+	EXPECT_CALL(page, Append(&record)).
+			InSequence(s1).
+			WillOnce(Return(1));
+
+	file.Add(record);
+	EXPECT_EQ(5, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(true, RecordAdded());
+
+	SetPageNull();
+}
+
+/**
+ * DBFile::Add should, if the Page cannot fit the new Record in the current Page (which is not the
+ * last page), get the last Page(which is not full) and write to it.
+ */
+TEST_F(DBFileTest, Add4) {
+	SetCurPage(5);
+	SetRecordAdded(false);
+	SetRecordRead(false);
+	StrictMock<MockPage> page;
+	SetPage(page);
+	StrictMock<MockRecord> record;
+
+	Sequence s1;
+	EXPECT_CALL(page, Append(&record)).
+			InSequence(s1).
+			WillOnce(Return(0));
+	EXPECT_CALL(mockFile, GetPage(&page, 9)).
+			Times(1).
+			InSequence(s1);
+	EXPECT_CALL(page, Append(&record)).
+			InSequence(s1).
+			WillOnce(Return(1));
+
+	EXPECT_CALL(mockFile, GetLength()).
+			Times(AtMost(2)).
+			WillRepeatedly(Return(10));
+
+	file.Add(record);
+	EXPECT_EQ(9, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(true, RecordAdded());
+
+	EXPECT_CALL(page, EmptyItOut()).
+			Times(AtMost(1));
+
+	SetPageNull();
+}
+
+/**
+ * DBFile::Add should, if the Page cannot fit the new Record in the current Page (which is not the
+ * last page) and the last Page is full, create a new Page.
+ */
+TEST_F(DBFileTest, Add5) {
+	SetCurPage(2);
+	SetRecordAdded(false);
+	SetRecordRead(false);
+	StrictMock<MockPage> page;
+	SetPage(page);
+	StrictMock<MockRecord> record;
+
+	EXPECT_CALL(mockFile, GetPage(&page, 5));
+	EXPECT_CALL(page, Append(&record)).
+			WillOnce(Return(0)).
+			WillOnce(Return(0)).
+			WillOnce(Return(1));
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(6));
+	EXPECT_CALL(page, EmptyItOut()).
+			Times(AtMost(2));
+
+	file.Add(record);
+	EXPECT_EQ(6, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(true, RecordAdded());
+
+	SetPageNull();
+}
+
+/**
+ * DBFile::Add should, if the current Page is the last Page and it is full, and create a new one.
+ */
+TEST_F(DBFileTest, Add6) {
+	SetCurPage(5);
+	SetRecordAdded(false);
+	SetRecordRead(false);
+	StrictMock<MockPage> page;
+	SetPage(page);
+	StrictMock<MockRecord> record;
+
+	EXPECT_CALL(page, EmptyItOut()).
+			Times(1);
+	EXPECT_CALL(page, Append(&record)).
+			WillOnce(Return(0)).
+			WillOnce(Return(1));
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(6));
+
+	file.Add(record);
+	EXPECT_EQ(6, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(true, RecordAdded());
+
+	SetPageNull();
+}
+
+/**
+ * DBFile::Add should, if the current Page is the last Page and it is not full, add the record to
+ * the current page.
+ */
+TEST_F(DBFileTest, Add7) {
+	SetCurPage(5);
+	SetRecordAdded(true);
+	SetRecordRead(false);
+	StrictMock<MockPage> page;
+	SetPage(page);
+	StrictMock<MockRecord> record;
+
+	Sequence s1;
+	EXPECT_CALL(page, Append(&record)).
+			InSequence(s1).
+			WillOnce(Return(1));
+
+	file.Add(record);
+	EXPECT_EQ(5, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(true, RecordAdded());
+
+	SetPageNull();
+}
+
+/**
+ * DBFile::Add should, if the current Page was written to but the new Record no longer fits, write
+ * the Record to the current Page and look for a Page that the new Record can fit in (in this case,
+ * the last page).
+ */
+TEST_F(DBFileTest, Add8) {
+	SetCurPage(3);
+	SetRecordAdded(true);
+	SetRecordRead(false);
+	StrictMock<MockPage> page;
+	SetPage(page);
+	StrictMock<MockRecord> record;
+
+	Sequence s1;
+	EXPECT_CALL(mockFile, AddPage(&page, 3)).
+			Times(1).
+			InSequence(s1);
+	EXPECT_CALL(mockFile, GetPage(&page, 6)).
+			Times(1).
+			InSequence(s1);
+
+	EXPECT_CALL(page, Append(&record)).
+			WillOnce(Return(0)).
+			WillOnce(Return(1));
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(7));
+	EXPECT_CALL(page, EmptyItOut()).Times(AtMost(3));
+
+	file.Add(record);
+	EXPECT_EQ(6, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(true, RecordAdded());
+
+	SetPageNull();
+}
+
+/**
+ * DBFile::Add should, if the current Page was written to but the new Record no longer fits, write
+ * the Record to the current Page and look for a Page that the new Record can fit in (in this case,
+ * the new page).
+ */
+TEST_F(DBFileTest, Add9) {
+	SetCurPage(3);
+	SetRecordAdded(true);
+	SetRecordRead(false);
+	StrictMock<MockPage> page;
+	SetPage(page);
+	StrictMock<MockRecord> record;
+
+	Sequence s1;
+	EXPECT_CALL(mockFile, AddPage(&page, 3)).
+			Times(1).
+			InSequence(s1);
+	EXPECT_CALL(mockFile, GetPage(&page, 6)).
+			Times(1).
+			InSequence(s1);
+
+	EXPECT_CALL(page, Append(&record)).
+			WillOnce(Return(0)).
+			WillOnce(Return(0)).
+			WillOnce(Return(1));
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(7));
+	EXPECT_CALL(page, EmptyItOut()).Times(AtLeast(1));
+
+	file.Add(record);
+	EXPECT_EQ(7, CurPage());
+	EXPECT_EQ(false, RecordRead());
+	EXPECT_EQ(true, RecordAdded());
+
+	SetPageNull();
+}
