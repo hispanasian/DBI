@@ -18,17 +18,22 @@ typedef enum {heap, sorted, tree} fType;
 class DBFile {
 friend class DBFileTest;
 private:
-	off_t curPage;
+	off_t cursorIndex;
+	off_t lastIndex;
 	File &file;
 	File myFile;
-	Page *page;
+	Page *cursor;		// Pointer to the current page
+	Page * last;		// Pointer to the last page
 	RawFile &rfile;
 	RawFile myRFile;
 	DBConfig &config;
 	DBConfig myConfig;
-	bool recordAdded;
-	bool recordRead;
 	DBFile(File &file, RawFile &rfile, DBConfig &config); // Strictly for Testing.
+
+	/**
+	 * Puts DBFile into an initial state.
+	 */
+	virtual void Reset();
 public:
 	DBFile ();
     virtual ~DBFile();
@@ -70,11 +75,8 @@ public:
 	virtual void MoveFirst ();
 
 	/**
-	 * Adds addme to a file and consumes addme. If the current page is not the last page, Add will
-	 * attempt to put the record into the current Page. If this fails, it will attempt to put it
-	 * into the last Page. If that too is full, it will make a new Page and add the Page to the
-	 * end of the file. The goal here is to not read n files from disk just to put a new Record
-	 * into a file.
+	 * Adds addMe to the last page in memory. Writes are not immediately readable. In order to get
+	 * the most immediate written records, you must call MoveFirst.
 	 * @param addme	The Record being added to DBFile
 	 */
 	virtual void Add (Record &addme);

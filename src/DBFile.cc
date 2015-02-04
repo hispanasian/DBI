@@ -13,35 +13,30 @@
 // stub file .. replace it with your own DBFile.cc
 
 DBFile::DBFile (): file(myFile), rfile(myRFile), config(myConfig) {
-	curPage = 0;
-	page = NULL;
-	recordAdded = false;
-	recordRead = false;
+	cursorIndex = 0;
+	lastIndex = 0;
+	cursor = new Page();
+	last = new Page();
 }
 
 DBFile::DBFile (File &otherFile, RawFile &otherRFile, DBConfig &otherConfig):
 		file(otherFile), rfile(otherRFile), config(otherConfig) {
-	curPage = 0;
-	page = NULL;
-	recordAdded = false;
-	recordRead = false;
+	cursorIndex = 0;
+	lastIndex = 0;
+	cursor = new Page();
+	last = new Page();
 }
 
 DBFile::~DBFile () {
-	delete page;
-	page = NULL;
+	delete cursor;
+	delete last;
 }
 
 int DBFile::Create (char *f_path, fType f_type, void *startup) {
 	bool success = true;
 	bool rawOpen = false;
 
-	curPage = 0;	// Reset Page offset
-	config.Clear(); // Obligatory clear
-
-	// Put page in a known state.
-	recordAdded = false;
-	recordRead = false;
+	Reset();
 
 	if(f_path == NULL) success = false;
 	else {
@@ -95,12 +90,7 @@ int DBFile::Open (char *f_path) {
 	bool success = true;
 	bool rawOpen = false;
 
-	curPage = 0;	// Reset Page offset
-	config.Clear(); // Obligatory clear
-
-	// Put page in a known state.
-	recordAdded = false;
-	recordRead = false;
+	Reset();
 
 	if(f_path == NULL) success = false;
 	else {
@@ -119,6 +109,9 @@ int DBFile::Open (char *f_path) {
 
 			if(success) {
 				const char * key = config.GetKey("fType").c_str();
+				lastIndex = file.GetLength() - 1;
+				file.GetPage(last, lastIndex);
+
 				if(strcmp("heap", key) == 0) {
 					// TODO: Implement
 				}
@@ -130,70 +123,42 @@ int DBFile::Open (char *f_path) {
 				}
 				else success = false;
 			}
-
 			if(!success) {
 				if(rawOpen) rfile.Close(); // Closing an unopened RawFile segfaults
 				file.Close();
 				config.Clear(); // Clear any changes made if there was a failure
 			}
 		}
-
 	}
 	return success;
 }
 
 void DBFile::MoveFirst () {
-	// Check if any records were written to page.
-	if(recordAdded) file.AddPage(page, curPage);
-
-	file.GetPage(page, 0);
-	curPage = 0;
-
-	// Reset flags
-	recordAdded = false;
-	recordRead = false;
+	file.AddPage(last, lastIndex); // Write out last page
+	file.GetPage(cursor, 0);
+	lastIndex = 0;
 }
 
 int DBFile::Close () {
 	bool success = true;
-	if(recordAdded) file.AddPage(page, curPage);
+	file.AddPage(last, lastIndex); // Write out last page
 	file.Close();
 
 	success &= config.Write(rfile);
 	success &= rfile.Close();
 
-	curPage = 0;	// Reset Page offset
-	config.Clear(); // Obligatory clear
-
-	// Put page in a known state.
-	recordAdded = false;
-	recordRead = false;
+	Reset();
 
 	return success;
 }
 
 void DBFile::Add (Record &rec) {
-	if(recordRead) {
-		file.GetPage(page, curPage);
-		recordRead = false;
+	if(!last->Append(&rec)) {
+		file.AddPage(last, lastIndex);
+		last->EmptyItOut();
+		if(last->Append(&rec)) throw std::runtime_error("rec exceeds the Page size");
+		lastIndex++;
 	}
-	if(!page->Append(&rec)) {
-		if(recordAdded) {
-			file.AddPage(page, curPage); // Write out any changes
-			recordAdded = false;
-		}
-		if(curPage + 1 < file.GetLength()) { // Not the last Page
-			curPage = file.GetLength() - 1;
-			file.GetPage(page, curPage);
-			Add(rec); // Add to last Page
-		}
-		else { // last page is full
-			page->EmptyItOut();
-			curPage++;
-			Add(rec); // Add to new Page
-		}
-	}
-	recordAdded = true;
 }
 
 int DBFile::GetNext (Record &fetchme) {
@@ -202,4 +167,12 @@ int DBFile::GetNext (Record &fetchme) {
 
 int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
 	return 0;
+}
+
+void DBFile::Reset() {
+	cursorIndex = 0;
+	lastIndex = 0;
+	cursor->EmptyItOut();
+	last->EmptyItOut();
+	config.Clear();
 }

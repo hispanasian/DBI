@@ -27,6 +27,7 @@ public:
 	StrictMock<MockDBConfig> config;
 	StrictMock<MockRawFile> rfile;
 	DBFile file = DBFile(mockFile, rfile, config);
+
 	off_t CurPage();
 	void SetCurPage(off_t offset);
 	File GetFile();
