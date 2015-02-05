@@ -26,6 +26,16 @@ class Schema {
 	char *fileName;
 
 	friend class Record;
+	friend class DBFileTest;
+	friend class MockSchema;
+
+private:
+	// Strictly for testing
+	Schema() {
+		fileName = NULL;
+		numAtts = NULL;
+		myAtts = NULL;
+	}
 
 public:
 
@@ -50,7 +60,7 @@ public:
 	// place a lexicographic ordering on the records using this type of schema
 	int GetSortOrder (OrderMaker &order);
 
-	~Schema ();
+	virtual ~Schema ();
 
 };
 
