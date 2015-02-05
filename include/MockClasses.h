@@ -4,7 +4,10 @@
 #include "RawFile.h"
 #include "DBFile.h"
 #include "DBConfig.h"
+<<<<<<< HEAD
 #include "Schema.h"
+=======
+>>>>>>> 7f96e7502f5c099ee53acadf07c856129dd19b0a
 #include "ComparisonEngine.h"
 
 class MockRecord: public Record {
