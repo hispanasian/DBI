@@ -341,3 +341,50 @@ TEST_F(DBFileTest, GetNext5) {
 	SetCursorNull();
 	SetLastNull();
 }
+
+/*
+ * GetNextCNF should read records until it finds one
+ * matching the condition, which it should return
+ */
+
+TEST_F(DBFileTest, GetNextCNF1) {
+	// setup
+	createFiles(header, path);
+	SetCursor(cursor);
+	SetLast(last);
+
+	// standard stuff for calling Open()
+	EXPECT_CALL(mockFile, Open(1, path));
+	EXPECT_CALL(rfile, Open(header)).
+			WillOnce(Return(true));
+			EXPECT_CALL(config, Clear());
+	EXPECT_CALL(config, Read(_)).
+			WillOnce(Return(true));
+	EXPECT_CALL(config, GetKey("fType")).
+			WillOnce(Return("heap"));
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(5));
+	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
+	EXPECT_CALL(mockFile, GetPage(&last, 4));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
+
+	Record* r;
+
+	// the test
+	EXPECT_CALL(cursor, GetFirst(r)).
+			WillOnce(Return(1));
+
+	EXPECT_EQ(1, file.Open(path));
+
+	
+	EXPECT_EQ(1, file.GetNext(*r));
+	EXPECT_EQ(0, CursorIndex());
+
+
+	// cleanup
+	cleanupFiles(header, path);
+	SetCursorNull();
+	SetLastNull();
+}

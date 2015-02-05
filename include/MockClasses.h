@@ -4,6 +4,7 @@
 #include "RawFile.h"
 #include "DBFile.h"
 #include "DBConfig.h"
+#include "ComparisonEngine.h"
 
 class MockRecord: public Record {
 public:
@@ -112,4 +113,18 @@ class MockDBFile: public DBFile {
 	MOCK_METHOD3(GetNext, int(Record &fetchme, CNF &cnf, Record &literal));
 //	virtual void Reset();
 	MOCK_METHOD0(Reset, void());
+};
+
+class MockComparisonEngine: public ComparisonEngine {
+    // int Compare(Record *left, Record *right, OrderMaker *orderUs);
+    MOCK_METHOD3(Compare, int(Record *left, Record *right, OrderMaker *orderUs));
+
+    // int Compare(Record *left, OrderMaker *order_left, Record *right, OrderMaker *order_right);
+    MOCK_METHOD4(Compare, int(Record *left, OrderMaker *order_left, Record *right, OrderMaker *order_right));
+
+    // int Compare(Record *left, Record *right, Record *literal, CNF *myComparison);
+    MOCK_METHOD4(Compare, int(Record *left, Record *right, Record *literal, CNF *myComparison));
+
+    // int Compare(Record *left, Record *literal, CNF *myComparison);
+    MOCK_METHOD3(Compare, int(Record *left, Record *literal, CNF *myComparison));
 };

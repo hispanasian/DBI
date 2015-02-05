@@ -12,15 +12,15 @@
 
 // stub file .. replace it with your own DBFile.cc
 
-DBFile::DBFile (): file(myFile), rfile(myRFile), config(myConfig) {
+DBFile::DBFile (): file(myFile), rfile(myRFile), config(myConfig), comp(myComp) {
 	cursorIndex = 0;
 	lastIndex = 0;
 	cursor = new Page();
 	last = new Page();
 }
 
-DBFile::DBFile (File &otherFile, RawFile &otherRFile, DBConfig &otherConfig):
-		file(otherFile), rfile(otherRFile), config(otherConfig) {
+DBFile::DBFile (File &otherFile, RawFile &otherRFile, DBConfig &otherConfig, ComparisonEngine &otherComp):
+		file(otherFile), rfile(otherRFile), config(otherConfig), comp(otherComp) {
 	cursorIndex = 0;
 	lastIndex = 0;
 	cursor = new Page();

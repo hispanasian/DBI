@@ -28,7 +28,9 @@ private:
 	RawFile myRFile;
 	DBConfig &config;
 	DBConfig myConfig;
-	DBFile(File &file, RawFile &rfile, DBConfig &config); // Strictly for Testing.
+	ComparisonEngine &comp;
+	ComparisonEngine myComp;
+	DBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp); // Strictly for Testing.
 
 	/**
 	 * Puts DBFile into an initial state.
