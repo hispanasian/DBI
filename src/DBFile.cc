@@ -159,7 +159,32 @@ void DBFile::Add (Record &rec) {
 }
 
 int DBFile::GetNext (Record &fetchme) {
-	return 0;
+	if(file.GetLength() == 0) {
+		// this file is empty, we can't return any records
+		return 0;
+	}
+
+	if(cursor->GetFirst(&fetchme)) {
+		// there was a record available in the cursor
+		return 1;
+	} else {
+		// we need to find the next page with a record in it
+		// we look through the pages until we find one with a record
+		// or we reach the end
+		cursorIndex++;
+		while(cursorIndex < file.GetLength()) {
+			cursor->EmptyItOut();
+			file.GetPage(cursor, cursorIndex);
+			if(cursor->GetFirst(&fetchme)) {
+				return 1;
+			}
+			cursorIndex++;
+		}
+		// we read the last page without finding anything, make sure
+		// our index stays in range
+		cursorIndex--;
+		return 0;
+	}
 }
 
 int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
