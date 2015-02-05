@@ -57,7 +57,7 @@ public:
 	virtual ~File ();
 
 	// returns the current length of the file, in pages
-	off_t GetLength ();
+	virtual off_t GetLength ();
 
 	// opens the given file; the first parameter tells whether or not to
 	// create the file.  If the parameter is zero, a new file is created
@@ -78,7 +78,5 @@ public:
 	virtual int Close ();
 
 };
-
-
 
 #endif

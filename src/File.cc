@@ -202,8 +202,8 @@ void File :: AddPage (Page *addMe, off_t whichPage) {
 		// do the zeroing
 		for (off_t i = curLength; i < whichPage; i++) {
 			int foo = 0;
-			lseek (myFilDes, PAGE_SIZE * i, SEEK_SET);
-			write (myFilDes, &foo, sizeof (int));
+            write (myFilDes, &foo, sizeof (int));
+            lseek (myFilDes, PAGE_SIZE * i, SEEK_SET);
 		}
 
 		// set the size
