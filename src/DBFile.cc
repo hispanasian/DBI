@@ -109,7 +109,7 @@ int DBFile::Open (char *f_path) {
 
 			if(success) {
 				const char * key = config.GetKey("fType").c_str();
-				lastIndex = file.GetLength() - 1;
+				lastIndex = file.GetLength() == 0 ? 0 :  file.GetLength() - 1;
 				file.GetPage(last, lastIndex);
 
 				if(strcmp("heap", key) == 0) {
