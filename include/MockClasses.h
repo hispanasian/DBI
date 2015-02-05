@@ -110,4 +110,6 @@ class MockDBFile: public DBFile {
 	MOCK_METHOD1(GetNext, int(Record &fetchme));
 //	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal);
 	MOCK_METHOD3(GetNext, int(Record &fetchme, CNF &cnf, Record &literal));
+//	virtual void Reset();
+	MOCK_METHOD0(Reset, void());
 };

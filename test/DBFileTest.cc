@@ -20,6 +20,7 @@ using ::testing::NotNull;
 using ::testing::SetArgPointee;
 using ::testing::DoAll;
 using ::testing::Eq;
+using ::testing::Ref;
 
 class DBFileTest: public ::testing::Test {
 public:
@@ -27,42 +28,51 @@ public:
 	StrictMock<MockDBConfig> config;
 	StrictMock<MockRawFile> rfile;
 	DBFile file = DBFile(mockFile, rfile, config);
-	off_t CurPage();
-	void SetCurPage(off_t offset);
+	StrictMock<MockPage> cursor;
+	StrictMock<MockPage> last;
+
+	off_t CursorIndex();
+	void SetCursorIndex(off_t offset);
+	off_t LastIndex();
+	void SetLastIndex(off_t offset);
 	File GetFile();
-	Page *GetPage();
-	void SetPage(Page &page);
-	void SetPageNull();
-	bool RecordAdded();
-	void SetRecordAdded(bool x);
-	bool RecordRead();
-	void SetRecordRead(bool x);
+	Page *GetCursor();
+	void SetCursor(Page &page);
+	void SetCursorNull();
+	Page *GetLast();
+	void SetLast(Page &page);
+	void SetLastNull();
 	char *path = "asdasdasd";
 	char *header = "asdasdasd.header";
 };
 
-off_t DBFileTest::CurPage() { return file.curPage; }
+off_t DBFileTest::CursorIndex() { return file.cursorIndex; }
 
-void DBFileTest::SetCurPage(off_t offset) { file.curPage = offset; }
+void DBFileTest::SetCursorIndex(off_t offset) { file.cursorIndex = offset; }
+
+off_t DBFileTest::LastIndex() { return file.lastIndex; }
+
+void DBFileTest::SetLastIndex(off_t offset) { file.lastIndex = offset; }
 
 File DBFileTest::GetFile() { return file.file; }
 
-Page *DBFileTest::GetPage() { return file.page; }
+Page *DBFileTest::GetCursor() { return file.cursor; }
 
-void DBFileTest::SetPage(Page &page) {
-	delete file.page;
-	file.page = &page;
+void DBFileTest::SetCursor(Page &page) {
+	delete file.cursor;
+	file.cursor = &page;
 }
 
-void DBFileTest::SetPageNull() { file.page = NULL; }
+void DBFileTest::SetCursorNull() { file.cursor= NULL; }
 
-bool DBFileTest::RecordAdded() { return file.recordAdded; }
+Page *DBFileTest::GetLast() { return file.last; }
 
-void DBFileTest::SetRecordAdded(bool x) { file.recordAdded = x; }
+void DBFileTest::SetLast(Page &page) {
+	delete file.last;
+	file.last = &page;
+}
 
-bool DBFileTest::RecordRead() { return file.recordRead; }
-
-void DBFileTest::SetRecordRead(bool x) { file.recordRead = x; }
+void DBFileTest::SetLastNull() { file.last = NULL; }
 
 /**
  * DBFile::FileExists should return false when no file named "asdasdasd" is found.
@@ -88,15 +98,17 @@ TEST(DBFile, FileExists2) {
 
 /**
  * DBFile:Create should check of a file called "asdasdasd" exists (and it should not). it should
- * then call Create on file and leave it's curPage unchanged. It should also create a header called
+ * then call Create on file and leave it's lastIndex unchanged. It should also create a header called
  * "asdasdasd.header". It should also make a key for "fType=heap" in the Config file when heap is
  * passed as the fType. It should also start off by clearing DBConfig.
  */
 TEST_F(DBFileTest, CreateHeap) {
 	Sequence s1, s2, s3;
+	SetLast(last);
+	SetCursor(cursor);
 
 	EXPECT_CALL(config, Clear()).
-			InSequence(s1, s2, s3);
+			InSequence(s2, s3);
 	EXPECT_CALL(mockFile, Open(0, path)).
 			InSequence(s1);
 	EXPECT_CALL(rfile, Open(header)).
@@ -107,21 +119,26 @@ TEST_F(DBFileTest, CreateHeap) {
 	EXPECT_CALL(config, Write(_)).
 			InSequence(s2, s3).
 			WillOnce(Return(true));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_EQ(1, file.Create(path, heap, NULL));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+	SetLastNull();
+	SetCursorNull();
 }
 
 /**
  * DBFile:Create should check of a file called "asdasdasd" exists (and it should not). it should
- * then call Create on file and leave it's curPage unchanged. It should also create a header called
+ * then call Create on file and leave it's lastIndex unchanged. It should also create a header called
  * "asdasdasd.header". It should also make a key for "fType=sorted" in the Config file when sorted
  * is passed as the fType. It should also start off by clearing DBConfig.
  */
-TEST_F(DBFileTest, CreateStorted) {
+TEST_F(DBFileTest, CreateSorted) {
 	Sequence s1, s2, s3;
+	SetLast(last);
+	SetCursor(cursor);
 
 	EXPECT_CALL(config, Clear()).
 				InSequence(s1, s2, s3);
@@ -135,21 +152,27 @@ TEST_F(DBFileTest, CreateStorted) {
 	EXPECT_CALL(config, Write(_)).
 			InSequence(s2, s3).
 			WillOnce(Return(true));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 
 	EXPECT_EQ(1, file.Create(path, sorted, NULL));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+	SetLastNull();
+	SetCursorNull();
 }
 
 /**
  * DBFile:Create should check if a file called "asdasdasd" exists (and it should not). it should
- * then call Create on file and leave it's curPage unchanged. It should also create a header called
+ * then call Create on file and leave it's lastIndex unchanged. It should also create a header called
  * "asdasdasd.header". It should also make a key for "fType=tree" in the Config file when tree is
  * passed as the fType. It should also start off by clearing DBConfig.
  */
 TEST_F(DBFileTest, CreateTree) {
 	Sequence s1, s2, s3;
+	SetLast(last);
+	SetCursor(cursor);
 
 	EXPECT_CALL(config, Clear()).
 				InSequence(s1, s2, s3);
@@ -163,11 +186,14 @@ TEST_F(DBFileTest, CreateTree) {
 	EXPECT_CALL(config, Write(_)).
 			InSequence(s2, s3).
 			WillOnce(Return(true));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_EQ(1, file.Create(path, tree, NULL));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+	SetLastNull();
+	SetCursorNull();
 }
 
 /**
@@ -178,18 +204,25 @@ TEST_F(DBFileTest, CreateTree) {
  * clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create1) {
+	SetCursor(cursor);
+	SetLast(last);
+
 	FILE *temp = fopen(path, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
-	InSequence seq;
 	EXPECT_CALL(config, Clear());
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+
 
 	// Cleanup
 	remove(path);
+	SetLastNull();
+	SetCursorNull();
 }
 
 /**
@@ -199,18 +232,24 @@ TEST_F(DBFileTest, Create1) {
  * also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create2) {
+	SetCursor(cursor);
+	SetLast(last);
+
 	FILE *temp = fopen(header, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
-	InSequence seq;
 	EXPECT_CALL(config, Clear());
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(header);
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -219,22 +258,28 @@ TEST_F(DBFileTest, Create2) {
  * it was called. DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create3) {
+	SetCursor(cursor);
+	SetLast(last);
+
 	FILE *temp = fopen(header, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
 	temp = fopen(path, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_CALL(config, Clear());
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(path);
 	remove(header);
+	SetCursorNull();
+	SetLastNull();
 }
 
 
@@ -245,6 +290,9 @@ TEST_F(DBFileTest, Create3) {
  * DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create4) {
+	SetCursor(cursor);
+	SetLast(last);
+
 	Sequence s1, s2, s3;
 	EXPECT_CALL(config, Clear()).
 			InSequence(s1, s2, s3);
@@ -270,10 +318,15 @@ TEST_F(DBFileTest, Create4) {
 			InSequence(s3).
 			WillRepeatedly(Return(true));
 
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -284,6 +337,9 @@ TEST_F(DBFileTest, Create4) {
  * DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create5) {
+	SetCursor(cursor);
+	SetLast(last);
+
 	Sequence s1, s2, s3;
 
 	EXPECT_CALL(config, Clear()).
@@ -309,10 +365,16 @@ TEST_F(DBFileTest, Create5) {
 			InSequence(s2).
 			WillRepeatedly(Return(true));
 
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+
+
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -321,6 +383,9 @@ TEST_F(DBFileTest, Create5) {
  * must be tested via integration testing. DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create6) {
+	SetCursor(cursor);
+	SetLast(last);
+
 	Sequence s1, s2, s3;
 
 	EXPECT_CALL(config, Clear()).
@@ -341,10 +406,15 @@ TEST_F(DBFileTest, Create6) {
 	EXPECT_CALL(config, Clear()).
 			InSequence(s1, s2);
 
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());	
+	
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -352,12 +422,19 @@ TEST_F(DBFileTest, Create6) {
  * clearing DBConfig. DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create7) {
-	InSequence seq;
+	SetCursor(cursor);
+	SetLast(last);
+
 	EXPECT_CALL(config, Clear());
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Create(NULL, heap, NULL));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -372,11 +449,16 @@ TEST_F(DBFileTest, Open1) {
 	fprintf(temp, "stuff");
 	fclose(temp);
 
+	SetCursor(cursor);
+	SetLast(last);
+
 	Sequence s1, s2, s3;
 
 	// s1
 	EXPECT_CALL(mockFile, Open(1, path)).
-			InSequence(s1);
+			InSequence(s1);	
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(5));
 
 	// s2
 	EXPECT_CALL(rfile, Open(header)).
@@ -390,15 +472,20 @@ TEST_F(DBFileTest, Open1) {
 	EXPECT_CALL(config, GetKey("fType")).
 			InSequence(s2).
 			WillOnce(Return("heap"));
+	EXPECT_CALL(mockFile, GetPage(_, _)).
+			Times(2);
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_EQ(1, file.Open(path));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(4, LastIndex());
 
 	// Cleanup
 	remove(path);
 	remove(header);
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -411,6 +498,9 @@ TEST_F(DBFileTest, Open2) {
 	temp = fopen(path, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
+
+	SetCursor(cursor);
+	SetLast(last);
 
 	Sequence s1, s2, s3;
 
@@ -431,14 +521,18 @@ TEST_F(DBFileTest, Open2) {
 	EXPECT_CALL(config, Clear()). // Arbitrary
 			Times(AtMost(2));
 
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Open(path));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(path);
 	remove(header);
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -452,6 +546,9 @@ TEST_F(DBFileTest, Open3) {
 	temp = fopen(path, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
+
+	SetCursor(cursor);
+	SetLast(last);
 
 	Sequence s1, s2, s3, s4;
 
@@ -480,15 +577,18 @@ TEST_F(DBFileTest, Open3) {
 
 	EXPECT_CALL(config, Clear()). // Arbitrary
 			InSequence(s4);
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_EQ(0, file.Open(path));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(path);
 	remove(header);
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -502,6 +602,9 @@ TEST_F(DBFileTest, Open4) {
 	temp = fopen(path, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
+
+	SetCursor(cursor);
+	SetLast(last);
 
 	Sequence s1, s2, s3, s4, s5;
 
@@ -532,15 +635,20 @@ TEST_F(DBFileTest, Open4) {
 
 	EXPECT_CALL(config, Clear()). // Arbitrary
 			InSequence(s4);
+	// EXPECT_CALL(mockFile, GetLength());
+	// EXPECT_CALL(mockFile, GetPage(_,_));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_EQ(0, file.Open(path));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(path);
 	remove(header);
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -551,6 +659,9 @@ TEST_F(DBFileTest, Open5) {
 	FILE *temp = fopen(header, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
+
+	SetCursor(cursor);
+	SetLast(last);
 
 	Sequence s1, s2, s3, s4;
 
@@ -580,13 +691,18 @@ TEST_F(DBFileTest, Open5) {
 	EXPECT_CALL(config, Clear()).
 			Times(AtMost(2));
 
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
+
 	EXPECT_EQ(0, file.Open(path));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(header);
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
@@ -597,6 +713,9 @@ TEST_F(DBFileTest, Open6) {
 	FILE *temp = fopen(path, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
+
+	SetCursor(cursor);
+	SetLast(last);
 
 	Sequence s1, s2;
 
@@ -614,39 +733,138 @@ TEST_F(DBFileTest, Open6) {
 		Times(AtMost(1)).
 		InSequence(s2);
 
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Open(path));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
 
 	// Cleanup
 	remove(path);
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
  * DBFile::Open should return 0 if the path is null.
  */
 TEST_F(DBFileTest, Open7) {
+	SetCursor(cursor);
+	SetLast(last);
+
 	EXPECT_CALL(config, Clear()).
 		Times(AtMost(1));
 
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
 	EXPECT_EQ(0, file.Open(NULL));
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
- * DBFile::Close should call File.Close, delete page, and set page to null. It should then return 1.
+<<<<<<< HEAD
+* DBFile::Open should set cursor to the first page of the file
+* and set last to the last page of the file.
+*/
+TEST_F(DBFileTest, Open8) {
+	FILE *temp = fopen(header, "w");
+	fprintf(temp, "stuff");
+	fclose(temp);
+	temp = fopen(path, "w");
+	fprintf(temp, "stuff");
+	fclose(temp);
+
+	SetCursor(cursor);
+	SetLast(last);
+
+	
+	EXPECT_CALL(rfile, Open(header)).
+			WillOnce(Return(true));
+	EXPECT_CALL(config, Clear()).
+		Times(AtMost(1));
+	EXPECT_CALL(config, Read(_)).
+		WillOnce(Return(true));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+	EXPECT_CALL(mockFile, Open(1, path)).
+			Times(AtMost(1));
+	EXPECT_CALL(config, GetKey("fType")).
+			WillOnce(Return("heap"));
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(5));
+	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
+	EXPECT_CALL(mockFile, GetPage(&last, 4));
+	
+
+	EXPECT_EQ(1, file.Open(path));
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(4, LastIndex());
+
+	remove(path);
+	remove(header);
+	SetCursorNull();
+	SetLastNull();
+}
+
+/**
+* DBFile::Open should not call GetPage when the 
+* file is empty.
+*/
+TEST_F(DBFileTest, Open9) {
+	FILE *temp = fopen(header, "w");
+	fprintf(temp, "stuff");
+	fclose(temp);
+	temp = fopen(path, "w");
+	fprintf(temp, "stuff");
+	fclose(temp);
+
+	SetCursor(cursor);
+	SetLast(last);
+
+	
+	EXPECT_CALL(rfile, Open(header)).
+			WillOnce(Return(true));
+	EXPECT_CALL(config, Clear()).
+		Times(AtMost(1));
+	EXPECT_CALL(config, Read(_)).
+		WillOnce(Return(true));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+	EXPECT_CALL(mockFile, Open(1, path)).
+			Times(AtMost(1));
+	EXPECT_CALL(config, GetKey("fType")).
+			WillOnce(Return("heap"));
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(0));
+	
+	EXPECT_EQ(1, file.Open(path));
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+
+	remove(path);
+	remove(header);
+	SetCursorNull();
+	SetLastNull();
+}
+
+/**
+ * DBFile::Close should call File.Close, write last to disk, and clear out last, cursor, lastIndex,
+ * and cursorIndex. It should then return 1.
  */
 TEST_F(DBFileTest, Close1) {
-	SetCurPage(5);
-	SetRecordAdded(false);
+	SetCursorIndex(5);
+	SetLastIndex(6);
+	SetCursor(cursor);
+	SetLast(last);
 
 	Sequence s1, s2;
-	EXPECT_CALL(mockFile, Close());
-
-	EXPECT_CALL(config, Write(_)).
+	EXPECT_CALL(config, Write(Ref(rfile))).
 			InSequence(s1, s2).
 			WillOnce(Return(true));
 	EXPECT_CALL(config, Clear()).
@@ -655,163 +873,325 @@ TEST_F(DBFileTest, Close1) {
 			InSequence(s2).
 			WillOnce(Return(true));
 
+	Sequence s3;
+	EXPECT_CALL(mockFile, AddPage(&last, 6)).
+			InSequence(s3);
+	EXPECT_CALL(last, EmptyItOut()).
+			InSequence(s3);
+
+	// Order doesn't matter
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(mockFile, Close());
+
 
 	EXPECT_EQ(1, file.Close());
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
- * DBFile::Close should add page to File if a record has been added to the current page.
+ * DBFile::Close should return false if DBConfig::Write fails, but it should still close RawFile,
+ * clear config, zero out the indexes, and write out last.
  */
 TEST_F(DBFileTest, Close2) {
-	SetCurPage(4);
-	SetRecordAdded(true);
+	SetCursorIndex(5);
+	SetLastIndex(6);
+	SetCursor(cursor);
+	SetLast(last);
 
-	Sequence s1, s2, s3;
-	EXPECT_CALL(mockFile, AddPage(_, 4)).
-			InSequence(s1);
-	EXPECT_CALL(mockFile, Close()).
-			InSequence(s1);
-
-	EXPECT_CALL(config, Write(_)).
-			InSequence(s2, s3).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, Clear()).
-			InSequence(s2);
-	EXPECT_CALL(rfile, Close()).
-			InSequence(s3).
-			WillOnce(Return(true));
-
-	EXPECT_EQ(1, file.Close());
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
-}
-
-/**
- * DBFile::Close should add page to File if a record has been added to the current page. However,
- * it should also return false if DBConfig::Write fails, but it should sitll close RawFile and
- * clear config.
- */
-TEST_F(DBFileTest, Close3) {
-	SetCurPage(4);
-	SetRecordAdded(false);
-
-	Sequence s1, s2, s3;
-	EXPECT_CALL(mockFile, Close()).
-			InSequence(s1);
-
-	EXPECT_CALL(config, Write(_)).
-			InSequence(s2, s3).
+	Sequence s1, s2;
+	EXPECT_CALL(config, Write(Ref(rfile))).
+			InSequence(s1, s2).
 			WillOnce(Return(false));
 	EXPECT_CALL(config, Clear()).
-			InSequence(s2);
+			InSequence(s1);
 	EXPECT_CALL(rfile, Close()).
-			InSequence(s3).
+			InSequence(s2).
 			WillOnce(Return(true));
 
+	Sequence s3;
+	EXPECT_CALL(mockFile, AddPage(&last, 6)).
+			InSequence(s3);
+	EXPECT_CALL(last, EmptyItOut()).
+			InSequence(s3);
+
+	// Order doesn't matter
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(mockFile, Close());
+
 	EXPECT_EQ(0, file.Close());
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
  * DBFile::Close should add page to File if a record has been added to the current page. However,
- * it should also return false if RawFile::Close fails.
+ * it should also return false if RawFile::Close fails. It should also still write out the last
+ * page and zero out the indexes.
  */
 TEST_F(DBFileTest, Close4) {
-	SetCurPage(4);
-	SetRecordAdded(false);
+	SetCursorIndex(5);
+	SetLastIndex(6);
+	SetCursor(cursor);
+	SetLast(last);
 
-	Sequence s1, s2, s3;
-	EXPECT_CALL(mockFile, Close()).
-			InSequence(s1);
-
-	EXPECT_CALL(config, Write(_)).
-			InSequence(s2, s3).
+	Sequence s1, s2;
+	EXPECT_CALL(config, Write(Ref(rfile))).
+			InSequence(s1, s2).
 			WillOnce(Return(true));
 	EXPECT_CALL(config, Clear()).
-			InSequence(s2);
+			InSequence(s1);
 	EXPECT_CALL(rfile, Close()).
-			InSequence(s3).
+			InSequence(s2).
 			WillOnce(Return(false));
 
+	Sequence s3;
+	EXPECT_CALL(mockFile, AddPage(&last, 6)).
+			InSequence(s3);
+	EXPECT_CALL(last, EmptyItOut()).
+			InSequence(s3);
+
+	// Order doesn't matter
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(mockFile, Close());
+
 	EXPECT_EQ(0, file.Close());
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+
+	SetCursorNull();
+	SetLastNull();
+}
+
+/**
+ * DBFile::Close should write last to disk, even if last is the first page (or there are no other
+ * pages).
+ */
+TEST_F(DBFileTest, Close5) {
+	SetCursorIndex(0);
+	SetLastIndex(0);
+	SetCursor(cursor);
+	SetLast(last);
+
+	Sequence s1, s2;
+	EXPECT_CALL(config, Write(Ref(rfile))).
+			InSequence(s1, s2).
+			WillOnce(Return(true));
+	EXPECT_CALL(config, Clear()).
+			InSequence(s1);
+	EXPECT_CALL(rfile, Close()).
+			InSequence(s2).
+			WillOnce(Return(true));
+
+	Sequence s3;
+	EXPECT_CALL(mockFile, AddPage(&last, 0)).
+			InSequence(s3);
+	EXPECT_CALL(last, EmptyItOut()).
+			InSequence(s3);
+
+	// Order doesn't matter
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(mockFile, Close());
+
+	EXPECT_EQ(1, file.Close());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
  * DBFile::MoveFirst should ask File for the first (0th) Page and put it into page. It should then
- * update curPage to 0.
+ * update lastIndex to 0. It should also write out the last page
  */
 TEST_F(DBFileTest, MoveFirst1) {
-	SetCurPage(4);
-	SetRecordAdded(false);
-	StrictMock<MockPage> page;
-	SetPage(page);
+	SetCursorIndex(4);
+	SetLastIndex(4);
+	SetCursor(cursor);
+	SetLast(last);
 
-	Sequence s1;
-	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
-			Times(1).
-			InSequence(s1);
+	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
+	EXPECT_CALL(mockFile, AddPage(&last, 4));
 
 	file.MoveFirst();
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(4, LastIndex());
 
-	SetPageNull();
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
  * DBFile::MoveFirst should ask File for the first(0th) Page and put it into page even if the
- * current page is already 0.
+ * current page is already 0. It should also write out the last page.
  */
 TEST_F(DBFileTest, MoveFirst2) {
-	SetCurPage(0);
-	SetRecordAdded(false);
-	StrictMock<MockPage> page;
-	SetPage(page);
+	SetCursorIndex(0);
+	SetLastIndex(4);
+	SetCursor(cursor);
+	SetLast(last);
 
-	Sequence s1;
-	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
-			Times(1).
-			InSequence(s1);
+	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
+	EXPECT_CALL(mockFile, AddPage(&last, 4));
 
 	file.MoveFirst();
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(4, LastIndex());
 
-	SetPageNull();
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
- * DBFile::MoveFirst should write any changes to disk if there were any.
+ * DBFile::Add should, if last is not full, add the record to last.
  */
-TEST_F(DBFileTest, MoveFirst3) {
-	SetCurPage(5);
-	SetRecordAdded(true);
-	StrictMock<MockPage> page;
-	SetPage(page);
+TEST_F(DBFileTest, Add1) {
+	SetCursorIndex(0);
+	SetLastIndex(5);
+
+	SetCursor(cursor);
+	SetLast(last);
+	StrictMock<MockRecord> record;
 
 	Sequence s1;
-	EXPECT_CALL(mockFile, AddPage(NotNull(), 5)).
-			Times(1).
-			InSequence(s1);
-	EXPECT_CALL(mockFile, GetPage(NotNull(), 0)).
-			Times(1).
-			InSequence(s1);
+	EXPECT_CALL(last, Append(&record)).
+			InSequence(s1).
+			WillOnce(Return(1));
 
-	file.MoveFirst();
-	EXPECT_EQ(0, CurPage());
-	EXPECT_EQ(false, RecordRead());
-	EXPECT_EQ(false, RecordAdded());
+	file.Add(record);
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(5, LastIndex());
 
-	SetPageNull();
+	SetCursorNull();
+	SetLastNull();
+}
+
+/**
+ * DBFile::Add should, if last is not full and cursor is on the last page, add the record to last.
+ */
+TEST_F(DBFileTest, Add2) {
+	SetCursorIndex(5);
+	SetLastIndex(5);
+
+	SetCursor(cursor);
+	SetLast(last);
+	StrictMock<MockRecord> record;
+
+	Sequence s1;
+	EXPECT_CALL(last, Append(&record)).
+			InSequence(s1).
+			WillOnce(Return(1));
+
+	file.Add(record);
+	EXPECT_EQ(5, CursorIndex());
+	EXPECT_EQ(5, LastIndex());
+
+	SetCursorNull();
+	SetLastNull();
+}
+
+/**
+ * DBFile::Add should, if last is full, write out the last page and add the record to the cleared
+ * last.
+ */
+TEST_F(DBFileTest, Add3) {
+	SetCursorIndex(0);
+	SetLastIndex(5);
+	SetCursor(cursor);
+	SetLast(last);
+	StrictMock<MockRecord> record;
+
+	InSequence seq;
+	EXPECT_CALL(last, Append(&record)).
+			WillOnce(Return(0));
+	EXPECT_CALL(mockFile, AddPage(&last, 5));
+	EXPECT_CALL(last, EmptyItOut());
+	EXPECT_CALL(last, Append(&record)).
+			WillOnce(Return(1));
+
+	file.Add(record);
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(6, LastIndex());
+
+	SetCursorNull();
+	SetLastNull();
+}
+
+/**
+ * DBFile::Add should, even if the last page is the current page, write the record to last.
+ */
+TEST_F(DBFileTest, Add4) {
+	SetCursorIndex(5);
+	SetLastIndex(5);
+	SetCursor(cursor);
+	SetLast(last);
+	StrictMock<MockRecord> record;
+
+	InSequence seq;
+	EXPECT_CALL(last, Append(&record)).
+			WillOnce(Return(1));
+
+	file.Add(record);
+	EXPECT_EQ(5, CursorIndex());
+	EXPECT_EQ(5, LastIndex());
+
+	SetCursorNull();
+	SetLastNull();
+}
+
+/**
+ * DBFile::Add should, even if the last page is the first page AND the current page, write the
+ * record to last.
+ */
+TEST_F(DBFileTest, Add5) {
+	SetCursorIndex(0);
+	SetLastIndex(0);
+	SetCursor(cursor);
+	SetLast(last);
+	StrictMock<MockRecord> record;
+
+	InSequence seq;
+	EXPECT_CALL(last, Append(&record)).
+			WillOnce(Return(1));
+
+	file.Add(record);
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+
+	SetCursorNull();
+	SetLastNull();
+}
+
+/**
+ * DBFile::Add should, if last is full and cursor is at the end, write out the last page and add
+ * the record to the cleared last.
+ */
+TEST_F(DBFileTest, Add6) {
+	SetCursorIndex(5);
+	SetLastIndex(5);
+	SetCursor(cursor);
+	SetLast(last);
+	StrictMock<MockRecord> record;
+
+	InSequence seq;
+	EXPECT_CALL(last, Append(&record)).
+			WillOnce(Return(0));
+	EXPECT_CALL(mockFile, AddPage(&last, 5));
+	EXPECT_CALL(last, EmptyItOut());
+	EXPECT_CALL(last, Append(&record)).
+			WillOnce(Return(1));
+
+	file.Add(record);
+	EXPECT_EQ(5, CursorIndex());
+	EXPECT_EQ(6, LastIndex());
+
+	SetCursorNull();
+	SetLastNull();
 }
