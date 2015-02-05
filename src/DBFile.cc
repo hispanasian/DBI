@@ -146,7 +146,6 @@ int DBFile::Close () {
 	success &= rfile.Close();
 
 	Reset();
-
 	return success;
 }
 

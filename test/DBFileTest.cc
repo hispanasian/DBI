@@ -20,6 +20,7 @@ using ::testing::NotNull;
 using ::testing::SetArgPointee;
 using ::testing::DoAll;
 using ::testing::Eq;
+using ::testing::Ref;
 
 class DBFileTest: public ::testing::Test {
 public:
@@ -767,6 +768,7 @@ TEST_F(DBFileTest, Open7) {
 }
 
 /**
+<<<<<<< HEAD
 * DBFile::Open should set cursor to the first page of the file
 * and set last to the last page of the file.
 */
@@ -852,16 +854,17 @@ TEST_F(DBFileTest, Open9) {
 }
 
 /**
- * DBFile::Close should call File.Close, delete page, and set page to null. It should then return 1.
+ * DBFile::Close should call File.Close, write last to disk, and clear out last, cursor, lastIndex,
+ * and cursorIndex. It should then return 1.
  */
 TEST_F(DBFileTest, Close1) {
 	SetCursorIndex(5);
-
+	SetLastIndex(6);
+	SetCursor(cursor);
+	SetLast(last);
 
 	Sequence s1, s2;
-	EXPECT_CALL(mockFile, Close());
-
-	EXPECT_CALL(config, Write(_)).
+	EXPECT_CALL(config, Write(Ref(rfile))).
 			InSequence(s1, s2).
 			WillOnce(Return(true));
 	EXPECT_CALL(config, Clear()).
@@ -870,94 +873,138 @@ TEST_F(DBFileTest, Close1) {
 			InSequence(s2).
 			WillOnce(Return(true));
 
+	Sequence s3;
+	EXPECT_CALL(mockFile, AddPage(&last, 6)).
+			InSequence(s3);
+	EXPECT_CALL(last, EmptyItOut()).
+			InSequence(s3);
+
+	// Order doesn't matter
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(mockFile, Close());
+
 
 	EXPECT_EQ(1, file.Close());
 	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
 
-
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
- * DBFile::Close should add page to File if a record has been added to the current page.
+ * DBFile::Close should return false if DBConfig::Write fails, but it should still close RawFile,
+ * clear config, zero out the indexes, and write out last.
  */
 TEST_F(DBFileTest, Close2) {
-	SetCursorIndex(4);
+	SetCursorIndex(5);
+	SetLastIndex(6);
+	SetCursor(cursor);
+	SetLast(last);
 
-
-	Sequence s1, s2, s3;
-	EXPECT_CALL(mockFile, AddPage(_, 4)).
+	Sequence s1, s2;
+	EXPECT_CALL(config, Write(Ref(rfile))).
+			InSequence(s1, s2).
+			WillOnce(Return(false));
+	EXPECT_CALL(config, Clear()).
 			InSequence(s1);
-	EXPECT_CALL(mockFile, Close()).
-			InSequence(s1);
+	EXPECT_CALL(rfile, Close()).
+			InSequence(s2).
+			WillOnce(Return(true));
 
-	EXPECT_CALL(config, Write(_)).
-			InSequence(s2, s3).
+	Sequence s3;
+	EXPECT_CALL(mockFile, AddPage(&last, 6)).
+			InSequence(s3);
+	EXPECT_CALL(last, EmptyItOut()).
+			InSequence(s3);
+
+	// Order doesn't matter
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(mockFile, Close());
+
+	EXPECT_EQ(0, file.Close());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+
+	SetCursorNull();
+	SetLastNull();
+}
+
+/**
+ * DBFile::Close should add page to File if a record has been added to the current page. However,
+ * it should also return false if RawFile::Close fails. It should also still write out the last
+ * page and zero out the indexes.
+ */
+TEST_F(DBFileTest, Close4) {
+	SetCursorIndex(5);
+	SetLastIndex(6);
+	SetCursor(cursor);
+	SetLast(last);
+
+	Sequence s1, s2;
+	EXPECT_CALL(config, Write(Ref(rfile))).
+			InSequence(s1, s2).
 			WillOnce(Return(true));
 	EXPECT_CALL(config, Clear()).
-			InSequence(s2);
+			InSequence(s1);
 	EXPECT_CALL(rfile, Close()).
-			InSequence(s3).
+			InSequence(s2).
+			WillOnce(Return(false));
+
+	Sequence s3;
+	EXPECT_CALL(mockFile, AddPage(&last, 6)).
+			InSequence(s3);
+	EXPECT_CALL(last, EmptyItOut()).
+			InSequence(s3);
+
+	// Order doesn't matter
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(mockFile, Close());
+
+	EXPECT_EQ(0, file.Close());
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+
+	SetCursorNull();
+	SetLastNull();
+}
+
+/**
+ * DBFile::Close should write last to disk, even if last is the first page (or there are no other
+ * pages).
+ */
+TEST_F(DBFileTest, Close5) {
+	SetCursorIndex(0);
+	SetLastIndex(0);
+	SetCursor(cursor);
+	SetLast(last);
+
+	Sequence s1, s2;
+	EXPECT_CALL(config, Write(Ref(rfile))).
+			InSequence(s1, s2).
 			WillOnce(Return(true));
+	EXPECT_CALL(config, Clear()).
+			InSequence(s1);
+	EXPECT_CALL(rfile, Close()).
+			InSequence(s2).
+			WillOnce(Return(true));
+
+	Sequence s3;
+	EXPECT_CALL(mockFile, AddPage(&last, 0)).
+			InSequence(s3);
+	EXPECT_CALL(last, EmptyItOut()).
+			InSequence(s3);
+
+	// Order doesn't matter
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(mockFile, Close());
 
 	EXPECT_EQ(1, file.Close());
 	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
 
-
-}
-
-/**
- * DBFile::Close should add page to File if a record has been added to the current page. However,
- * it should also return false if DBConfig::Write fails, but it should sitll close RawFile and
- * clear config.
- */
-TEST_F(DBFileTest, Close3) {
-	SetCursorIndex(4);
-
-
-	Sequence s1, s2, s3;
-	EXPECT_CALL(mockFile, Close()).
-			InSequence(s1);
-
-	EXPECT_CALL(config, Write(_)).
-			InSequence(s2, s3).
-			WillOnce(Return(false));
-	EXPECT_CALL(config, Clear()).
-			InSequence(s2);
-	EXPECT_CALL(rfile, Close()).
-			InSequence(s3).
-			WillOnce(Return(true));
-
-	EXPECT_EQ(0, file.Close());
-	EXPECT_EQ(0, CursorIndex());
-
-
-}
-
-/**
- * DBFile::Close should add page to File if a record has been added to the current page. However,
- * it should also return false if RawFile::Close fails.
- */
-TEST_F(DBFileTest, Close4) {
-	SetCursorIndex(4);
-
-
-	Sequence s1, s2, s3;
-	EXPECT_CALL(mockFile, Close()).
-			InSequence(s1);
-
-	EXPECT_CALL(config, Write(_)).
-			InSequence(s2, s3).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, Clear()).
-			InSequence(s2);
-	EXPECT_CALL(rfile, Close()).
-			InSequence(s3).
-			WillOnce(Return(false));
-
-	EXPECT_EQ(0, file.Close());
-	EXPECT_EQ(0, CursorIndex());
-
-
+	SetCursorNull();
+	SetLastNull();
 }
 
 /**
