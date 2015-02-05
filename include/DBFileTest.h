@@ -64,6 +64,8 @@ public:
 	}
 
 	void SetLastNull() { file.last = NULL; }
+
+	void Lod(Schema &myschema, char *loadpath, Record record) { file.Load(myschema, loadpath, record); }
 };
 
 #endif

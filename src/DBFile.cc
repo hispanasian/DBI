@@ -83,6 +83,11 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 }
 
 void DBFile::Load (Schema &f_schema, char *loadpath) {
+	Record record;
+	Load(f_schema, loadpath, record);
+}
+
+void DBFile::Load (Schema &f_schema, char *loadpath, Record record) {
 
 }
 
