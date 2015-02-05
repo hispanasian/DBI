@@ -188,6 +188,11 @@ int DBFile::GetNext (Record &fetchme) {
 }
 
 int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
+	while(this->GetNext(fetchme)) {
+		if(comp.Compare(&fetchme, &literal, &cnf)) {
+			return 1;
+		}
+	}
 	return 0;
 }
 

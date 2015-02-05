@@ -116,6 +116,7 @@ class MockDBFile: public DBFile {
 };
 
 class MockComparisonEngine: public ComparisonEngine {
+public:
     // int Compare(Record *left, Record *right, OrderMaker *orderUs);
     MOCK_METHOD3(Compare, int(Record *left, Record *right, OrderMaker *orderUs));
 

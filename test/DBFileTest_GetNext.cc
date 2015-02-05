@@ -343,8 +343,7 @@ TEST_F(DBFileTest, GetNext5) {
 }
 
 /*
- * GetNextCNF should read records until it finds one
- * matching the condition, which it should return
+ * GetNext will return the first record if it matches the CNF
  */
 
 TEST_F(DBFileTest, GetNextCNF1) {
@@ -371,16 +370,171 @@ TEST_F(DBFileTest, GetNextCNF1) {
 
 
 	Record* r;
+	Record* literal;
+	CNF* cnf;
 
 	// the test
 	EXPECT_CALL(cursor, GetFirst(r)).
+			WillRepeatedly(Return(1));
+	EXPECT_CALL(comp, Compare(r, literal, cnf)).
+			WillRepeatedly(Return(1));
+
+	EXPECT_EQ(1, file.Open(path));
+
+	
+	EXPECT_EQ(1, file.GetNext(*r, *cnf, *literal));
+
+
+	// cleanup
+	cleanupFiles(header, path);
+	SetCursorNull();
+	SetLastNull();
+}
+
+/*
+ * GetNext will read through multiple records until it finds 
+ * one that matches 
+ */
+TEST_F(DBFileTest, GetNextCNF2) {
+	// setup
+	createFiles(header, path);
+	SetCursor(cursor);
+	SetLast(last);
+
+	// standard stuff for calling Open()
+	EXPECT_CALL(mockFile, Open(1, path));
+	EXPECT_CALL(rfile, Open(header)).
+			WillOnce(Return(true));
+			EXPECT_CALL(config, Clear());
+	EXPECT_CALL(config, Read(_)).
+			WillOnce(Return(true));
+	EXPECT_CALL(config, GetKey("fType")).
+			WillOnce(Return("heap"));
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(5));
+	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
+	EXPECT_CALL(mockFile, GetPage(&last, 4));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
+
+	Record* r;
+	Record* literal;
+	CNF* cnf;
+
+	// the test
+	EXPECT_CALL(cursor, GetFirst(r)).
+			WillRepeatedly(Return(1));
+	EXPECT_CALL(comp, Compare(r, literal, cnf)).
+			WillOnce(Return(0)).
+			WillOnce(Return(0)).
+			WillOnce(Return(0)).
+			WillOnce(Return(0)).
+			WillOnce(Return(0)).
 			WillOnce(Return(1));
 
 	EXPECT_EQ(1, file.Open(path));
 
 	
-	EXPECT_EQ(1, file.GetNext(*r));
-	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(1, file.GetNext(*r, *cnf, *literal));
+
+
+	// cleanup
+	cleanupFiles(header, path);
+	SetCursorNull();
+	SetLastNull();
+}
+
+
+/*
+ * If none of the records match, GetNext will return 0
+ */
+
+TEST_F(DBFileTest, GetNextCNF3) {
+	// setup
+	createFiles(header, path);
+	SetCursor(cursor);
+	SetLast(last);
+
+	// standard stuff for calling Open()
+	EXPECT_CALL(mockFile, Open(1, path));
+	EXPECT_CALL(rfile, Open(header)).
+			WillOnce(Return(true));
+			EXPECT_CALL(config, Clear());
+	EXPECT_CALL(config, Read(_)).
+			WillOnce(Return(true));
+	EXPECT_CALL(config, GetKey("fType")).
+			WillOnce(Return("heap"));
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(2));
+	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
+	EXPECT_CALL(mockFile, GetPage(&cursor, 1));
+	EXPECT_CALL(mockFile, GetPage(&last, 1));
+	EXPECT_CALL(cursor, EmptyItOut()).
+			Times(2);
+	EXPECT_CALL(last, EmptyItOut());
+
+
+	Record* r;
+	Record* literal;
+	CNF* cnf;
+
+	// the test
+	EXPECT_CALL(cursor, GetFirst(r)).
+			WillOnce(Return(1)).
+			WillOnce(Return(1)).
+			WillOnce(Return(1)).
+			WillOnce(Return(0)).
+			WillOnce(Return(1)).
+			WillOnce(Return(0));
+	EXPECT_CALL(comp, Compare(r, literal, cnf)).
+			WillRepeatedly(Return(0));
+
+	EXPECT_EQ(1, file.Open(path));
+
+	
+	EXPECT_EQ(0, file.GetNext(*r, *cnf, *literal));
+
+
+	// cleanup
+	cleanupFiles(header, path);
+	SetCursorNull();
+	SetLastNull();
+}
+
+/*
+ * Files with 0 pages are properly handled
+ */
+TEST_F(DBFileTest, GetNextCNF4) {
+	// setup
+	createFiles(header, path);
+	SetCursor(cursor);
+	SetLast(last);
+
+	// standard stuff for calling Open()
+	EXPECT_CALL(mockFile, Open(1, path));
+	EXPECT_CALL(rfile, Open(header)).
+			WillOnce(Return(true));
+			EXPECT_CALL(config, Clear());
+	EXPECT_CALL(config, Read(_)).
+			WillOnce(Return(true));
+	EXPECT_CALL(config, GetKey("fType")).
+			WillOnce(Return("heap"));
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(0));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+
+
+	Record* r;
+	Record* literal;
+	CNF* cnf;
+
+	// the test
+	EXPECT_EQ(1, file.Open(path));
+
+	
+	EXPECT_EQ(0, file.GetNext(*r, *cnf, *literal));
 
 
 	// cleanup
