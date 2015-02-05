@@ -27,6 +27,8 @@ public:
 	StrictMock<MockDBConfig> config;
 	StrictMock<MockRawFile> rfile;
 	DBFile file = DBFile(mockFile, rfile, config);
+	StrictMock<MockPage> cursor;
+	StrictMock<MockPage> last;
 
 	off_t CursorIndex();
 	void SetCursorIndex(off_t offset);
@@ -101,9 +103,11 @@ TEST(DBFile, FileExists2) {
  */
 TEST_F(DBFileTest, CreateHeap) {
 	Sequence s1, s2, s3;
+	SetLast(last);
+	SetCursor(cursor);
 
 	EXPECT_CALL(config, Clear()).
-			InSequence(s1, s2, s3);
+			InSequence(s2, s3);
 	EXPECT_CALL(mockFile, Open(0, path)).
 			InSequence(s1);
 	EXPECT_CALL(rfile, Open(header)).
@@ -114,9 +118,14 @@ TEST_F(DBFileTest, CreateHeap) {
 	EXPECT_CALL(config, Write(_)).
 			InSequence(s2, s3).
 			WillOnce(Return(true));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_EQ(1, file.Create(path, heap, NULL));
 	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+	SetLastNull();
+	SetCursorNull();
 }
 
 /**
@@ -125,7 +134,7 @@ TEST_F(DBFileTest, CreateHeap) {
  * "asdasdasd.header". It should also make a key for "fType=sorted" in the Config file when sorted
  * is passed as the fType. It should also start off by clearing DBConfig.
  */
-TEST_F(DBFileTest, CreateStorted) {
+TEST_F(DBFileTest, CreateSorted) {
 	Sequence s1, s2, s3;
 
 	EXPECT_CALL(config, Clear()).
@@ -143,6 +152,7 @@ TEST_F(DBFileTest, CreateStorted) {
 
 	EXPECT_EQ(1, file.Create(path, sorted, NULL));
 	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
 }
 
 /**
