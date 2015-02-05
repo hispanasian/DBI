@@ -136,7 +136,7 @@ int DBFile::Open (char *f_path) {
 void DBFile::MoveFirst () {
 	file.AddPage(last, lastIndex); // Write out last page
 	file.GetPage(cursor, 0);
-	lastIndex = 0;
+	cursorIndex = 0;
 }
 
 int DBFile::Close () {
@@ -156,7 +156,7 @@ void DBFile::Add (Record &rec) {
 	if(!last->Append(&rec)) {
 		file.AddPage(last, lastIndex);
 		last->EmptyItOut();
-		if(last->Append(&rec)) throw std::runtime_error("rec exceeds the Page size");
+		if(!last->Append(&rec)) throw std::runtime_error("rec exceeds the Page size");
 		lastIndex++;
 	}
 }
