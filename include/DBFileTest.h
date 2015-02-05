@@ -9,6 +9,7 @@
 #include "../include/MockClasses.h"
 #include "../include/DBFile.h"
 #include "../include/File.h"
+#include "../include/Schema.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -33,6 +34,7 @@ public:
 	DBFile file = DBFile(mockFile, rfile, config);
 	StrictMock<MockPage> cursor;
 	StrictMock<MockPage> last;
+	StrictMock<MockSchema> schema;
 
 	char *path = "asdasdasd";
 	char *header = "asdasdasd.header";
@@ -64,6 +66,8 @@ public:
 	}
 
 	void SetLastNull() { file.last = NULL; }
+
+	void Load(Schema &myschema, char *loadpath, Record &record) { file.Load(myschema, loadpath, record); }
 };
 
 #endif

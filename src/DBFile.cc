@@ -83,7 +83,18 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 }
 
 void DBFile::Load (Schema &f_schema, char *loadpath) {
+	Record record;
+	Load(f_schema, loadpath, record);
+}
 
+void DBFile::Load (Schema &f_schema, char *loadpath, Record &record) {
+	if(!FileExists(loadpath)) throw std::runtime_error(loadpath + std::string(" could not be found."));
+	// File exists
+	FILE *file = fopen(loadpath, "r");
+	while(record.SuckNextRecord(&f_schema, file)) {
+		Add(record);
+	}
+	fclose(file);
 }
 
 int DBFile::Open (char *f_path) {

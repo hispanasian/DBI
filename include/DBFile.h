@@ -38,6 +38,13 @@ private:
 	 * Initializes the cursor and last Page pointers
 	 */
 	void InitializePages();
+
+	/**
+	 * This is a function will be called by the public Load and it will provide it's own Record.
+	 * The Load logic will be put in here. The existence of this function is purely for testing
+	 * purposes (to Mock record).
+	 */
+	virtual void Load (Schema &myschema, char *loadpath, Record &record);
 public:
 	DBFile ();
     virtual ~DBFile();

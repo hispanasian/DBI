@@ -146,3 +146,27 @@ TEST_F(DBFileTest, Add6) {
 	SetCursorNull();
 	SetLastNull();
 }
+
+/**
+ * DBFile::Add should throw a runtime_exception if the record cannot be added to a fresh page
+ */
+TEST_F(DBFileTest, Add7) {
+	SetCursorIndex(5);
+	SetLastIndex(5);
+	SetCursor(cursor);
+	SetLast(last);
+	StrictMock<MockRecord> record;
+
+	InSequence seq;
+	EXPECT_CALL(last, Append(&record)).
+			WillOnce(Return(0));
+	EXPECT_CALL(mockFile, AddPage(&last, 5));
+	EXPECT_CALL(last, EmptyItOut());
+	EXPECT_CALL(last, Append(&record)).
+			WillOnce(Return(0));
+
+	EXPECT_THROW(file.Add(record), std::runtime_error);
+
+	SetCursorNull();
+	SetLastNull();
+}

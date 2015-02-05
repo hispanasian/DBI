@@ -4,6 +4,7 @@
 #include "RawFile.h"
 #include "DBFile.h"
 #include "DBConfig.h"
+#include "Schema.h"
 
 class MockRecord: public Record {
 public:
@@ -98,10 +99,8 @@ class MockDBFile: public DBFile {
 	MOCK_METHOD1(Open, int(char *fpath));
 //	virtual int Close ();
 	MOCK_METHOD0(Close, int());
-
 //	virtual void Load (Schema &myschema, char *loadpath);
 	MOCK_METHOD2(Load, void(Schema &myschema, char *loadpath));
-
 //	virtual void MoveFirst ();
 	MOCK_METHOD0(MoveFirst, void());
 //	virtual void Add (Record &addme);
@@ -112,4 +111,17 @@ class MockDBFile: public DBFile {
 	MOCK_METHOD3(GetNext, int(Record &fetchme, CNF &cnf, Record &literal));
 //	virtual void Reset();
 	MOCK_METHOD0(Reset, void());
+};
+
+class MockSchema: public Schema {
+//	Attribute *GetAtts ();
+	MOCK_METHOD0(GetAtts, Attribute*());
+//	int GetNumAtts ();
+	MOCK_METHOD0(GetNumAtts, int());
+//	int Find (char *attName);
+	MOCK_METHOD1(Find, int(char *attName));
+//	Type FindType (char *attName);
+	MOCK_METHOD1(FindType, Type(char *attName));
+//	int GetSortOrder (OrderMaker &order);
+	MOCK_METHOD1(GetSortOrder, int(OrderMaker &order));
 };
