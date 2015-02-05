@@ -32,10 +32,6 @@ DBFile::~DBFile () {
 	delete last;
 }
 
-DBFile::~DBFile () {
-
-}
-
 int DBFile::Create (char *f_path, fType f_type, void *startup) {
 	bool success = true;
 	bool rawOpen = false;
