@@ -457,7 +457,7 @@ TEST_F(DBFileTest, Open1) {
 	EXPECT_CALL(mockFile, Open(1, path)).
 			InSequence(s1);	
 	EXPECT_CALL(mockFile, GetLength()).
-			WillOnce(Return(0));
+			WillRepeatedly(Return(5));
 
 	// s2
 	EXPECT_CALL(rfile, Open(header)).
@@ -471,13 +471,14 @@ TEST_F(DBFileTest, Open1) {
 	EXPECT_CALL(config, GetKey("fType")).
 			InSequence(s2).
 			WillOnce(Return("heap"));
-	EXPECT_CALL(mockFile, GetPage(_, _));
+	EXPECT_CALL(mockFile, GetPage(_, _)).
+			Times(2);
 	EXPECT_CALL(cursor, EmptyItOut());
 	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_EQ(1, file.Open(path));
 	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
+	EXPECT_EQ(4, LastIndex());
 
 	// Cleanup
 	remove(path);
@@ -633,8 +634,8 @@ TEST_F(DBFileTest, Open4) {
 
 	EXPECT_CALL(config, Clear()). // Arbitrary
 			InSequence(s4);
-	EXPECT_CALL(mockFile, GetLength());
-	EXPECT_CALL(mockFile, GetPage(_,_));
+	// EXPECT_CALL(mockFile, GetLength());
+	// EXPECT_CALL(mockFile, GetPage(_,_));
 	EXPECT_CALL(cursor, EmptyItOut());
 	EXPECT_CALL(last, EmptyItOut());
 
@@ -761,6 +762,91 @@ TEST_F(DBFileTest, Open7) {
 	EXPECT_EQ(0, CursorIndex());
 	EXPECT_EQ(0, LastIndex());
 
+	SetCursorNull();
+	SetLastNull();
+}
+
+/**
+* DBFile::Open should set cursor to the first page of the file
+* and set last to the last page of the file.
+*/
+TEST_F(DBFileTest, Open8) {
+	FILE *temp = fopen(header, "w");
+	fprintf(temp, "stuff");
+	fclose(temp);
+	temp = fopen(path, "w");
+	fprintf(temp, "stuff");
+	fclose(temp);
+
+	SetCursor(cursor);
+	SetLast(last);
+
+	
+	EXPECT_CALL(rfile, Open(header)).
+			WillOnce(Return(true));
+	EXPECT_CALL(config, Clear()).
+		Times(AtMost(1));
+	EXPECT_CALL(config, Read(_)).
+		WillOnce(Return(true));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+	EXPECT_CALL(mockFile, Open(1, path)).
+			Times(AtMost(1));
+	EXPECT_CALL(config, GetKey("fType")).
+			WillOnce(Return("heap"));
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(5));
+	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
+	EXPECT_CALL(mockFile, GetPage(&last, 4));
+	
+
+	EXPECT_EQ(1, file.Open(path));
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(4, LastIndex());
+
+	remove(path);
+	remove(header);
+	SetCursorNull();
+	SetLastNull();
+}
+
+/**
+* DBFile::Open should not call GetPage when the 
+* file is empty.
+*/
+TEST_F(DBFileTest, Open9) {
+	FILE *temp = fopen(header, "w");
+	fprintf(temp, "stuff");
+	fclose(temp);
+	temp = fopen(path, "w");
+	fprintf(temp, "stuff");
+	fclose(temp);
+
+	SetCursor(cursor);
+	SetLast(last);
+
+	
+	EXPECT_CALL(rfile, Open(header)).
+			WillOnce(Return(true));
+	EXPECT_CALL(config, Clear()).
+		Times(AtMost(1));
+	EXPECT_CALL(config, Read(_)).
+		WillOnce(Return(true));
+	EXPECT_CALL(cursor, EmptyItOut());
+	EXPECT_CALL(last, EmptyItOut());
+	EXPECT_CALL(mockFile, Open(1, path)).
+			Times(AtMost(1));
+	EXPECT_CALL(config, GetKey("fType")).
+			WillOnce(Return("heap"));
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(0));
+	
+	EXPECT_EQ(1, file.Open(path));
+	EXPECT_EQ(0, CursorIndex());
+	EXPECT_EQ(0, LastIndex());
+
+	remove(path);
+	remove(header);
 	SetCursorNull();
 	SetLastNull();
 }

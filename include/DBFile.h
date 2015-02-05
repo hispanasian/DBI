@@ -34,6 +34,10 @@ private:
 	 * Puts DBFile into an initial state.
 	 */
 	virtual void Reset();
+	/*
+	 * Initializes the cursor and last Page pointers
+	 */
+	void InitializePages();
 public:
 	DBFile ();
     virtual ~DBFile();

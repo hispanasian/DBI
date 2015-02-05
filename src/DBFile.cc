@@ -109,11 +109,9 @@ int DBFile::Open (char *f_path) {
 
 			if(success) {
 				const char * key = config.GetKey("fType").c_str();
-				lastIndex = file.GetLength() == 0 ? 0 :  file.GetLength() - 1;
-				file.GetPage(last, lastIndex);
 
 				if(strcmp("heap", key) == 0) {
-					// TODO: Implement
+					InitializePages();
 				}
 				else if(strcmp("sorted", key) == 0) {
 					// TODO: Implement
@@ -175,4 +173,14 @@ void DBFile::Reset() {
 	cursor->EmptyItOut();
 	last->EmptyItOut();
 	config.Clear();
+}
+
+void DBFile::InitializePages() {
+	if(file.GetLength() == 0) { // don't call GetPage on
+		lastIndex = 0;          // a file that has no pages
+	} else {
+		file.GetPage(cursor, 0);
+		lastIndex = file.GetLength() - 1;
+		file.GetPage(last, lastIndex);
+	}
 }
