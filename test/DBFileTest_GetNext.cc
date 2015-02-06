@@ -139,7 +139,7 @@ TEST_F(DBFileTest, GetNext3) {
 
 	// the test
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(7));
+			WillRepeatedly(Return(8));
 	EXPECT_CALL(cursor, GetFirst(r)).
 			WillOnce(Return(0)).
 			WillOnce(Return(0)).
@@ -194,7 +194,7 @@ TEST_F(DBFileTest, GetNext4) {
 
 	// the test
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(7));
+			WillRepeatedly(Return(8));
 	EXPECT_CALL(cursor, GetFirst(r)).
 			WillOnce(Return(0)).
 			WillOnce(Return(0)).
@@ -299,7 +299,7 @@ TEST_F(DBFileTest, GetNext5) {
 
 	// the test
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(3));
+			WillRepeatedly(Return(4));
 	EXPECT_CALL(cursor, GetFirst(r)).
 			WillOnce(Return(1)).
 			WillOnce(Return(1)).
@@ -362,7 +362,7 @@ TEST_F(DBFileTest, GetNextCNF1) {
 	EXPECT_CALL(config, GetKey("fType")).
 			WillOnce(Return("heap"));
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(5));
+			WillRepeatedly(Return(6));
 	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
 	EXPECT_CALL(mockFile, GetPage(&last, 4));
 	EXPECT_CALL(cursor, EmptyItOut());
@@ -411,7 +411,7 @@ TEST_F(DBFileTest, GetNextCNF2) {
 	EXPECT_CALL(config, GetKey("fType")).
 			WillOnce(Return("heap"));
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(5));
+			WillRepeatedly(Return(6));
 	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
 	EXPECT_CALL(mockFile, GetPage(&last, 4));
 	EXPECT_CALL(cursor, EmptyItOut());
@@ -466,7 +466,7 @@ TEST_F(DBFileTest, GetNextCNF3) {
 	EXPECT_CALL(config, GetKey("fType")).
 			WillOnce(Return("heap"));
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(2));
+			WillRepeatedly(Return(3));
 	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
 	EXPECT_CALL(mockFile, GetPage(&cursor, 1));
 	EXPECT_CALL(mockFile, GetPage(&last, 1));
