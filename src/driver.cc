@@ -3,7 +3,7 @@
 #include "driver.h"
 
 // make sure that the file path/dir information below is correct
-char *dbfile_dir = ""; // dir where binary heap files should be stored
+char *dbfile_dir = "data"; // dir where binary heap files should be stored
 char *tpch_dir ="data/10M/"; // dir where dbgen tpch files (extension *.tbl) can be found
 char *catalog_path = "data/catalog"; // full path of the catalog file
 
