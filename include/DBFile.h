@@ -47,6 +47,8 @@ private:
 	 * purposes (to Mock record).
 	 */
 	virtual void Load (Schema &myschema, char *loadpath, Record &record);
+
+	int GetLength();
 public:
 	DBFile ();
     virtual ~DBFile();

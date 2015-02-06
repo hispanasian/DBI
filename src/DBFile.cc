@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string.h>
 #include <stdio.h>
+#include <algorithm>
 
 // stub file .. replace it with your own DBFile.cc
 
@@ -144,7 +145,7 @@ int DBFile::Open (char *f_path) {
 
 void DBFile::MoveFirst () {
 	file.AddPage(last, lastIndex); // Write out last page
-	if(file.GetLength() > 0) file.GetPage(cursor, 0); // Get Page if it exists
+	if(GetLength() > 0) file.GetPage(cursor, 0); // Get Page if it exists
 	else cursor -> EmptyItOut(); // Empty out current Page if no Page exists
 	cursorIndex = 0;
 }
@@ -171,7 +172,7 @@ void DBFile::Add (Record &rec) {
 }
 
 int DBFile::GetNext (Record &fetchme) {
-	if(file.GetLength() == 0) {
+	if(GetLength() == 0) {
 		// this file is empty, we can't return any records
 		return 0;
 	}
@@ -184,7 +185,7 @@ int DBFile::GetNext (Record &fetchme) {
 		// we look through the pages until we find one with a record
 		// or we reach the end
 		cursorIndex++;
-		while(cursorIndex < file.GetLength()) {
+		while(cursorIndex < GetLength()) {
 			cursor->EmptyItOut();
 			file.GetPage(cursor, cursorIndex);
 			if(cursor->GetFirst(&fetchme)) {
@@ -217,11 +218,16 @@ void DBFile::Reset() {
 }
 
 void DBFile::InitializePages() {
-	if(file.GetLength() == 0) { // don't call GetPage on
+	if(GetLength() == 0) { // don't call GetPage on
 		lastIndex = 0;          // a file that has no pages
 	} else {
 		file.GetPage(cursor, 0);
-		lastIndex = file.GetLength() - 1;
+		lastIndex = GetLength() - 1;
 		file.GetPage(last, lastIndex);
 	}
+}
+
+int DBFile::GetLength() {
+	off_t zero = 0;
+	return max(zero, file.GetLength()-2);
 }
