@@ -116,3 +116,7 @@ src/y.tab.c
 .cproject
 .project
 .settings/
+
+### Data Files ###
+*.header
+*.bin
