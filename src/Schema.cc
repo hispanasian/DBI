@@ -1,4 +1,4 @@
-#include "Schema.h"
+#include "../include/Schema.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -132,6 +132,7 @@ Schema :: Schema (char *fName, char *relName) {
 }
 
 Schema :: ~Schema () {
+	delete fileName;
 	delete [] myAtts;
 	myAtts = 0;
 }
