@@ -13,6 +13,9 @@ TEST_F(DBFileTest, MoveFirst1) {
 	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
 	EXPECT_CALL(mockFile, AddPage(&last, 4));
 
+	EXPECT_CALL(mockFile, GetLength()).
+				WillRepeatedly(Return(4));
+
 	file.MoveFirst();
 	EXPECT_EQ(0, CursorIndex());
 	EXPECT_EQ(4, LastIndex());
@@ -22,8 +25,8 @@ TEST_F(DBFileTest, MoveFirst1) {
 }
 
 /**
- * DBFile::MoveFirst should ask File for the first(0th) Page and put it into page even if the
- * current page is already 0. It should also write out the last page.
+ * DBFile::MoveFirst should NOT ask File for the first(0th) Page and put it into page even if the
+ * current page is already 0. It should also write out the last page and clear out the cursor.
  */
 TEST_F(DBFileTest, MoveFirst2) {
 	SetCursorIndex(0);
@@ -31,8 +34,11 @@ TEST_F(DBFileTest, MoveFirst2) {
 	SetCursor(cursor);
 	SetLast(last);
 
-	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
+	EXPECT_CALL(cursor, EmptyItOut());
 	EXPECT_CALL(mockFile, AddPage(&last, 4));
+
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(0));
 
 	file.MoveFirst();
 	EXPECT_EQ(0, CursorIndex());
