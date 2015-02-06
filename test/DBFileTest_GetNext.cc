@@ -43,7 +43,7 @@ TEST_F(DBFileTest, GetNext1) {
 
 	// the test
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(5));
+			WillRepeatedly(Return(6));
 	EXPECT_CALL(cursor, GetFirst(r)).
 			WillOnce(Return(1));
 
@@ -89,7 +89,7 @@ TEST_F(DBFileTest, GetNext2) {
 
 	// the test
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(5));
+			WillRepeatedly(Return(6));
 	EXPECT_CALL(cursor, GetFirst(r)).
 			WillOnce(Return(0)).
 			WillOnce(Return(1));

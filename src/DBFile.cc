@@ -229,5 +229,5 @@ void DBFile::InitializePages() {
 
 int DBFile::GetLength() {
 	off_t zero = 0;
-	return max(zero, file.GetLength()-2);
+	return max(zero, file.GetLength()-1);
 }
