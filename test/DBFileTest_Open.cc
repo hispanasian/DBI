@@ -2,7 +2,7 @@
 
 /**
  * DBFile::Open should simply open a file if it exists along with it's header and return 1 if there
- * were no issues.
+ * were no issues. Recall that the indexes will be File.GetLenth() - 2 (unless length is 0)
  */
 TEST_F(DBFileTest, Open1) {
 	FILE *temp = fopen(header, "w");
@@ -35,14 +35,16 @@ TEST_F(DBFileTest, Open1) {
 	EXPECT_CALL(config, GetKey("fType")).
 			InSequence(s2).
 			WillOnce(Return("heap"));
-	EXPECT_CALL(mockFile, GetPage(_, _)).
-			Times(2);
+	EXPECT_CALL(mockFile, GetPage(&last, 3)).
+			Times(1);
+	EXPECT_CALL(mockFile, GetPage(&cursor, 0)).
+			Times(1);
 	EXPECT_CALL(cursor, EmptyItOut());
 	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_EQ(1, file.Open(path));
 	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(4, LastIndex());
+	EXPECT_EQ(3, LastIndex());
 
 	// Cleanup
 	remove(path);
@@ -331,9 +333,9 @@ TEST_F(DBFileTest, Open7) {
 }
 
 /**
-<<<<<<< HEAD
 * DBFile::Open should set cursor to the first page of the file
-* and set last to the last page of the file.
+* and set last to the last page of the file. Recall that the
+* indices should be File.GetLength - 2
 */
 TEST_F(DBFileTest, Open8) {
 	FILE *temp = fopen(header, "w");
@@ -362,12 +364,12 @@ TEST_F(DBFileTest, Open8) {
 	EXPECT_CALL(mockFile, GetLength()).
 			WillRepeatedly(Return(5));
 	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
-	EXPECT_CALL(mockFile, GetPage(&last, 4));
+	EXPECT_CALL(mockFile, GetPage(&last, 3));
 	
 
 	EXPECT_EQ(1, file.Open(path));
 	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(4, LastIndex());
+	EXPECT_EQ(3, LastIndex());
 
 	remove(path);
 	remove(header);
