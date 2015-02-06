@@ -12,15 +12,15 @@
 
 // stub file .. replace it with your own DBFile.cc
 
-DBFile::DBFile (): file(myFile), rfile(myRFile), config(myConfig) {
+DBFile::DBFile (): file(myFile), rfile(myRFile), config(myConfig), comp(myComp) {
 	cursorIndex = 0;
 	lastIndex = 0;
 	cursor = new Page();
 	last = new Page();
 }
 
-DBFile::DBFile (File &otherFile, RawFile &otherRFile, DBConfig &otherConfig):
-		file(otherFile), rfile(otherRFile), config(otherConfig) {
+DBFile::DBFile (File &otherFile, RawFile &otherRFile, DBConfig &otherConfig, ComparisonEngine &otherComp):
+		file(otherFile), rfile(otherRFile), config(otherConfig), comp(otherComp) {
 	cursorIndex = 0;
 	lastIndex = 0;
 	cursor = new Page();
@@ -170,10 +170,40 @@ void DBFile::Add (Record &rec) {
 }
 
 int DBFile::GetNext (Record &fetchme) {
-	return 0;
+	if(file.GetLength() == 0) {
+		// this file is empty, we can't return any records
+		return 0;
+	}
+
+	if(cursor->GetFirst(&fetchme)) {
+		// there was a record available in the cursor
+		return 1;
+	} else {
+		// we need to find the next page with a record in it
+		// we look through the pages until we find one with a record
+		// or we reach the end
+		cursorIndex++;
+		while(cursorIndex < file.GetLength()) {
+			cursor->EmptyItOut();
+			file.GetPage(cursor, cursorIndex);
+			if(cursor->GetFirst(&fetchme)) {
+				return 1;
+			}
+			cursorIndex++;
+		}
+		// we read the last page without finding anything, make sure
+		// our index stays in range
+		cursorIndex--;
+		return 0;
+	}
 }
 
 int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
+	while(this->GetNext(fetchme)) {
+		if(comp.Compare(&fetchme, &literal, &cnf)) {
+			return 1;
+		}
+	}
 	return 0;
 }
 

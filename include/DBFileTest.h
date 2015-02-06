@@ -31,7 +31,8 @@ public:
 	StrictMock<MockFile> mockFile;
 	StrictMock<MockDBConfig> config;
 	StrictMock<MockRawFile> rfile;
-	DBFile file = DBFile(mockFile, rfile, config);
+	StrictMock<MockComparisonEngine> comp;
+	DBFile file = DBFile(mockFile, rfile, config, comp);
 	StrictMock<MockPage> cursor;
 	StrictMock<MockPage> last;
 	StrictMock<MockSchema> schema;

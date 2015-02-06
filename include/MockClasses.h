@@ -5,6 +5,7 @@
 #include "DBFile.h"
 #include "DBConfig.h"
 #include "Schema.h"
+#include "ComparisonEngine.h"
 
 class MockRecord: public Record {
 public:
@@ -124,4 +125,19 @@ class MockSchema: public Schema {
 	MOCK_METHOD1(FindType, Type(char *attName));
 //	int GetSortOrder (OrderMaker &order);
 	MOCK_METHOD1(GetSortOrder, int(OrderMaker &order));
+};
+
+class MockComparisonEngine: public ComparisonEngine {
+public:
+    // int Compare(Record *left, Record *right, OrderMaker *orderUs);
+    MOCK_METHOD3(Compare, int(Record *left, Record *right, OrderMaker *orderUs));
+
+    // int Compare(Record *left, OrderMaker *order_left, Record *right, OrderMaker *order_right);
+    MOCK_METHOD4(Compare, int(Record *left, OrderMaker *order_left, Record *right, OrderMaker *order_right));
+
+    // int Compare(Record *left, Record *right, Record *literal, CNF *myComparison);
+    MOCK_METHOD4(Compare, int(Record *left, Record *right, Record *literal, CNF *myComparison));
+
+    // int Compare(Record *left, Record *literal, CNF *myComparison);
+    MOCK_METHOD3(Compare, int(Record *left, Record *literal, CNF *myComparison));
 };
