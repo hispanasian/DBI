@@ -144,7 +144,8 @@ int DBFile::Open (char *f_path) {
 
 void DBFile::MoveFirst () {
 	file.AddPage(last, lastIndex); // Write out last page
-	file.GetPage(cursor, 0);
+	if(file.GetLength() > 0) file.GetPage(cursor, 0); // Get Page if it exists
+	else cursor -> EmptyItOut(); // Empty out current Page if no Page exists
 	cursorIndex = 0;
 }
 
