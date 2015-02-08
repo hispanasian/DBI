@@ -8,7 +8,7 @@ make test (Builds bin/test)
 make driver (Builds bin/driver)
 make main (Biulds bin/main)
 
-Run all anit tests:
+Run all unit tests:
 ./bin/test
 
 Run driver (originally test.cc)
@@ -29,3 +29,14 @@ The tables are searched for in data/10M
 The binary heap file is stored in data/*.bin
 The header files for the binary heap files are stored in data/*.bin.header
 Simply run './bin/driver' to run the program
+
+Advanced Makefile:
+By default, make will add the -O2 flag and -w flag to optimize the compilation and silence any 
+warnings. 
+If you wish to add the -g flag instead of the -O2 flag, do:
+make DEBUG=yes
+If you wish to see compile warnings, do:
+make WARNINGS=yes
+The above commands can be combines. If you wish to add your own flags ontop of the existing compile
+flags, do:
+make CCFLAGS = -flag

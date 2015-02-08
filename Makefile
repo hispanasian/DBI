@@ -1,5 +1,21 @@
 ### Remember to add new mains to the MAINS variable
-CC = g++ -Wno-deprecated -w #-O2
+CC := g++
+override DEBUG = no
+override WARNINGS = no
+
+ifeq ($(DEBUG), yes)
+	FLAGS += -g
+else
+	FLAGS += -O2
+endif
+
+ifeq ($(WARNINGS), yes)
+	FLAGS += -Wall
+else
+	FLAGS += -w
+endif
+
+override CCFLAGS = $(FLAGS) -Wno-deprecated
 
 # Vars
 SRCDIR := src
@@ -46,28 +62,28 @@ all: main driver test
 # Build main
 .PHONY: main
 main: $(OBJECTS) $(BUILDDIR)/main.o
-	$(CC) -o $(TARGETDIR)/main $^ $(lfl)
+	$(CC) $(CCFLAGS) -o $(TARGETDIR)/main $^ $(lfl)
 
 # Build driver
 .PHONY: driver
 driver: $(OBJECTS) $(BUILDDIR)/driver.o
-	$(CC) -o $(TARGETDIR)/driver $^ $(lfl)
+	$(CC) $(CCFLAGS) -o $(TARGETDIR)/driver $^ $(lfl)
 
 # Compile cc files
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(BUILDDIR)
-	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
+	$(CC) $(CCFLAGS) $(INC) -c -o $@ $<
 
 # Compile Flex/Bison files
 $(BUILDDIR)/y.tab.o: $(SRCDIR)/Parser.y
 	(cd $(SRCDIR);yacc -d Parser.y)
 	$(sed)
 	(mv $(SRCDIR)/y.tab.h $(INCLUDEDIR))
-	g++ $(CFLAGS) $(INC) -c -o $@ $(SRCDIR)/y.tab.c
+	g++ $(CCFLAGS) $(INC) -c -o $@ $(SRCDIR)/y.tab.c
 
 $(BUILDDIR)/lex.yy.o: $(SRCDIR)/Lexer.l
 	(cd $(SRCDIR);lex  Lexer.l)
-	gcc $(CFLAGS) $(INC) -c -o $@ $(SRCDIR)/lex.yy.c
+	gcc $(CCFLAGS) $(INC) -c -o $@ $(SRCDIR)/lex.yy.c
 
 
 ########## Testing ##########
