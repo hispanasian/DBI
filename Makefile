@@ -15,7 +15,7 @@ else
 	FLAGS += -w
 endif
 
-override CCFLAGS = $(FLAGS) -Wno-deprecated
+CCFLAGS = $(FLAGS) -Wno-deprecated
 
 # Vars
 SRCDIR := src

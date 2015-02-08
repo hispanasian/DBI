@@ -37,6 +37,7 @@ If you wish to add the -g flag instead of the -O2 flag, do:
 make DEBUG=yes
 If you wish to see compile warnings, do:
 make WARNINGS=yes
-The above commands can be combines. If you wish to add your own flags ontop of the existing compile
+The above commands can be combined. If you wish to add your own flags ontop of the existing compile
 flags, do:
-make CCFLAGS = -flag
+make CCFLAGS = -flag(s)
+This will override any existing flags
