@@ -6,6 +6,8 @@
 #include "DBConfig.h"
 #include "Schema.h"
 #include "ComparisonEngine.h"
+#include "BigQ.h"
+#include "Pipe.h"
 
 class MockRecord: public Record {
 public:
@@ -140,4 +142,17 @@ public:
 
     // int Compare(Record *left, Record *literal, CNF *myComparison);
     MOCK_METHOD3(Compare, int(Record *left, Record *literal, CNF *myComparison));
+};
+
+class MockBigQ: public BigQ {
+
+};
+
+class MockPipe: public Pipe {
+//	void Insert (Record *insertMe);
+	MOCK_METHOD1(Insert, void(Record *insertMe));
+//	int Remove (Record *removeMe);
+	MOCK_METHOD1(Remove, void(Record *insertMe));
+//	void ShutDown ();
+	MOCK_METHOD0(ShutDown, void());
 };
