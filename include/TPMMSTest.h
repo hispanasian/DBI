@@ -23,6 +23,7 @@ using ::testing::SetArgPointee;
 using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Ref;
+using ::testing::Mock;
 
 class TPMMSTest: public ::testing::Test {
 public:
@@ -33,7 +34,7 @@ public:
 	StrictMock<MockRecord> *rec = new StrictMock<MockRecord>;
 	StrictMock<ComparisonEngine> comp;
 	OrderMaker order;
-	vector<int> runPos;
+	vector<off_t> runPos;
 	vector<Record *> run;
 	int runlen = 3;
 
@@ -42,7 +43,7 @@ public:
 	void SortRun() { tpmms.SortRun(); }
 	void RunToFile(off_t &totalPageCount) { tpmms.RunToFile(totalPageCount); }
 	bool AddRecord(Record* rec) { return tpmms.AddRecord(rec); }
-	int Phase1() { return tpmms.Phase1(); }
+	void Phase1() { tpmms.Phase1(); }
 	void Phase2() { tpmms.Phase2(); }
 	void Sort() { tpmms.Sort(); }
 	int GetRunSizeInBytes() { return tpmms.runSizeInBytes; }

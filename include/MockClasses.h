@@ -173,8 +173,8 @@ public:
 	MOCK_METHOD1(RunToFile, void(off_t &totalPageCount));
 //	virtual void AddRecord();
 	MOCK_METHOD1(AddRecord, bool(Record* rec));
-//	virtual int Phase1();
-	MOCK_METHOD0(Phase1, int());
+//	virtual void Phase1();
+	MOCK_METHOD0(Phase1, void());
 //	virtual void Phase2();
 	MOCK_METHOD0(Phase2, void());
 //	virtual void Sort();

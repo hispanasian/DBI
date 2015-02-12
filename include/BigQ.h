@@ -20,6 +20,7 @@ public:
 class TPMMS {
 friend class TPMMSTest;
 friend class MockTPMMS;
+friend class MockForPhase1;
 private:
 	Pipe &in;
 	Pipe myIn;
@@ -34,17 +35,18 @@ private:
 	ComparisonEngine myComp;
 	OrderMaker &order;
 	OrderMaker myOrder;
-	vector<int> &runPos;
-	vector<int> myRunPos;
+	vector<off_t> &runPos;
+	vector<off_t> myRunPos;
 	vector<Record *> &run;
 	vector<Record *> myRun;
 	int currRunSizeInBytes;
 	int runSizeInBytes;
 	const int runlen;
+	off_t totalPageCount;
 
 	TPMMS();
 	TPMMS(Pipe &_in, Pipe &_out, File &_file, Page &_page, ComparisonEngine &_comp,
-			OrderMaker &_order, vector<int> &_runPos, vector<Record *> &_run, int &runlen);
+			OrderMaker &_order, vector<off_t> &_runPos, vector<Record *> &_run, int &runlen);
 
 	/**
 	 * This function will run an in place sort on run using comp based on the order provided.
@@ -56,7 +58,7 @@ private:
 	 * @param totalPageSize	The current page size of the file. This will be incremented as new
 	 * 						pages are added (ie, totalPageSize is modified).
 	 */
-	virtual void RunToFile(off_t &totalPageSize);
+	virtual void RunToFile(off_t &totalPageCount);
 
 	/**
 	 *	Adds rec to the page buffer. If record fills the page buffer, the page will be moved
@@ -69,9 +71,9 @@ private:
 	 * Phase 1 of the TPMMS algorithm. This algorithm will take records from in and, once runlen
 	 * number of pages have been filled (or there are no more pages), sort the records and write
 	 * them to file. It will repeat this process until there are no more records (in has been shut
-	 * down). This will return the number of runs that have been generated.
+	 * down).
 	 */
-	virtual int Phase1();
+	virtual void Phase1();
 
 	/**
 	 * Phase 2 of the TPMMS algorithm. This phase will take the runs from disk and merge them into
