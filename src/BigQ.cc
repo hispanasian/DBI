@@ -23,25 +23,28 @@ void* Work(void *ptr) {
 }
 
 TPMMS::TPMMS(Pipe &_in, Pipe &_out, File &_file, Page &_page, ComparisonEngine &_comp,
-		OrderMaker &_order, vector<int> &_runPos, vector<Record *> &_run, int &_runlen):
+		OrderMaker &_order, vector<off_t> &_runPos, vector<Record *> &_run, int &_runlen):
 	in(_in), out(_out), file(_file), page(_page), rec(new Record()), comp(_comp), order(_order),
 	runPos(_runPos), run(_run), runlen(_runlen) {
+	currPageCount = 0;
+	totalPageCount = 0;
 }
 
 TPMMS::TPMMS():
 		in(myIn), out(myOut), file(myFile), page(myPage), rec(new Record()), comp(myComp),
 		order(myOrder), runPos(myRunPos), run(myRun), runlen(0) {
-
+	currPageCount = 0;
+	totalPageCount = 0;
 }
 
 TPMMS::TPMMS(Pipe &_in, Pipe &_out, OrderMaker &_sortorder, int &_runlen):
 		in(_in), out(_out), file(myFile), page(myPage), rec(new Record()), comp(myComp),
 		order(myOrder), runPos(myRunPos), run(myRun), runlen(_runlen) {
-
+	currPageCount = 0;
+	totalPageCount = 0;
 }
 
 TPMMS::~TPMMS() {
-	std::cout << "Adios!" << std::endl;
 }
 
 void TPMMS::SortRun() {
@@ -53,12 +56,13 @@ void TPMMS::SortRun() {
 void TPMMS::RunToFile(off_t &totalPageCount) {
 	page.EmptyItOut();
 	for(vector<Record*>::iterator it = run.begin(); it != run.end(); it++) {
-		if(page.Append(*it) == 0) {
+		if(!page.Append(*it)) {
 			// Page full
 			file.AddPage(&page, totalPageCount);
 			++totalPageCount;
 			page.EmptyItOut();
-			page.Append(*it); // Now add the record that could not be added
+			// Now add the record that could not be added
+			if(!page.Append(*it)) throw std::runtime_error("A record exceeds the Page size");
 		}
 	}
 
@@ -86,10 +90,20 @@ bool TPMMS::AddRecord(Record* rec) {
 	return false;
 }
 
-int TPMMS::Phase1() {
-	//file.Create(0, "sortingtemp.bin"); // TODO: make actually random name.
-
-	return 0;
+void TPMMS::Phase1() {
+	while(in.Remove(rec)) {
+		if(!AddRecord(rec)) {
+			SortRun();
+			RunToFile(totalPageCount);
+			runPos.push_back(totalPageCount);
+			AddRecord(rec); // Add the record that failed to get added
+		}
+	}
+	if(run.size() != 0) {
+		SortRun();
+		RunToFile(totalPageCount);
+		runPos.push_back(totalPageCount);
+	}
 }
 
 void TPMMS::Phase2() {
@@ -102,4 +116,6 @@ void TPMMS::Phase2() {
 
 void TPMMS::Sort() {
 	std::cout << "Sorting time!" << std::endl;
+	//file.Create(0, "sortingtemp.bin"); // TODO: make actually random name.
+	// use http://www.cplusplus.com/reference/cstdio/tmpnam/ for rand file names
 }

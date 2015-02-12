@@ -131,3 +131,32 @@ TEST_F(TPMMSTest, RunToFile3) {
 	EXPECT_EQ(12, totalPageCount);
 	EXPECT_EQ(0, run.size());
 }
+
+/**
+ * If a record in the run fails to fit in a page, RunToFile should throw a runtime_error
+ */
+TEST_F(TPMMSTest, RunToFile4) {
+	Sequence s1;
+	EXPECT_CALL(page, Append(_)).
+			Times(2).
+			InSequence(s1).
+			WillRepeatedly(Return(1));
+	EXPECT_CALL(page, Append(_)).
+			InSequence(s1).
+			WillOnce(Return(0));
+	EXPECT_CALL(page, Append(_)).
+			InSequence(s1).
+			WillOnce(Return(0));
+
+	EXPECT_CALL(page, EmptyItOut()).
+			Times(AtLeast(1));
+
+	EXPECT_CALL(file, AddPage(&page, 10));
+
+	off_t totalPageCount = 10;
+	for(int i = 0; i < 4; i++) {
+		run.push_back(new Record());
+	}
+
+	EXPECT_THROW(RunToFile(totalPageCount), runtime_error);
+}
