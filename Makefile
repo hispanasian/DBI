@@ -1,7 +1,7 @@
 ### Remember to add new mains to the MAINS variable
 CC := g++
-override DEBUG = no
-override WARNINGS = no
+DEBUG = no
+WARNINGS = no
 
 ifeq ($(DEBUG), yes)
 	FLAGS += -g
