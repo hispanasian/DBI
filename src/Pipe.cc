@@ -1,9 +1,10 @@
 #include "Pipe.h"
+#include "Defs.h"
 
 #include <iostream>
 #include <stdlib.h> 
 
-Pipe :: Pipe() {}
+Pipe :: Pipe(): Pipe(PIPE_SIZE) {}
 
 Pipe :: Pipe (int bufferSize) {
 

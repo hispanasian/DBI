@@ -8,7 +8,7 @@
 
 class Pipe {
 private:
-
+friend class MockPipe;
 	// these are used for data storage in the pipeline
 	Record *buffered;
 
