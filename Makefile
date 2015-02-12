@@ -1,5 +1,5 @@
 ### Remember to add new mains to the MAINS variable
-CC := g++ -pthread
+CC := g++ -pthread -std=c++0x
 DEBUG = no
 WARNINGS = no
 
