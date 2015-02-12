@@ -22,7 +22,9 @@ friend class TPMMSTest;
 friend class MockTPMMS;
 private:
 	Pipe &in;
+	Pipe myIn;
 	Pipe &out;
+	Pipe myOut;
 	File &file;
 	File myFile;
 	Page &page;

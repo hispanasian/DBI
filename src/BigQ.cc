@@ -21,7 +21,7 @@ TPMMS::TPMMS(Pipe &_in, Pipe &_out, File &_file, Page &_page, ComparisonEngine &
 }
 
 TPMMS::TPMMS():
-		in(in), out(out), file(myFile), page(myPage), rec(new Record()), comp(myComp),
+		in(myIn), out(myOut), file(myFile), page(myPage), rec(new Record()), comp(myComp),
 		order(myOrder), runPos(myRunPos), run(myRun), runlen(0) {
 
 }
@@ -42,8 +42,29 @@ void TPMMS::SortRun() {
 	} );
 }
 
-void TPMMS::RunToFile(int &totalPageCount) {
+void TPMMS::RunToFile(off_t &totalPageCount) {
+	page.EmptyItOut();
+	for(vector<Record*>::iterator it = run.begin(); it != run.end(); it++) {
+		if(page.Append(*it) == 0) {
+			// Page full
+			file.AddPage(&page, totalPageCount);
+			++totalPageCount;
+			page.EmptyItOut();
+			page.Append(*it); // Now add the record that could not be added
+		}
+	}
 
+	// Write out the last page
+	file.AddPage(&page, totalPageCount);
+	++totalPageCount;
+	page.EmptyItOut();
+
+	// Delete Records and clear run
+	for_each(run.begin(), run.end(),[] (Record *&rec) {
+		delete rec;
+		return true;
+	});
+	run.clear();
 }
 
 void TPMMS::PageToRun() {

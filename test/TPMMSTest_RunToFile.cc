@@ -10,14 +10,24 @@
  * run at the same time).
  */
 TEST_F(TPMMSTest, RunToFile1) {
+	Sequence s1;
 	EXPECT_CALL(page, Append(_)).
 			Times(5).
-			WillRepeatedly(Return(1)).
-			WillOnce(Return(0)).
+			InSequence(s1).
+			WillRepeatedly(Return(1));
+	EXPECT_CALL(page, Append(_)).
+			InSequence(s1).
+			WillOnce(Return(0));
+	EXPECT_CALL(page, Append(_)).
 			Times(5).
-			WillRepeatedly(Return(1)).
-			WillOnce(Return(0)).
+			InSequence(s1).
+			WillRepeatedly(Return(1));
+	EXPECT_CALL(page, Append(_)).
+			InSequence(s1).
+			WillOnce(Return(0));
+	EXPECT_CALL(page, Append(_)).
 			Times(5).
+			InSequence(s1).
 			WillRepeatedly(Return(1));
 
 	EXPECT_CALL(page, EmptyItOut()).
@@ -27,14 +37,13 @@ TEST_F(TPMMSTest, RunToFile1) {
 	EXPECT_CALL(file, AddPage(&page, 11));
 	EXPECT_CALL(file, AddPage(&page, 12));
 
-	Record record;
 	off_t totalPageCount = 10;
 	for(int i = 0; i < 15; i++) {
-		run.push_back(&record);
+		run.push_back(new Record());
 	}
 
 	RunToFile(totalPageCount);
-	EXPECT_EQ(12, totalPageCount);
+	EXPECT_EQ(13, totalPageCount);
 	EXPECT_EQ(0, run.size());
 }
 
@@ -44,17 +53,31 @@ TEST_F(TPMMSTest, RunToFile1) {
  * page).
  */
 TEST_F(TPMMSTest, RunToFile2) {
+	Sequence s1;
 	EXPECT_CALL(page, Append(_)).
 			Times(2).
-			WillRepeatedly(Return(1)).
-			WillOnce(Return(0)).
+			InSequence(s1).
+			WillRepeatedly(Return(1));
+	EXPECT_CALL(page, Append(_)).
+			InSequence(s1).
+			WillOnce(Return(0));
+	EXPECT_CALL(page, Append(_)).
 			Times(3).
-			WillRepeatedly(Return(1)).
-			WillOnce(Return(0)).
+			InSequence(s1).
+			WillRepeatedly(Return(1));
+	EXPECT_CALL(page, Append(_)).
+			InSequence(s1).
+			WillOnce(Return(0));
+	EXPECT_CALL(page, Append(_)).
 			Times(2).
-			WillRepeatedly(Return(1)).
-			WillOnce(Return(0)).
-			WillOnce(Return(1)); // Page still has space
+			InSequence(s1).
+			WillRepeatedly(Return(1));
+	EXPECT_CALL(page, Append(_)).
+			InSequence(s1).
+			WillOnce(Return(0));
+	EXPECT_CALL(page, Append(_)).
+			InSequence(s1).
+			WillOnce(Return(1));
 
 	EXPECT_CALL(page, EmptyItOut()).
 			Times(AtLeast(3));
@@ -62,15 +85,15 @@ TEST_F(TPMMSTest, RunToFile2) {
 	EXPECT_CALL(file, AddPage(&page, 10));
 	EXPECT_CALL(file, AddPage(&page, 11));
 	EXPECT_CALL(file, AddPage(&page, 12));
+	EXPECT_CALL(file, AddPage(&page, 13));
 
-	Record record;
 	off_t totalPageCount = 10;
 	for(int i = 0; i < 8; i++) {
-		run.push_back(&record);
+		run.push_back(new Record());
 	}
 
 	RunToFile(totalPageCount);
-	EXPECT_EQ(12, totalPageCount);
+	EXPECT_EQ(14, totalPageCount);
 	EXPECT_EQ(0, run.size());
 }
 
@@ -80,11 +103,17 @@ TEST_F(TPMMSTest, RunToFile2) {
  * page).
  */
 TEST_F(TPMMSTest, RunToFile3) {
+	Sequence s1;
 	EXPECT_CALL(page, Append(_)).
 			Times(2).
-			WillRepeatedly(Return(1)).
-			WillOnce(Return(0)).
+			InSequence(s1).
+			WillRepeatedly(Return(1));
+	EXPECT_CALL(page, Append(_)).
+			InSequence(s1).
+			WillOnce(Return(0));
+	EXPECT_CALL(page, Append(_)).
 			Times(2).
+			InSequence(s1).
 			WillRepeatedly(Return(1));
 
 	EXPECT_CALL(page, EmptyItOut()).
@@ -93,13 +122,12 @@ TEST_F(TPMMSTest, RunToFile3) {
 	EXPECT_CALL(file, AddPage(&page, 10));
 	EXPECT_CALL(file, AddPage(&page, 11));
 
-	Record record;
 	off_t totalPageCount = 10;
 	for(int i = 0; i < 4; i++) {
-		run.push_back(&record);
+		run.push_back(new Record());
 	}
 
 	RunToFile(totalPageCount);
-	EXPECT_EQ(11, totalPageCount);
+	EXPECT_EQ(12, totalPageCount);
 	EXPECT_EQ(0, run.size());
 }

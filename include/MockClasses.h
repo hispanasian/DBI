@@ -152,6 +152,7 @@ class MockBigQ: public BigQ {
 };
 
 class MockPipe: public Pipe {
+public:
 //	void Insert (Record *insertMe);
 	MOCK_METHOD1(Insert, void(Record *insertMe));
 //	int Remove (Record *removeMe);
@@ -161,6 +162,7 @@ class MockPipe: public Pipe {
 };
 
 class MockTPMMS: public TPMMS {
+public:
 //	virtual void SortRun();
 	MOCK_METHOD0(ShortRun, void());
 //	virtual void PageToRun();
