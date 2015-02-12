@@ -156,3 +156,16 @@ class MockPipe: public Pipe {
 //	void ShutDown ();
 	MOCK_METHOD0(ShutDown, void());
 };
+
+class MockTPMMS: public TPMMS {
+//	virtual void SortRun();
+	MOCK_METHOD0(ShortRun, void());
+//	virtual void PageToRun();
+	MOCK_METHOD0(PageToRun, void());
+//	virtual void AddRecord();
+	MOCK_METHOD0(AddRecord, void());
+//	virtual int Phase1();
+	MOCK_METHOD0(Phase1, int());
+//	virtual void Phase2();
+	MOCK_METHOD0(Phase2, void());
+};
