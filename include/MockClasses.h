@@ -152,7 +152,7 @@ class MockPipe: public Pipe {
 //	void Insert (Record *insertMe);
 	MOCK_METHOD1(Insert, void(Record *insertMe));
 //	int Remove (Record *removeMe);
-	MOCK_METHOD1(Remove, void(Record *insertMe));
+	MOCK_METHOD1(Remove, int(Record *insertMe));
 //	void ShutDown ();
 	MOCK_METHOD0(ShutDown, void());
 };
