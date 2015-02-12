@@ -1,3 +1,6 @@
+#ifndef MOCKCLASSES_H
+#define MOCKCLASSES_H
+
 #include <gmock/gmock.h>
 #include "Record.h"
 #include "File.h"
@@ -162,12 +165,16 @@ class MockTPMMS: public TPMMS {
 	MOCK_METHOD0(ShortRun, void());
 //	virtual void PageToRun();
 	MOCK_METHOD0(PageToRun, void());
-//	void RunToFile();
-	MOCK_METHOD0(RunToFile, void());
+//	void RunToFile(&totalPageCount);
+	MOCK_METHOD1(RunToFile, void(int &totalPageCount));
 //	virtual void AddRecord();
 	MOCK_METHOD0(AddRecord, void());
 //	virtual int Phase1();
 	MOCK_METHOD0(Phase1, int());
 //	virtual void Phase2();
 	MOCK_METHOD0(Phase2, void());
+//	virtual void Sort();
+	MOCK_METHOD0(Sort, void());
 };
+
+#endif MOCKCLASSES_H

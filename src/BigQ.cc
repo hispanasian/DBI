@@ -42,7 +42,7 @@ void TPMMS::SortRun() {
 	} );
 }
 
-void TPMMS::RunToFile() {
+void TPMMS::RunToFile(int &totalPageCount) {
 
 }
 

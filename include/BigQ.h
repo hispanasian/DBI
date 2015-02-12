@@ -36,7 +36,7 @@ private:
 	vector<int> myRunPos;
 	vector<Record *> &run;
 	vector<Record *> myRun;
-	int runlen;
+	const int runlen;
 
 	TPMMS();
 	TPMMS(Pipe &_in, Pipe &_out, File &_file, Page &_page, ComparisonEngine &_comp,
@@ -54,8 +54,10 @@ private:
 
 	/**
 	 * Writes the run to file.
+	 * @param totalPageSize	The current page size of the file. This will be incremented as new
+	 * 						pages are added (ie, totalPageSize is modified).
 	 */
-	virtual void RunToFile();
+	virtual void RunToFile(int &totalPageSize);
 
 	/**
 	 *	Adds record to the run. If record fills the current page, the page will be written to disk

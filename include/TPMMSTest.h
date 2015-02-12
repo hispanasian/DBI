@@ -38,6 +38,14 @@ public:
 	int runlen = 3;
 
 	TPMMS tpmms = TPMMS(in, out, file, page, comp, order, runPos, run, runlen);
+
+	void SortRun() { tpmms.SortRun(); }
+	void PageToRun() { tpmms.PageToRun(); }
+	void RunToFile(int &totalPageCount) { tpmms.RunToFile(totalPageCount); }
+	void AddRecord() { tpmms.AddRecord(); }
+	int Phase1() { return tpmms.Phase1(); }
+	void Phase2() { tpmms.Phase2(); }
+	void Sort() { tpmms.Sort(); }
 };
 
 #endif /* INCLUDE_TPMMSTEST_H_ */
