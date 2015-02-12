@@ -76,6 +76,20 @@ private:
 	virtual void Phase1();
 
 	/**
+	 * Replaces the old mininumum value located at min with a new value.
+	 * @param min	The index of the minimum record
+	 * @param head	The array that will be updated with the new min value
+	 */
+	virtual void GetNextRecord(int min, Record *head[]);
+
+	/**
+	 * Find the index of the minimum record in the head.
+	 * @param head	The head of each run.
+	 * @return 		The index of the min Record in head
+	 */
+	virtual int FindMin(Record *head[]);
+
+	/**
 	 * Phase 2 of the TPMMS algorithm. This phase will take the runs from disk and merge them into
 	 * sorted pages that will be put into out.
 	 */

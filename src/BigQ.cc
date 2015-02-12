@@ -110,6 +110,14 @@ void TPMMS::Phase1() {
 	}
 }
 
+void TPMMS::GetNextRecord(int min, Record *head[]) {
+
+}
+
+int TPMMS::FindMin(Record *head[]) {
+	return 0;
+}
+
 void TPMMS::Phase2() {
 
 

@@ -179,6 +179,10 @@ public:
 	MOCK_METHOD0(Phase2, void());
 //	virtual void Sort();
 	MOCK_METHOD0(Sort, void());
+//	virtual void GetNextRecord(int min, Record *head[]);
+	MOCK_METHOD2(GetNextRecord, void(int min, Record *head[]));
+//	virtual int FindMin(Record *head[]);
+	MOCK_METHOD1(FindMin, int(Record *head[]));
 };
 
 #endif MOCKCLASSES_H
