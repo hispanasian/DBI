@@ -53,6 +53,11 @@ private:
 	virtual void PageToRun();
 
 	/**
+	 * Writes the run to file.
+	 */
+	virtual void RunToFile();
+
+	/**
 	 *	Adds record to the run. If record fills the current page, the page will be written to disk
 	 *	and modify any dependent objects (ie counters).
 	 */
