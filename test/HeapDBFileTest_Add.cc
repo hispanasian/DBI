@@ -1,9 +1,9 @@
-#include "DBFileTest.h"
+#include "HeapDBFileTest.h"
 
 /**
  * DBFile::Add should, if last is not full, add the record to last.
  */
-TEST_F(DBFileTest, Add1) {
+TEST_F(HeapDBFileTest, Add1) {
 	SetCursorIndex(0);
 	SetLastIndex(5);
 
@@ -27,7 +27,7 @@ TEST_F(DBFileTest, Add1) {
 /**
  * DBFile::Add should, if last is not full and cursor is on the last page, add the record to last.
  */
-TEST_F(DBFileTest, Add2) {
+TEST_F(HeapDBFileTest, Add2) {
 	SetCursorIndex(5);
 	SetLastIndex(5);
 
@@ -52,7 +52,7 @@ TEST_F(DBFileTest, Add2) {
  * DBFile::Add should, if last is full, write out the last page and add the record to the cleared
  * last.
  */
-TEST_F(DBFileTest, Add3) {
+TEST_F(HeapDBFileTest, Add3) {
 	SetCursorIndex(0);
 	SetLastIndex(5);
 	SetCursor(cursor);
@@ -78,7 +78,7 @@ TEST_F(DBFileTest, Add3) {
 /**
  * DBFile::Add should, even if the last page is the current page, write the record to last.
  */
-TEST_F(DBFileTest, Add4) {
+TEST_F(HeapDBFileTest, Add4) {
 	SetCursorIndex(5);
 	SetLastIndex(5);
 	SetCursor(cursor);
@@ -101,7 +101,7 @@ TEST_F(DBFileTest, Add4) {
  * DBFile::Add should, even if the last page is the first page AND the current page, write the
  * record to last.
  */
-TEST_F(DBFileTest, Add5) {
+TEST_F(HeapDBFileTest, Add5) {
 	SetCursorIndex(0);
 	SetLastIndex(0);
 	SetCursor(cursor);
@@ -124,7 +124,7 @@ TEST_F(DBFileTest, Add5) {
  * DBFile::Add should, if last is full and cursor is at the end, write out the last page and add
  * the record to the cleared last.
  */
-TEST_F(DBFileTest, Add6) {
+TEST_F(HeapDBFileTest, Add6) {
 	SetCursorIndex(5);
 	SetLastIndex(5);
 	SetCursor(cursor);
@@ -150,7 +150,7 @@ TEST_F(DBFileTest, Add6) {
 /**
  * DBFile::Add should throw a runtime_exception if the record cannot be added to a fresh page
  */
-TEST_F(DBFileTest, Add7) {
+TEST_F(HeapDBFileTest, Add7) {
 	SetCursorIndex(5);
 	SetLastIndex(5);
 	SetCursor(cursor);
