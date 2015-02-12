@@ -10,7 +10,6 @@ private:
 	FILE* file = NULL;
 	char buffer[4096];
 	std::string filename;
-	bool fileExists(const char* fileName);
 public:
     RawFile();
     virtual ~RawFile();
@@ -23,6 +22,7 @@ public:
     virtual bool Append(std::string value);
     virtual bool Truncate();
     virtual void LSeek(off_t offset);
+    virtual bool FileExists(const char* fileName);
 };
 
 #endif RAWFILE_H

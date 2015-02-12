@@ -1,10 +1,10 @@
-#include "DBFileTest.h"
+#include "HeapDBFileTest.h"
 
 /**
  * DBFile::MoveFirst should ask File for the first (0th) Page and put it into page. It should then
  * update lastIndex to 0. It should also write out the last page
  */
-TEST_F(DBFileTest, MoveFirst1) {
+TEST_F(HeapDBFileTest, MoveFirst1) {
 	SetCursorIndex(4);
 	SetLastIndex(4);
 	SetCursor(cursor);
@@ -28,7 +28,7 @@ TEST_F(DBFileTest, MoveFirst1) {
  * DBFile::MoveFirst should NOT ask File for the first(0th) Page and put it into page even if the
  * current page is already 0. It should also write out the last page and clear out the cursor.
  */
-TEST_F(DBFileTest, MoveFirst2) {
+TEST_F(HeapDBFileTest, MoveFirst2) {
 	SetCursorIndex(0);
 	SetLastIndex(4);
 	SetCursor(cursor);
