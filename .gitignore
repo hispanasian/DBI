@@ -1,5 +1,4 @@
 # Created by https://www.gitignore.io
-
 ### C++ ###
 # Compiled Object files
 *.slo
@@ -115,6 +114,7 @@ src/y.tab.c
 ### Eclipse ###
 .cproject
 .project
+.autotools
 .settings/
 
 ### Data Files ###
