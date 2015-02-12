@@ -1,17 +1,25 @@
 #include "BigQ.h"
-#include<algorithm>
+#include <algorithm>
+#include <iostream>
 
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
-	// read data from in pipe sort them into runlen pages
-
-    // construct priority queue over sorted runs and dump sorted data 
- 	// into the out pipe
-
-    // finally shut down the out pipe
-	out.ShutDown ();
+    TPMMS* tpmms = new TPMMS(in, out, sortorder, runlen);
+    cout << "Creating thread" << endl;
+    pthread_t worker;
+    int ret = pthread_create(&worker, NULL, Work, (void*) tpmms);
+    if(ret) {
+    	cout << "Unable to create thread " << ret << endl;
+    }
 }
 
 BigQ::~BigQ () {
+}
+
+void* Work(void *ptr) {
+	TPMMS *tpmms = (TPMMS*) ptr;
+	tpmms->Sort();
+	delete tpmms;
+	pthread_exit(NULL);
 }
 
 TPMMS::TPMMS(Pipe &_in, Pipe &_out, File &_file, Page &_page, ComparisonEngine &_comp,
@@ -33,7 +41,7 @@ TPMMS::TPMMS(Pipe &_in, Pipe &_out, OrderMaker &_sortorder, int &_runlen):
 }
 
 TPMMS::~TPMMS() {
-
+	std::cout << "Adios!" << std::endl;
 }
 
 void TPMMS::SortRun() {
@@ -68,21 +76,30 @@ void TPMMS::RunToFile(off_t &totalPageCount) {
 }
 
 void TPMMS::PageToRun() {
-
+	Record* r;
+	while(!page.GetFirst(r)) {
+		run.push_back(r);
+	}
 }
 
-void TPMMS::AddRecord() {
+bool TPMMS::AddRecord(Record* rec) {
 
 }
 
 int TPMMS::Phase1() {
+	//file.Create(0, "sortingtemp.bin"); // TODO: make actually random name.
+
 	return 0;
 }
 
 void TPMMS::Phase2() {
 
+
+	file.Close();
+	remove("sortingtemp.bin");
+	out.ShutDown();
 }
 
 void TPMMS::Sort() {
-
+	std::cout << "Sorting time!" << std::endl;
 }

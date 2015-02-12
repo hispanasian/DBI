@@ -38,6 +38,7 @@ private:
 	vector<int> myRunPos;
 	vector<Record *> &run;
 	vector<Record *> myRun;
+	int currPageCount;
 	const int runlen;
 
 	TPMMS();
@@ -62,10 +63,11 @@ private:
 	virtual void RunToFile(off_t &totalPageSize);
 
 	/**
-	 *	Adds record to the run. If record fills the current page, the page will be written to disk
-	 *	and modify any dependent objects (ie counters).
+	 *	Adds rec to the page buffer. If record fills the page buffer, the page will be moved
+	 *	to run. If this causes the number of pages to equal runlen, the record will not be added
+	 *  and the method will return false. Otherwise it will return true.
 	 */
-	virtual void AddRecord();
+	virtual bool AddRecord(Record* rec);
 
 	/**
 	 * Phase 1 of the TPMMS algorithm. This algorithm will take records from in and, once runlen
@@ -95,6 +97,6 @@ public:
 /**
  * Two-Phase Multiway merge Sort
  */
-void Work(void *ptr);
+void* Work(void *ptr);
 
 #endif
