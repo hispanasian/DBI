@@ -1,5 +1,5 @@
 ### Remember to add new mains to the MAINS variable
-CC := g++
+CC := g++ -pthread
 DEBUG = no
 WARNINGS = no
 
@@ -31,7 +31,7 @@ CFLAGS := -g -Wall
 LIB := -L lib
 INC := -I include
 PARSING := $(BUILDDIR)/y.tab.o $(BUILDDIR)/lex.yy.o
-MAINS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o $(BUILDDIR)/driver.o
+MAINS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o $(BUILDDIR)/driver1.o $(BUILDDIR)/driver2a.o
 
 # Objects excluding main
 OBJECTS := $(filter-out $(MAINS),$(ALL_OBJECTS)) $(PARSING)
@@ -57,7 +57,7 @@ endif
 ###### Main Build ######
 # Build all
 .PHONY: all
-all: main driver test
+all: main driver1 driver2a test
 
 # Build main
 .PHONY: main
@@ -65,9 +65,14 @@ main: $(OBJECTS) $(BUILDDIR)/main.o
 	$(CC) $(CCFLAGS) -o $(TARGETDIR)/main $^ $(lfl)
 
 # Build driver
-.PHONY: driver
-driver: $(OBJECTS) $(BUILDDIR)/driver.o
-	$(CC) $(CCFLAGS) -o $(TARGETDIR)/driver $^ $(lfl)
+.PHONY: driver1
+driver1: $(OBJECTS) $(BUILDDIR)/driver1.o
+	$(CC) $(CCFLAGS) -o $(TARGETDIR)/driver1 $^ $(lfl)
+
+# Build driver
+.PHONY: driver2a
+driver2a: $(OBJECTS) $(BUILDDIR)/driver2a.o
+	$(CC) $(CCFLAGS) -o $(TARGETDIR)/driver2a $^ $(lfl)
 
 # Compile cc files
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)

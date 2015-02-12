@@ -1,6 +1,6 @@
 #include <iostream>
 #include "DBFile.h"
-#include "driver.h"
+#include "driver1.h"
 
 // make sure that the file path/dir information below is correct
 char *dbfile_dir = "data/"; // dir where binary heap files should be stored
