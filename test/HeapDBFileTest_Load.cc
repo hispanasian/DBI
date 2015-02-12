@@ -1,4 +1,4 @@
-#include "../include/DBFileTest.h"
+#include "../include/HeapDBFileTest.h"
 #include "../include/Schema.h"
 #include "../include/RawFile.h"
 #include <sstream>
@@ -11,7 +11,7 @@
  * last. This should happen until SuckNextRecord returns 0. If the FILE opens corretly and has 5
  * records, the call to SuckNextRecord and last.AddFile should occur 5 times.
  */
-TEST_F(DBFileTest, Load1) {
+TEST_F(HeapDBFileTest, Load1) {
 	StrictMock<MockRecord> record;
 	SetLast(last);
 	string fpath = "jkdlkjfslkdjfsdf";
@@ -39,7 +39,7 @@ TEST_F(DBFileTest, Load1) {
 /**
  * DBFile::Load should throw a runtime_error if the file does not exist.
  */
-TEST_F(DBFileTest, Load2) {
+TEST_F(HeapDBFileTest, Load2) {
 	SetLast(last);
 	StrictMock<MockRecord> record;
 	string fpath = "jkdlkjfslkdjfsdf";
@@ -51,7 +51,7 @@ TEST_F(DBFileTest, Load2) {
 /**
  * DBFile::Load should not fail if only 1 record exists in the file.
  */
-TEST_F(DBFileTest, Load3) {
+TEST_F(HeapDBFileTest, Load3) {
 	StrictMock<MockRecord> record;
 	SetLast(last);
 	string fpath = "jkdlkjfslkdjfsdf";
@@ -77,7 +77,7 @@ TEST_F(DBFileTest, Load3) {
 /**
  * DBFile::Load should not fail if the file has no records.
  */
-TEST_F(DBFileTest, Load4) {
+TEST_F(HeapDBFileTest, Load4) {
 	StrictMock<MockRecord> record;
 	SetLast(last);
 	string fpath = "jkdlkjfslkdjfsdf";

@@ -1,4 +1,4 @@
-#include "DBFileTest.h"
+#include "HeapDBFileTest.h"
 
 void createFiles(char* header, char* path) {
 	FILE *temp = fopen(header, "w");
@@ -18,7 +18,7 @@ void cleanupFiles(char* header, char* path) {
  * GetNext() should call GetFirst() on the cursor
  * and pass addMe as a paramter
  */
-TEST_F(DBFileTest, GetNext1) {
+TEST_F(HeapDBFileTest, GetNext1) {
 	// setup
 	createFiles(header, path);
 	SetCursor(cursor);
@@ -65,7 +65,7 @@ TEST_F(DBFileTest, GetNext1) {
  * the cursor index, read the next page into cursor,
  * and return the next record
  */
-TEST_F(DBFileTest, GetNext2) {
+TEST_F(HeapDBFileTest, GetNext2) {
 	// setup
 	createFiles(header, path);
 	SetCursor(cursor);
@@ -115,7 +115,7 @@ TEST_F(DBFileTest, GetNext2) {
 * GetNext() should seek across empty pages to find
 * the next non-empty page to get a record from
 */
-TEST_F(DBFileTest, GetNext3) {
+TEST_F(HeapDBFileTest, GetNext3) {
 	// setup
 	createFiles(header, path);
 	SetCursor(cursor);
@@ -170,7 +170,7 @@ TEST_F(DBFileTest, GetNext3) {
  * If all of the pages in the file contain
  * 0 records, GetNext() should return 0
  */
-TEST_F(DBFileTest, GetNext4) {
+TEST_F(HeapDBFileTest, GetNext4) {
 	// setup
 	createFiles(header, path);
 	SetCursor(cursor);
@@ -229,7 +229,7 @@ TEST_F(DBFileTest, GetNext4) {
  * If there are no pages in the file,
  * GetNext() should return zero
  */
-TEST_F(DBFileTest, GetNext5) {
+TEST_F(HeapDBFileTest, GetNext5) {
 	// setup
 	createFiles(header, path);
 	SetCursor(cursor);
@@ -275,7 +275,7 @@ TEST_F(DBFileTest, GetNext5) {
  * on successive calls
  */
 
- TEST_F(DBFileTest, GetNext6) {
+ TEST_F(HeapDBFileTest, GetNext6) {
 	// setup
 	createFiles(header, path);
 	SetCursor(cursor);
@@ -346,7 +346,7 @@ TEST_F(DBFileTest, GetNext5) {
  * GetNext will return the first record if it matches the CNF
  */
 
-TEST_F(DBFileTest, GetNextCNF1) {
+TEST_F(HeapDBFileTest, GetNextCNF1) {
 	// setup
 	createFiles(header, path);
 	SetCursor(cursor);
@@ -395,7 +395,7 @@ TEST_F(DBFileTest, GetNextCNF1) {
  * GetNext will read through multiple records until it finds 
  * one that matches 
  */
-TEST_F(DBFileTest, GetNextCNF2) {
+TEST_F(HeapDBFileTest, GetNextCNF2) {
 	// setup
 	createFiles(header, path);
 	SetCursor(cursor);
@@ -450,7 +450,7 @@ TEST_F(DBFileTest, GetNextCNF2) {
  * If none of the records match, GetNext will return 0
  */
 
-TEST_F(DBFileTest, GetNextCNF3) {
+TEST_F(HeapDBFileTest, GetNextCNF3) {
 	// setup
 	createFiles(header, path);
 	SetCursor(cursor);
@@ -505,7 +505,7 @@ TEST_F(DBFileTest, GetNextCNF3) {
 /*
  * Files with 0 pages are properly handled
  */
-TEST_F(DBFileTest, GetNextCNF4) {
+TEST_F(HeapDBFileTest, GetNextCNF4) {
 	// setup
 	createFiles(header, path);
 	SetCursor(cursor);
