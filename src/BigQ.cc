@@ -1,4 +1,5 @@
 #include "BigQ.h"
+#include<algorithm>
 
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 	// read data from in pipe sort them into runlen pages
@@ -36,6 +37,12 @@ TPMMS::~TPMMS() {
 }
 
 void TPMMS::SortRun() {
+	std::sort(run.begin(), run.end(), [&] (Record *left, Record *right) {
+		return (comp.Compare(left, right, &order) < 0); // if both are equal, return right.
+	} );
+}
+
+void TPMMS::RunToFile() {
 
 }
 
