@@ -12,3 +12,20 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 
 BigQ::~BigQ () {
 }
+
+int Phase1(Pipe &in, Pipe &out, OrderMaker &order, File &file, vector<int> &runPages, const int &runlen) {
+	return 0;
+}
+
+int Phase1(Pipe &in, Pipe &out, OrderMaker &order, ComparisonEngine &comp, File &file,
+		vector<int> &runPages,  Page &page, const int &runlen) {
+	return 0;
+}
+
+void Phase2(Pipe &out, OrderMaker &order, File &file, vector<int> &runPages, const int &runcount) {
+
+}
+
+void Phase2(Pipe &out, OrderMaker &order, File &file, vector<int> &runPages, vector<Page*> &runs, const int &runcount) {
+
+}
