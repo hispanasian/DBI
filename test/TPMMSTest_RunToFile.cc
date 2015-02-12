@@ -28,7 +28,7 @@ TEST_F(TPMMSTest, RunToFile1) {
 	EXPECT_CALL(file, AddPage(&page, 12));
 
 	Record record;
-	int totalPageCount = 10;
+	off_t totalPageCount = 10;
 	for(int i = 0; i < 15; i++) {
 		run.push_back(&record);
 	}
@@ -64,7 +64,7 @@ TEST_F(TPMMSTest, RunToFile2) {
 	EXPECT_CALL(file, AddPage(&page, 12));
 
 	Record record;
-	int totalPageCount = 10;
+	off_t totalPageCount = 10;
 	for(int i = 0; i < 8; i++) {
 		run.push_back(&record);
 	}
@@ -94,7 +94,7 @@ TEST_F(TPMMSTest, RunToFile3) {
 	EXPECT_CALL(file, AddPage(&page, 11));
 
 	Record record;
-	int totalPageCount = 10;
+	off_t totalPageCount = 10;
 	for(int i = 0; i < 4; i++) {
 		run.push_back(&record);
 	}

@@ -165,8 +165,8 @@ class MockTPMMS: public TPMMS {
 	MOCK_METHOD0(ShortRun, void());
 //	virtual void PageToRun();
 	MOCK_METHOD0(PageToRun, void());
-//	void RunToFile(&totalPageCount);
-	MOCK_METHOD1(RunToFile, void(int &totalPageCount));
+//	void RunToFile(off_t &totalPageCount);
+	MOCK_METHOD1(RunToFile, void(off_t &totalPageCount));
 //	virtual void AddRecord();
 	MOCK_METHOD0(AddRecord, void());
 //	virtual int Phase1();

@@ -57,7 +57,7 @@ private:
 	 * @param totalPageSize	The current page size of the file. This will be incremented as new
 	 * 						pages are added (ie, totalPageSize is modified).
 	 */
-	virtual void RunToFile(int &totalPageSize);
+	virtual void RunToFile(off_t &totalPageSize);
 
 	/**
 	 *	Adds record to the run. If record fills the current page, the page will be written to disk
