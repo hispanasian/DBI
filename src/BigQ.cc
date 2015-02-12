@@ -1,4 +1,5 @@
 #include "BigQ.h"
+#include "Defs.h"
 #include <algorithm>
 #include <iostream>
 
@@ -26,22 +27,25 @@ TPMMS::TPMMS(Pipe &_in, Pipe &_out, File &_file, Page &_page, ComparisonEngine &
 		OrderMaker &_order, vector<off_t> &_runPos, vector<Record *> &_run, int &_runlen):
 	in(_in), out(_out), file(_file), page(_page), rec(new Record()), comp(_comp), order(_order),
 	runPos(_runPos), run(_run), runlen(_runlen) {
-	currPageCount = 0;
 	totalPageCount = 0;
+	runSizeInBytes = PAGE_SIZE * runlen;
+	currRunSizeInBytes = 0;
 }
 
 TPMMS::TPMMS():
 		in(myIn), out(myOut), file(myFile), page(myPage), rec(new Record()), comp(myComp),
 		order(myOrder), runPos(myRunPos), run(myRun), runlen(0) {
-	currPageCount = 0;
 	totalPageCount = 0;
+	runSizeInBytes = PAGE_SIZE * runlen;
+	currRunSizeInBytes = 0;
 }
 
 TPMMS::TPMMS(Pipe &_in, Pipe &_out, OrderMaker &_sortorder, int &_runlen):
 		in(_in), out(_out), file(myFile), page(myPage), rec(new Record()), comp(myComp),
 		order(myOrder), runPos(myRunPos), run(myRun), runlen(_runlen) {
-	currPageCount = 0;
 	totalPageCount = 0;
+	runSizeInBytes = PAGE_SIZE * runlen;
+	currRunSizeInBytes = 0;
 }
 
 TPMMS::~TPMMS() {
