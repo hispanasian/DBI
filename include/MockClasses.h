@@ -28,6 +28,8 @@ public:
     int numAttsRight, int *attsToKeep, int numAttsToKeep, int startOfRight));
     // void Print (Schema *mySchema);
     MOCK_METHOD1(Print, void(Schema *mySchema));
+//    int Size();
+    MOCK_METHOD0(Size, int());
 };
 
 class MockPage: public Page {
