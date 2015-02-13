@@ -3,6 +3,8 @@
 #include <iostream>
 #include <stdlib.h> 
 
+Pipe :: Pipe() {}
+
 Pipe :: Pipe (int bufferSize) {
 
 	// set up the mutex assoicated with the pipe
