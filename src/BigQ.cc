@@ -110,12 +110,22 @@ void TPMMS::Phase1() {
 	}
 }
 
-void TPMMS::GetNextRecord(int min, Record *head[]) {
+void TPMMS::GetNextRecord(int min, Record **&heads) {
 
 }
 
-int TPMMS::FindMin(Record *head[]) {
-	return 0;
+int TPMMS::FindMin(int size, Record **&heads) {
+	int minIndex = -1;
+	Record *min = NULL;
+
+	for(int i = 0; i < size; i++) {
+		if(heads[i] != NULL && ( min == NULL || comp.Compare(min, heads[i], &order) < 0 )) {
+			min = heads[i];
+			minIndex = i;
+		}
+	}
+
+	return minIndex;
 }
 
 void TPMMS::Phase2() {

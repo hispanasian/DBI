@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+#include <vector>
 #include "MockClasses.h"
 #include "BigQ.h"
 
@@ -32,7 +33,7 @@ public:
 	StrictMock<MockFile> file;
 	StrictMock<MockPage> page;
 	StrictMock<MockRecord> *rec = new StrictMock<MockRecord>;
-	StrictMock<ComparisonEngine> comp;
+	StrictMock<MockComparisonEngine> comp;
 	OrderMaker order;
 	vector<off_t> runPos;
 	vector<Record *> run;
@@ -50,8 +51,8 @@ public:
 	void SetRunSizeInBytes(int size) { tpmms.runSizeInBytes = size; }
 	int GetCurrRunSizeInBytes() { return tpmms.currRunSizeInBytes; }
 	void SetCurrRunSizeInBytes(int size) { tpmms.currRunSizeInBytes = size; }
-	void GetNextRecord(int min, Record *head[]) { tpmms.GetNextRecord(min, head); }
-	int FindMin(Record *head[]) { return tpmms.FindMin(head); }
+	void GetNextRecord(int min, Record **&heads) { tpmms.GetNextRecord(min, heads); }
+	int FindMin(int size, Record **&heads) { return tpmms.FindMin(size, heads); }
 	vector<Record *> GetRun() { return run; }
 };
 

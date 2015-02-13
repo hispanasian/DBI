@@ -2,6 +2,7 @@
 #define MOCKCLASSES_H
 
 #include <gmock/gmock.h>
+#include <vector>
 #include "Record.h"
 #include "File.h"
 #include "RawFile.h"
@@ -179,10 +180,10 @@ public:
 	MOCK_METHOD0(Phase2, void());
 //	virtual void Sort();
 	MOCK_METHOD0(Sort, void());
-//	virtual void GetNextRecord(int min, Record *head[]);
-	MOCK_METHOD2(GetNextRecord, void(int min, Record *head[]));
-//	virtual int FindMin(Record *head[]);
-	MOCK_METHOD1(FindMin, int(Record *head[]));
+//	virtual void GetNextRecord(int min, Record **&heads);
+	MOCK_METHOD2(GetNextRecord, void(int min, Record **&heads));
+//	virtual int FindMin(int size, Record **&heads);
+	MOCK_METHOD2(FindMin, int(int size, Record **&heads));
 };
 
 #endif MOCKCLASSES_H
