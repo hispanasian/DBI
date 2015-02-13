@@ -13,19 +13,31 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
 BigQ::~BigQ () {
 }
 
-int Phase1(Pipe &in, Pipe &out, OrderMaker &order, File &file, vector<int> &runPos, const int &runlen) {
+TPMMSContainer::TPMMSContainer(Pipe &_in, Pipe &_out, File &_file, Page &_page, ComparisonEngine &_comp, OrderMaker &_order, vector<int> &_runPos, vector<Record *> &_run, int &_runlen):
+	in(_in), out(_out), file(_file), page(_page), rec(new Record()), comp(_comp), order(_order), runPos(_runPos), run(_run), runlen(_runlen) {
+}
+
+TPMMSContainer::TPMMSContainer(Pipe &_in, Pipe &_out, OrderMaker &_sortorder, int &_runlen):
+		in(_in), out(_out), file(myFile), page(myPage), rec(new Record()), comp(myComp), order(myOrder), runPos(myRunPos), run(myRun), runlen(_runlen) {
+
+}
+
+void TPMMSContainer::SortRun() {
+
+}
+
+void TPMMSContainer::AddRecord() {
+
+}
+
+int TPMMSContainer::Phase1() {
 	return 0;
 }
 
-int Phase1(Pipe &in, Pipe &out, OrderMaker &order, ComparisonEngine &comp, File &file,
-		vector<int> &runPos,  Page &page, const int &runlen) {
-	return 0;
-}
-
-void Phase2(Pipe &out, OrderMaker &order, File &file, vector<int> &runPos, const int &runcount) {
+void TPMMSContainer::Phase2() {
 
 }
 
-void Phase2(Pipe &out, OrderMaker &order, File &file, vector<int> &runPos, vector<Page*> &runs, const int &runcount) {
+ void TPMMS() {
 
-}
+ }
