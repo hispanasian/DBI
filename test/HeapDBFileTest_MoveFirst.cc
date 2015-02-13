@@ -9,6 +9,7 @@ TEST_F(HeapDBFileTest, MoveFirst1) {
 	SetLastIndex(4);
 	SetCursor(cursor);
 	SetLast(last);
+	SetDBToheapdb();
 
 	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
 	EXPECT_CALL(mockFile, AddPage(&last, 4));
@@ -22,10 +23,11 @@ TEST_F(HeapDBFileTest, MoveFirst1) {
 
 	SetCursorNull();
 	SetLastNull();
+	SetDBNull();
 }
 
 /**
- * DBFile::MoveFirst should NOT ask File for the first(0th) Page and put it into page even if the
+ * DBFile::MoveFirst should ask File for the first(0th) Page and put it into page even if the
  * current page is already 0. It should also write out the last page and clear out the cursor.
  */
 TEST_F(HeapDBFileTest, MoveFirst2) {
@@ -33,6 +35,7 @@ TEST_F(HeapDBFileTest, MoveFirst2) {
 	SetLastIndex(4);
 	SetCursor(cursor);
 	SetLast(last);
+	SetDBToheapdb();
 
 	EXPECT_CALL(cursor, EmptyItOut());
 	EXPECT_CALL(mockFile, AddPage(&last, 4));
@@ -46,4 +49,5 @@ TEST_F(HeapDBFileTest, MoveFirst2) {
 
 	SetCursorNull();
 	SetLastNull();
+	SetDBNull();
 }
