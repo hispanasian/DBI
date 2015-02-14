@@ -40,12 +40,16 @@ public:
 	TPMMS tpmms = TPMMS(in, out, file, page, comp, order, runPos, run, runlen);
 
 	void SortRun() { tpmms.SortRun(); }
-	void PageToRun() { tpmms.PageToRun(); }
 	void RunToFile(off_t &totalPageCount) { tpmms.RunToFile(totalPageCount); }
 	bool AddRecord(Record* rec) { return tpmms.AddRecord(rec); }
 	int Phase1() { return tpmms.Phase1(); }
 	void Phase2() { tpmms.Phase2(); }
 	void Sort() { tpmms.Sort(); }
+	int GetRunSizeInBytes() { return tpmms.runSizeInBytes; }
+	void SetRunSizeInBytes(int size) { tpmms.runSizeInBytes = size; }
+	int GetCurrRunSizeInBytes() { return tpmms.currRunSizeInBytes; }
+	void SetCurrRunSizeInBytes(int size) { tpmms.currRunSizeInBytes = size; }
+	vector<Record *> GetRun() { return run; }
 };
 
 #endif /* INCLUDE_TPMMSTEST_H_ */

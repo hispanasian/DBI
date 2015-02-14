@@ -38,7 +38,8 @@ private:
 	vector<int> myRunPos;
 	vector<Record *> &run;
 	vector<Record *> myRun;
-	int currPageCount;
+	int currRunSizeInBytes;
+	int runSizeInBytes;
 	const int runlen;
 
 	TPMMS();
@@ -49,11 +50,6 @@ private:
 	 * This function will run an in place sort on run using comp based on the order provided.
 	 */
 	virtual void SortRun();
-
-	/**
-	 * Moves the records from page to run.
-	 */
-	virtual void PageToRun();
 
 	/**
 	 * Writes the run to file.

@@ -75,15 +75,15 @@ void TPMMS::RunToFile(off_t &totalPageCount) {
 	run.clear();
 }
 
-void TPMMS::PageToRun() {
-	Record* r;
-	while(!page.GetFirst(r)) {
-		run.push_back(r);
-	}
-}
-
 bool TPMMS::AddRecord(Record* rec) {
-
+	if(rec->Size()+currRunSizeInBytes <= runSizeInBytes) {
+		run.push_back(rec);
+		currRunSizeInBytes += rec->Size();
+		return true;
+	} else if(run.size() == 0) {
+		throw std::runtime_error("rec exceeds the Page size");
+	}
+	return false;
 }
 
 int TPMMS::Phase1() {
