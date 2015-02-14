@@ -8,7 +8,7 @@
 
 class Pipe {
 private:
-
+friend class MockPipe;
 	// these are used for data storage in the pipeline
 	Record *buffered;
 
@@ -29,6 +29,7 @@ public:
 
 	// this sets up the pipeline; the parameter is the number of
 	// records to buffer
+	Pipe();
 	Pipe (int bufferSize);	
 	virtual ~Pipe();
 

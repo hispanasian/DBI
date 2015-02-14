@@ -1,3 +1,6 @@
+#ifndef MOCKCLASSES_H
+#define MOCKCLASSES_H
+
 #include <gmock/gmock.h>
 #include "Record.h"
 #include "File.h"
@@ -25,6 +28,8 @@ public:
     int numAttsRight, int *attsToKeep, int numAttsToKeep, int startOfRight));
     // void Print (Schema *mySchema);
     MOCK_METHOD1(Print, void(Schema *mySchema));
+//    int Size();
+    MOCK_METHOD0(Size, int());
 };
 
 class MockPage: public Page {
@@ -149,6 +154,7 @@ class MockBigQ: public BigQ {
 };
 
 class MockPipe: public Pipe {
+public:
 //	void Insert (Record *insertMe);
 	MOCK_METHOD1(Insert, void(Record *insertMe));
 //	int Remove (Record *removeMe);
@@ -156,3 +162,23 @@ class MockPipe: public Pipe {
 //	void ShutDown ();
 	MOCK_METHOD0(ShutDown, void());
 };
+
+class MockTPMMS: public TPMMS {
+public:
+//	virtual void SortRun();
+	MOCK_METHOD0(ShortRun, void());
+//	virtual void PageToRun();
+	MOCK_METHOD0(PageToRun, void());
+//	void RunToFile(off_t &totalPageCount);
+	MOCK_METHOD1(RunToFile, void(off_t &totalPageCount));
+//	virtual void AddRecord();
+	MOCK_METHOD1(AddRecord, bool(Record* rec));
+//	virtual void Phase1();
+	MOCK_METHOD0(Phase1, void());
+//	virtual void Phase2();
+	MOCK_METHOD0(Phase2, void());
+//	virtual void Sort();
+	MOCK_METHOD0(Sort, void());
+};
+
+#endif MOCKCLASSES_H
