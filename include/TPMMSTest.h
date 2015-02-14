@@ -42,7 +42,7 @@ public:
 	void SortRun() { tpmms.SortRun(); }
 	void PageToRun() { tpmms.PageToRun(); }
 	void RunToFile(off_t &totalPageCount) { tpmms.RunToFile(totalPageCount); }
-	void AddRecord() { tpmms.AddRecord(); }
+	bool AddRecord(Record* rec) { return tpmms.AddRecord(rec); }
 	int Phase1() { return tpmms.Phase1(); }
 	void Phase2() { tpmms.Phase2(); }
 	void Sort() { tpmms.Sort(); }
