@@ -112,10 +112,10 @@ int DBFile::Open (char *f_path) {
 					delegate = new HeapDBFile(file, rfile, config, comp);
 				}
 				else if(strcmp("sorted", key) == 0) {
-					// TODO: Implement
+					delegate = new SortedDBFile(file, rfile, config, comp);
 				}
 				else if(strcmp("tree", key) == 0) {
-					// TODO: Implement
+					delegate = new TreeDBFile(file, rfile, config, comp);
 				}
 				else success = false;
 				if(success) Initialize();
