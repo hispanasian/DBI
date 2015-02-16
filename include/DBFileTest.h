@@ -26,6 +26,8 @@ using ::testing::SetArgPointee;
 using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Ref;
+using ::testing::Pointee;
+using ::testing::NotNull;
 
 class DBFileTest: public ::testing::Test {
 public:
@@ -47,6 +49,8 @@ public:
 		delete file.delegate;
 		file.delegate = db;
 	}
+
+	GenericDBFile* GetDB() { return file.delegate; }
 };
 
 #endif
