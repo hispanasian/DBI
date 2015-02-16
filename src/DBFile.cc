@@ -1,5 +1,7 @@
 #include "GenericDBFile.h"
 #include "HeapDBFile.h"
+#include "TreeDBFile.h"
+#include "SortedDBFile.h"
 #include "TwoWayList.h"
 #include "Record.h"
 #include "Schema.h"
@@ -54,9 +56,11 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 				break;
 			case sorted:
 				config.AddKey("fType", "sorted");
+				delegate = new SortedDBFile(file, rfile, config, comp);
 				break;
 			case tree:
 				config.AddKey("fType", "tree");
+				delegate = new TreeDBFile(file, rfile, config, comp);
 				break;
 			}
 			file.Open(0, f_path);

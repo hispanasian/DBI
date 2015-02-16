@@ -1,27 +1,21 @@
-#ifndef HEAPDBFILE_H
-#define HEAPDBFILE_H
+/*
+ * TreeDBFile.h
+ *
+ *  Created on: Feb 16, 2015
+ *      Author: cvasquez
+ */
 
-#include "TwoWayList.h"
-#include "Record.h"
-#include "Schema.h"
-#include "File.h"
-#include "Comparison.h"
-#include "ComparisonEngine.h"
-#include "RawFile.h"
-#include "DBConfig.h"
 #include "GenericDBFile.h"
-#include <sys/stat.h>
+
+#ifndef INCLUDE_TREEDBFILE_H_
+#define INCLUDE_TREEDBFILE_H_
 
 /**
- * HeapDBFile will store records in a heap.
+ *	TreeDBFile will store Records in a tree
  */
-class HeapDBFile: public GenericDBFile {
-friend class HeapDBFileTest;
+class TreeDBFile: public GenericDBFile {
+friend class TreeDBFileTest;
 private:
-	off_t cursorIndex;
-	off_t lastIndex;
-	Page *cursor;		// Pointer to the current page
-	Page * last;		// Pointer to the last page
 
 	/**
 	 * This is a function will be called by the public Load and it will provide it's own Record.
@@ -31,8 +25,8 @@ private:
 	virtual void Load (Schema &myschema, char *loadpath, Record &record);
 
 public:
-	HeapDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp);
-    virtual ~HeapDBFile();
+	TreeDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp);
+    virtual ~TreeDBFile();
 
     /**
 	 * Appends the data located at loadpath to memory.
@@ -88,4 +82,4 @@ public:
 	virtual void Reset();
 };
 
-#endif
+#endif /* INCLUDE_SORTEDDBFILE_H_ */
