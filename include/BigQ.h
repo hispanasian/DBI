@@ -77,11 +77,12 @@ private:
 
 	/**
 	 * Replaces the old mininumum value located at min with a new value.
-	 * @param min	The index of the minimum record
-	 * @param heads	The array that will be updated with the new min value
+	 * @param min		The index of the minimum record
+	 * @param heads		The array that will be updated with the new min value
 	 * @param runIndex	The index of each run.
+	 * @param runsLeft	The number of runs remaining
 	 */
-	virtual void GetNextRecord(int min, Record **&heads, off_t **&runIndex);
+	virtual void GetNextRecord(int min, Record **&heads, off_t **&runIndex, int &runsLeft);
 
 	/**
 	 * Find the index of the minimum record in the heads.

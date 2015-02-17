@@ -110,7 +110,7 @@ void TPMMS::Phase1() {
 	}
 }
 
-void TPMMS::GetNextRecord(int min, Record **&heads, off_t **&runIndex) {
+void TPMMS::GetNextRecord(int min, Record **&heads, off_t **&runIndex, int &runsLeft) {
 
 }
 

@@ -51,7 +51,7 @@ public:
 	void SetRunSizeInBytes(int size) { tpmms.runSizeInBytes = size; }
 	int GetCurrRunSizeInBytes() { return tpmms.currRunSizeInBytes; }
 	void SetCurrRunSizeInBytes(int size) { tpmms.currRunSizeInBytes = size; }
-	void GetNextRecord(int min, Record **&heads, off_t **&runIndex) { tpmms.GetNextRecord(min, heads, runIndex); }
+	void GetNextRecord(int min, Record **&heads, off_t **&runIndex, int &runsLeft) { tpmms.GetNextRecord(min, heads, runIndex, runsLeft); }
 	int FindMin(int size, Record **&heads) { return tpmms.FindMin(size, heads); }
 	vector<Record *> GetRun() { return run; }
 };
