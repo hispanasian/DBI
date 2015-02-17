@@ -82,7 +82,7 @@ private:
 	 * @param runIndex	The index of each run.
 	 * @param runsLeft	The number of runs remaining
 	 */
-	virtual void GetNextRecord(int min, Record **&heads, off_t **&runIndex, int &runsLeft);
+	virtual void GetNextRecord(int min, Record **&heads, off_t *&runIndex, int &runsLeft);
 
 	/**
 	 * Find the index of the minimum record in the heads.
