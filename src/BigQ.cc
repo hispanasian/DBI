@@ -177,8 +177,8 @@ void TPMMS::Phase2() {
 }
 
 void TPMMS::Sort() {
-	char* fname = tmpnam(NULL);							 // Come up with
-	while(fname != NULL) { char* fname = tmpnam(NULL); } // a temp file name
+	char* fname = tmpnam(NULL);	
+	while(fname == NULL) { fname = tmpnam(NULL); } // a temp file name
 	file.Open(0, fname);
 
 	// Initialize
