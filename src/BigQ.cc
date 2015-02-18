@@ -2,6 +2,7 @@
 #include "Defs.h"
 #include <algorithm>
 #include <iostream>
+#include <cstdio>
 
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
     TPMMS* tpmms = new TPMMS(in, out, sortorder, runlen);
@@ -134,7 +135,6 @@ int TPMMS::FindMin(int size, Record **&heads) {
 			minIndex = i;
 		}
 	}
-
 	return minIndex;
 }
 
@@ -161,9 +161,24 @@ void TPMMS::Phase2() {
 		out.Insert(heads[minIndex]);
 		GetNextRecord(minIndex, heads, runIndex, pages, runsLeft);
 	}
+
+	// Clean up
+	for(int i = 0; i < totalRuns; i++) {
+		delete heads[i];
+		delete pages[i];
+	}
+	delete heads;
+	delete runIndex;
+	delete pages;
 }
 
 void TPMMS::Sort() {
+	char* fname = tmpnam(NULL);							 // Come up with
+	while(fname != NULL) { char* fname = tmpnam(NULL); } // a temp file name
+	file.Open(0, fname);
+
+	// Initialize
+
 	std::cout << "Sorting time!" << std::endl;
 	//file.Create(0, "sortingtemp.bin"); // TODO: make actually random name.
 	// use http://www.cplusplus.com/reference/cstdio/tmpnam/ for rand file names
