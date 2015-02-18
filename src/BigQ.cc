@@ -95,7 +95,8 @@ bool TPMMS::AddRecord(Record* rec) {
 }
 
 void TPMMS::Phase1() {
-	runPos.push_back(0);
+	totalPageCount = 0;
+	runPos.push_back(totalPageCount);
 	while(in.Remove(rec)) {
 		if(!AddRecord(rec)) {
 			SortRun();
