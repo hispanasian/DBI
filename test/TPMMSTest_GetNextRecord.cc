@@ -13,6 +13,9 @@ TEST_F(TPMMSTest, GetNextRecord1) {
 	Record **heads = temp;
 	off_t temp2[5];
 	off_t *runIndex = temp2;
+	Page *temp3[5];
+	Page **&pages = temp3;
+
 	int runsLeft = 3;
 
 	StrictMock<MockRecord> head0;
@@ -27,7 +30,7 @@ TEST_F(TPMMSTest, GetNextRecord1) {
 	heads[3] = &head3;
 	heads[4] = &head4;
 
-	GetNextRecord(3, heads, runIndex, runsLeft);
+	GetNextRecord(3, heads, runIndex, pages, runsLeft);
 }
 
 /**

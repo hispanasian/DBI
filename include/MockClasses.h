@@ -180,8 +180,8 @@ public:
 	MOCK_METHOD0(Phase2, void());
 //	virtual void Sort();
 	MOCK_METHOD0(Sort, void());
-//	virtual void GetNextRecord(int min, Record **&heads, off_t *&runIndex, int &runsLeft);
-	MOCK_METHOD4(GetNextRecord, void(int min, Record **&heads, off_t *&runIndex, int &runsLeft));
+//	virtual void GetNextRecord(int min, Record **&heads, off_t *&runIndex, Page **&pages, int &runsLeft);
+	MOCK_METHOD5(GetNextRecord, void(int min, Record **&heads, off_t *&runIndex, Page **&pages, int &runsLeft));
 //	virtual int FindMin(int size, Record **&heads);
 	MOCK_METHOD2(FindMin, int(int size, Record **&heads));
 };
