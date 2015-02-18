@@ -121,7 +121,11 @@ void TPMMS::GetNextRecord(int min, Record **&heads, off_t *&runIndex, Page **&pa
 			file.GetPage(pages[min], runIndex[min]);
 			pages[min]->GetFirst(heads[min]); // Get the missing recordR
 		}
-		else --runsLeft; // The run has run out of pages.
+		else{
+			 --runsLeft; // The run has run out of pages.
+			 heads[min] = NULL;
+		}
+			
 	}
 }
 

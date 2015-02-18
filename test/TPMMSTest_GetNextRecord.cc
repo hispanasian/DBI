@@ -15,8 +15,7 @@ TEST_F(TPMMSTest, GetNextRecord1) {
 	off_t *runIndex = temp2;
 	Page *temp3[5];
 	Page **pages = temp3;
-	StrictMock<Record> temp4;
-	Record *nextMin = &temp4;
+	MockRecord mockNextMin;
 
 	int runsLeft = 3;
 
@@ -41,11 +40,11 @@ TEST_F(TPMMSTest, GetNextRecord1) {
 	pages[4] = NULL;
 
 	EXPECT_CALL(minPage, GetFirst(&head3)).
-			WillOnce(DoAll(SetArgPointee<0>(*nextMin), Return(1)));
-
+			WillOnce(Return(1));
+	
 	GetNextRecord(3, heads, runIndex, pages, runsLeft);
 	EXPECT_EQ(3, runsLeft);
-	EXPECT_EQ(&(*nextMin), &(*heads[3]));
+	EXPECT_EQ(&head3, heads[3]);
 }
 
 /**
@@ -83,26 +82,27 @@ TEST_F(TPMMSTest, GetNextRecord2) {
 	runIndex[3] = 7;
 
 	StrictMock<MockPage> minPage;
-	StrictMock<MockRecord> nextHead;
+	pages[0] = NULL;
+	pages[1] = NULL;
+	pages[2] = NULL;
 	pages[3] = &minPage;
+	pages[4] = NULL;
 
-	EXPECT_CALL(minPage, GetFirst(heads[3])).
-		WillOnce(Return(0));
+	
+	{
+		InSequence seq;
+		EXPECT_CALL(minPage, GetFirst(heads[3])).
+			WillOnce(Return(0));
 
-	EXPECT_CALL(minPage, EmptyItOut());
+		EXPECT_CALL(file, GetPage(pages[3], 8));
 
-	EXPECT_CALL(file, GetPage(pages[3], 8)).
-		WillOnce(DoAll(
-            testing::SetArgPointee<1>(minPage), Return(1)));
-
-	EXPECT_CALL(minPage, GetFirst(heads[3])).
-		WillOnce(DoAll(
-            testing::SetArgPointee<0>(nextHead), Return(1)));
-
+		EXPECT_CALL(minPage, GetFirst(heads[3])).
+			WillOnce(Return(1));
+	}
+	
 
 	GetNextRecord(3, heads, runIndex, pages, runsLeft);
 	ASSERT_EQ(3, runsLeft);
-	ASSERT_EQ(nextHead, heads[3]);
 	ASSERT_EQ(8, runIndex[3]);
 }
 
@@ -138,11 +138,15 @@ TEST_F(TPMMSTest, GetNextRecord3) {
 	runPos.push_back(7);
 	runPos.push_back(9);
 	runPos.push_back(10);
-
 	runIndex[3] = 9;
 
 	StrictMock<MockPage> minPage;
+	pages[0] = NULL;
+	pages[1] = NULL;
+	pages[2] = NULL;
 	pages[3] = &minPage;
+	pages[4] = NULL;
+
 	EXPECT_CALL(minPage, GetFirst(heads[3])).
 		WillOnce(Return(0));
 

@@ -27,6 +27,7 @@ using ::testing::Ref;
 using ::testing::Mock;
 using ::testing::DoAll;
 using ::testing::SetArgPointee;
+using ::testing::SetArgReferee;
 
 class TPMMSTest: public ::testing::Test {
 public:
