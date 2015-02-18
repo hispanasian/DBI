@@ -14,7 +14,9 @@ TEST_F(TPMMSTest, GetNextRecord1) {
 	off_t temp2[5];
 	off_t *runIndex = temp2;
 	Page *temp3[5];
-	Page **&pages = temp3;
+	Page **pages = temp3;
+	StrictMock<Record> temp4;
+	Record *nextMin = &temp4;
 
 	int runsLeft = 3;
 
@@ -30,7 +32,20 @@ TEST_F(TPMMSTest, GetNextRecord1) {
 	heads[3] = &head3;
 	heads[4] = &head4;
 
+	StrictMock<MockPage> minPage;
+
+	pages[0] = NULL;
+	pages[1] = NULL;
+	pages[2] = NULL;
+	pages[3] = &minPage;
+	pages[4] = NULL;
+
+	EXPECT_CALL(minPage, GetFirst(&head3)).
+			WillOnce(DoAll(SetArgPointee<0>(*nextMin), Return(1)));
+
 	GetNextRecord(3, heads, runIndex, pages, runsLeft);
+	EXPECT_EQ(3, runsLeft);
+	EXPECT_EQ(&(*nextMin), &(*heads[3]));
 }
 
 /**
