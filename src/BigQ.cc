@@ -116,9 +116,9 @@ void TPMMS::GetNextRecord(int min, Record **&heads, off_t *&runIndex, Page **&pa
 	if(!pages[min]->GetFirst(heads[min])) {
 		// We have run out of pages
 		++runIndex[min];
-		if(runIndex[min] < runPos(min+1)) {
+		if(runIndex[min] < runPos[min+1]) {
 			file.GetPage(pages[min], runIndex[min]);
-			pages[min]->GetFirst(heads[min]); // Get the missing record
+			pages[min]->GetFirst(heads[min]); // Get the missing recordR
 		}
 		else --runsLeft; // The run has run out of pages.
 	}
@@ -139,15 +139,35 @@ int TPMMS::FindMin(int size, Record **&heads) {
 }
 
 void TPMMS::Phase2() {
+	int minIndex = -1;
+	int totalRuns = runPos.size() - 1;
+	int runsLeft = totalRuns;
 
+	// initialize
+	Record **heads = new Record*[totalRuns];
+	off_t *runIndex = new off_t[totalRuns];
+	Page ** pages = new Page*[totalRuns];
 
-	file.Close();
-	remove("sortingtemp.bin");
-	out.ShutDown();
+	for(int i = 0; i < totalRuns; i++) {
+		heads[i] = new Record();
+		runIndex[i] = runPos[i];
+		pages[i] = new Page();
+		file.GetPage(pages[i], runIndex[i]);
+		pages[i]->GetFirst(heads[i]);
+	}
+
+	while(runsLeft > 0) {
+		minIndex = FindMin(totalRuns, heads);
+		out.Insert(heads[minIndex]);
+		GetNextRecord(minIndex, heads, runIndex, pages, runsLeft);
+	}
 }
 
 void TPMMS::Sort() {
 	std::cout << "Sorting time!" << std::endl;
 	//file.Create(0, "sortingtemp.bin"); // TODO: make actually random name.
 	// use http://www.cplusplus.com/reference/cstdio/tmpnam/ for rand file names
+	file.Close();
+	remove("sortingtemp.bin");
+	out.ShutDown();
 }
