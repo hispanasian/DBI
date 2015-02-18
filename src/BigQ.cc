@@ -178,11 +178,15 @@ void TPMMS::Sort() {
 	file.Open(0, fname);
 
 	// Initialize
+	rec = new Record;
 
-	std::cout << "Sorting time!" << std::endl;
-	//file.Create(0, "sortingtemp.bin"); // TODO: make actually random name.
-	// use http://www.cplusplus.com/reference/cstdio/tmpnam/ for rand file names
-	file.Close();
-	remove("sortingtemp.bin");
+	Phase1();
+	Phase2();
+
+	// Clean up
 	out.ShutDown();
+	file.Close();
+	remove(fname);
+	delete rec;
+	runPos.clear();
 }
