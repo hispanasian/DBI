@@ -113,7 +113,15 @@ void TPMMS::Phase1() {
 }
 
 void TPMMS::GetNextRecord(int min, Record **&heads, off_t *&runIndex, Page **&pages, int &runsLeft) {
-
+	if(!pages[min]->GetFirst(heads[min])) {
+		// We have run out of pages
+		++runIndex[min];
+		if(runIndex[min] < runPos(min+1)) {
+			file.GetPage(pages[min], runIndex[min]);
+			pages[min]->GetFirst(heads[min]); // Get the missing record
+		}
+		else --runsLeft; // The run has run out of pages.
+	}
 }
 
 int TPMMS::FindMin(int size, Record **&heads) {
