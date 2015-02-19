@@ -10,21 +10,6 @@ TEST_F(HeapDBFileTest, GetNext1) {
 	SetLast(last);
 	SetDBToheapdb();
 
-	// standard stuff for calling Open()
-	EXPECT_CALL(mockFile, Open(1, path));
-	EXPECT_CALL(rfile, Open(header)).
-			WillOnce(Return(true));
-			EXPECT_CALL(config, Clear());
-	EXPECT_CALL(config, Read(_)).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, GetKey("fType")).
-			WillOnce(Return("heap"));
-	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
-	EXPECT_CALL(mockFile, GetPage(&last, 4));
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
-
-
 	Record* r;
 
 	// the test
@@ -32,8 +17,6 @@ TEST_F(HeapDBFileTest, GetNext1) {
 			WillRepeatedly(Return(6));
 	EXPECT_CALL(cursor, GetFirst(r)).
 			WillOnce(Return(1));
-
-//	EXPECT_EQ(1, file.Open(path));
 
 	
 	EXPECT_EQ(1, file.GetNext(*r));
@@ -56,20 +39,6 @@ TEST_F(HeapDBFileTest, GetNext2) {
 	SetLast(last);
 	SetDBToheapdb();
 
-	// standard stuff for calling Open()
-	EXPECT_CALL(mockFile, Open(1, path));
-	EXPECT_CALL(rfile, Open(header)).
-			WillOnce(Return(true));
-			EXPECT_CALL(config, Clear());
-	EXPECT_CALL(config, Read(_)).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, GetKey("fType")).
-			WillOnce(Return("heap"));
-	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
-	EXPECT_CALL(mockFile, GetPage(&last, 4));
-	EXPECT_CALL(last, EmptyItOut());
-
-
 	Record* r;
 
 	// the test
@@ -80,9 +49,7 @@ TEST_F(HeapDBFileTest, GetNext2) {
 			WillOnce(Return(1));
 	EXPECT_CALL(mockFile, GetPage(&cursor, 1));
 	EXPECT_CALL(cursor, EmptyItOut()).
-			Times(2);
-	
-	EXPECT_EQ(1, file.Open(path));
+			Times(AtLeast(1));
 
 	EXPECT_EQ(0, CursorIndex());
 	EXPECT_EQ(1, file.GetNext(*r));
@@ -105,20 +72,6 @@ TEST_F(HeapDBFileTest, GetNext3) {
 	SetCursor(cursor);
 	SetLast(last);
 
-	// standard stuff for calling Open()
-	EXPECT_CALL(mockFile, Open(1, path));
-	EXPECT_CALL(rfile, Open(header)).
-			WillOnce(Return(true));
-			EXPECT_CALL(config, Clear());
-	EXPECT_CALL(config, Read(_)).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, GetKey("fType")).
-			WillOnce(Return("heap"));
-	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
-	EXPECT_CALL(mockFile, GetPage(&last, 6));
-	EXPECT_CALL(last, EmptyItOut());
-
-
 	Record* r;
 
 	// the test
@@ -135,9 +88,7 @@ TEST_F(HeapDBFileTest, GetNext3) {
 	EXPECT_CALL(mockFile, GetPage(&cursor, 3));
 	EXPECT_CALL(mockFile, GetPage(&cursor, 4));
 	EXPECT_CALL(cursor, EmptyItOut()).
-			Times(5);
-	
-	EXPECT_EQ(1, file.Open(path));
+			Times(4);
 
 	EXPECT_EQ(0, CursorIndex());
 	EXPECT_EQ(1, file.GetNext(*r));
@@ -159,33 +110,14 @@ TEST_F(HeapDBFileTest, GetNext4) {
 	SetCursor(cursor);
 	SetLast(last);
 
-	// standard stuff for calling Open()
-	EXPECT_CALL(mockFile, Open(1, path));
-	EXPECT_CALL(rfile, Open(header)).
-			WillOnce(Return(true));
-			EXPECT_CALL(config, Clear());
-	EXPECT_CALL(config, Read(_)).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, GetKey("fType")).
-			WillOnce(Return("heap"));
-	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
-	EXPECT_CALL(mockFile, GetPage(&last, 6));
-	EXPECT_CALL(last, EmptyItOut());
-
-
 	Record* r;
 
 	// the test
 	EXPECT_CALL(mockFile, GetLength()).
 			WillRepeatedly(Return(8));
 	EXPECT_CALL(cursor, GetFirst(r)).
-			WillOnce(Return(0)).
-			WillOnce(Return(0)).
-			WillOnce(Return(0)).
-			WillOnce(Return(0)).
-			WillOnce(Return(0)).
-			WillOnce(Return(0)).
-			WillOnce(Return(0));
+			Times(7).
+			WillRepeatedly(Return(0));
 	EXPECT_CALL(mockFile, GetPage(&cursor, 1));
 	EXPECT_CALL(mockFile, GetPage(&cursor, 2));
 	EXPECT_CALL(mockFile, GetPage(&cursor, 3));
@@ -193,9 +125,7 @@ TEST_F(HeapDBFileTest, GetNext4) {
 	EXPECT_CALL(mockFile, GetPage(&cursor, 5));
 	EXPECT_CALL(mockFile, GetPage(&cursor, 6));
 	EXPECT_CALL(cursor, EmptyItOut()).
-			Times(7);
-	
-	EXPECT_EQ(1, file.Open(path));
+			Times(6);
 
 	EXPECT_EQ(0, CursorIndex());
 	EXPECT_EQ(0, file.GetNext(*r));
@@ -217,26 +147,11 @@ TEST_F(HeapDBFileTest, GetNext5) {
 	SetCursor(cursor);
 	SetLast(last);
 
-	// standard stuff for calling Open()
-	EXPECT_CALL(mockFile, Open(1, path));
-	EXPECT_CALL(rfile, Open(header)).
-			WillOnce(Return(true));
-			EXPECT_CALL(config, Clear());
-	EXPECT_CALL(config, Read(_)).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, GetKey("fType")).
-			WillOnce(Return("heap"));
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
-
-
 	Record* r;
 
 	// the test
 	EXPECT_CALL(mockFile, GetLength()).
 			WillRepeatedly(Return(0));
-	
-	EXPECT_EQ(1, file.Open(path));
 
 	EXPECT_EQ(0, CursorIndex());
 	EXPECT_EQ(0, file.GetNext(*r));
@@ -262,20 +177,6 @@ TEST_F(HeapDBFileTest, GetNext5) {
 	SetCursor(cursor);
 	SetLast(last);
 
-	// standard stuff for calling Open()
-	EXPECT_CALL(mockFile, Open(1, path));
-	EXPECT_CALL(rfile, Open(header)).
-			WillOnce(Return(true));
-			EXPECT_CALL(config, Clear());
-	EXPECT_CALL(config, Read(_)).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, GetKey("fType")).
-			WillOnce(Return("heap"));
-	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
-	EXPECT_CALL(mockFile, GetPage(&last, 2));
-	EXPECT_CALL(last, EmptyItOut());
-
-
 	Record* r;
 
 	// the test
@@ -297,9 +198,7 @@ TEST_F(HeapDBFileTest, GetNext5) {
 	EXPECT_CALL(mockFile, GetPage(&cursor, 1));
 	EXPECT_CALL(mockFile, GetPage(&cursor, 2));
 	EXPECT_CALL(cursor, EmptyItOut()).
-			Times(3);
-	
-	EXPECT_EQ(1, file.Open(path));
+			Times(2);
 
 	EXPECT_EQ(0, CursorIndex());
 	EXPECT_EQ(1, file.GetNext(*r));
@@ -332,35 +231,17 @@ TEST_F(HeapDBFileTest, GetNextCNF1) {
 	SetCursor(cursor);
 	SetLast(last);
 
-	// standard stuff for calling Open()
-	EXPECT_CALL(mockFile, Open(1, path));
-	EXPECT_CALL(rfile, Open(header)).
-			WillOnce(Return(true));
-			EXPECT_CALL(config, Clear());
-	EXPECT_CALL(config, Read(_)).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, GetKey("fType")).
-			WillOnce(Return("heap"));
-	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(6));
-	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
-	EXPECT_CALL(mockFile, GetPage(&last, 4));
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
-
-
 	Record* r;
 	Record* literal;
 	CNF* cnf;
 
 	// the test
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(4));
 	EXPECT_CALL(cursor, GetFirst(r)).
 			WillRepeatedly(Return(1));
 	EXPECT_CALL(comp, Compare(r, literal, cnf)).
 			WillRepeatedly(Return(1));
-
-	EXPECT_EQ(1, file.Open(path));
-
 	
 	EXPECT_EQ(1, file.GetNext(*r, *cnf, *literal));
 
@@ -380,28 +261,13 @@ TEST_F(HeapDBFileTest, GetNextCNF2) {
 	SetCursor(cursor);
 	SetLast(last);
 
-	// standard stuff for calling Open()
-	EXPECT_CALL(mockFile, Open(1, path));
-	EXPECT_CALL(rfile, Open(header)).
-			WillOnce(Return(true));
-			EXPECT_CALL(config, Clear());
-	EXPECT_CALL(config, Read(_)).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, GetKey("fType")).
-			WillOnce(Return("heap"));
-	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(6));
-	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
-	EXPECT_CALL(mockFile, GetPage(&last, 4));
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
-
-
 	Record* r;
 	Record* literal;
 	CNF* cnf;
 
 	// the test
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(4));
 	EXPECT_CALL(cursor, GetFirst(r)).
 			WillRepeatedly(Return(1));
 	EXPECT_CALL(comp, Compare(r, literal, cnf)).
@@ -412,9 +278,6 @@ TEST_F(HeapDBFileTest, GetNextCNF2) {
 			WillOnce(Return(0)).
 			WillOnce(Return(1));
 
-	EXPECT_EQ(1, file.Open(path));
-
-	
 	EXPECT_EQ(1, file.GetNext(*r, *cnf, *literal));
 
 
@@ -434,30 +297,13 @@ TEST_F(HeapDBFileTest, GetNextCNF3) {
 	SetCursor(cursor);
 	SetLast(last);
 
-	// standard stuff for calling Open()
-	EXPECT_CALL(mockFile, Open(1, path));
-	EXPECT_CALL(rfile, Open(header)).
-			WillOnce(Return(true));
-			EXPECT_CALL(config, Clear());
-	EXPECT_CALL(config, Read(_)).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, GetKey("fType")).
-			WillOnce(Return("heap"));
-	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(3));
-	EXPECT_CALL(mockFile, GetPage(&cursor, 0));
-	EXPECT_CALL(mockFile, GetPage(&cursor, 1));
-	EXPECT_CALL(mockFile, GetPage(&last, 1));
-	EXPECT_CALL(cursor, EmptyItOut()).
-			Times(2);
-	EXPECT_CALL(last, EmptyItOut());
-
-
 	Record* r;
 	Record* literal;
 	CNF* cnf;
 
 	// the test
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(3));
 	EXPECT_CALL(cursor, GetFirst(r)).
 			WillOnce(Return(1)).
 			WillOnce(Return(1)).
@@ -465,12 +311,12 @@ TEST_F(HeapDBFileTest, GetNextCNF3) {
 			WillOnce(Return(0)).
 			WillOnce(Return(1)).
 			WillOnce(Return(0));
+	EXPECT_CALL(mockFile, GetPage(&cursor, 1));
 	EXPECT_CALL(comp, Compare(r, literal, cnf)).
 			WillRepeatedly(Return(0));
+	EXPECT_CALL(cursor, EmptyItOut()).
+			Times(1);
 
-	EXPECT_EQ(1, file.Open(path));
-
-	
 	EXPECT_EQ(0, file.GetNext(*r, *cnf, *literal));
 
 
@@ -488,29 +334,13 @@ TEST_F(HeapDBFileTest, GetNextCNF4) {
 	SetCursor(cursor);
 	SetLast(last);
 
-	// standard stuff for calling Open()
-	EXPECT_CALL(mockFile, Open(1, path));
-	EXPECT_CALL(rfile, Open(header)).
-			WillOnce(Return(true));
-			EXPECT_CALL(config, Clear());
-	EXPECT_CALL(config, Read(_)).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, GetKey("fType")).
-			WillOnce(Return("heap"));
-	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(0));
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
-
-
 	Record* r;
 	Record* literal;
 	CNF* cnf;
 
 	// the test
-	EXPECT_EQ(1, file.Open(path));
-
-	
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(0));
 	EXPECT_EQ(0, file.GetNext(*r, *cnf, *literal));
 
 
