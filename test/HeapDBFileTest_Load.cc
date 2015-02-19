@@ -13,6 +13,7 @@
  */
 TEST_F(HeapDBFileTest, Load1) {
 	StrictMock<MockRecord> record;
+	SetDBToheapdb();
 	SetLast(last);
 	string fpath = "jkdlkjfslkdjfsdf";
 	char *path = (char *)fpath.c_str();
@@ -31,6 +32,9 @@ TEST_F(HeapDBFileTest, Load1) {
 	EXPECT_CALL(last, Append(&record)).
 			Times(4).
 			WillRepeatedly(Return(1));
+	EXPECT_CALL(rfile, FileExists(Pointee(*path))).
+			Times(AtLeast(1)).
+			WillRepeatedly(Return(true));
 	this->Load(schema, path, record);
 	remove(path);
 	SetLastNull();
@@ -41,9 +45,13 @@ TEST_F(HeapDBFileTest, Load1) {
  */
 TEST_F(HeapDBFileTest, Load2) {
 	SetLast(last);
+	SetDBToheapdb();
 	StrictMock<MockRecord> record;
 	string fpath = "jkdlkjfslkdjfsdf";
 	char *path = (char *)fpath.c_str();
+	EXPECT_CALL(rfile, FileExists(Pointee(*path))).
+			Times(AtLeast(1)).
+			WillRepeatedly(Return(false));
 	EXPECT_THROW(this->Load(schema, path, record), std::runtime_error);
 	SetLastNull();
 }
@@ -53,6 +61,7 @@ TEST_F(HeapDBFileTest, Load2) {
  */
 TEST_F(HeapDBFileTest, Load3) {
 	StrictMock<MockRecord> record;
+	SetDBToheapdb();
 	SetLast(last);
 	string fpath = "jkdlkjfslkdjfsdf";
 	char *path = (char *)fpath.c_str();
@@ -69,6 +78,9 @@ TEST_F(HeapDBFileTest, Load3) {
 	}
 	EXPECT_CALL(last, Append(&record)).
 			WillOnce(Return(1));
+	EXPECT_CALL(rfile, FileExists(Pointee(*path))).
+			Times(AtLeast(1)).
+			WillRepeatedly(Return(true));
 	this->Load(schema, path, record);
 	remove(path);
 	SetLastNull();
@@ -79,6 +91,7 @@ TEST_F(HeapDBFileTest, Load3) {
  */
 TEST_F(HeapDBFileTest, Load4) {
 	StrictMock<MockRecord> record;
+	SetDBToheapdb();
 	SetLast(last);
 	string fpath = "jkdlkjfslkdjfsdf";
 	char *path = (char *)fpath.c_str();
@@ -89,6 +102,9 @@ TEST_F(HeapDBFileTest, Load4) {
 
 	EXPECT_CALL(record, SuckNextRecord(&schema, NotNull())).
 			WillOnce(Return(0));
+	EXPECT_CALL(rfile, FileExists(Pointee(*path))).
+			Times(AtLeast(1)).
+			WillRepeatedly(Return(true));
 
 	this->Load(schema, path, record);
 	remove(path);
