@@ -60,6 +60,11 @@ public:
 		heapdb->cursor = &page;
 	}
 
+	void SetCursorP(Page *page) {
+		delete heapdb->cursor;
+		heapdb->cursor = page;
+	}
+
 	void SetCursorNull() { heapdb->cursor= NULL; }
 
 	Page *GetLast() { return heapdb->last; }
@@ -67,6 +72,11 @@ public:
 	void SetLast(Page &page) {
 		delete heapdb->last;
 		heapdb->last = &page;
+	}
+
+	void SetLastP(Page *page) {
+		delete heapdb->last;
+		heapdb->last = page;
 	}
 
 	void SetLastNull() { heapdb->last = NULL; }
