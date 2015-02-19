@@ -11,8 +11,8 @@ make main (Biulds bin/main)
 Run all unit tests:
 ./bin/test
 
-Run driver (originally test.cc)
-./bin/driver
+Run driverX (where X corresponds to the assignment, ie 1, 2a, 2b, etc.)
+./bin/driverX
 
 File Structure:
 bin - stores the binaries
@@ -23,12 +23,12 @@ lib - stores the google mock, google test, and dbgen libraries
 src - stores all the source files
 test - stores all the unit test source files
 
-Instructions to run driver (originally test.cc)
+Instructions to the run drivers
 The catalog is searched for in data/catalog
 The tables are searched for in data/10M
 The binary heap file is stored in data/*.bin
 The header files for the binary heap files are stored in data/*.bin.header
-Simply run './bin/driver' to run the program
+Simply run './bin/driver1' or './bin/driver2a' to run the corresponding program
 
 Advanced Makefile:
 By default, make will add the -O2 flag and -w flag to optimize the compilation and silence any 

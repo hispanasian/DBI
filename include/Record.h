@@ -65,6 +65,9 @@ public:
 	// prints the contents of the record; this requires
 	// that the schema also be given so that the record can be interpreted
 	virtual void Print (Schema *mySchema);
+
+	// Returns the size of the Record
+	virtual int Size();
 };
 
 #endif

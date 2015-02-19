@@ -21,6 +21,7 @@ private:
 	int Run(Record *left, Record *right, Record *literal, Comparison *c);
 
 public:
+	virtual ~ComparisonEngine() {}
 
         // this version of Compare is for sorting.  The OrderMaker struct
         // encapsulates the specification for a sort order.  For example,

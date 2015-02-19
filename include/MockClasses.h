@@ -1,4 +1,8 @@
+#ifndef MOCKCLASSES_H
+#define MOCKCLASSES_H
+
 #include <gmock/gmock.h>
+#include <vector>
 #include "Record.h"
 #include "File.h"
 #include "RawFile.h"
@@ -6,6 +10,8 @@
 #include "DBConfig.h"
 #include "Schema.h"
 #include "ComparisonEngine.h"
+#include "BigQ.h"
+#include "Pipe.h"
 
 class MockRecord: public Record {
 public:
@@ -23,6 +29,8 @@ public:
     int numAttsRight, int *attsToKeep, int numAttsToKeep, int startOfRight));
     // void Print (Schema *mySchema);
     MOCK_METHOD1(Print, void(Schema *mySchema));
+//    int Size();
+    MOCK_METHOD0(Size, int());
 };
 
 class MockPage: public Page {
@@ -141,3 +149,41 @@ public:
     // int Compare(Record *left, Record *literal, CNF *myComparison);
     MOCK_METHOD3(Compare, int(Record *left, Record *literal, CNF *myComparison));
 };
+
+class MockBigQ: public BigQ {
+
+};
+
+class MockPipe: public Pipe {
+public:
+//	void Insert (Record *insertMe);
+	MOCK_METHOD1(Insert, void(Record *insertMe));
+//	int Remove (Record *removeMe);
+	MOCK_METHOD1(Remove, int(Record *insertMe));
+//	void ShutDown ();
+	MOCK_METHOD0(ShutDown, void());
+};
+
+class MockTPMMS: public TPMMS {
+public:
+//	virtual void SortRun();
+	MOCK_METHOD0(ShortRun, void());
+//	virtual void PageToRun();
+	MOCK_METHOD0(PageToRun, void());
+//	void RunToFile(off_t &totalPageCount);
+	MOCK_METHOD1(RunToFile, void(off_t &totalPageCount));
+//	virtual void AddRecord(Record* &rec);
+	MOCK_METHOD1(AddRecord, bool(Record* &rec));
+//	virtual void Phase1();
+	MOCK_METHOD0(Phase1, void());
+//	virtual void Phase2();
+	MOCK_METHOD0(Phase2, void());
+//	virtual void Sort();
+	MOCK_METHOD0(Sort, void());
+//	virtual void GetNextRecord(int min, Record **&heads, off_t *&runIndex, Page **&pages, int &runsLeft);
+	MOCK_METHOD5(GetNextRecord, void(int min, Record **&heads, off_t *&runIndex, Page **&pages, int &runsLeft));
+//	virtual int FindMin(int size, Record **&heads);
+	MOCK_METHOD2(FindMin, int(int size, Record **&heads));
+};
+
+#endif MOCKCLASSES_H
