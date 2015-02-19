@@ -31,7 +31,7 @@ void HeapDBFile::Load (Schema &f_schema, char *loadpath) {
 }
 
 void HeapDBFile::Load (Schema &f_schema, char *loadpath, Record &record) {
-	if(rfile.FileExists(loadpath)) throw std::runtime_error(loadpath + std::string(" could not be found."));
+	if(!rfile.FileExists(loadpath)) throw std::runtime_error(loadpath + std::string(" could not be found."));
 	// File exists
 	FILE *file = fopen(loadpath, "r");
 	while(record.SuckNextRecord(&f_schema, file)) {
