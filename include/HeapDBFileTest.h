@@ -38,43 +38,43 @@ public:
 	StrictMock<MockSchema> schema;
 
 	DBFile file = DBFile(mockFile, rfile, config, comp);
-	HeapDBFile heapdb = HeapDBFile(mockFile, rfile, config, comp);
+	HeapDBFile *heapdb = new HeapDBFile(mockFile, rfile, config, comp);
 
 	char *path = "asdasdasd";
 	char *header = "asdasdasd.header";
 
-	off_t CursorIndex() { return heapdb.cursorIndex; }
+	off_t CursorIndex() { return heapdb->cursorIndex; }
 
-	void SetCursorIndex(off_t offset) { heapdb.cursorIndex = offset; }
+	void SetCursorIndex(off_t offset) { heapdb->cursorIndex = offset; }
 
-	off_t LastIndex() { return heapdb.lastIndex; }
+	off_t LastIndex() { return heapdb->lastIndex; }
 
-	void SetLastIndex(off_t offset) { heapdb.lastIndex = offset; }
+	void SetLastIndex(off_t offset) { heapdb->lastIndex = offset; }
 
 	File GetFile() { return file.file; }
 
-	Page *GetCursor() { return heapdb.cursor; }
+	Page *GetCursor() { return heapdb->cursor; }
 
 	void SetCursor(Page &page) {
-		delete heapdb.cursor;
-		heapdb.cursor = &page;
+		delete heapdb->cursor;
+		heapdb->cursor = &page;
 	}
 
-	void SetCursorNull() { heapdb.cursor= NULL; }
+	void SetCursorNull() { heapdb->cursor= NULL; }
 
-	Page *GetLast() { return heapdb.last; }
+	Page *GetLast() { return heapdb->last; }
 
 	void SetLast(Page &page) {
-		delete heapdb.last;
-		heapdb.last = &page;
+		delete heapdb->last;
+		heapdb->last = &page;
 	}
 
-	void SetLastNull() { heapdb.last = NULL; }
+	void SetLastNull() { heapdb->last = NULL; }
 
 	void Load(Schema &myschema, char *loadpath, Record &record) { file.Load(myschema, loadpath, record); }
 
 	void SetDBToheapdb() {
-		file.delegate = &heapdb;
+		file.delegate = heapdb;
 	}
 
 	void SetDBNull() { file.delegate = NULL; }
