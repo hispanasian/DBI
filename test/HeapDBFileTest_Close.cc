@@ -90,6 +90,7 @@ TEST_F(HeapDBFileTest, Close2) {
 	EXPECT_EQ(0, file.Close());
 	EXPECT_EQ(0, CursorIndex());
 	EXPECT_EQ(0, LastIndex());
+	EXPECT_EQ(NULL, Delegate());
 
 	SetCursorNull();
 	SetLastNull();
@@ -138,6 +139,7 @@ TEST_F(HeapDBFileTest, Close4) {
 	EXPECT_EQ(0, file.Close());
 	EXPECT_EQ(0, CursorIndex());
 	EXPECT_EQ(0, LastIndex());
+	EXPECT_EQ(NULL, Delegate());
 
 	SetCursorNull();
 	SetLastNull();
@@ -185,6 +187,7 @@ TEST_F(HeapDBFileTest, Close5) {
 	EXPECT_EQ(1, file.Close());
 	EXPECT_EQ(0, CursorIndex());
 	EXPECT_EQ(0, LastIndex());
+	EXPECT_EQ(NULL, Delegate());
 
 	SetCursorNull();
 	SetLastNull();
