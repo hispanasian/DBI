@@ -77,6 +77,8 @@ public:
 		file.delegate = heapdb;
 	}
 
+	GenericDBFile* Delegate() { return file.delegate; }
+
 	void SetDBNull() { file.delegate = NULL; }
 };
 
