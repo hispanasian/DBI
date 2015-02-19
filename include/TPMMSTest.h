@@ -46,7 +46,7 @@ public:
 
 	void SortRun() { tpmms.SortRun(); }
 	void RunToFile(off_t &totalPageCount) { tpmms.RunToFile(totalPageCount); }
-	bool AddRecord(Record* rec) { return tpmms.AddRecord(rec); }
+	bool AddRecord(Record* &rec) { return tpmms.AddRecord(rec); }
 	void Phase1() { tpmms.Phase1(); }
 	void Phase2() { tpmms.Phase2(); }
 	void Sort() { tpmms.Sort(); }
@@ -58,6 +58,8 @@ public:
 	int FindMin(int size, Record **&heads) { return tpmms.FindMin(size, heads); }
 	vector<Record *> GetRun() { return run; }
 	vector<off_t> GetRunPos() { return runPos; }
+	Record* GetRec() { return tpmms.rec; }
+	void SetRec(Record *rec) { tpmms.rec = rec; }
 };
 
 #endif /* INCLUDE_TPMMSTEST_H_ */

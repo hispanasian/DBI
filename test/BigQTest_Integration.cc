@@ -4,10 +4,10 @@
 #include "Pipe.h"
 #include "Comparison.h"
 
-TEST(BigQTest, Integration1) {
-	Pipe in;
-	Pipe out;
-	OrderMaker order;
-	int runlen = 10;
-	BigQ bigq(in, out, order, runlen);
-}
+//TEST(BigQTest, Integration1) {
+//	Pipe in;
+//	Pipe out;
+//	OrderMaker order;
+//	int runlen = 10;
+//	BigQ bigq(in, out, order, runlen);
+//}

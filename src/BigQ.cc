@@ -84,10 +84,11 @@ void TPMMS::RunToFile(off_t &totalPageCount) {
 	run.clear();
 }
 
-bool TPMMS::AddRecord(Record* rec) {
+bool TPMMS::AddRecord(Record* &rec) {
 	if(rec->Size()+currRunSizeInBytes <= runSizeInBytes) {
 		run.push_back(rec);
 		currRunSizeInBytes += rec->Size();
+		rec = new Record(); // can't re-use object
 		return true;
 	} else if(run.size() == 0) {
 		throw std::runtime_error("rec exceeds the Page size");
@@ -98,11 +99,13 @@ bool TPMMS::AddRecord(Record* rec) {
 void TPMMS::Phase1() {
 	totalPageCount = 0;
 	runPos.push_back(totalPageCount);
+	currRunSizeInBytes = runlen * sizeof (int);
 	while(in.Remove(rec)) {
 		if(!AddRecord(rec)) {
 			SortRun();
 			RunToFile(totalPageCount);
 			runPos.push_back(totalPageCount);
+			currRunSizeInBytes = runlen * sizeof (int); // Reset currRunsSizeInButes
 			AddRecord(rec); // Add the record that failed to get added
 		}
 	}

@@ -64,8 +64,10 @@ private:
 	 *	Adds rec to the page buffer. If record fills the page buffer, the page will be moved
 	 *	to run. If this causes the number of pages to equal runlen, the record will not be added
 	 *  and the method will return false. Otherwise it will return true.
+	 *  @param rec	The Record that will be added. rec will be consumed and replaced with a new
+	 *  			Record
 	 */
-	virtual bool AddRecord(Record* rec);
+	virtual bool AddRecord(Record* &rec);
 
 	/**
 	 * Phase 1 of the TPMMS algorithm. This algorithm will take records from in and, once runlen
