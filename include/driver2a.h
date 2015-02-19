@@ -41,6 +41,9 @@ public:
 		rname (_name), rschema (_schema), prefix (_prefix) {
 		sprintf (rpath, "%s%s.bin", prefix, rname);
 	}
+	~relation() {
+		delete rschema;
+	}
 	char* name () { return rname; }
 	char* path () { return rpath; }
 	Schema* schema () { return rschema;}
@@ -106,7 +109,14 @@ void setup () {
 }
 
 void cleanup () {
-	delete s, p, ps, n, li, r, o, c;
+	delete s;
+	delete ps;
+	delete p;
+	delete n;
+	delete li;
+	delete r;
+	delete o;
+	delete c;
 }
 
 #endif
