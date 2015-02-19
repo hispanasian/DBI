@@ -1,28 +1,14 @@
 #include "HeapDBFileTest.h"
 
-void createFiles(char* header, char* path) {
-	FILE *temp = fopen(header, "w");
-	fprintf(temp, "stuff");
-	fclose(temp);
-	temp = fopen(path, "w");
-	fprintf(temp, "stuff");
-	fclose(temp);
-}
-
-void cleanupFiles(char* header, char* path) {
-	remove(path);
-	remove(header);
-}
-
 /*
  * GetNext() should call GetFirst() on the cursor
  * and pass addMe as a paramter
  */
 TEST_F(HeapDBFileTest, GetNext1) {
 	// setup
-	createFiles(header, path);
 	SetCursor(cursor);
 	SetLast(last);
+	SetDBToheapdb();
 
 	// standard stuff for calling Open()
 	EXPECT_CALL(mockFile, Open(1, path));
@@ -47,7 +33,7 @@ TEST_F(HeapDBFileTest, GetNext1) {
 	EXPECT_CALL(cursor, GetFirst(r)).
 			WillOnce(Return(1));
 
-	EXPECT_EQ(1, file.Open(path));
+//	EXPECT_EQ(1, file.Open(path));
 
 	
 	EXPECT_EQ(1, file.GetNext(*r));
@@ -55,7 +41,6 @@ TEST_F(HeapDBFileTest, GetNext1) {
 
 
 	// cleanup
-	cleanupFiles(header, path);
 	SetCursorNull();
 	SetLastNull();
 }
@@ -67,9 +52,9 @@ TEST_F(HeapDBFileTest, GetNext1) {
  */
 TEST_F(HeapDBFileTest, GetNext2) {
 	// setup
-	createFiles(header, path);
 	SetCursor(cursor);
 	SetLast(last);
+	SetDBToheapdb();
 
 	// standard stuff for calling Open()
 	EXPECT_CALL(mockFile, Open(1, path));
@@ -105,7 +90,6 @@ TEST_F(HeapDBFileTest, GetNext2) {
 
 
 	// cleanup
-	cleanupFiles(header, path);
 	SetCursorNull();
 	SetLastNull();
 }
@@ -117,7 +101,7 @@ TEST_F(HeapDBFileTest, GetNext2) {
 */
 TEST_F(HeapDBFileTest, GetNext3) {
 	// setup
-	createFiles(header, path);
+	SetDBToheapdb();
 	SetCursor(cursor);
 	SetLast(last);
 
@@ -161,7 +145,6 @@ TEST_F(HeapDBFileTest, GetNext3) {
 
 
 	// cleanup
-	cleanupFiles(header, path);
 	SetCursorNull();
 	SetLastNull();
 }
@@ -172,7 +155,7 @@ TEST_F(HeapDBFileTest, GetNext3) {
  */
 TEST_F(HeapDBFileTest, GetNext4) {
 	// setup
-	createFiles(header, path);
+	SetDBToheapdb();
 	SetCursor(cursor);
 	SetLast(last);
 
@@ -220,7 +203,6 @@ TEST_F(HeapDBFileTest, GetNext4) {
 
 
 	// cleanup
-	cleanupFiles(header, path);
 	SetCursorNull();
 	SetLastNull();
 }
@@ -231,7 +213,7 @@ TEST_F(HeapDBFileTest, GetNext4) {
  */
 TEST_F(HeapDBFileTest, GetNext5) {
 	// setup
-	createFiles(header, path);
+	SetDBToheapdb();
 	SetCursor(cursor);
 	SetLast(last);
 
@@ -262,7 +244,6 @@ TEST_F(HeapDBFileTest, GetNext5) {
 
 
 	// cleanup
-	cleanupFiles(header, path);
 	SetCursorNull();
 	SetLastNull();
 }
@@ -277,7 +258,7 @@ TEST_F(HeapDBFileTest, GetNext5) {
 
  TEST_F(HeapDBFileTest, GetNext6) {
 	// setup
-	createFiles(header, path);
+	 SetDBToheapdb();
 	SetCursor(cursor);
 	SetLast(last);
 
@@ -337,7 +318,6 @@ TEST_F(HeapDBFileTest, GetNext5) {
 
 
 	// cleanup
-	cleanupFiles(header, path);
 	SetCursorNull();
 	SetLastNull();
 }
@@ -348,7 +328,7 @@ TEST_F(HeapDBFileTest, GetNext5) {
 
 TEST_F(HeapDBFileTest, GetNextCNF1) {
 	// setup
-	createFiles(header, path);
+	SetDBToheapdb();
 	SetCursor(cursor);
 	SetLast(last);
 
@@ -386,7 +366,6 @@ TEST_F(HeapDBFileTest, GetNextCNF1) {
 
 
 	// cleanup
-	cleanupFiles(header, path);
 	SetCursorNull();
 	SetLastNull();
 }
@@ -397,7 +376,7 @@ TEST_F(HeapDBFileTest, GetNextCNF1) {
  */
 TEST_F(HeapDBFileTest, GetNextCNF2) {
 	// setup
-	createFiles(header, path);
+	SetDBToheapdb();
 	SetCursor(cursor);
 	SetLast(last);
 
@@ -440,7 +419,6 @@ TEST_F(HeapDBFileTest, GetNextCNF2) {
 
 
 	// cleanup
-	cleanupFiles(header, path);
 	SetCursorNull();
 	SetLastNull();
 }
@@ -452,7 +430,7 @@ TEST_F(HeapDBFileTest, GetNextCNF2) {
 
 TEST_F(HeapDBFileTest, GetNextCNF3) {
 	// setup
-	createFiles(header, path);
+	SetDBToheapdb();
 	SetCursor(cursor);
 	SetLast(last);
 
@@ -497,7 +475,6 @@ TEST_F(HeapDBFileTest, GetNextCNF3) {
 
 
 	// cleanup
-	cleanupFiles(header, path);
 	SetCursorNull();
 	SetLastNull();
 }
@@ -507,7 +484,7 @@ TEST_F(HeapDBFileTest, GetNextCNF3) {
  */
 TEST_F(HeapDBFileTest, GetNextCNF4) {
 	// setup
-	createFiles(header, path);
+	SetDBToheapdb();
 	SetCursor(cursor);
 	SetLast(last);
 
@@ -538,7 +515,6 @@ TEST_F(HeapDBFileTest, GetNextCNF4) {
 
 
 	// cleanup
-	cleanupFiles(header, path);
 	SetCursorNull();
 	SetLastNull();
 }
