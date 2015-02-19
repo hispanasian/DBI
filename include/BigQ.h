@@ -23,9 +23,7 @@ friend class MockTPMMS;
 friend class MockForPhase1;
 private:
 	Pipe &in;
-	Pipe myIn;
 	Pipe &out;
-	Pipe myOut;
 	File &file;
 	File myFile;
 	Page &page;
@@ -34,7 +32,6 @@ private:
 	ComparisonEngine &comp;
 	ComparisonEngine myComp;
 	OrderMaker &order;
-	OrderMaker myOrder;
 	vector<off_t> &runPos;
 	vector<off_t> myRunPos;
 	vector<Record *> &run;

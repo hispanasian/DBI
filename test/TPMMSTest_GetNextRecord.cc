@@ -123,13 +123,13 @@ TEST_F(TPMMSTest, GetNextRecord3) {
 	StrictMock<MockRecord> head0;
 	StrictMock<MockRecord> head1;
 	StrictMock<MockRecord> head2;
-	StrictMock<MockRecord> head3;
+	StrictMock<MockRecord> *head3= new StrictMock<MockRecord>;
 	StrictMock<MockRecord> head4;
 
 	heads[0] = &head0;
 	heads[1] = &head1;
 	heads[2] = &head2;
-	heads[3] = &head3;
+	heads[3] = head3;
 	heads[4] = &head4;
 
 	runPos.push_back(0);

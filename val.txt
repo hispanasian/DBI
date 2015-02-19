@@ -1,0 +1,299 @@
+==19344== Memcheck, a memory error detector
+==19344== Copyright (C) 2002-2013, and GNU GPL'd, by Julian Seward et al.
+==19344== Using Valgrind-3.10.0.SVN and LibVEX; rerun with -h for copyright info
+==19344== Command: ./bin/driver2a
+==19344== 
+==19344== Mismatched free() / delete / delete []
+==19344==    at 0x4C2C2BC: operator delete(void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4069E1: Schema::~Schema() (Schema.cc:135)
+==19344==    by 0x411067: CNF::GrowFromParseTree(AndList*, Schema*, Record&) (Comparison.cc:615)
+==19344==    by 0x414BBD: relation::get_sort_order(OrderMaker&) (driver2a.h:73)
+==19344==    by 0x41460E: test1(int, int) (driver2a.cc:93)
+==19344==    by 0x414987: main (driver2a.cc:153)
+==19344==  Address 0x5c449e0 is 0 bytes inside a block of size 9 alloc'd
+==19344==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x55F83C9: strdup (strdup.c:42)
+==19344==    by 0x4066A2: Schema::Schema(char*, char*) (Schema.cc:86)
+==19344==    by 0x4106B2: CNF::GrowFromParseTree(AndList*, Schema*, Record&) (Comparison.cc:606)
+==19344==    by 0x414BBD: relation::get_sort_order(OrderMaker&) (driver2a.h:73)
+==19344==    by 0x41460E: test1(int, int) (driver2a.cc:93)
+==19344==    by 0x414987: main (driver2a.cc:153)
+==19344== 
+==19344== Thread 2:
+==19344== Syscall param write(buf) points to uninitialised byte(s)
+==19344==    at 0x536035D: ??? (syscall-template.S:81)
+==19344==    by 0x404145: File::AddPage(Page*, long) (File.cc:223)
+==19344==    by 0x405C70: DBFile::MoveFirst() (DBFile.cc:147)
+==19344==    by 0x413FF8: producer(void*) (driver2a.cc:15)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Address 0x5d563a8 is 95,160 bytes inside a block of size 131,072 alloc'd
+==19344==    at 0x4C2BAD0: operator new[](unsigned long, std::nothrow_t const&) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4040C8: File::AddPage(Page*, long) (File.cc:214)
+==19344==    by 0x405C70: DBFile::MoveFirst() (DBFile.cc:147)
+==19344==    by 0x413FF8: producer(void*) (driver2a.cc:15)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Uninitialised value was created by a heap allocation
+==19344==    at 0x4C2BAD0: operator new[](unsigned long, std::nothrow_t const&) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4040C8: File::AddPage(Page*, long) (File.cc:214)
+==19344==    by 0x405C70: DBFile::MoveFirst() (DBFile.cc:147)
+==19344==    by 0x413FF8: producer(void*) (driver2a.cc:15)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344== 
+==19344== Thread 4:
+==19344== Syscall param write(buf) points to uninitialised byte(s)
+==19344==    at 0x536035D: ??? (syscall-template.S:81)
+==19344==    by 0x404145: File::AddPage(Page*, long) (File.cc:223)
+==19344==    by 0x40B21A: TPMMS::RunToFile(long&) (BigQ.cc:66)
+==19344==    by 0x40B69E: TPMMS::Phase1() (BigQ.cc:106)
+==19344==    by 0x40BED9: TPMMS::Sort() (BigQ.cc:188)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Address 0x5fcfa14 is 130,916 bytes inside a block of size 131,072 alloc'd
+==19344==    at 0x4C2BAD0: operator new[](unsigned long, std::nothrow_t const&) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4040C8: File::AddPage(Page*, long) (File.cc:214)
+==19344==    by 0x40B21A: TPMMS::RunToFile(long&) (BigQ.cc:66)
+==19344==    by 0x40B69E: TPMMS::Phase1() (BigQ.cc:106)
+==19344==    by 0x40BED9: TPMMS::Sort() (BigQ.cc:188)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Uninitialised value was created by a heap allocation
+==19344==    at 0x4C2BAD0: operator new[](unsigned long, std::nothrow_t const&) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4040C8: File::AddPage(Page*, long) (File.cc:214)
+==19344==    by 0x40B21A: TPMMS::RunToFile(long&) (BigQ.cc:66)
+==19344==    by 0x40B69E: TPMMS::Phase1() (BigQ.cc:106)
+==19344==    by 0x40BED9: TPMMS::Sort() (BigQ.cc:188)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344== 
+==19344== Syscall param write(buf) points to uninitialised byte(s)
+==19344==    at 0x536035D: ??? (syscall-template.S:81)
+==19344==    by 0x404145: File::AddPage(Page*, long) (File.cc:223)
+==19344==    by 0x40B372: TPMMS::RunToFile(long&) (BigQ.cc:75)
+==19344==    by 0x40B69E: TPMMS::Phase1() (BigQ.cc:106)
+==19344==    by 0x40BED9: TPMMS::Sort() (BigQ.cc:188)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Address 0x788166c is 636 bytes inside a block of size 131,072 alloc'd
+==19344==    at 0x4C2BAD0: operator new[](unsigned long, std::nothrow_t const&) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4040C8: File::AddPage(Page*, long) (File.cc:214)
+==19344==    by 0x40B372: TPMMS::RunToFile(long&) (BigQ.cc:75)
+==19344==    by 0x40B69E: TPMMS::Phase1() (BigQ.cc:106)
+==19344==    by 0x40BED9: TPMMS::Sort() (BigQ.cc:188)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Uninitialised value was created by a heap allocation
+==19344==    at 0x4C2BAD0: operator new[](unsigned long, std::nothrow_t const&) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4040C8: File::AddPage(Page*, long) (File.cc:214)
+==19344==    by 0x40B372: TPMMS::RunToFile(long&) (BigQ.cc:75)
+==19344==    by 0x40B69E: TPMMS::Phase1() (BigQ.cc:106)
+==19344==    by 0x40BED9: TPMMS::Sort() (BigQ.cc:188)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344== 
+==19344== Thread 2:
+==19344== Syscall param write(buf) points to uninitialised byte(s)
+==19344==    at 0x536035D: ??? (syscall-template.S:81)
+==19344==    by 0x404145: File::AddPage(Page*, long) (File.cc:223)
+==19344==    by 0x405D20: DBFile::Close() (DBFile.cc:155)
+==19344==    by 0x41407D: producer(void*) (driver2a.cc:25)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Address 0x7fac4e8 is 95,160 bytes inside a block of size 131,072 alloc'd
+==19344==    at 0x4C2BAD0: operator new[](unsigned long, std::nothrow_t const&) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4040C8: File::AddPage(Page*, long) (File.cc:214)
+==19344==    by 0x405D20: DBFile::Close() (DBFile.cc:155)
+==19344==    by 0x41407D: producer(void*) (driver2a.cc:25)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Uninitialised value was created by a heap allocation
+==19344==    at 0x4C2BAD0: operator new[](unsigned long, std::nothrow_t const&) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4040C8: File::AddPage(Page*, long) (File.cc:214)
+==19344==    by 0x405D20: DBFile::Close() (DBFile.cc:155)
+==19344==    by 0x41407D: producer(void*) (driver2a.cc:25)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344== 
+==19344== Thread 4:
+==19344== Syscall param write(buf) points to uninitialised byte(s)
+==19344==    at 0x536035D: ??? (syscall-template.S:81)
+==19344==    by 0x404145: File::AddPage(Page*, long) (File.cc:223)
+==19344==    by 0x40B21A: TPMMS::RunToFile(long&) (BigQ.cc:66)
+==19344==    by 0x40B795: TPMMS::Phase1() (BigQ.cc:114)
+==19344==    by 0x40BED9: TPMMS::Sort() (BigQ.cc:188)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Address 0x80a87ac is 131,052 bytes inside a block of size 131,072 alloc'd
+==19344==    at 0x4C2BAD0: operator new[](unsigned long, std::nothrow_t const&) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4040C8: File::AddPage(Page*, long) (File.cc:214)
+==19344==    by 0x40B21A: TPMMS::RunToFile(long&) (BigQ.cc:66)
+==19344==    by 0x40B795: TPMMS::Phase1() (BigQ.cc:114)
+==19344==    by 0x40BED9: TPMMS::Sort() (BigQ.cc:188)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Uninitialised value was created by a heap allocation
+==19344==    at 0x4C2BAD0: operator new[](unsigned long, std::nothrow_t const&) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4040C8: File::AddPage(Page*, long) (File.cc:214)
+==19344==    by 0x40B21A: TPMMS::RunToFile(long&) (BigQ.cc:66)
+==19344==    by 0x40B795: TPMMS::Phase1() (BigQ.cc:114)
+==19344==    by 0x40BED9: TPMMS::Sort() (BigQ.cc:188)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344== 
+==19344== Syscall param write(buf) points to uninitialised byte(s)
+==19344==    at 0x536035D: ??? (syscall-template.S:81)
+==19344==    by 0x404145: File::AddPage(Page*, long) (File.cc:223)
+==19344==    by 0x40B372: TPMMS::RunToFile(long&) (BigQ.cc:75)
+==19344==    by 0x40B795: TPMMS::Phase1() (BigQ.cc:114)
+==19344==    by 0x40BED9: TPMMS::Sort() (BigQ.cc:188)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Address 0x80d8108 is 87,112 bytes inside a block of size 131,072 alloc'd
+==19344==    at 0x4C2BAD0: operator new[](unsigned long, std::nothrow_t const&) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4040C8: File::AddPage(Page*, long) (File.cc:214)
+==19344==    by 0x40B372: TPMMS::RunToFile(long&) (BigQ.cc:75)
+==19344==    by 0x40B795: TPMMS::Phase1() (BigQ.cc:114)
+==19344==    by 0x40BED9: TPMMS::Sort() (BigQ.cc:188)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Uninitialised value was created by a heap allocation
+==19344==    at 0x4C2BAD0: operator new[](unsigned long, std::nothrow_t const&) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4040C8: File::AddPage(Page*, long) (File.cc:214)
+==19344==    by 0x40B372: TPMMS::RunToFile(long&) (BigQ.cc:75)
+==19344==    by 0x40B795: TPMMS::Phase1() (BigQ.cc:114)
+==19344==    by 0x40BED9: TPMMS::Sort() (BigQ.cc:188)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344== 
+==19344== Mismatched free() / delete / delete []
+==19344==    at 0x4C2C2BC: operator delete(void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x40BE14: TPMMS::Phase2() (BigQ.cc:178)
+==19344==    by 0x40BEF0: TPMMS::Sort() (BigQ.cc:189)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Address 0x7a20600 is 0 bytes inside a block of size 200 alloc'd
+==19344==    at 0x4C2B800: operator new[](unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x40BB1D: TPMMS::Phase2() (BigQ.cc:155)
+==19344==    by 0x40BEF0: TPMMS::Sort() (BigQ.cc:189)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344== 
+==19344== Mismatched free() / delete / delete []
+==19344==    at 0x4C2C2BC: operator delete(void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x40BE20: TPMMS::Phase2() (BigQ.cc:179)
+==19344==    by 0x40BEF0: TPMMS::Sort() (BigQ.cc:189)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Address 0x7a20d40 is 0 bytes inside a block of size 200 alloc'd
+==19344==    at 0x4C2B800: operator new[](unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x40BB4A: TPMMS::Phase2() (BigQ.cc:156)
+==19344==    by 0x40BEF0: TPMMS::Sort() (BigQ.cc:189)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344== 
+==19344== Mismatched free() / delete / delete []
+==19344==    at 0x4C2C2BC: operator delete(void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x40BE2C: TPMMS::Phase2() (BigQ.cc:180)
+==19344==    by 0x40BEF0: TPMMS::Sort() (BigQ.cc:189)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344==  Address 0x7a212a0 is 0 bytes inside a block of size 200 alloc'd
+==19344==    at 0x4C2B800: operator new[](unsigned long) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x40BB77: TPMMS::Phase2() (BigQ.cc:157)
+==19344==    by 0x40BEF0: TPMMS::Sort() (BigQ.cc:189)
+==19344==    by 0x40A856: Work(void*) (BigQ.cc:22)
+==19344==    by 0x5359181: start_thread (pthread_create.c:312)
+==19344==    by 0x566A00C: clone (clone.S:111)
+==19344== 
+ consumer: 60175 recs out of 60175 recs in sorted order 
+==19344== Thread 1:
+==19344== Mismatched free() / delete / delete []
+==19344==    at 0x4C2C2BC: operator delete(void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4069E1: Schema::~Schema() (Schema.cc:135)
+==19344==    by 0x406A7D: Schema::~Schema() (Schema.cc:138)
+==19344==    by 0x414A87: relation::~relation() (driver2a.h:45)
+==19344==    by 0x413E61: cleanup() (driver2a.h:112)
+==19344==    by 0x41498C: main (driver2a.cc:155)
+==19344==  Address 0x5c3b320 is 0 bytes inside a block of size 13 alloc'd
+==19344==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x55F83C9: strdup (strdup.c:42)
+==19344==    by 0x4066A2: Schema::Schema(char*, char*) (Schema.cc:86)
+==19344==    by 0x413AD0: setup() (driver2a.h:101)
+==19344==    by 0x4147E6: main (driver2a.cc:122)
+==19344== 
+==19344== Mismatched free() / delete / delete []
+==19344==    at 0x4C2C2BC: operator delete(void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x406AF8: Attribute::~Attribute() (Schema.h:18)
+==19344==    by 0x406A26: Schema::~Schema() (Schema.cc:136)
+==19344==    by 0x406A7D: Schema::~Schema() (Schema.cc:138)
+==19344==    by 0x414A87: relation::~relation() (driver2a.h:45)
+==19344==    by 0x413E61: cleanup() (driver2a.h:112)
+==19344==    by 0x41498C: main (driver2a.cc:155)
+==19344==  Address 0x5c3b890 is 0 bytes inside a block of size 10 alloc'd
+==19344==    at 0x4C2AB80: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x55F83C9: strdup (strdup.c:42)
+==19344==    by 0x406842: Schema::Schema(char*, char*) (Schema.cc:115)
+==19344==    by 0x413AD0: setup() (driver2a.h:101)
+==19344==    by 0x4147E6: main (driver2a.cc:122)
+==19344== 
+==19344== 
+==19344== HEAP SUMMARY:
+==19344==     in use at exit: 53,885 bytes in 19 blocks
+==19344==   total heap usage: 545,667 allocs, 545,648 frees, 80,433,507 bytes allocated
+==19344== 
+==19344== 288 bytes in 1 blocks are possibly lost in loss record 14 of 19
+==19344==    at 0x4C2CC70: calloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x4012E54: _dl_allocate_tls (dl-tls.c:296)
+==19344==    by 0x5359DA0: pthread_create@@GLIBC_2.2.5 (allocatestack.c:589)
+==19344==    by 0x40A7CE: BigQ::BigQ(Pipe&, Pipe&, OrderMaker&, int) (BigQ.cc:11)
+==19344==    by 0x414718: test1(int, int) (driver2a.cc:114)
+==19344==    by 0x414987: main (driver2a.cc:153)
+==19344== 
+==19344== 1,608 bytes in 1 blocks are possibly lost in loss record 16 of 19
+==19344==    at 0x4C2BAD0: operator new[](unsigned long, std::nothrow_t const&) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x403375: Pipe::Pipe(int) (Pipe.cc:19)
+==19344==    by 0x4032DA: Pipe::Pipe() (Pipe.cc:7)
+==19344==    by 0x40AD6B: TPMMS::TPMMS(Pipe&, Pipe&, OrderMaker&, int&) (BigQ.cc:46)
+==19344==    by 0x40A791: BigQ::BigQ(Pipe&, Pipe&, OrderMaker&, int) (BigQ.cc:8)
+==19344==    by 0x414718: test1(int, int) (driver2a.cc:114)
+==19344==    by 0x414987: main (driver2a.cc:153)
+==19344== 
+==19344== 1,608 bytes in 1 blocks are possibly lost in loss record 17 of 19
+==19344==    at 0x4C2BAD0: operator new[](unsigned long, std::nothrow_t const&) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==19344==    by 0x403375: Pipe::Pipe(int) (Pipe.cc:19)
+==19344==    by 0x4032DA: Pipe::Pipe() (Pipe.cc:7)
+==19344==    by 0x40AD8C: TPMMS::TPMMS(Pipe&, Pipe&, OrderMaker&, int&) (BigQ.cc:46)
+==19344==    by 0x40A791: BigQ::BigQ(Pipe&, Pipe&, OrderMaker&, int) (BigQ.cc:8)
+==19344==    by 0x414718: test1(int, int) (driver2a.cc:114)
+==19344==    by 0x414987: main (driver2a.cc:153)
+==19344== 
+==19344== LEAK SUMMARY:
+==19344==    definitely lost: 0 bytes in 0 blocks
+==19344==    indirectly lost: 0 bytes in 0 blocks
+==19344==      possibly lost: 3,504 bytes in 3 blocks
+==19344==    still reachable: 50,381 bytes in 16 blocks
+==19344==         suppressed: 0 bytes in 0 blocks
+==19344== Reachable blocks (those to which a pointer was found) are not shown.
+==19344== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==19344== 
+==19344== For counts of detected and suppressed errors, rerun with: -v
+==19344== ERROR SUMMARY: 198 errors from 15 contexts (suppressed: 0 from 0)

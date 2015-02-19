@@ -34,8 +34,8 @@ TPMMS::TPMMS(Pipe &_in, Pipe &_out, File &_file, Page &_page, ComparisonEngine &
 }
 
 TPMMS::TPMMS():
-		in(myIn), out(myOut), file(myFile), page(myPage), rec(new Record()), comp(myComp),
-		order(myOrder), runPos(myRunPos), run(myRun), runlen(0) {
+		in(in), out(out), file(myFile), page(myPage), rec(new Record()), comp(myComp),
+		order(order), runPos(myRunPos), run(myRun), runlen(0) {
 	totalPageCount = 0;
 	runSizeInBytes = PAGE_SIZE * runlen;
 	currRunSizeInBytes = 0;
@@ -43,7 +43,7 @@ TPMMS::TPMMS():
 
 TPMMS::TPMMS(Pipe &_in, Pipe &_out, OrderMaker &_sortorder, int &_runlen):
 		in(_in), out(_out), file(myFile), page(myPage), rec(new Record()), comp(myComp),
-		order(myOrder), runPos(myRunPos), run(myRun), runlen(_runlen) {
+		order(_sortorder), runPos(myRunPos), run(myRun), runlen(_runlen) {
 	totalPageCount = 0;
 	runSizeInBytes = PAGE_SIZE * runlen;
 	currRunSizeInBytes = 0;
