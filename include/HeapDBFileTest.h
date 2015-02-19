@@ -74,7 +74,6 @@ public:
 	void Load(Schema &myschema, char *loadpath, Record &record) { file.Load(myschema, loadpath, record); }
 
 	void SetDBToheapdb() {
-		delete file.delegate;
 		file.delegate = &heapdb;
 	}
 
