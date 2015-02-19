@@ -2,6 +2,7 @@
 #include "Defs.h"
 #include <algorithm>
 #include <iostream>
+#include <cstdio>
 
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
     TPMMS* tpmms = new TPMMS(in, out, sortorder, runlen);
@@ -83,10 +84,11 @@ void TPMMS::RunToFile(off_t &totalPageCount) {
 	run.clear();
 }
 
-bool TPMMS::AddRecord(Record* rec) {
+bool TPMMS::AddRecord(Record* &rec) {
 	if(rec->Size()+currRunSizeInBytes <= runSizeInBytes) {
 		run.push_back(rec);
 		currRunSizeInBytes += rec->Size();
+		rec = new Record(); // can't re-use object
 		return true;
 	} else if(run.size() == 0) {
 		throw std::runtime_error("rec exceeds the Page size");
@@ -95,11 +97,15 @@ bool TPMMS::AddRecord(Record* rec) {
 }
 
 void TPMMS::Phase1() {
+	totalPageCount = 0;
+	runPos.push_back(totalPageCount);
+	currRunSizeInBytes = runlen * sizeof (int);
 	while(in.Remove(rec)) {
 		if(!AddRecord(rec)) {
 			SortRun();
 			RunToFile(totalPageCount);
 			runPos.push_back(totalPageCount);
+			currRunSizeInBytes = runlen * sizeof (int); // Reset currRunsSizeInButes
 			AddRecord(rec); // Add the record that failed to get added
 		}
 	}
@@ -110,16 +116,84 @@ void TPMMS::Phase1() {
 	}
 }
 
+void TPMMS::GetNextRecord(int min, Record **&heads, off_t *&runIndex, Page **&pages, int &runsLeft) {
+	if(!pages[min]->GetFirst(heads[min])) {
+		// We have run out of pages
+		++runIndex[min];
+		if(runIndex[min] < runPos[min+1]) {
+			file.GetPage(pages[min], runIndex[min]);
+			pages[min]->GetFirst(heads[min]); // Get the missing recordR
+		}
+		else{
+			 --runsLeft; // The run has run out of pages.
+			 heads[min] = NULL;
+		}
+			
+	}
+}
+
+int TPMMS::FindMin(int size, Record **&heads) {
+	int minIndex = -1;
+	Record *min = NULL;
+
+	for(int i = 0; i < size; i++) {
+		if(heads[i] != NULL && ( min == NULL || comp.Compare(min, heads[i], &order) < 0 )) {
+			min = heads[i];
+			minIndex = i;
+		}
+	}
+	return minIndex;
+}
+
 void TPMMS::Phase2() {
+	int minIndex = -1;
+	int totalRuns = runPos.size() - 1;
+	int runsLeft = totalRuns;
 
+	// initialize
+	Record **heads = new Record*[totalRuns];
+	off_t *runIndex = new off_t[totalRuns];
+	Page ** pages = new Page*[totalRuns];
 
-	file.Close();
-	remove("sortingtemp.bin");
-	out.ShutDown();
+	for(int i = 0; i < totalRuns; i++) {
+		heads[i] = new Record();
+		runIndex[i] = runPos[i];
+		pages[i] = new Page();
+		file.GetPage(pages[i], runIndex[i]);
+		pages[i]->GetFirst(heads[i]);
+	}
+
+	while(runsLeft > 0) {
+		minIndex = FindMin(totalRuns, heads);
+		out.Insert(heads[minIndex]);
+		GetNextRecord(minIndex, heads, runIndex, pages, runsLeft);
+	}
+
+	// Clean up
+	for(int i = 0; i < totalRuns; i++) {
+		delete heads[i];
+		delete pages[i];
+	}
+	delete heads;
+	delete runIndex;
+	delete pages;
 }
 
 void TPMMS::Sort() {
-	std::cout << "Sorting time!" << std::endl;
-	//file.Create(0, "sortingtemp.bin"); // TODO: make actually random name.
-	// use http://www.cplusplus.com/reference/cstdio/tmpnam/ for rand file names
+	char* fname = tmpnam(NULL);	
+	while(fname == NULL) { fname = tmpnam(NULL); } // a temp file name
+	file.Open(0, fname);
+
+	// Initialize
+	rec = new Record;
+
+	Phase1();
+	Phase2();
+
+	// Clean up
+	out.ShutDown();
+	file.Close();
+	remove(fname);
+	delete rec;
+	runPos.clear();
 }

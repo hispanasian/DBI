@@ -11,21 +11,21 @@
  */
 TEST_F(TPMMSTest, RunToFile1) {
 	Sequence s1;
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			Times(5).
 			InSequence(s1).
 			WillRepeatedly(Return(1));
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			InSequence(s1).
 			WillOnce(Return(0));
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			Times(5).
 			InSequence(s1).
 			WillRepeatedly(Return(1));
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			InSequence(s1).
 			WillOnce(Return(0));
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			Times(5).
 			InSequence(s1).
 			WillRepeatedly(Return(1));
@@ -54,28 +54,28 @@ TEST_F(TPMMSTest, RunToFile1) {
  */
 TEST_F(TPMMSTest, RunToFile2) {
 	Sequence s1;
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			Times(2).
 			InSequence(s1).
 			WillRepeatedly(Return(1));
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			InSequence(s1).
 			WillOnce(Return(0));
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			Times(3).
 			InSequence(s1).
 			WillRepeatedly(Return(1));
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			InSequence(s1).
 			WillOnce(Return(0));
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			Times(2).
 			InSequence(s1).
 			WillRepeatedly(Return(1));
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			InSequence(s1).
 			WillOnce(Return(0));
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			InSequence(s1).
 			WillOnce(Return(1));
 
@@ -104,14 +104,14 @@ TEST_F(TPMMSTest, RunToFile2) {
  */
 TEST_F(TPMMSTest, RunToFile3) {
 	Sequence s1;
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			Times(2).
 			InSequence(s1).
 			WillRepeatedly(Return(1));
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			InSequence(s1).
 			WillOnce(Return(0));
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			Times(2).
 			InSequence(s1).
 			WillRepeatedly(Return(1));
@@ -137,14 +137,14 @@ TEST_F(TPMMSTest, RunToFile3) {
  */
 TEST_F(TPMMSTest, RunToFile4) {
 	Sequence s1;
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			Times(2).
 			InSequence(s1).
 			WillRepeatedly(Return(1));
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			InSequence(s1).
 			WillOnce(Return(0));
-	EXPECT_CALL(page, Append(_)).
+	EXPECT_CALL(page, Append(NotNull())).
 			InSequence(s1).
 			WillOnce(Return(0));
 

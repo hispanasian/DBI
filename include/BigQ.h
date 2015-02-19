@@ -64,8 +64,10 @@ private:
 	 *	Adds rec to the page buffer. If record fills the page buffer, the page will be moved
 	 *	to run. If this causes the number of pages to equal runlen, the record will not be added
 	 *  and the method will return false. Otherwise it will return true.
+	 *  @param rec	The Record that will be added. rec will be consumed and replaced with a new
+	 *  			Record
 	 */
-	virtual bool AddRecord(Record* rec);
+	virtual bool AddRecord(Record* &rec);
 
 	/**
 	 * Phase 1 of the TPMMS algorithm. This algorithm will take records from in and, once runlen
@@ -74,6 +76,24 @@ private:
 	 * down).
 	 */
 	virtual void Phase1();
+
+	/**
+	 * Replaces the old mininumum value located at min with a new value.
+	 * @param min		The index of the minimum record
+	 * @param heads		The array that will be updated with the new min value
+	 * @param runIndex	The index of each run.
+	 * @param pages		The "head" page of each run.
+	 * @param runsLeft	The number of runs remaining
+	 */
+	virtual void GetNextRecord(int min, Record **&heads, off_t *&runIndex, Page **&pages, int &runsLeft);
+
+	/**
+	 * Find the index of the minimum record in the heads.
+	 * @param size		The size of heads
+	 * @param heads		The head of each run.
+	 * @return 			The index of the min Record in head
+	 */
+	virtual int FindMin(int size, Record **&heads);
 
 	/**
 	 * Phase 2 of the TPMMS algorithm. This phase will take the runs from disk and merge them into

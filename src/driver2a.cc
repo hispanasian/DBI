@@ -16,8 +16,8 @@ void *producer (void *arg) {
 
 	while (dbfile.GetNext (temp) == 1) {
 		counter += 1;
-		if (counter%100000 == 0) {
-			 cerr << " producer: " << counter << endl;
+		if (counter%1000 == 0) {
+			 // cerr << " producer: " << counter << endl;
 		}
 		myPipe->Insert (&temp);
 	}
@@ -48,7 +48,11 @@ void *consumer (void *arg) {
 	Record rec[2];
 	Record *last = NULL, *prev = NULL;
 
+	int counter = 0;
+
 	while (t->pipe->Remove (&rec[i%2])) {
+		// if(counter % 10) cout << "Reading from output" << endl;
+		// counter++;
 		prev = last;
 		last = &rec[i%2];
 
