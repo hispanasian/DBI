@@ -6,7 +6,6 @@
 
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
     TPMMS* tpmms = new TPMMS(in, out, sortorder, runlen);
-    cout << "Creating thread" << endl;
     pthread_t worker;
     int ret = pthread_create(&worker, NULL, Work, (void*) tpmms);
     if(ret) {
@@ -129,7 +128,7 @@ void TPMMS::GetNextRecord(int min, Record **&heads, off_t *&runIndex, Page **&pa
 			 delete heads[min];
 			 heads[min] = NULL;
 		}
-			
+
 	}
 }
 
@@ -181,7 +180,7 @@ void TPMMS::Phase2() {
 }
 
 void TPMMS::Sort() {
-	char* fname = tmpnam(NULL);	
+	char* fname = tmpnam(NULL);
 	while(fname == NULL) { fname = tmpnam(NULL); } // a temp file name
 	file.Open(0, fname);
 
