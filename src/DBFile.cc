@@ -143,7 +143,7 @@ int DBFile::Close () {
 
 void DBFile::Load (Schema &f_schema, char *loadpath) {
 	Record record;
-	Load(f_schema, loadpath);
+	Load(f_schema, loadpath, record);
 }
 
 void DBFile::Load (Schema &f_schema, char *loadpath, Record &record) { delegate->Load(f_schema, loadpath, record); }
