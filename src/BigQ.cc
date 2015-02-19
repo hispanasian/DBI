@@ -126,6 +126,7 @@ void TPMMS::GetNextRecord(int min, Record **&heads, off_t *&runIndex, Page **&pa
 		}
 		else{
 			 --runsLeft; // The run has run out of pages.
+			 delete heads[min];
 			 heads[min] = NULL;
 		}
 			
@@ -183,9 +184,6 @@ void TPMMS::Sort() {
 	char* fname = tmpnam(NULL);	
 	while(fname == NULL) { fname = tmpnam(NULL); } // a temp file name
 	file.Open(0, fname);
-
-	// Initialize
-	rec = new Record;
 
 	Phase1();
 	Phase2();
