@@ -87,7 +87,7 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 int DBFile::Open (char *f_path) {
 	bool success = true;
 	bool rawOpen = false;
-
+	
 	Reset();
 
 	if(f_path == NULL) success = false;
@@ -96,7 +96,6 @@ int DBFile::Open (char *f_path) {
 		std::string buf(f_path);
 		buf.append(".header");
 		const char *header = buf.c_str();
-
 		if(!rfile.FileExists(f_path) || !rfile.FileExists(header)) success = false;
 		else {
 			// Begin
