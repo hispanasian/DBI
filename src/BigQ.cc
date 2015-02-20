@@ -7,6 +7,8 @@
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
     TPMMS* tpmms = new TPMMS(in, out, sortorder, runlen);
     pthread_t worker;
+    cout << "sortorder:" << endl;
+	sortorder.Print();
     int ret = pthread_create(&worker, NULL, Work, (void*) tpmms);
     if(ret) {
     	cout << "Unable to create thread " << ret << endl;
@@ -137,7 +139,7 @@ int TPMMS::FindMin(int size, Record **&heads) {
 	Record *min = NULL;
 
 	for(int i = 0; i < size; i++) {
-		if(heads[i] != NULL && ( min == NULL || comp.Compare(min, heads[i], &order) < 0 )) {
+		if(heads[i] != NULL && ( min == NULL || comp.Compare(min, heads[i], &order) > 0 )) {
 			min = heads[i];
 			minIndex = i;
 		}
