@@ -6,6 +6,7 @@
 #include "File.h"
 #include "Comparison.h"
 #include "ComparisonEngine.h"
+#include <string>
 
 
 // This stores an individual comparison that is part of a CNF
@@ -42,6 +43,7 @@ class OrderMaker {
 
 	friend class ComparisonEngine;
 	friend class CNF;
+	friend class OrderMakerTest;
 
 	int numAtts;
 
@@ -57,8 +59,17 @@ public:
 	// based upon ALL of their attributes
 	OrderMaker(Schema *schema);
 
+	// create an OrderMaker that can be used to sort records
+	// based upon str which is expected to have the following format:
+	// OrderMaker = (whichAtt whichType)*
+	OrderMaker(std::string str);
+
 	// print to the screen
 	void Print ();
+
+	// returns a string representation of OrderMaker in the following format:
+	// OrderMaker = (whichAtt whichType)*
+	std::string ToString();
 };
 
 class Record;

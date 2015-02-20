@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
+#include <stdexcept>
 
 #include "../include/Comparison.h"
 
@@ -102,6 +103,24 @@ OrderMaker :: OrderMaker(Schema *schema) {
         }
 }
 
+OrderMaker :: OrderMaker(std::string str) {
+	numAtts = 0;
+	char *tokens = strtok((char*)str.c_str(), " ");
+	while(tokens != NULL) {
+		whichAtts[numAtts] = stoi(tokens);
+		tokens = strtok(NULL, " ");
+		if(tokens != NULL) {
+			if(strcmp(tokens, "int") == 0) whichTypes[numAtts] = Int;
+			else if(strcmp(tokens, "double") == 0) whichTypes[numAtts] = Double;
+			else if(strcmp(tokens, "string") == 0) whichTypes[numAtts] = String;
+			else throw invalid_argument("Unexpected type: was found when creating OrderMaker. Type must be int, double, or string");
+		}
+		else throw invalid_argument("Expected a type but none was found when creating OrderMaker");
+		tokens = strtok(NULL, " ");
+		++numAtts;
+	}
+}
+
 
 void OrderMaker :: Print () {
 	printf("NumAtts = %5d\n", numAtts);
@@ -117,7 +136,11 @@ void OrderMaker :: Print () {
 	}
 }
 
+string OrderMaker :: ToString() {
+	string str = std::to_string(numAtts);
 
+	return str;
+}
 
 int CNF :: GetSortOrders (OrderMaker &left, OrderMaker &right) {
 
