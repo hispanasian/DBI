@@ -137,7 +137,14 @@ void OrderMaker :: Print () {
 }
 
 string OrderMaker :: ToString() {
-	string str = std::to_string(numAtts);
+	string str;
+	for(int i = 0; i < numAtts; i++) {
+		str += to_string(whichAtts[i]);
+		if (whichTypes[i] == Int) str += " int";
+		else if (whichTypes[i] == Double) str += " double";
+		else str += " string";
+		if (i < numAtts - 1) str += " ";
+	}
 
 	return str;
 }
