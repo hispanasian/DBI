@@ -45,9 +45,13 @@ public:
 
 	off_t CursorIndex() { return heapdb->cursorIndex; }
 
+	off_t GetDelegateCursorIndex() { return ((HeapDBFile*)file.delegate)->cursorIndex; }
+
 	void SetCursorIndex(off_t offset) { heapdb->cursorIndex = offset; }
 
 	off_t LastIndex() { return heapdb->lastIndex; }
+
+	off_t GetDelegateLastIndex() { return ((HeapDBFile*)file.delegate)->lastIndex; }
 
 	void SetLastIndex(off_t offset) { heapdb->lastIndex = offset; }
 
