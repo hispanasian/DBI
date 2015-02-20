@@ -20,6 +20,7 @@ typedef enum {heap, sorted, tree} fType;
 class DBFile {
 friend class DBFileTest;
 friend class HeapDBFileTest;
+friend class SortedDBFileTest;
 private:
 	File &file;
 	File myFile;

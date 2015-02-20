@@ -12,8 +12,8 @@
 #include <string.h>
 #include <stdio.h>
 
-SortedDBFile::SortedDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp):
-GenericDBFile(file, rfile, config, comp) {
+SortedDBFile::SortedDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp, SortInfo *_sortInfo):
+GenericDBFile(file, rfile, config, comp), sortInfo(_sortInfo) {
 
 }
 
