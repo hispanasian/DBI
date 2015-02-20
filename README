@@ -19,6 +19,7 @@ bin - stores the binaries
 build - stores all the object files
 data - contains catalog and 10M directory. Also the location where the database files get written to
 include - stores the header files
+inputs - stores input files used to run the drivers with automation
 lib - stores the google mock, google test, and dbgen libraries
 src - stores all the source files
 test - stores all the unit test source files
@@ -31,8 +32,8 @@ The header files for the binary heap files are stored in data/*.bin.header
 Simply run './bin/driver1' or './bin/driver2a' to run the corresponding program
 
 Advanced Makefile:
-By default, make will add the -O2 flag and -w flag to optimize the compilation and silence any 
-warnings. 
+By default, make will add the -O2 flag and -w flag to optimize the compilation and silence any
+warnings.
 If you wish to add the -g flag instead of the -O2 flag, do:
 make DEBUG=yes
 If you wish to see compile warnings, do:
