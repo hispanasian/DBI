@@ -22,6 +22,7 @@ class SortedDBFile: public GenericDBFile {
 friend class SortedDBFileTest;
 private:
 	SortInfo *sortInfo;
+	char *f_path;
 
 	/**
 	 * This is a function will be called by the public Load and it will provide it's own Record.
@@ -31,7 +32,7 @@ private:
 	virtual void Load (Schema &myschema, char *loadpath, Record &record);
 
 public:
-	SortedDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp, SortInfo *sortInfo);
+	SortedDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp, char *f_path, SortInfo *sortInfo);
     virtual ~SortedDBFile();
 
     /**

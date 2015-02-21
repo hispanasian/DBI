@@ -37,15 +37,15 @@ public:
 	StrictMock<MockPage> last;
 	StrictMock<MockSchema> schema;
 
-	DBFile file = DBFile(mockFile, rfile, config, comp);
-	SortedDBFile *sorteddb = new SortedDBFile(mockFile, rfile, config, comp, NULL);
-
 	char *path = "asdasdasd";
 	char *header = "asdasdasd.header";
 
+	DBFile file = DBFile(mockFile, rfile, config, comp);
+	SortedDBFile *sorteddb = new SortedDBFile(mockFile, rfile, config, comp, path, NULL);
+
 	void MakeSortedDBFile(SortInfo *sortInfo) {
 		delete sorteddb;
-		sorteddb = new SortedDBFile(mockFile, rfile, config, comp, sortInfo);
+		sorteddb = new SortedDBFile(mockFile, rfile, config, comp, path, sortInfo);
 	}
 
 	File GetFile() { return file.file; }

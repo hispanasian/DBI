@@ -63,7 +63,7 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 						config.AddKey("fType", "sorted");
 						config.AddKey("order", sort->myOrder->ToString());
 						config.AddKey("runLength", to_string(sort->runLength));
-						delegate = new SortedDBFile(file, rfile, config, comp, sort);
+						delegate = new SortedDBFile(file, rfile, config, comp, f_path, sort);
 					}
 				}
 				break;
@@ -127,7 +127,7 @@ int DBFile::Open (char *f_path) {
 					else {
 						SortInfo *sort = new SortInfo{ new OrderMaker(config.GetKey("order")),
 							stoi((char*)config.GetKey("runLength").c_str()) };
-						delegate = new SortedDBFile(file, rfile, config, comp, sort);
+						delegate = new SortedDBFile(file, rfile, config, comp, f_path, sort);
 					}
 				}
 				else if(strcmp("tree", key) == 0) {
