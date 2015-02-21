@@ -86,3 +86,8 @@ void RawFile::LSeek(off_t offset) {
 bool RawFile::FileExists(const char* fileName) {
 	return access(fileName, F_OK) != -1;
 }
+
+void RawFile::MakeTemp(char *scheme) {
+	int fd = mkstemp(scheme);
+	close(fd);
+}

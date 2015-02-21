@@ -83,6 +83,8 @@ public:
     MOCK_METHOD1(LSeek, void(off_t offset));
 //    virtual bool RawFile::FileExists(const char* fileName);
     MOCK_METHOD1(FileExists, bool(const char* fileName));
+//    virtual void MakeTemp(char *scheme);
+    MOCK_METHOD1(MakeTemp, void(char *scheme));
 };
 
 class MockDBConfig: public DBConfig {
@@ -269,3 +271,5 @@ public:
 //	virtual void Initialize();
 	MOCK_METHOD0(Initialize, void());
 };
+
+#endif
