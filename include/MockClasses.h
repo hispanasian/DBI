@@ -14,6 +14,7 @@
 #include "Pipe.h"
 #include "SortedDBFile.h"
 #include "TreeDBFile.h"
+#include "PipedPage.h"
 
 class MockRecord: public Record {
 public:
@@ -270,6 +271,20 @@ public:
 	MOCK_METHOD0(Flush, void());
 //	virtual void Initialize();
 	MOCK_METHOD0(Initialize, void());
+};
+
+class MockPipedPage: public PipedPage {
+public:
+    //virtual void ToBinary (char *bits);
+    MOCK_METHOD1(ToBinary, void(char *bits));
+    //virtual void FromBinary (char *bits);
+    MOCK_METHOD1(FromBinary, void(char *bits));
+    //virtual int GetFirst (Record *firstOne);
+    MOCK_METHOD1(GetFirst, int(Record *firstOne));
+    //virtual int Append (Record *addMe);
+    MOCK_METHOD1(Append, int(Record *addMe));
+    //virtual void EmptyItOut ();
+    MOCK_METHOD0(EmptyItOut, void());
 };
 
 #endif
