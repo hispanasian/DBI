@@ -23,6 +23,7 @@ public:
     virtual bool Truncate();
     virtual void LSeek(off_t offset);
     virtual bool FileExists(const char* fileName);
+    virtual int Rename(char *oldName, char *newName);
 
     /*
      * Takes in a char array scheme with the following pattern: filenameXXXXXX where the X's will

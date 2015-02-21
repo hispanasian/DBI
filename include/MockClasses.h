@@ -86,6 +86,8 @@ public:
     MOCK_METHOD1(FileExists, bool(const char* fileName));
 //    virtual void MakeTemp(char *scheme);
     MOCK_METHOD1(MakeTemp, void(char *scheme));
+//    virtual int Rename(char *oldName, char *newName);
+    MOCK_METHOD2(Rename, int(char *oldName, char *newName));'
 };
 
 class MockDBConfig: public DBConfig {
