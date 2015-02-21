@@ -73,6 +73,4 @@ TEST(PipedPageTest, Constructor) {
 //	EXPECT_CALL(mock, ShutDown());
 
 	PipedPage test = PipedPage(mock, file);
-
-	EXPECT_EQ(NULL, file);
 }

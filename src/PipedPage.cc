@@ -38,7 +38,7 @@ PipedPage :: PipedPage (Pipe &_recs, File *&_file): recs(_recs) {
 
 		// Cleanup
 		data->recs.ShutDown();
-		delete data->file;
+		data->file->Close();
 		data -> file = NULL;
 		delete data;
 	}, (void*)data);
