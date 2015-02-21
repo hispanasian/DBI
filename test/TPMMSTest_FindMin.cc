@@ -28,7 +28,7 @@ TEST_F(TPMMSTest, FindMin2) {
 	EXPECT_CALL(comp, Compare(NotNull(), NotNull(), &order)).
 			Times(4).
 			InSequence(s1).
-			WillRepeatedly(Return(5));
+			WillRepeatedly(Return(-5));
 
 	EXPECT_EQ(0, FindMin(5,head));
 }
@@ -46,10 +46,10 @@ TEST_F(TPMMSTest, FindMin3) {
 	EXPECT_CALL(comp, Compare(NotNull(), NotNull(), &order)).
 			Times(3).
 			InSequence(s1).
-			WillRepeatedly(Return(-1));
+			WillRepeatedly(Return(1));
 	EXPECT_CALL(comp, Compare(NotNull(), NotNull(), &order)).
 			InSequence(s1).
-			WillOnce(Return(-1));
+			WillOnce(Return(1));
 
 
 	EXPECT_EQ(4, FindMin(5,head));
@@ -71,11 +71,11 @@ TEST_F(TPMMSTest, FindMin4) {
 			WillRepeatedly(Return(0));
 	EXPECT_CALL(comp, Compare(NotNull(), NotNull(), &order)).
 			InSequence(s1).
-			WillOnce(Return(-1));
+			WillOnce(Return(1));
 	EXPECT_CALL(comp, Compare(NotNull(), NotNull(), &order)).
 			Times(2).
 			InSequence(s1).
-			WillRepeatedly(Return(2));
+			WillRepeatedly(Return(-2));
 
 
 	EXPECT_EQ(2, FindMin(5,head));
@@ -134,10 +134,10 @@ TEST_F(TPMMSTest, FindMin8) {
 	Sequence s1;
 	EXPECT_CALL(comp, Compare(NotNull(), NotNull(), &order)).
 			InSequence(s1).
-			WillOnce(Return(-1));
+			WillOnce(Return(1));
 	EXPECT_CALL(comp, Compare(NotNull(), NotNull(), &order)).
 			InSequence(s1).
-			WillOnce(Return(-1));
+			WillOnce(Return(1));
 
 	EXPECT_EQ(4, FindMin(5,head));
 }

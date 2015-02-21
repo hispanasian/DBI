@@ -7,8 +7,6 @@
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
     TPMMS* tpmms = new TPMMS(in, out, sortorder, runlen);
     pthread_t worker;
-    cout << "sortorder:" << endl;
-	sortorder.Print();
     int ret = pthread_create(&worker, NULL, Work, (void*) tpmms);
     if(ret) {
     	cout << "Unable to create thread " << ret << endl;
