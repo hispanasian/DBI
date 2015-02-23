@@ -1,3 +1,7 @@
+#include "GenericDBFile.h"
+#include "HeapDBFile.h"
+#include "TreeDBFile.h"
+#include "SortedDBFile.h"
 #include "TwoWayList.h"
 #include "Record.h"
 #include "Schema.h"
@@ -14,23 +18,16 @@
 // stub file .. replace it with your own DBFile.cc
 
 DBFile::DBFile (): file(myFile), rfile(myRFile), config(myConfig), comp(myComp) {
-	cursorIndex = 0;
-	lastIndex = 0;
-	cursor = new Page();
-	last = new Page();
+	delegate = NULL;
 }
 
 DBFile::DBFile (File &otherFile, RawFile &otherRFile, DBConfig &otherConfig, ComparisonEngine &otherComp):
 		file(otherFile), rfile(otherRFile), config(otherConfig), comp(otherComp) {
-	cursorIndex = 0;
-	lastIndex = 0;
-	cursor = new Page();
-	last = new Page();
+	delegate = NULL;
 }
 
 DBFile::~DBFile () {
-	delete cursor;
-	delete last;
+	delete delegate;
 }
 
 int DBFile::Create (char *f_path, fType f_type, void *startup) {
@@ -47,20 +44,31 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 		const char *header = buf.c_str();
 
 		if(f_path == NULL ||
-				FileExists(f_path) ||
-				FileExists(header) ) {
+				rfile.FileExists(f_path) ||
+				rfile.FileExists(header) ) {
 			success = 0;
 		}
 		else {
 			switch (f_type) {
 			case heap:
 				config.AddKey("fType", "heap");
+				delegate = new HeapDBFile(file, rfile, config, comp);
 				break;
 			case sorted:
-				config.AddKey("fType", "sorted");
+				{
+					SortInfo *sort = (SortInfo*) startup;
+					if(sort == NULL || sort->myOrder == NULL || sort->runLength < 1) success = false;
+					else {
+						config.AddKey("fType", "sorted");
+						config.AddKey("order", sort->myOrder->ToString());
+						config.AddKey("runLength", to_string(sort->runLength));
+						delegate = new SortedDBFile(file, rfile, config, comp, sort);
+					}
+				}
 				break;
 			case tree:
 				config.AddKey("fType", "tree");
+				delegate = new TreeDBFile(file, rfile, config, comp);
 				break;
 			}
 			file.Open(0, f_path);
@@ -76,32 +84,18 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 				if(rawOpen) rfile.Close(); // Closing an unopened RawFile segfaults
 				remove(f_path);
 				remove(header);
-				config.Clear(); // Clear any changes made if there was a failure
+				Reset();
 			}
+			else delegate->Initialize();
 		}
 	}
 	return success;
 }
 
-void DBFile::Load (Schema &f_schema, char *loadpath) {
-	Record record;
-	Load(f_schema, loadpath, record);
-}
-
-void DBFile::Load (Schema &f_schema, char *loadpath, Record &record) {
-	if(!FileExists(loadpath)) throw std::runtime_error(loadpath + std::string(" could not be found."));
-	// File exists
-	FILE *file = fopen(loadpath, "r");
-	while(record.SuckNextRecord(&f_schema, file)) {
-		Add(record);
-	}
-	fclose(file);
-}
-
 int DBFile::Open (char *f_path) {
 	bool success = true;
 	bool rawOpen = false;
-
+	
 	Reset();
 
 	if(f_path == NULL) success = false;
@@ -110,8 +104,7 @@ int DBFile::Open (char *f_path) {
 		std::string buf(f_path);
 		buf.append(".header");
 		const char *header = buf.c_str();
-
-		if(!FileExists(f_path) || !FileExists(header)) success = false;
+		if(!rfile.FileExists(f_path) || !rfile.FileExists(header)) success = false;
 		else {
 			// Begin
 			file.Open(1, f_path);
@@ -123,36 +116,30 @@ int DBFile::Open (char *f_path) {
 				const char * key = config.GetKey("fType").c_str();
 
 				if(strcmp("heap", key) == 0) {
-					InitializePages();
+					delegate = new HeapDBFile(file, rfile, config, comp);
 				}
 				else if(strcmp("sorted", key) == 0) {
-					// TODO: Implement
+					delegate = new SortedDBFile(file, rfile, config, comp, NULL);
 				}
 				else if(strcmp("tree", key) == 0) {
-					// TODO: Implement
+					delegate = new TreeDBFile(file, rfile, config, comp);
 				}
 				else success = false;
+				if(success) Initialize();
 			}
 			if(!success) {
 				if(rawOpen) rfile.Close(); // Closing an unopened RawFile segfaults
 				file.Close();
-				config.Clear(); // Clear any changes made if there was a failure
+				Reset();
 			}
 		}
 	}
 	return success;
 }
 
-void DBFile::MoveFirst () {
-	file.AddPage(last, lastIndex); // Write out last page
-	if(GetLength() > 0) file.GetPage(cursor, 0); // Get Page if it exists
-	else cursor -> EmptyItOut(); // Empty out current Page if no Page exists
-	cursorIndex = 0;
-}
-
 int DBFile::Close () {
 	bool success = true;
-	file.AddPage(last, lastIndex); // Write out last page
+	delegate->Flush(); // Write out data
 	file.Close();
 
 	success &= config.Write(rfile);
@@ -162,72 +149,27 @@ int DBFile::Close () {
 	return success;
 }
 
-void DBFile::Add (Record &rec) {
-	if(!last->Append(&rec)) {
-		file.AddPage(last, lastIndex);
-		last->EmptyItOut();
-		if(!last->Append(&rec)) throw std::runtime_error("rec exceeds the Page size");
-		lastIndex++;
-	}
+void DBFile::Load (Schema &f_schema, char *loadpath) {
+	Record record;
+	Load(f_schema, loadpath, record);
 }
 
-int DBFile::GetNext (Record &fetchme) {
-	if(GetLength() == 0) {
-		// this file is empty, we can't return any records
-		return 0;
-	}
+void DBFile::Load (Schema &f_schema, char *loadpath, Record &record) { delegate->Load(f_schema, loadpath, record); }
 
-	if(cursor->GetFirst(&fetchme)) {
-		// there was a record available in the cursor
-		return 1;
-	} else {
-		// we need to find the next page with a record in it
-		// we look through the pages until we find one with a record
-		// or we reach the end
-		cursorIndex++;
-		while(cursorIndex < GetLength()) {
-			cursor->EmptyItOut();
-			file.GetPage(cursor, cursorIndex);
-			if(cursor->GetFirst(&fetchme)) {
-				return 1;
-			}
-			cursorIndex++;
-		}
-		// we read the last page without finding anything, make sure
-		// our index stays in range
-		cursorIndex--;
-		return 0;
-	}
-}
 
-int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
-	while(this->GetNext(fetchme)) {
-		if(comp.Compare(&fetchme, &literal, &cnf)) {
-			return 1;
-		}
-	}
-	return 0;
-}
+void DBFile::MoveFirst () { delegate->MoveFirst(); }
+
+void DBFile::Add (Record &rec) { delegate->Add(rec); }
+
+int DBFile::GetNext (Record &fetchme) { return delegate->GetNext(fetchme); }
+
+int DBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) { return delegate->GetNext(fetchme, cnf, literal); }
 
 void DBFile::Reset() {
-	cursorIndex = 0;
-	lastIndex = 0;
-	cursor->EmptyItOut();
-	last->EmptyItOut();
+	if(delegate != NULL) delegate->Reset();
 	config.Clear();
+	delete delegate;
+	delegate = NULL;
 }
 
-void DBFile::InitializePages() {
-	if(GetLength() == 0) { // don't call GetPage on
-		lastIndex = 0;          // a file that has no pages
-	} else {
-		file.GetPage(cursor, 0);
-		lastIndex = GetLength() - 1;
-		file.GetPage(last, lastIndex);
-	}
-}
-
-int DBFile::GetLength() {
-	off_t zero = 0;
-	return max(zero, file.GetLength()-1);
-}
+void DBFile::Initialize() { delegate->Initialize(); }

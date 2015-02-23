@@ -1,5 +1,5 @@
-#ifndef DBFILETEST_H
-#define DBFILETEST_H
+#ifndef sorteddbDBFILETEST_H
+#define sorteddbDBFILETEST_H
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -10,7 +10,7 @@
 #include "../include/DBFile.h"
 #include "../include/File.h"
 #include "../include/Schema.h"
-#include "GenericDBFile.h"
+#include "SortedDBFile.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -26,31 +26,45 @@ using ::testing::SetArgPointee;
 using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Ref;
-using ::testing::Pointee;
-using ::testing::NotNull;
 
-class DBFileTest: public ::testing::Test {
+class SortedDBFileTest: public ::testing::Test {
 public:
 	StrictMock<MockFile> mockFile;
 	StrictMock<MockDBConfig> config;
 	StrictMock<MockRawFile> rfile;
 	StrictMock<MockComparisonEngine> comp;
-	DBFile file = DBFile(mockFile, rfile, config, comp);
 	StrictMock<MockPage> cursor;
 	StrictMock<MockPage> last;
 	StrictMock<MockSchema> schema;
 
+	DBFile file = DBFile(mockFile, rfile, config, comp);
+	SortedDBFile *sorteddb = new SortedDBFile(mockFile, rfile, config, comp, NULL);
+
 	char *path = "asdasdasd";
 	char *header = "asdasdasd.header";
 
-	void Load(Schema &myschema, char *loadpath, Record &record) { file.Load(myschema, loadpath, record); }
-
-	void SetDB(GenericDBFile *db) {
-		delete file.delegate;
-		file.delegate = db;
+	void MakeSortedDBFile(SortInfo *sortInfo) {
+		delete sorteddb;
+		sorteddb = new SortedDBFile(mockFile, rfile, config, comp, sortInfo);
 	}
 
-	GenericDBFile* GetDB() { return file.delegate; }
+	File GetFile() { return file.file; }
+
+	void Load(Schema &myschema, char *loadpath, Record &record) { file.Load(myschema, loadpath, record); }
+
+	void SetDBTosorteddb() {
+		file.delegate = sorteddb;
+	}
+
+	GenericDBFile* Delegate() { return file.delegate; }
+
+	void SetDBNull() { file.delegate = NULL; }
+
+	void SetSortInfo(SortInfo *sortInfo) { ((SortedDBFile*)file.delegate)-> sortInfo = sortInfo; }
+
+	OrderMaker* GetOrder() { return ((SortedDBFile*)file.delegate)-> sortInfo -> myOrder; }
+
+	int GetRunLength() { return ((SortedDBFile*)file.delegate)-> sortInfo -> runLength; }
 };
 
 #endif
