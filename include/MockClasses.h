@@ -269,3 +269,5 @@ public:
 //	virtual void Initialize();
 	MOCK_METHOD0(Initialize, void());
 };
+
+#endif
