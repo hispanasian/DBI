@@ -73,6 +73,10 @@ int SortedDBFile::GetNext (Record &fetchme) {
 	return 0;
 }
 
+int SortedDBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp){
+	return 0;
+}
+
 int SortedDBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
 	while(this->GetNext(fetchme)) {
 		if(comp.Compare(&fetchme, &literal, &cnf)) {
@@ -164,4 +168,37 @@ void SortedDBFile::Initialize() {
 	if(in == NULL) in = new Pipe(PIPE_SIZE);
 	if(out == NULL) out = new Pipe(PIPE_SIZE);
 	if(create) BigQ(*in, *out, *(sortInfo->myOrder), sortInfo->runLength);
+}
+
+bool SortedDBFile::BinarySearch(Record &literal, OrderMaker &query) {
+	Record rec;
+	Page page;
+	ComparisonEngine comp;
+	return BinarySearch(literal, query, comp, rec, page);
+}
+
+bool SortedDBFile::BinarySearch(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page) {
+	return true;
+}
+
+void SortedDBFile::GetBSTPage(Page &page, off_t index) {
+	if(index == cursorIndex) {
+		char *bits;
+		cursor->ToBinary(bits);
+		page.FromBinary(bits);
+	}
+	else file.GetPage(&page, index);
+}
+
+bool SortedDBFile::FindValidRecord(Record &literal, OrderMaker &query, int index) {
+	Record rec;
+	Page page;
+	Page buff;
+	ComparisonEngine comp;
+	return FindValidRecord(literal, query, index, rec, page, buff, comp);
+}
+
+bool SortedDBFile::FindValidRecord(Record &literal, OrderMaker &query, int index, Record &rec,
+		Page &page, Page &buff, ComparisonEngine &comp) {
+	return false;
 }

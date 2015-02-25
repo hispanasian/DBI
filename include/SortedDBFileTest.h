@@ -31,6 +31,9 @@ class PartialSortedDBFileMock: public SortedDBFile {
 public:
 	MOCK_METHOD1(Flush, void(HeapDBFile &temp));
 	MOCK_METHOD0(Flush, void());
+	MOCK_METHOD2(BinarySearch, bool(Record &literal, OrderMaker &query));
+	MOCK_METHOD2(GetBSTPage, void(Page &page, off_t index));
+	MOCK_METHOD3(FindValidRecord, bool(Record &literal, OrderMaker &query, int index));
 private:
 	virtual void Load (Schema &myschema, char *loadpath, Record &record);
 	virtual void Flush(File &temp);
@@ -47,6 +50,12 @@ public:
 //	virtual void Flush();
 	virtual void Initialize();
 	virtual void Reset();
+//	virtual bool BinarySearch(Record &literal, OrderMaker &query);
+	virtual bool BinarySearch(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page);
+//	virtual void GetBSTPage(Page &page, off_t index);
+	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp);
+//	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index);
+	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index, Record &rec, Page &page, Page &buff, ComparisonEngine &comp);
 };
 
 class SortedDBFileTest: public ::testing::Test {
@@ -118,6 +127,14 @@ public:
 	void SetCursorIndex(int i) { sorteddb->cursorIndex = i;}
 
 	int GetCursorIndex() { return sorteddb->cursorIndex;}
+
+	virtual bool BinarySearch(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page) { return sorteddb -> BinarySearch(literal, query, comp, rec, page); }
+
+	virtual void GetBSTPage(Page &page, off_t index) { sorteddb -> GetBSTPage(page, index); }
+
+	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp) { return sorteddb -> GetNext(fetchme, cnf, literal, comp);}
+
+	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index, Record &rec, Page &page, Page &buff, ComparisonEngine &comp) { return sorteddb -> FindValidRecord(literal, query, index, rec, page, buff, comp); }
 };
 
 #endif

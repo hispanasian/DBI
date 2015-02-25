@@ -261,6 +261,18 @@ public:
 	MOCK_METHOD1(Flush, void(File &temp));
 //	virtual void Flush(HeapDBFile &temp);
 	MOCK_METHOD1(Flush, void(HeapDBFile &temp));
+//	virtual bool BinarySearch(Record &literal, OrderMaker &query);
+	MOCK_METHOD2(BinarySearch, bool(Record &literal, OrderMaker &query));
+	//	virtual bool BinarySearch(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page);
+	MOCK_METHOD5(BinarySearch, bool(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page));
+//	virtual void GetBSTPage(Page &page, off_t index);
+	MOCK_METHOD2(SortedDBFile, void(Page &page, off_t index));
+//	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp);
+	MOCK_METHOD4(GetNext, int(Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp));
+//	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index);
+	MOCK_METHOD3(FindValidRecord, bool(Record &literal, OrderMaker &query, int index));
+//	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index, Record &rec, Page &page, Page &buff, ComparisonEngine &comp);
+	MOCK_METHOD7(FindValidRecord, bool(Record &literal, OrderMaker &query, int index, Record &rec, Page &page, Page &buff, ComparisonEngine &comp));
 };
 
 class MockTreeDBFile: public TreeDBFile {
