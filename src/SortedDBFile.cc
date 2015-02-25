@@ -178,7 +178,24 @@ bool SortedDBFile::BinarySearch(Record &literal, OrderMaker &query) {
 }
 
 bool SortedDBFile::BinarySearch(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page) {
-	return true;
+	off_t start = cursorIndex;
+	off_t end = GetLength() - 1;
+	off_t mid;
+
+	while(start < mid) {
+		mid = (start + end + 1)/2; // super important to take 'ceiling'
+		GetBSTPage(page, mid);
+		if(page.GetFirst(&rec) == 0) ++start; // This should only happen when page is cursor and cursor is empty
+		else if(comp.Compare(&rec, &literal, &query) <= 0) start = mid;
+		else /* comp.Compare(&rec, &literal, &query) > 0 */ end = mid - 1;
+	}
+
+	// Now it must be the case that mid == start == end
+	// mid is an index to a page that:
+	// a. contains a Record that conforms to the query/literal pair or
+	// b. precedes a Page with a Record that conforms to the query/literal pair
+	// Find the Page/Record and set it as the cursor if it exists.
+	return FindValidRecord(literal, query, mid);
 }
 
 void SortedDBFile::GetBSTPage(Page &page, off_t index) {
