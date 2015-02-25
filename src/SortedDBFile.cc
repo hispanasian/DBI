@@ -18,14 +18,14 @@ SortedDBFile::SortedDBFile(): GenericDBFile() {
 	f_path = NULL;
 	in = NULL;
 	out = NULL;
-	bigq = NULL;
+	recordAdded = false;
 }
 
 SortedDBFile::SortedDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp, char *_f_path, SortInfo *_sortInfo):
 GenericDBFile(file, rfile, config, comp), f_path(_f_path), sortInfo(_sortInfo) {
 	in = NULL;
 	out = NULL;
-	bigq = NULL;
+	recordAdded = false;
 	Initialize();
 }
 
@@ -63,8 +63,10 @@ int SortedDBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
 }
 
 void SortedDBFile::Flush() {
-	File file;
-	Flush(file);
+	if(recordAdded) {
+		File file;
+		Flush(file);
+	}
 }
 
 void SortedDBFile::Flush(File &temp) {
@@ -127,15 +129,12 @@ void SortedDBFile::Reset() {
 
 	delete in;
 	delete out;
-	delete bigq;
 	delete rec;
 	in = NULL;
 	out = NULL;
-	bigq = NULL;
 }
 
 void SortedDBFile::Initialize() {
 	if(in == NULL) in = new Pipe(PIPE_SIZE);
 	if(out == NULL) out = new Pipe(PIPE_SIZE);
-	if(bigq == NULL) bigq = new BigQ(*in, *out, *(sortInfo->myOrder), sortInfo->runLength);
 }

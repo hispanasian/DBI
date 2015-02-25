@@ -107,9 +107,9 @@ public:
 
 	Pipe * GetOut() { return sorteddb -> out;}
 
-	void SetBigQ(BigQ *q) { sorteddb -> bigq = q; }
+	void SetRecordAdded(bool flag) { sorteddb -> recordAdded = flag; }
 
-	BigQ* GetBigQ() { return sorteddb -> bigq;}
+	bool GetRecordAdded() { return sorteddb -> recordAdded; }
 };
 
 #endif

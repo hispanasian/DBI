@@ -28,6 +28,9 @@ struct MergeData {
 
 /**
  *	SortedDBFile will store records in a sorted manner.
+ *	Load and Add should always set the recordAdded flag to true adn the Close, Read, and MoveFirst
+ *	methods should always call flush which should check if a record was added and flush added
+ *	Records.
  */
 class SortedDBFile: public GenericDBFile {
 friend class SortedDBFileTest;
@@ -36,9 +39,9 @@ friend class PartialSortedDBFileMock;
 private:
 	SortInfo *sortInfo;
 	char *f_path;
+	bool recordAdded;
 	Pipe *in;
 	Pipe *out; // The Pipe used to get the added Records
-	BigQ *bigq;
 
 	/**
 	 * This is a function will be called by the public Load and it will provide it's own Record.
