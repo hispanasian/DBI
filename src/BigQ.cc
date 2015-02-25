@@ -216,6 +216,7 @@ void TPMMS::Merge(PipedPage *p1, PipedPage *p2) {
 	pages[1] = p2;
 	pages[0]->GetFirst(heads[0]);
 	pages[1]->GetFirst(heads[1]);
+	runPos.clear();
 	runPos.push_back(0);
 	runPos.push_back(0);
 	runPos.push_back(1);
@@ -227,6 +228,7 @@ void TPMMS::Merge(PipedPage *p1, PipedPage *p2) {
 	}
 
 	// Clean up
+	out.ShutDown();
 	for(int i = 0; i < totalRuns; i++) {
 		delete heads[i];
 	}
