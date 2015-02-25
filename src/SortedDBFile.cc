@@ -190,7 +190,7 @@ void SortedDBFile::GetBSTPage(Page &page, off_t index) {
 	else file.GetPage(&page, index);
 }
 
-bool SortedDBFile::FindValidRecord(Record &literal, OrderMaker &query, int index) {
+bool SortedDBFile::FindValidRecord(Record &literal, OrderMaker &query, off_t index) {
 	Record rec;
 	Page page;
 	Page buff;
@@ -198,7 +198,43 @@ bool SortedDBFile::FindValidRecord(Record &literal, OrderMaker &query, int index
 	return FindValidRecord(literal, query, index, rec, page, buff, comp);
 }
 
-bool SortedDBFile::FindValidRecord(Record &literal, OrderMaker &query, int index, Record &rec,
+bool SortedDBFile::FindValidRecord(Record &literal, OrderMaker &query, off_t index, Record &rec,
 		Page &page, Page &buff, ComparisonEngine &comp) {
-	return false;
+
+	bool found = false;
+
+	// Look for a valid record in the first page
+	GetBSTPage(page, index);
+	int c;
+	while(page.GetFirst(&rec) != 0 && (c = comp.Compare(&rec, &literal, &query)) <= 0) {
+		if(c == 0) {
+			found = true;
+			break;
+		}
+	}
+
+	// Look for a valid Record in the following page if none exists in the current one
+	if(!found && index < GetLength() - 1) {
+		++index;
+		GetBSTPage(page, index);
+		while(page.GetFirst(&rec) != 0 && (c = comp.Compare(&rec, &literal, &query)) <= 0) {
+			if(c == 0) {
+				found = true;
+				break;
+			}
+		}
+	}
+
+	if(!found) return false;
+	// Copy remaining Records into buff and update cursor and cursorIndex
+	buff.Append(&rec); // Add the first correct Record
+	while(page.GetFirst(&rec) != 0) { buff.Append(&rec); }
+
+	// Update cursor
+	char *bits = new (std::nothrow) char[PAGE_SIZE];
+	buff.ToBinary(bits);
+	cursor->FromBinary(bits);
+	cursorIndex = index;
+
+	return true;
 }

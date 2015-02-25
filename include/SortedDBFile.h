@@ -101,9 +101,12 @@ private:
 	 * found. This will only look at the page pointed to by index and the following Page. If such a
 	 * page is found, this will set cursor and cursorIndex to the Page.
 	 */
-	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index);
+	virtual bool FindValidRecord(Record &literal, OrderMaker &query, off_t index);
 
-	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index, Record &rec, Page &page, Page &buff, ComparisonEngine &comp);
+	/**
+	 * Note that all the Records and pages are assumed to be empty.
+	 */
+	virtual bool FindValidRecord(Record &literal, OrderMaker &query, off_t index, Record &rec, Page &page, Page &buff, ComparisonEngine &comp);
 
 	SortedDBFile();
 
