@@ -126,7 +126,6 @@ void SortedDBFile::Reset() {
 		while(out->Remove(rec) != 0) {/* empty that thing out */}
 		out->ShutDown();
 	}
-
 	delete in;
 	delete out;
 	delete rec;

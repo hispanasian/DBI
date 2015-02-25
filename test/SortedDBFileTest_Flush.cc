@@ -23,7 +23,6 @@ TEST_F(SortedDBFileTest, Flush1) {
 
 	SetIn(&in);
 	SetOut(&out);
-	SetBigQ(&q);
 
 	Sequence s1, s2;
 	EXPECT_CALL(rfile, MakeTemp(NotNull())).
@@ -74,7 +73,6 @@ TEST_F(SortedDBFileTest, Flush2) {
 
 	SetIn(&in);
 	SetOut(&out);
-	SetBigQ(&q);
 
 	Sequence s1, s2;
 	EXPECT_CALL(rfile, MakeTemp(NotNull())).
@@ -125,7 +123,6 @@ TEST_F(SortedDBFileTest, Flush3) {
 
 	SetIn(&in);
 	SetOut(&out);
-	SetBigQ(&q);
 
 	Sequence s1, s2;
 	EXPECT_CALL(rfile, MakeTemp(NotNull())).
