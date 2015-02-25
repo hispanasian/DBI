@@ -6,7 +6,8 @@
  */
 TEST_F(SortedDBFileTest, Open1) {
 	Sequence s1, s2, s3;
-	SortInfo *info = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), 5 };
+	SortInfo *info = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), 10 };
+	MakeSortedDBFile(info);
 
 	// s1
 	EXPECT_CALL(mockFile, Open(1, path)).

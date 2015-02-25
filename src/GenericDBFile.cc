@@ -11,6 +11,10 @@
 #include <string.h>
 #include <stdio.h>
 
+GenericDBFile::GenericDBFile(): file(file), rfile(rfile), config(config), comp(comp) {
+
+}
+
 GenericDBFile::GenericDBFile(File &_file, RawFile &_rfile, DBConfig &_config,
 		ComparisonEngine &_comp): file(_file), rfile(_rfile), config(_config), comp(_comp) {
 

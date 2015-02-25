@@ -30,9 +30,9 @@ public:
 	 * This is a tricky Constructor. It will take file and create a pthread that will open it as
 	 * a heap (even if it is a sorted file, as long as things are added in order or read in order,
 	 * it is effectively sorted), read from it, and put it into the _recs until there are no
-	 * remaining files.
+	 * remaining files. Cleanup of file is left to the caller.
 	 */
-	PipedPage (Pipe &_recs, File *&file);
+	PipedPage (Pipe &_recs, File *file);
 	virtual ~PipedPage ();
 
 	/**

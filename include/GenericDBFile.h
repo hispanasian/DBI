@@ -17,6 +17,7 @@
  */
 class GenericDBFile {
 friend class DBFile;
+friend class MockGenericDBFile;
 protected:
 	File &file;
 	RawFile &rfile;
@@ -34,6 +35,7 @@ protected:
 	 * purposes (to Mock record).
 	 */
 	virtual void Load (Schema &myschema, char *loadpath, Record &record) = 0;
+	GenericDBFile();
 
 public:
 	GenericDBFile(File &_file, RawFile &_rfile, DBConfig &_config, ComparisonEngine &_comp);

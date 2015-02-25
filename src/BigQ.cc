@@ -1,8 +1,11 @@
 #include "BigQ.h"
 #include "Defs.h"
+#include "../include/PipedPage.h"
 #include <algorithm>
 #include <iostream>
 #include <cstdio>
+
+BigQ :: BigQ () {}
 
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
     TPMMS* tpmms = new TPMMS(in, out, sortorder, runlen);
@@ -193,4 +196,41 @@ void TPMMS::Sort() {
 	remove(fname);
 	delete rec;
 	runPos.clear();
+}
+
+void TPMMS::Merge(PipedPage *p1, PipedPage *p2) {
+	int minIndex = -1;
+	int totalRuns = 2;
+	int runsLeft = totalRuns;
+
+	// initialize
+	Record **heads = new Record*[totalRuns];
+	off_t *runIndex = new off_t[totalRuns];
+	Page **pages = new Page*[totalRuns];
+
+	heads[0] = new Record();
+	heads[1] = new Record();
+	runIndex[0] = 0;
+	runIndex[1] = 1;
+	pages[0] = p1;
+	pages[1] = p2;
+	pages[0]->GetFirst(heads[0]);
+	pages[1]->GetFirst(heads[1]);
+	runPos.push_back(0);
+	runPos.push_back(0);
+	runPos.push_back(1);
+
+	while(runsLeft > 0) {
+		minIndex = FindMin(totalRuns, heads);
+		out.Insert(heads[minIndex]);
+		GetNextRecord(minIndex, heads, runIndex, pages, runsLeft);
+	}
+
+	// Clean up
+	for(int i = 0; i < totalRuns; i++) {
+		delete heads[i];
+	}
+	delete heads;
+	delete runIndex;
+	delete pages;
 }

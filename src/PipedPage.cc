@@ -17,10 +17,9 @@
 
 PipedPage :: PipedPage (): recs(recs) {}
 
-PipedPage :: PipedPage (Pipe &_recs, File *&_file): recs(_recs) {
+PipedPage :: PipedPage (Pipe &_recs, File *_file): recs(_recs) {
 	pthread_t worker;
 	PipedPageData *data = new PipedPageData {_recs, _file};
-	_file = NULL;
 
 	int ret = pthread_create(&worker, NULL, [] (void* args) -> void* {
 		PipedPageData *data = (PipedPageData*) args;

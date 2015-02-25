@@ -67,10 +67,12 @@ TEST(PipedPageTest, EmptyItOut) {
  * A constructor that takes a file pointer should set it to NULL.
  */
 TEST(PipedPageTest, Constructor) {
+	// TODO: make this an integration test.
 	StrictMock<MockPipe> mock;
-	File *file;
+	File file;;
+
 
 //	EXPECT_CALL(mock, ShutDown());
 
-	PipedPage test = PipedPage(mock, file);
+//	PipedPage test = PipedPage(mock, &file);
 }

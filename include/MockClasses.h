@@ -87,7 +87,9 @@ public:
 //    virtual void MakeTemp(char *scheme);
     MOCK_METHOD1(MakeTemp, void(char *scheme));
 //    virtual int Rename(char *oldName, char *newName);
-    MOCK_METHOD2(Rename, int(char *oldName, char *newName));'
+    MOCK_METHOD2(Rename, int(char *oldName, char *newName));
+//    virtual int Remove(char *name);
+    MOCK_METHOD1(Remove, int(char *name));
 };
 
 class MockDBConfig: public DBConfig {
@@ -193,6 +195,8 @@ public:
 	MOCK_METHOD5(GetNextRecord, void(int min, Record **&heads, off_t *&runIndex, Page **&pages, int &runsLeft));
 //	virtual int FindMin(int size, Record **&heads);
 	MOCK_METHOD2(FindMin, int(int size, Record **&heads));
+//	virtual void Merge(PipedPage *p1, PipedPage *p2);
+	MOCK_METHOD2(Merge, void(PipedPage *p1, PipedPage *p2));
 };
 
 class MockGenericDBFile: public GenericDBFile {
@@ -253,6 +257,8 @@ public:
 	MOCK_METHOD0(Flush, void());
 //	virtual void Initialize();
 	MOCK_METHOD0(Initialize, void());
+//	virtual void Flush(HeapDBFile &temp);
+	MOCK_METHOD1(Flush, void(HeapDBFile &temp));
 };
 
 class MockTreeDBFile: public TreeDBFile {
