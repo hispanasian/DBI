@@ -114,6 +114,10 @@ public:
 	GetNextState GetGetNextState() { return sorteddb -> getNextState; }
 
 	void SetCursor(Page* cursor) { sorteddb->cursor = cursor;}
+
+	void SetCursorIndex(int i) { sorteddb->cursorIndex = i;}
+
+	int GetCursorIndex() { return sorteddb->cursorIndex;}
 };
 
 #endif

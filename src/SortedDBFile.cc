@@ -19,6 +19,7 @@ SortedDBFile::SortedDBFile(): GenericDBFile() {
 	in = NULL;
 	out = NULL;
 	cursor = new Page();
+	cursorIndex = 0;
 	rwState = Reading;
 	getNextState = NoCNF;
 }
@@ -29,10 +30,13 @@ GenericDBFile(file, rfile, config, comp), f_path(_f_path), sortInfo(_sortInfo), 
 	out = NULL;
 	rwState = Reading;
 	getNextState = NoCNF;	
+	cursorIndex = 0;
+	cursor = new Page();
 }
 
 SortedDBFile::~SortedDBFile () {
 	Reset();
+	delete cursor;
 }
 
 void SortedDBFile::Load (Schema &f_schema, char *loadpath) {
@@ -139,6 +143,8 @@ void SortedDBFile::Flush(HeapDBFile &temp) {
 }
 
 void SortedDBFile::Reset() {
+	cursor -> EmptyItOut();
+	cursorIndex = 0;
 	if(in != NULL) in->ShutDown();
 
 	// Make sure that BigQ finishes up with in
@@ -149,10 +155,8 @@ void SortedDBFile::Reset() {
 	delete in;
 	delete out;
 	delete rec;
-	delete cursor;
 	in = NULL;
 	out = NULL;
-	cursor = NULL;
 }
 
 void SortedDBFile::Initialize() {
