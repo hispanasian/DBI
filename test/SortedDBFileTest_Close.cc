@@ -8,6 +8,8 @@ TEST_F(SortedDBFileTest, Close1) {
 	MakeFlushlessSorted(sortInfo);
 	SetDBTosorteddb();
 
+	sorteddb->Initialize(); // start it
+
 	Sequence s1, s2, s3;
 	EXPECT_CALL(config, Write(Ref(rfile))).
 			InSequence(s1, s2).
@@ -22,8 +24,9 @@ TEST_F(SortedDBFileTest, Close1) {
 	EXPECT_CALL(*mock, Flush());
 	EXPECT_CALL(mockFile, Close());
 
-	GetOut()->ShutDown();
-
 	EXPECT_EQ(1, file.Close());
 	EXPECT_EQ(NULL, Delegate());
+
+	SetIn(NULL);
+	SetOut(NULL);
 }

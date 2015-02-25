@@ -28,11 +28,10 @@ GenericDBFile(file, rfile, config, comp), f_path(_f_path), sortInfo(_sortInfo) {
 	out = NULL;
 	rwState = Reading;
 	getNextState = NoCNF;
-	Initialize();
 }
 
 SortedDBFile::~SortedDBFile () {
-
+	Reset();
 }
 
 void SortedDBFile::Load (Schema &f_schema, char *loadpath) {
@@ -68,6 +67,7 @@ void SortedDBFile::Flush() {
 	if(rwState == Writing) {
 		File file;
 		Flush(file);
+		rwState = Reading;
 	}
 }
 
@@ -129,8 +129,7 @@ void SortedDBFile::Reset() {
 	// Make sure that BigQ finishes up with in
 	Record *rec = new Record();
 	if(out != NULL) {
-		while(out->Remove(rec) != 0) {/* empty that thing out */}
-		out->ShutDown();
+		while(out->Remove(rec) != 0) {/* empty that thing out and wait for BigQ to shut it down */}
 	}
 	delete in;
 	delete out;
@@ -140,7 +139,8 @@ void SortedDBFile::Reset() {
 }
 
 void SortedDBFile::Initialize() {
+	bool create = (in == NULL || out == NULL);
 	if(in == NULL) in = new Pipe(PIPE_SIZE);
 	if(out == NULL) out = new Pipe(PIPE_SIZE);
-	BigQ(*in, *out, sortInfo->myOrder, sortInfo->runLength);
+	if(create) BigQ(*in, *out, *(sortInfo->myOrder), sortInfo->runLength);
 }
