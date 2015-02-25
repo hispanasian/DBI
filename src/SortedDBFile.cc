@@ -201,31 +201,26 @@ bool SortedDBFile::FindValidRecord(Record &literal, OrderMaker &query, off_t ind
 bool SortedDBFile::FindValidRecord(Record &literal, OrderMaker &query, off_t index, Record &rec,
 		Page &page, Page &buff, ComparisonEngine &comp) {
 
-	bool found = false;
+	int c;
 
 	// Look for a valid record in the first page
 	GetBSTPage(page, index);
-	int c;
 	while(page.GetFirst(&rec) != 0 && (c = comp.Compare(&rec, &literal, &query)) <= 0) {
-		if(c == 0) {
-			found = true;
-			break;
-		}
+		if(c == 0) break;
 	}
 
-	// Look for a valid Record in the following page if none exists in the current one
-	if(!found && index < GetLength() - 1) {
+	// Look for a valid Record in the following page if none exists in the current one. If
+	// c != 0, then the previous loop failed because it ran out of Records
+	if(c < 0 && index < GetLength() - 1) {
 		++index;
 		GetBSTPage(page, index);
 		while(page.GetFirst(&rec) != 0 && (c = comp.Compare(&rec, &literal, &query)) <= 0) {
-			if(c == 0) {
-				found = true;
-				break;
-			}
+			if(c == 0) break;
 		}
 	}
 
-	if(!found) return false;
+	// Again, if c != 0, then the previous loop ran out of Records without finding a matching Record
+	if(c != 0) return false;
 	// Copy remaining Records into buff and update cursor and cursorIndex
 	buff.Append(&rec); // Add the first correct Record
 	while(page.GetFirst(&rec) != 0) { buff.Append(&rec); }
