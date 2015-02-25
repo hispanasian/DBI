@@ -23,6 +23,7 @@ TEST_F(SortedDBFileTest, MoveFirst1) {
 
 	sorteddb->MoveFirst();
 	EXPECT_EQ(0, GetCursorIndex());
+	EXPECT_EQ(NoCNF, GetGetNextState());
 
 	SetCursor(new Page());
 	delete mock;
@@ -53,6 +54,7 @@ TEST_F(SortedDBFileTest, MoveFirst2) {
 
 	sorteddb->MoveFirst();
 	EXPECT_EQ(0, GetCursorIndex());
+	EXPECT_EQ(NoCNF, GetGetNextState());
 
 	SetCursor(new Page());
 	delete mock;
@@ -79,6 +81,7 @@ TEST_F(SortedDBFileTest, MoveFirst3) {
 
 	sorteddb->MoveFirst();
 	EXPECT_EQ(0, GetCursorIndex());
+	EXPECT_EQ(NoCNF, GetGetNextState());
 
 	SetCursor(new Page());
 	delete mock;
@@ -104,6 +107,7 @@ TEST_F(SortedDBFileTest, MoveFirst4) {
 
 	sorteddb->MoveFirst();
 	EXPECT_EQ(0, GetCursorIndex());
+	EXPECT_EQ(NoCNF, GetGetNextState());
 
 	SetCursor(new Page());
 	delete mock;
