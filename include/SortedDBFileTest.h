@@ -111,6 +111,8 @@ public:
 
 	bool GetRWState() { return sorteddb -> rwState; }
 
+	void SetGetNextState(GetNextState state) { sorteddb -> getNextState = state; }
+
 	GetNextState GetGetNextState() { return sorteddb -> getNextState; }
 
 	void SetCursor(Page* cursor) { sorteddb->cursor = cursor;}

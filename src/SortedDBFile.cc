@@ -29,7 +29,7 @@ GenericDBFile(file, rfile, config, comp), f_path(_f_path), sortInfo(_sortInfo), 
 	in = NULL;
 	out = NULL;
 	rwState = Reading;
-	getNextState = NoCNF;	
+	getNextState = NoCNF;
 	cursorIndex = 0;
 	cursor = new Page();
 }
@@ -66,7 +66,10 @@ void SortedDBFile::MoveFirst () {
 }
 
 void SortedDBFile::Add (Record &rec) {
+	in->Insert(&rec);
 
+	rwState = Writing;
+	getNextState = NoCNF;
 }
 
 int SortedDBFile::GetNext (Record &fetchme) {
