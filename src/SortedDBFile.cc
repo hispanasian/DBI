@@ -182,7 +182,7 @@ bool SortedDBFile::BinarySearch(Record &literal, OrderMaker &query, ComparisonEn
 	off_t end = GetLength() - 1;
 	off_t mid;
 
-	while(start < mid) {
+	while(start < end) {
 		mid = (start + end + 1)/2; // super important to take 'ceiling'
 		GetBSTPage(page, mid);
 		if(page.GetFirst(&rec) == 0) ++start; // This should only happen when page is cursor and cursor is empty
