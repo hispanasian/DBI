@@ -23,6 +23,15 @@ public:
     virtual bool Truncate();
     virtual void LSeek(off_t offset);
     virtual bool FileExists(const char* fileName);
+    virtual int Rename(char *oldName, char *newName);
+    virtual int Remove(char *name);
+
+    /*
+     * Takes in a char array scheme with the following pattern: filenameXXXXXX where the X's will
+     * be replaced accordingly and used to generate and create a unique file. Note that char* is
+     * not constant because it WILL be changed. Note that this must end with 6 trailing X's
+     */
+    virtual void MakeTemp(char *scheme);
 };
 
 #endif RAWFILE_H

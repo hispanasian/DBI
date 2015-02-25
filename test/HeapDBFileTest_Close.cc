@@ -40,12 +40,8 @@ TEST_F(HeapDBFileTest, Close1) {
 
 
 	EXPECT_EQ(1, file.Close());
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
 	EXPECT_EQ(NULL, Delegate());
 
-	SetCursorNull();
-	SetLastNull();
 	SetDBNull();
 }
 

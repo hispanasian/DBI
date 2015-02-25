@@ -17,6 +17,7 @@
  */
 class HeapDBFile: public GenericDBFile {
 friend class HeapDBFileTest;
+friend class MockHeapDBFile;
 private:
 	off_t cursorIndex;
 	off_t lastIndex;
@@ -29,6 +30,7 @@ private:
 	 * purposes (to Mock record).
 	 */
 	virtual void Load (Schema &myschema, char *loadpath, Record &record);
+	HeapDBFile();
 
 public:
 	HeapDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp);

@@ -17,6 +17,7 @@
  */
 class GenericDBFile {
 friend class DBFile;
+friend class MockGenericDBFile;
 protected:
 	File &file;
 	File myFile;

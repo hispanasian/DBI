@@ -12,6 +12,13 @@
 #include <string.h>
 #include <stdio.h>
 
+HeapDBFile::HeapDBFile():GenericDBFile() {
+	cursorIndex = 0;
+	lastIndex = 0;
+	cursor = NULL;
+	last = NULL;
+}
+
 HeapDBFile::HeapDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp):
 GenericDBFile(file, rfile, config, comp) {
 	cursorIndex = 0;
