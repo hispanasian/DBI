@@ -270,4 +270,4 @@ public:
 	MOCK_METHOD0(Initialize, void());
 };
 
-#endif MOCKCLASSES_H
+#endif

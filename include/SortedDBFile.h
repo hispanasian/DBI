@@ -10,12 +10,18 @@
 #ifndef INCLUDE_SORTEDDBFILE_H_
 #define INCLUDE_SORTEDDBFILE_H_
 
+struct SortInfo {
+	OrderMaker *myOrder;
+	int runLength;
+};
+
 /**
  *	SortedDBFile will store records in a sorted manner.
  */
 class SortedDBFile: public GenericDBFile {
 friend class SortedDBFileTest;
 private:
+	SortInfo *sortInfo;
 
 	/**
 	 * This is a function will be called by the public Load and it will provide it's own Record.
@@ -25,7 +31,7 @@ private:
 	virtual void Load (Schema &myschema, char *loadpath, Record &record);
 
 public:
-	SortedDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp);
+	SortedDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp, SortInfo *sortInfo);
     virtual ~SortedDBFile();
 
     /**

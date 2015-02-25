@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <algorithm>
+#include <string>
 
 // stub file .. replace it with your own DBFile.cc
 
@@ -55,8 +56,16 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 				delegate = new HeapDBFile(file, rfile, config, comp);
 				break;
 			case sorted:
-				config.AddKey("fType", "sorted");
-				delegate = new SortedDBFile(file, rfile, config, comp);
+				{
+					SortInfo *sort = (SortInfo*) startup;
+					if(sort == NULL || sort->myOrder == NULL || sort->runLength < 1) success = false;
+					else {
+						config.AddKey("fType", "sorted");
+						config.AddKey("order", sort->myOrder->ToString());
+						config.AddKey("runLength", to_string(sort->runLength));
+						delegate = new SortedDBFile(file, rfile, config, comp, sort);
+					}
+				}
 				break;
 			case tree:
 				config.AddKey("fType", "tree");
@@ -111,7 +120,14 @@ int DBFile::Open (char *f_path) {
 					delegate = new HeapDBFile(file, rfile, config, comp);
 				}
 				else if(strcmp("sorted", key) == 0) {
-					delegate = new SortedDBFile(file, rfile, config, comp);
+					if(strcmp("", config.GetKey("order").c_str()) == 0 ||
+							strcmp("", config.GetKey("runLength").c_str()) == 0 ||
+							stoi((char*)config.GetKey("runLength").c_str()) < 1) success = false;
+					else {
+						SortInfo *sort = new SortInfo{ new OrderMaker(config.GetKey("order")),
+							stoi((char*)config.GetKey("runLength").c_str()) };
+						delegate = new SortedDBFile(file, rfile, config, comp, sort);
+					}
 				}
 				else if(strcmp("tree", key) == 0) {
 					delegate = new TreeDBFile(file, rfile, config, comp);
