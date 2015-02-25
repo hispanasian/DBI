@@ -33,7 +33,7 @@ public:
 	MOCK_METHOD0(Flush, void());
 	MOCK_METHOD2(BinarySearch, bool(Record &literal, OrderMaker &query));
 	MOCK_METHOD2(GetBSTPage, void(Page &page, off_t index));
-	MOCK_METHOD3(FindValidRecord, bool(Record &literal, OrderMaker &query, int index));
+	MOCK_METHOD3(FindValidRecord, bool(Record &literal, OrderMaker &query, off_t index));
 private:
 	virtual void Load (Schema &myschema, char *loadpath, Record &record);
 	virtual void Flush(File &temp);
