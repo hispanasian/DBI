@@ -63,7 +63,8 @@ int SortedDBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
 }
 
 void SortedDBFile::Flush() {
-
+	File file;
+	Flush(file);
 }
 
 void SortedDBFile::Flush(File &temp) {

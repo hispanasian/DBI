@@ -27,6 +27,28 @@ using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Ref;
 
+class PartialSortedDBFileMock: public SortedDBFile {
+public:
+	MOCK_METHOD1(Flush, void(HeapDBFile &temp));
+	MOCK_METHOD0(Flush, void());
+private:
+	virtual void Load (Schema &myschema, char *loadpath, Record &record);
+	virtual void Flush(File &temp);
+//	virtual void Flush(HeapDBFile &temp);
+
+public:
+	PartialSortedDBFileMock(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp, char *f_path, SortInfo *sortInfo);
+	virtual ~PartialSortedDBFileMock();
+	virtual void Load (Schema &myschema, char *loadpath);
+	virtual void MoveFirst ();
+	virtual void Add (Record &addme);
+	virtual int GetNext (Record &fetchme);
+	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal);
+//	virtual void Flush();
+	virtual void Initialize();
+	virtual void Reset();
+};
+
 class SortedDBFileTest: public ::testing::Test {
 public:
 	StrictMock<MockFile> mockFile;
@@ -36,6 +58,7 @@ public:
 	StrictMock<MockPage> cursor;
 	StrictMock<MockPage> last;
 	StrictMock<MockSchema> schema;
+	PartialSortedDBFileMock *mock = NULL;
 	SortInfo *sortInfo = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), 5 };
 
 	char *path = "asdasdasd";
@@ -47,6 +70,11 @@ public:
 	void MakeSortedDBFile(SortInfo *sortInfo) {
 		delete sorteddb;
 		sorteddb = new SortedDBFile(mockFile, rfile, config, comp, path, sortInfo);
+	}
+
+	void MakeFlushlessSorted(SortInfo *sortInfo) {
+		mock = new PartialSortedDBFileMock(mockFile, rfile, config, comp, path, sortInfo);
+		sorteddb = mock;
 	}
 
 	File GetFile() { return file.file; }

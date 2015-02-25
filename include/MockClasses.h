@@ -257,6 +257,8 @@ public:
 	MOCK_METHOD0(Flush, void());
 //	virtual void Initialize();
 	MOCK_METHOD0(Initialize, void());
+//	virtual void Flush(File &temp);
+	MOCK_METHOD1(Flush, void(File &temp));
 //	virtual void Flush(HeapDBFile &temp);
 	MOCK_METHOD1(Flush, void(HeapDBFile &temp));
 };
