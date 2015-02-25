@@ -20,9 +20,13 @@ friend class DBFile;
 friend class MockGenericDBFile;
 protected:
 	File &file;
+	File myFile;
 	RawFile &rfile;
+	RawFile myRFile;
 	DBConfig &config;
+	DBConfig myConfig;
 	ComparisonEngine &comp;
+	ComparisonEngine myComp;
 
 	/**
 	 * Returns the length of file.
@@ -34,24 +38,29 @@ protected:
 	 * The Load logic will be put in here. The existence of this function is purely for testing
 	 * purposes (to Mock record).
 	 */
-	virtual void Load (Schema &myschema, char *loadpath, Record &record) = 0;
-	GenericDBFile();
+	virtual void Load (Schema &myschema, char *loadpath, Record &record);
 
 public:
+	// GenericDBFile() : file(myFile), rfile(myRFile), config(myConfig), comp(myComp){}
+	GenericDBFile();
+
+	// GenericDBFile(File &_file, RawFile &_rfile, DBConfig &_config, ComparisonEngine &_comp) :
+	// 	file(_file), rfile(_rfile), config(_config), comp(_comp){}
 	GenericDBFile(File &_file, RawFile &_rfile, DBConfig &_config, ComparisonEngine &_comp);
+
     virtual ~GenericDBFile();
 
 	/**
 	 * Moves the pointer from the current record to the first record of the first page.
 	 */
-	virtual void MoveFirst () = 0;
+	virtual void MoveFirst ();
 
 	/**
 	 * Adds addMe to the last page in memory. Writes are not immediately readable. In order to get
 	 * the most immediate written records, you must call MoveFirst.
 	 * @param addme	The Record being added to DBFile
 	 */
-	virtual void Add (Record &addme) = 0;
+	virtual void Add (Record &addme);
 
 	/**
 	 * Puts the current record in fetchme and moves the pointer to the next record. Upon use, the
@@ -60,7 +69,7 @@ public:
 	 * @param fetchme	A reference that will be used to return the current Record
 	 * @return			0 if there is no valid record to be returned.
 	 */
-	virtual int GetNext (Record &fetchme) = 0;
+	virtual int GetNext (Record &fetchme);
 
 	/**
 	 * Looks for the next record that passes applyMe when applied between a Record in DBFile and
@@ -70,22 +79,22 @@ public:
 	 * @param literal	The Record that will be compared with the Records in DBFile.
 	 * @return			0 if there is no valid record to be returned.
 	 */
-	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal) = 0;
+	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal);
 
 	/**
 	 * Writes out any changes to disk
 	 */
-	virtual void Flush()= 0;
+	virtual void Flush();
 
 	/**
 	 * Initializes this DBFile
 	 */
-	virtual void Initialize() = 0;
+	virtual void Initialize();
 
 	/**
 	 * Puts DBFile into an initial state.
 	 */
-	virtual void Reset() = 0;
+	virtual void Reset();
 };
 
 #endif
