@@ -55,7 +55,7 @@ TEST_F(SortedDBFileTest, BinarySearch1) {
 
 	SetIn(NULL);
 	SetOut(NULL);
-	SetCursor(NULL);
+	SetCursor(new Page());
 	delete mock;
 }
 
@@ -109,7 +109,7 @@ TEST_F(SortedDBFileTest, BinarySearch2) {
 
 	SetIn(NULL);
 	SetOut(NULL);
-	SetCursor(NULL);
+	SetCursor(new Page());
 	delete mock;
 }
 
@@ -162,7 +162,7 @@ TEST_F(SortedDBFileTest, BinarySearch3) {
 
 	SetIn(NULL);
 	SetOut(NULL);
-	SetCursor(NULL);
+	SetCursor(new Page());
 	delete mock;
 }
 
@@ -220,7 +220,7 @@ TEST_F(SortedDBFileTest, BinarySearch5) {
 
 	SetIn(NULL);
 	SetOut(NULL);
-	SetCursor(NULL);
+	SetCursor(new Page());
 	delete mock;
 }
 
@@ -273,7 +273,7 @@ TEST_F(SortedDBFileTest, BinarySearch6) {
 
 	SetIn(NULL);
 	SetOut(NULL);
-	SetCursor(NULL);
+	SetCursor(new Page());
 	delete mock;
 }
 
@@ -334,7 +334,7 @@ TEST_F(SortedDBFileTest, BinarySearch7) {
 
 	SetIn(NULL);
 	SetOut(NULL);
-	SetCursor(NULL);
+	SetCursor(new Page());
 	delete mock;
 }
 
@@ -384,7 +384,7 @@ TEST_F(SortedDBFileTest, BinarySearch8) {
 
 	SetIn(NULL);
 	SetOut(NULL);
-	SetCursor(NULL);
+	SetCursor(new Page());
 	delete mock;
 }
 
@@ -440,7 +440,7 @@ TEST_F(SortedDBFileTest, BinarySearch9) {
 
 	SetIn(NULL);
 	SetOut(NULL);
-	SetCursor(NULL);
+	SetCursor(new Page());
 	delete mock;
 }
 
@@ -495,7 +495,7 @@ TEST_F(SortedDBFileTest, BinarySearch10) {
 
 	SetIn(NULL);
 	SetOut(NULL);
-	SetCursor(NULL);
+	SetCursor(new Page());
 	delete mock;
 }
 
@@ -545,7 +545,7 @@ TEST_F(SortedDBFileTest, BinarySearch11) {
 
 	SetIn(NULL);
 	SetOut(NULL);
-	SetCursor(NULL);
+	SetCursor(new Page());
 	delete mock;
 }
 
@@ -594,7 +594,7 @@ TEST_F(SortedDBFileTest, BinarySearch12) {
 
 	SetIn(NULL);
 	SetOut(NULL);
-	SetCursor(NULL);
+	SetCursor(new Page());
 	delete mock;
 }
 
@@ -648,7 +648,7 @@ TEST_F(SortedDBFileTest, BinarySearch13) {
 
 	SetIn(NULL);
 	SetOut(NULL);
-	SetCursor(NULL);
+	SetCursor(new Page());
 	delete mock;
 }
 
@@ -706,6 +706,6 @@ TEST_F(SortedDBFileTest, BinarySearch14) {
 
 	SetIn(NULL);
 	SetOut(NULL);
-	SetCursor(NULL);
+	SetCursor(new Page());
 	delete mock;
 }
