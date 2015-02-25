@@ -84,7 +84,6 @@ void SortedDBFile::Flush(File &temp) {
 	// Here's where the real work gets done to merge the Records in bigq and the Records in file.
 	temp.Open(0, tempname);
 	HeapDBFile db = HeapDBFile(temp,temprfile, tempconfig, tempcomp);
-	db.Initialize();
 	Flush(db);
 
 	// Cleanup and re-assign files
@@ -105,6 +104,7 @@ void SortedDBFile::Flush(HeapDBFile &temp) {
 	TPMMS tpmms = TPMMS(sortedrecs, sortedrecs, *(sortInfo->myOrder), runlen);
 	MergeData *data = new MergeData { &p1, &p2, &tpmms };
 
+	in->ShutDown(); // Stop the Pipe so we don't block
 	// Spin up a thread to do the sorting
 	int t = pthread_create(&worker, NULL, [] (void* args) -> void* {
 		MergeData *data = (MergeData*)args;
@@ -117,6 +117,10 @@ void SortedDBFile::Flush(HeapDBFile &temp) {
 		temp.Add(rec);
 	}
 	temp.Flush(); // Write out any remaining Records
+
+	// Cleanup/Reset state
+	Reset();
+	Initialize();
 }
 
 void SortedDBFile::Reset() {
@@ -138,4 +142,5 @@ void SortedDBFile::Reset() {
 void SortedDBFile::Initialize() {
 	if(in == NULL) in = new Pipe(PIPE_SIZE);
 	if(out == NULL) out = new Pipe(PIPE_SIZE);
+	BigQ(*in, *out, sortInfo->myOrder, sortInfo->runLength);
 }
