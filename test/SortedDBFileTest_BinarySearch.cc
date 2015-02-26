@@ -587,7 +587,7 @@ TEST_F(SortedDBFileTest, BinarySearch12) {
 }
 
 /**
- * SortedDBFile::BinarySearch should, if a match exists in the first element, return the first
+ * SortedDBFile::BinarySearch should, if a match exists in the 0th element, return the 0th
  */
 TEST_F(SortedDBFileTest, BinarySearch13) {
 	StrictMock<MockPage> cursor;
@@ -602,7 +602,7 @@ TEST_F(SortedDBFileTest, BinarySearch13) {
 	SetCursorIndex(0);
 
 	Sequence s1;
-	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 5)).
+	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 4)).
 			InSequence(s1);
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
@@ -617,16 +617,18 @@ TEST_F(SortedDBFileTest, BinarySearch13) {
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
 			WillOnce(Return(5));
-	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 0));
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
-			InSequence(s1).
-			WillOnce(Return(0));
 
 
 	// Last thing
 	EXPECT_CALL(*mock, FindValidRecord(Ref(lit), Ref(query), 0)).
 			InSequence(s1).
 			WillOnce(Return(true));
+	
+	// Arbitrary calls
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(11)); // length of 11,  last index 9
+	EXPECT_CALL(page, GetFirst(&rec)).
+			WillRepeatedly(Return(1));
 
 	// Arbitrary calls
 	EXPECT_CALL(mockFile, GetLength()).
