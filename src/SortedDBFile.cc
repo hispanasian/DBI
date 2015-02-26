@@ -102,11 +102,13 @@ int SortedDBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
 		getNextState = UseCNF;
 		OrderMaker query;
 
+		cout << cnf.MakeQuery(*(sortInfo->myOrder), query) << " cnf.MakeQuery(*(sortInfo->myOrder), query)" << endl;
+		cout << "query: " << query.ToString() << endl;
 		// If we can make a query but the binary search fails, then we could not find any valid
 		// Record. Note that we should not fail just because we could not make a query.
 		if(cnf.MakeQuery(*(sortInfo->myOrder), query) && !BinarySearch(literal, query)) return false;
 	}
-
+	cout << "Passed binary search" << endl;
 	while(this->GetNext(fetchme)) {
 		if(comp.Compare(&fetchme, &literal, &cnf)) {
 			return 1;
