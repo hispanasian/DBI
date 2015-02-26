@@ -200,7 +200,7 @@ bool SortedDBFile::BinarySearch(Record &literal, OrderMaker &query, ComparisonEn
 
 void SortedDBFile::GetBSTPage(Page &page, off_t index) {
 	if(index == cursorIndex) {
-		char *bits;
+		char *bits = new (std::nothrow) char[PAGE_SIZE];
 		cursor->ToBinary(bits);
 		page.FromBinary(bits);
 	}
