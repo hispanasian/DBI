@@ -76,9 +76,7 @@ TEST_F(SortedDBFileTest, GetNext2) {
 	SetGetNextState(NoCNF);
 
 	Sequence s1;
-	EXPECT_CALL(*mock, Flush()).
-			InSequence(s1);
-	EXPECT_CALL(*mock, BinarySearch(Ref(lit), _)).
+	EXPECT_CALL(*mock, BinarySearch(_, _)).
 			InSequence(s1).
 			WillOnce(Return(true));
 	EXPECT_CALL(comp, Compare(&rec, &lit, &cnf)).
@@ -94,6 +92,8 @@ TEST_F(SortedDBFileTest, GetNext2) {
 			WillRepeatedly(Return(1));
 	EXPECT_CALL(cnf, MakeQuery(_, _)).
 			WillRepeatedly(Return(true));
+	EXPECT_CALL(*mock, Flush()).
+				Times(AtLeast(1));
 
 	EXPECT_EQ(1, sorteddb->GetNext(rec, cnf, lit));
 	//EXPECT_EQ(Reading, GetRWState()); // RW states are dealt with in Flush
@@ -121,8 +121,6 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 	SetGetNextState(UseCNF);
 
 	Sequence s1;
-	EXPECT_CALL(*mock, Flush()).
-			InSequence(s1);
 	EXPECT_CALL(comp, Compare(&rec, &lit, &cnf)).
 			Times(5).
 			InSequence(s1).
@@ -136,6 +134,8 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 			WillRepeatedly(Return(1));
 	EXPECT_CALL(cnf, MakeQuery(_, _)).
 			WillRepeatedly(Return(true));
+	EXPECT_CALL(*mock, Flush()).
+			Times(AtLeast(1));
 
 	EXPECT_EQ(1, sorteddb->GetNext(rec, cnf, lit));
 	//EXPECT_EQ(Reading, GetRWState()); // RW states are dealt with in Flush
@@ -163,9 +163,7 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 	SetGetNextState(NoCNF);
 
 	Sequence s1;
-	EXPECT_CALL(*mock, Flush()).
-			InSequence(s1);
-	EXPECT_CALL(*mock, BinarySearch(Ref(lit), _)).
+	EXPECT_CALL(*mock, BinarySearch(_, _)).
 			InSequence(s1).
 			WillOnce(Return(true));
 	EXPECT_CALL(*scanner, GetNext(Ref(rec))).
@@ -181,8 +179,10 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 			WillRepeatedly(Return(0));
 	EXPECT_CALL(cnf, MakeQuery(_, _)).
 			WillRepeatedly(Return(true));
+	EXPECT_CALL(*mock, Flush()).
+			Times(AtLeast(1));
 
-	EXPECT_EQ(1, sorteddb->GetNext(rec, cnf, lit));
+	EXPECT_EQ(0, sorteddb->GetNext(rec, cnf, lit));
 	//EXPECT_EQ(Reading, GetRWState()); // RW states are dealt with in Flush
 	EXPECT_EQ(UseCNF, GetGetNextState());
 
