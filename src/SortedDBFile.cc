@@ -41,6 +41,8 @@ SortedDBFile::~SortedDBFile () {
 	Reset();
 	delete cursor;
 	delete scanner;
+	delete sortInfo->myOrder;
+	delete sortInfo;
 }
 
 void SortedDBFile::Load (Schema &f_schema, char *loadpath) {
