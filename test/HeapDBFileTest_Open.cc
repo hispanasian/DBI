@@ -5,13 +5,6 @@
  * were no issues. Recall that the indexes will be File.GetLenth() - 2 (unless length is 0)
  */
 TEST_F(HeapDBFileTest, Open1) {
-	FILE *temp = fopen(header, "w");
-	fprintf(temp, "stuff");
-	fclose(temp);
-	temp = fopen(path, "w");
-	fprintf(temp, "stuff");
-	fclose(temp);
-
 	SetCursor(cursor);
 	SetLast(last);
 
