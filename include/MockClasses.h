@@ -86,7 +86,7 @@ public:
 //    virtual bool RawFile::FileExists(const char* fileName);
     MOCK_METHOD1(FileExists, bool(const char* fileName));
 //    virtual void MakeTemp(char *scheme);
-    MOCK_METHOD1(MakeTemp, void(const char *scheme));
+    MOCK_METHOD1(MakeTemp, void(char *scheme));
 //    virtual int Rename(char *oldName, char *newName);
     MOCK_METHOD2(Rename, int(const char *oldName, const char *newName));
 //    virtual int Remove(char *name);
