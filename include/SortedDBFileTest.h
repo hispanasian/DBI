@@ -11,6 +11,7 @@
 #include "../include/File.h"
 #include "../include/Schema.h"
 #include "SortedDBFile.h"
+#include "../include/LinearScanner.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -129,6 +130,8 @@ public:
 	void SetCursorIndex(int i) { sorteddb->cursorIndex = i;}
 
 	int GetCursorIndex() { return sorteddb->cursorIndex;}
+
+	void SetLinearScanner(LinearScanner *scanner) { sorteddb->scanner = scanner; }
 
 	virtual bool BinarySearch(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page) { return sorteddb -> BinarySearch(literal, query, comp, rec, page); }
 
