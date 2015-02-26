@@ -24,7 +24,12 @@ TEST_F(SortedDBFileTest, BinarySearch1) {
 	SetCursorIndex(0);
 
 	Sequence s1;
-	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 5)).
+	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 4)).
+			InSequence(s1);
+	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+			InSequence(s1).
+			WillOnce(Return(-5));
+	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 6)).
 			InSequence(s1);
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
@@ -42,7 +47,8 @@ TEST_F(SortedDBFileTest, BinarySearch1) {
 
 	// Last things
 	EXPECT_CALL(*mock, FindValidRecord(Ref(lit), Ref(query), 7)).
-			InSequence(s1);
+			InSequence(s1).
+			WillOnce(Return(true));
 
 	// Arbitrary calls
 	EXPECT_CALL(mockFile, GetLength()).
@@ -83,6 +89,11 @@ TEST_F(SortedDBFileTest, BinarySearch2) {
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
 			WillOnce(Return(5));
+	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 2)).
+			InSequence(s1);
+	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+			InSequence(s1).
+			WillOnce(Return(-5));
 	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 3)).
 			InSequence(s1);
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
@@ -92,7 +103,7 @@ TEST_F(SortedDBFileTest, BinarySearch2) {
 			InSequence(s1);
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
-			WillOnce(Return(5));
+			WillOnce(Return(0));
 
 	// Last thing
 	EXPECT_CALL(*mock, FindValidRecord(Ref(lit), Ref(query), 3)).
@@ -226,7 +237,7 @@ TEST_F(SortedDBFileTest, BinarySearch5) {
 
 /**
  * SortedDBFile::BinarySearch should, if it starts with cursor at 0, length 10, and no empty pages
- * with the "correct" Record in Page 3 (not the start) should set cursorIndex to 3 and cursor to
+ * with the "correct" Record in Page 2 (not the start) should set cursorIndex to 2 and cursor to
  * Page.
  */
 TEST_F(SortedDBFileTest, BinarySearch6) {
@@ -247,16 +258,16 @@ TEST_F(SortedDBFileTest, BinarySearch6) {
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
 			WillOnce(Return(5));
-	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 3)).
-			InSequence(s1);
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
-			InSequence(s1).
-			WillOnce(Return(0));
 	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 2)).
 			InSequence(s1);
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
-			WillOnce(Return(-5));
+			WillOnce(Return(-2));
+	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 3)).
+			InSequence(s1);
+	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+			InSequence(s1).
+			WillOnce(Return(5));
 
 	// Last thing
 	EXPECT_CALL(*mock, FindValidRecord(Ref(lit), Ref(query), 2)).
@@ -301,11 +312,6 @@ TEST_F(SortedDBFileTest, BinarySearch7) {
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
 			WillOnce(Return(5));
-	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 3)).
-			InSequence(s1);
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
-			InSequence(s1).
-			WillOnce(Return(0));
 	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 2)).
 			InSequence(s1);
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
@@ -315,7 +321,7 @@ TEST_F(SortedDBFileTest, BinarySearch7) {
 			InSequence(s1);
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
-			WillOnce(Return(-5));
+			WillOnce(Return(-2));
 
 	// Last thing
 	EXPECT_CALL(*mock, FindValidRecord(Ref(lit), Ref(query), 1)).
@@ -327,8 +333,7 @@ TEST_F(SortedDBFileTest, BinarySearch7) {
 			WillRepeatedly(Return(11)); // length of 11,  last index 9
 	EXPECT_CALL(page, GetFirst(&rec)).
 			Times(4).
-			WillRepeatedly(Return(1)).
-			WillOnce(Return(0)); // Case where cursor is empty
+			WillRepeatedly(Return(1));
 
 	EXPECT_EQ(true, BinarySearch(lit, query, comp, rec, page));
 
@@ -619,17 +624,13 @@ TEST_F(SortedDBFileTest, BinarySearch13) {
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
 			WillOnce(Return(5));
-	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 3)).
-			InSequence(s1);
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
-			InSequence(s1).
-			WillOnce(Return(5));
 	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 2)).
 			InSequence(s1);
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
 			WillOnce(Return(5));
-	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 1));
+	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 1)).
+			InSequence(s1);
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
 			WillOnce(Return(5));
