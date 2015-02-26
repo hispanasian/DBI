@@ -56,7 +56,7 @@ public:
 //	virtual off_t GetLength ();
 	MOCK_METHOD0(GetLength, off_t());
     //virtual void Open (int length, char *fName);
-    MOCK_METHOD2(Open, void(int length, char *fname));
+    MOCK_METHOD2(Open, void(int length, const char *fname));
     //virtual void GetPage (Page *putItHere, off_t whichPage);
     MOCK_METHOD2(GetPage, void(Page *putItHere, off_t whichPage));
     //virtual void AddPage (Page *addMe, off_t whichPage);
@@ -86,11 +86,11 @@ public:
 //    virtual bool RawFile::FileExists(const char* fileName);
     MOCK_METHOD1(FileExists, bool(const char* fileName));
 //    virtual void MakeTemp(char *scheme);
-    MOCK_METHOD1(MakeTemp, void(char *scheme));
+    MOCK_METHOD1(MakeTemp, void(const char *scheme));
 //    virtual int Rename(char *oldName, char *newName);
-    MOCK_METHOD2(Rename, int(char *oldName, char *newName));
+    MOCK_METHOD2(Rename, int(const char *oldName, const char *newName));
 //    virtual int Remove(char *name);
-    MOCK_METHOD1(Remove, int(char *name));
+    MOCK_METHOD1(Remove, int(const char *name));
 };
 
 class MockDBConfig: public DBConfig {
