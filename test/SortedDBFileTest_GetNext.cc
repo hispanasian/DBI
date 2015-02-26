@@ -70,7 +70,6 @@ TEST_F(SortedDBFileTest, GetNext2) {
 	SetLinearScanner(scanner);
 	StrictMock<MockRecord> rec;
 	StrictMock<MockRecord> lit;
-	OrderMaker query;
 	CNF cnf;
 
 	//SetRWState(Writing);
@@ -79,7 +78,7 @@ TEST_F(SortedDBFileTest, GetNext2) {
 	Sequence s1;
 	EXPECT_CALL(*mock, Flush()).
 			InSequence(s1);
-	EXPECT_CALL(*mock, BinarySearch(Ref(lit),Ref(query))).
+	EXPECT_CALL(*mock, BinarySearch(Ref(lit), _)).
 			InSequence(s1).
 			WillOnce(Return(true));
 	EXPECT_CALL(comp, Compare(&rec, &lit, &cnf)).
@@ -114,7 +113,6 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 	SetLinearScanner(scanner);
 	StrictMock<MockRecord> rec;
 	StrictMock<MockRecord> lit;
-	OrderMaker query;
 	CNF cnf;
 
 	//SetRWState(Writing);
@@ -159,7 +157,6 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 	SetLinearScanner(scanner);
 	StrictMock<MockRecord> rec;
 	StrictMock<MockRecord> lit;
-	OrderMaker query;
 	CNF cnf;
 
 	//SetRWState(Writing);
@@ -168,7 +165,7 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 	Sequence s1;
 	EXPECT_CALL(*mock, Flush()).
 			InSequence(s1);
-	EXPECT_CALL(*mock, BinarySearch(Ref(lit),Ref(query))).
+	EXPECT_CALL(*mock, BinarySearch(Ref(lit), _)).
 			InSequence(s1).
 			WillOnce(Return(true));
 	EXPECT_CALL(*scanner, GetNext(Ref(rec))).
@@ -204,7 +201,6 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 	SetLinearScanner(scanner);
 	StrictMock<MockRecord> rec;
 	StrictMock<MockRecord> lit;
-	OrderMaker query;
 	CNF cnf;
 
 	//SetRWState(Writing);
@@ -213,7 +209,7 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 	Sequence s1;
 	EXPECT_CALL(*mock, Flush()).
 			InSequence(s1);
-	EXPECT_CALL(*mock, BinarySearch(Ref(lit),Ref(query))).
+	EXPECT_CALL(*mock, BinarySearch(Ref(lit), _)).
 			InSequence(s1).
 			WillOnce(Return(false));
 
