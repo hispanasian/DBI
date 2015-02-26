@@ -216,8 +216,14 @@ void TPMMS::Merge(PipedPage *p1, PipedPage *p2) {
 	pages[1] = p2;
 
 	// Check to make sure the pages are full
-	if(pages[0]->GetFirst(heads[0]) == 0) --runsLeft;
-	if(pages[1]->GetFirst(heads[1]) == 0) --runsLeft;
+	if(pages[0]->GetFirst(heads[0]) == 0) {
+		--runsLeft;
+		heads[0] = NULL;
+	}
+	if(pages[1]->GetFirst(heads[1]) == 0) {
+		--runsLeft;
+		heads[1] = NULL;
+	}
 	runPos.clear();
 	runPos.push_back(0);
 	runPos.push_back(0);

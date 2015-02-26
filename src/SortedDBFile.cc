@@ -149,7 +149,7 @@ void SortedDBFile::Flush(File &temp) {
 void SortedDBFile::Flush(HeapDBFile &temp) {
 	Pipe p = Pipe(PIPE_SIZE);
 	PipedPage p1 = PipedPage(p, &file);
-	PipedPage p2 = PipedPage(*in);
+	PipedPage p2 = PipedPage(*out);
 	pthread_t worker;
 	Pipe sortedrecs;
 	int runlen = 1;
