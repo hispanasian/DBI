@@ -297,4 +297,19 @@ public:
     MOCK_METHOD0(EmptyItOut, void());
 };
 
+class MockCNF: public CNF {
+//	int GetSortOrders (OrderMaker &left, OrderMaker &right);
+	MOCK_METHOD2(GetSortOrders, int(OrderMaker &left, OrderMaker &right));
+//	bool MakeQuery(const OrderMaker *sortOrder, OrderMaker &query);
+	MOCK_METHOD2(MakeQuery, bool(const OrderMaker *sortOrder, OrderMaker &query));
+//	bool IsSortableAttribute(const int &attr);
+	MOCK_METHOD1(IsSortableAttribute, bool(const int &attr));
+//	void Print ();
+	MOCK_METHOD0(Print, void());
+//	void GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema, Schema *rightSchema, Record &literal);
+	MOCK_METHOD4(GrowFromParseTree, void(struct AndList *parseTree, Schema *leftSchema, Schema *rightSchema, Record &literal));
+//	void GrowFromParseTree (struct AndList *parseTree, Schema *mySchema, Record &literal);
+	MOCK_METHOD3(GrowFromParseTree, void(struct AndList *parseTree, Schema *mySchema, Record &literal));
+};
+
 #endif
