@@ -228,7 +228,8 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
  }
 
  /**
- * SortedDBFile::GetNext with CNF should, if a query cannot be built, return 0.
+ * SortedDBFile::GetNext with CNF should, if a query cannot be built, don't call BinarySearch but
+ * manually search for the correct record..
  */
  TEST_F(SortedDBFileTest, GetNextCNF5) {
 	 StrictMock<MockPage> cursor;
@@ -245,14 +246,23 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 	SetGetNextState(NoCNF);
 
 	Sequence s1;
-	EXPECT_CALL(*mock, Flush()).
-			InSequence(s1);
+	EXPECT_CALL(comp, Compare(&rec, &lit, &cnf)).
+		Times(5).
+		InSequence(s1).
+		WillRepeatedly(Return(0));
+	EXPECT_CALL(comp, Compare(&rec, &lit, &cnf)).
+			InSequence(s1).
+			WillOnce(Return(1));
 
-	// Order doesn't really matter
+	// Order doesn't matter much
+	EXPECT_CALL(*scanner, GetNext(Ref(rec))).
+			WillRepeatedly(Return(1));
 	EXPECT_CALL(cnf, MakeQuery(_, _)).
 			WillRepeatedly(Return(false));
+	EXPECT_CALL(*mock, Flush()).
+			Times(AtLeast(1));
 
-	EXPECT_EQ(0, sorteddb->GetNext(rec, cnf, lit));
+	EXPECT_EQ(1, sorteddb->GetNext(rec, cnf, lit));
 	//EXPECT_EQ(Reading, GetRWState()); // RW states are dealt with in Flush
 	EXPECT_EQ(UseCNF, GetGetNextState());
 
