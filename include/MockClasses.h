@@ -313,7 +313,7 @@ public:
 //	int GetSortOrders (OrderMaker &left, OrderMaker &right);
 	MOCK_METHOD2(GetSortOrders, int(OrderMaker &left, OrderMaker &right));
 //	bool MakeQuery(const OrderMaker *sortOrder, OrderMaker &query);
-	MOCK_METHOD2(MakeQuery, bool(const OrderMaker *sortOrder, OrderMaker &query));
+	MOCK_METHOD2(MakeQuery, bool(const OrderMaker &sortOrder, OrderMaker &query));
 //	bool IsSortableAttribute(const int &attr);
 	MOCK_METHOD1(IsSortableAttribute, bool(const int &attr));
 //	void Print ();
