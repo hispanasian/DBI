@@ -20,11 +20,8 @@ bool DBConfig::Read(RawFile &file) {
         delim = line->find_first_of("=");
         if(delim == string::npos) success = false;
         else {
-        	cout << "DBConfig:: Read is reading " + line->substr(0, line->length() + 1) << endl;
             key = line->substr(0, delim);
-            cout << "key = " << key << endl;
             val = line->substr(delim + 1, line->length() + 1);
-            cout << "val = " << val << endl;
             map.insert(pair<string, string>(key, val));
         }
     }
