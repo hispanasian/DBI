@@ -29,16 +29,16 @@ TEST_F(SortedDBFileTest, BinarySearch1) {
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
 			WillOnce(Return(-5));
-	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 8)).
-			InSequence(s1);
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
-			InSequence(s1).
-			WillOnce(Return(5));
 	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 7)).
 			InSequence(s1);
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
 			WillOnce(Return(-5));
+	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 8)).
+			InSequence(s1);
+	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+			InSequence(s1).
+			WillOnce(Return(5));
 
 	// Last things
 	EXPECT_CALL(*mock, FindValidRecord(Ref(lit), Ref(query), 7)).
@@ -46,7 +46,7 @@ TEST_F(SortedDBFileTest, BinarySearch1) {
 
 	// Arbitrary calls
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(10)); // length of 10, last index 9
+			WillRepeatedly(Return(11)); // length of 11, last index 9
 	EXPECT_CALL(page, GetFirst(&rec)).
 			WillRepeatedly(Return(1));
 
@@ -101,7 +101,7 @@ TEST_F(SortedDBFileTest, BinarySearch2) {
 
 	// Arbitrary calls
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(10)); // length of 10, last index 9
+			WillRepeatedly(Return(11)); // length of 11,  last index 9
 	EXPECT_CALL(page, GetFirst(&rec)).
 			WillRepeatedly(Return(1));
 
@@ -154,7 +154,7 @@ TEST_F(SortedDBFileTest, BinarySearch3) {
 
 	// Arbitrary calls
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(10)); // length of 10, last index 9
+			WillRepeatedly(Return(11)); // length of 11,  last index 9
 	EXPECT_CALL(page, GetFirst(&rec)).
 			WillRepeatedly(Return(1));
 
@@ -212,7 +212,7 @@ TEST_F(SortedDBFileTest, BinarySearch5) {
 
 	// Arbitrary calls
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(10)); // length of 10, last index 9
+			WillRepeatedly(Return(11)); // length of 11,  last index 9
 	EXPECT_CALL(page, GetFirst(&rec)).
 			WillRepeatedly(Return(1));
 
@@ -265,7 +265,7 @@ TEST_F(SortedDBFileTest, BinarySearch6) {
 
 	// Arbitrary calls
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(10)); // length of 10, last index 9
+			WillRepeatedly(Return(11)); // length of 11,  last index 9
 	EXPECT_CALL(page, GetFirst(&rec)).
 			WillRepeatedly(Return(1));
 
@@ -324,7 +324,7 @@ TEST_F(SortedDBFileTest, BinarySearch7) {
 
 	// Arbitrary calls
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(10)); // length of 10, last index 9
+			WillRepeatedly(Return(11)); // length of 11,  last index 9
 	EXPECT_CALL(page, GetFirst(&rec)).
 			Times(4).
 			WillRepeatedly(Return(1)).
@@ -376,7 +376,7 @@ TEST_F(SortedDBFileTest, BinarySearch8) {
 	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 7)).
 			InSequence(s1);
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(10)); // length of 10, last index 9
+			WillRepeatedly(Return(11)); // length of 11,  last index 9
 	EXPECT_CALL(page, GetFirst(&rec)).
 			WillRepeatedly(Return(1));
 
@@ -432,7 +432,7 @@ TEST_F(SortedDBFileTest, BinarySearch9) {
 	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 6)).
 			InSequence(s1);
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(10)); // length of 10, last index 9
+			WillRepeatedly(Return(11)); // length of 11,  last index 9
 	EXPECT_CALL(page, GetFirst(&rec)).
 			WillRepeatedly(Return(1));
 
@@ -487,7 +487,7 @@ TEST_F(SortedDBFileTest, BinarySearch10) {
 
 	// Arbitrary calls
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(10)); // length of 10, last index 9
+			WillRepeatedly(Return(11)); // length of 11,  last index 9
 	EXPECT_CALL(page, GetFirst(&rec)).
 			WillRepeatedly(Return(1));
 
@@ -698,7 +698,7 @@ TEST_F(SortedDBFileTest, BinarySearch14) {
 
 	// Arbitrary calls
 	EXPECT_CALL(mockFile, GetLength()).
-			WillRepeatedly(Return(10)); // length of 10, last index 9
+			WillRepeatedly(Return(11)); // length of 11,  last index 9
 	EXPECT_CALL(page, GetFirst(&rec)).
 			WillRepeatedly(Return(1));
 
