@@ -18,20 +18,25 @@ SortedDBFile::SortedDBFile(): GenericDBFile() {
 	f_path = NULL;
 	in = NULL;
 	out = NULL;
+	cursor = new Page();
+	cursorIndex = 0;
 	rwState = Reading;
 	getNextState = NoCNF;
 }
 
 SortedDBFile::SortedDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp, char *_f_path, SortInfo *_sortInfo):
-GenericDBFile(file, rfile, config, comp), f_path(_f_path), sortInfo(_sortInfo) {
+GenericDBFile(file, rfile, config, comp), f_path(_f_path), sortInfo(_sortInfo), cursor(new Page()) {
 	in = NULL;
 	out = NULL;
 	rwState = Reading;
-	getNextState = NoCNF;
+	getNextState = NoCNF;	
+	cursorIndex = 0;
+	cursor = new Page();
 }
 
 SortedDBFile::~SortedDBFile () {
 	Reset();
+	delete cursor;
 }
 
 void SortedDBFile::Load (Schema &f_schema, char *loadpath) {
@@ -43,7 +48,21 @@ void SortedDBFile::Load (Schema &f_schema, char *loadpath, Record &record) {
 }
 
 void SortedDBFile::MoveFirst () {
-
+	// if state is writing, flush
+	Flush(); // flush checks for writing state
+	
+	// read the 0th page into mem if it exists
+	if(GetLength() > 0) file.GetPage(cursor, 0); // Get Page if it exists
+	// otherwise empty the pointer
+	else cursor -> EmptyItOut(); // Empty out current Page if no Page exists
+	
+	// Invariants
+	// set the cursor index to 0
+	cursorIndex = 0;
+	// set the GetNexCNF state to NoCNF
+	getNextState = NoCNF;
+	// set the RW state to Reading
+	rwState = Reading;
 }
 
 void SortedDBFile::Add (Record &rec) {
@@ -124,6 +143,8 @@ void SortedDBFile::Flush(HeapDBFile &temp) {
 }
 
 void SortedDBFile::Reset() {
+	cursor -> EmptyItOut();
+	cursorIndex = 0;
 	if(in != NULL) in->ShutDown();
 
 	// Make sure that BigQ finishes up with in
