@@ -81,16 +81,25 @@ int SortedDBFile::GetNext (Record &fetchme) {
 	return scanner->GetNext(fetchme);
 }
 
-int SortedDBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp){
-	return 0;
-}
-
 int SortedDBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
-//	while(this->GetNext(fetchme)) {
-//		if(comp.Compare(&fetchme, &literal, &cnf)) {
-//			return 1;
-//		}
-//	}
+	bool search = true; // Flag to check if we bother searching for records
+
+	// Check if we need to do a Binary Search
+	if(getNextState == NoCNF) {
+		getNextState = UseCNF;
+		OrderMaker query;
+		search = cnf.MakeQuery(*(sortInfo->myOrder), query);
+		search = search && BinarySearch(literal, query);
+	}
+
+	if(!search) return false;
+
+	while(this->GetNext(fetchme)) {
+		if(comp.Compare(&fetchme, &literal, &cnf)) {
+			return 1;
+		}
+	}
+
 	return 0;
 }
 
