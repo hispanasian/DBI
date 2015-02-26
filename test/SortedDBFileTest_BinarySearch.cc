@@ -315,7 +315,7 @@ TEST_F(SortedDBFileTest, BinarySearch7) {
 			WillOnce(Return(0));
 
 	// Last thing
-	EXPECT_CALL(*mock, FindValidRecord(Ref(lit), Ref(query), 0)).
+	EXPECT_CALL(*mock, FindValidRecord(Ref(lit), Ref(query), 1)).
 			InSequence(s1).
 			WillOnce(Return(true));
 

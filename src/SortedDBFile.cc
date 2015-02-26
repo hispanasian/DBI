@@ -188,13 +188,7 @@ bool SortedDBFile::BinarySearch(Record &literal, OrderMaker &query, ComparisonEn
 		GetBSTPage(page, mid);
 		if(page.GetFirst(&rec) == 0) ++start; // This should only happen when page is cursor and cursor is empty
 		else if((c = comp.Compare(&rec, &literal, &query)) < 0) start = mid;
-		else /* comp.Compare(&rec, &literal, &query) > 0 */ end = mid;
-
-		cout << "start: " << start << endl;
-		cout << "end: " << end << endl;
-		cout << "mid: " << mid << endl;
-		cout << "c: " << c << endl;
-		cout << endl;
+		else /* comp.Compare(&rec, &literal, &query) >= 0 */ end = mid;
 	}
 
 	// Now, it must be the case that mid either:
