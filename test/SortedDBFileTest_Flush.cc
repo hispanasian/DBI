@@ -55,6 +55,8 @@ TEST_F(SortedDBFileTest, Flush1) {
 			WillRepeatedly(Return(1));
 
 	Flush(temp);
+	SetIn(NULL);
+	SetOut(NULL);
 	delete mock;
 }
 
@@ -105,6 +107,8 @@ TEST_F(SortedDBFileTest, Flush2) {
 
 	EXPECT_THROW(Flush(temp), std::runtime_error);
 
+	SetIn(NULL);
+	SetOut(NULL);
 	delete mock;
 }
 
@@ -155,5 +159,8 @@ TEST_F(SortedDBFileTest, Flush3) {
 			WillRepeatedly(Return(1));
 
 	EXPECT_THROW(Flush(temp), std::runtime_error);
+
+	SetIn(NULL);
+	SetOut(NULL);
 	delete mock;
 }
