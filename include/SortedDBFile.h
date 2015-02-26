@@ -42,11 +42,12 @@ friend class PartialSortedDBFileMock;
 private:
 	SortInfo *sortInfo;
 	char *f_path;
-	// bool recordAdded;
 	Pipe *in;
 	Pipe *out; // The Pipe used to get the added Records
 	RWState rwState; // flag to denote reading/writing mode
 	GetNextState getNextState; // flag to denote if using previously provided CNF
+	Page* cursor;
+	int cursorIndex;
 
 	/**
 	 * This is a function will be called by the public Load and it will provide it's own Record.

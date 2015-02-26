@@ -110,6 +110,10 @@ public:
 	void SetRWState(RWState state) { sorteddb -> rwState = state; }
 
 	bool GetRWState() { return sorteddb -> rwState; }
+
+	GetNextState GetGetNextState() { return sorteddb -> getNextState; }
+
+	void SetCursor(Page* cursor) { sorteddb->cursor = cursor;}
 };
 
 #endif
