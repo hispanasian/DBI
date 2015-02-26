@@ -82,7 +82,7 @@ TEST_F(SortedDBFileTest, BinarySearch2) {
 			InSequence(s1);
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
-			WillOnce(Return(0));
+			WillOnce(Return(5));
 	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 3)).
 			InSequence(s1);
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
@@ -477,7 +477,7 @@ TEST_F(SortedDBFileTest, BinarySearch10) {
 			InSequence(s1);
 	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
 			InSequence(s1).
-			WillOnce(Return(0));
+			WillOnce(Return(-5));
 	EXPECT_CALL(*mock, GetBSTPage(Ref(page), 6));
 
 	// Last thing
