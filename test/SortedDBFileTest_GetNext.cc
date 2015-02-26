@@ -70,7 +70,7 @@ TEST_F(SortedDBFileTest, GetNext2) {
 	SetLinearScanner(scanner);
 	StrictMock<MockRecord> rec;
 	StrictMock<MockRecord> lit;
-	CNF cnf;
+	StrictMock<MockCNF> cnf;
 
 	//SetRWState(Writing);
 	SetGetNextState(NoCNF);
@@ -92,6 +92,8 @@ TEST_F(SortedDBFileTest, GetNext2) {
 	// Order doesn't matter much
 	EXPECT_CALL(*scanner, GetNext(Ref(rec))).
 			WillRepeatedly(Return(1));
+	EXPECT_CALL(cnf, MakeQuery(_, _)).
+			WillRepeatedly(Return(true));
 
 	EXPECT_EQ(1, sorteddb->GetNext(rec, cnf, lit));
 	//EXPECT_EQ(Reading, GetRWState()); // RW states are dealt with in Flush
@@ -113,7 +115,7 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 	SetLinearScanner(scanner);
 	StrictMock<MockRecord> rec;
 	StrictMock<MockRecord> lit;
-	CNF cnf;
+	StrictMock<MockCNF> cnf;
 
 	//SetRWState(Writing);
 	SetGetNextState(UseCNF);
@@ -132,6 +134,8 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 	// Order doesn't matter much
 	EXPECT_CALL(*scanner, GetNext(Ref(rec))).
 			WillRepeatedly(Return(1));
+	EXPECT_CALL(cnf, MakeQuery(_, _)).
+			WillRepeatedly(Return(true));
 
 	EXPECT_EQ(1, sorteddb->GetNext(rec, cnf, lit));
 	//EXPECT_EQ(Reading, GetRWState()); // RW states are dealt with in Flush
@@ -144,10 +148,6 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
  /**
  * SortedDBFile::GetNext with CNF should, if no Record can be found conforming to the CNF, return 0.
  */
-/**
- * SortedDBFile::GetNext with CNF should, if getNextState is NoCNF, call BinarySearch and then do
- * a linear scan looking for a record that conforms to the CNF.
- */
  TEST_F(SortedDBFileTest, GetNextCNF3) {
 	StrictMock<MockPage> cursor;
 	MockLinearScanner *scanner = new MockLinearScanner();
@@ -157,7 +157,7 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 	SetLinearScanner(scanner);
 	StrictMock<MockRecord> rec;
 	StrictMock<MockRecord> lit;
-	CNF cnf;
+	StrictMock<MockCNF> cnf;
 
 	//SetRWState(Writing);
 	SetGetNextState(NoCNF);
@@ -179,6 +179,8 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 	// Order doesn't matter much
 	EXPECT_CALL(comp, Compare(&rec, &lit, &cnf)).
 			WillRepeatedly(Return(0));
+	EXPECT_CALL(cnf, MakeQuery(_, _)).
+			WillRepeatedly(Return(true));
 
 	EXPECT_EQ(1, sorteddb->GetNext(rec, cnf, lit));
 	//EXPECT_EQ(Reading, GetRWState()); // RW states are dealt with in Flush
@@ -201,7 +203,7 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 	SetLinearScanner(scanner);
 	StrictMock<MockRecord> rec;
 	StrictMock<MockRecord> lit;
-	CNF cnf;
+	StrictMock<MockCNF> cnf;
 
 	//SetRWState(Writing);
 	SetGetNextState(NoCNF);
@@ -213,7 +215,44 @@ TEST_F(SortedDBFileTest, GetNextCNF2) {
 			InSequence(s1).
 			WillOnce(Return(false));
 
-	EXPECT_EQ(1, sorteddb->GetNext(rec, cnf, lit));
+	// Order doesn't really matter
+	EXPECT_CALL(cnf, MakeQuery(_, _)).
+			WillRepeatedly(Return(true));
+
+	EXPECT_EQ(0, sorteddb->GetNext(rec, cnf, lit));
+	//EXPECT_EQ(Reading, GetRWState()); // RW states are dealt with in Flush
+	EXPECT_EQ(UseCNF, GetGetNextState());
+
+	SetCursor(new Page());
+	delete mock;
+ }
+
+ /**
+ * SortedDBFile::GetNext with CNF should, if a query cannot be built, return 0.
+ */
+ TEST_F(SortedDBFileTest, GetNextCNF5) {
+	 StrictMock<MockPage> cursor;
+	MockLinearScanner *scanner = new MockLinearScanner();
+	MakeFlushlessSorted(sortInfo);
+	SetCursor(&cursor);
+	SetCursorIndex(5);
+	SetLinearScanner(scanner);
+	StrictMock<MockRecord> rec;
+	StrictMock<MockRecord> lit;
+	StrictMock<MockCNF> cnf;
+
+	//SetRWState(Writing);
+	SetGetNextState(NoCNF);
+
+	Sequence s1;
+	EXPECT_CALL(*mock, Flush()).
+			InSequence(s1);
+
+	// Order doesn't really matter
+	EXPECT_CALL(cnf, MakeQuery(_, _)).
+			WillRepeatedly(Return(false));
+
+	EXPECT_EQ(0, sorteddb->GetNext(rec, cnf, lit));
 	//EXPECT_EQ(Reading, GetRWState()); // RW states are dealt with in Flush
 	EXPECT_EQ(UseCNF, GetGetNextState());
 
