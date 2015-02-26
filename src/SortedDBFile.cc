@@ -82,6 +82,7 @@ int SortedDBFile::GetNext (Record &fetchme) {
 }
 
 int SortedDBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
+	Flush();
 	bool search = true; // Flag to check if we bother searching for records
 
 	// Check if we need to do a Binary Search
