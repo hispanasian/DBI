@@ -15,6 +15,7 @@
 #include "SortedDBFile.h"
 #include "TreeDBFile.h"
 #include "PipedPage.h"
+#include "LinearScanner.h"
 
 class MockRecord: public Record {
 public:
@@ -322,6 +323,12 @@ class MockCNF: public CNF {
 	MOCK_METHOD4(GrowFromParseTree, void(struct AndList *parseTree, Schema *leftSchema, Schema *rightSchema, Record &literal));
 //	void GrowFromParseTree (struct AndList *parseTree, Schema *mySchema, Record &literal);
 	MOCK_METHOD3(GrowFromParseTree, void(struct AndList *parseTree, Schema *mySchema, Record &literal));
+};
+
+class MockLinearScanner: public LinearScanner {
+public:
+//	virtual int GetNext(Record& rec);
+	MOCK_METHOD1(GetNext, int(Record &rec));
 };
 
 #endif

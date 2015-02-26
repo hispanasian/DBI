@@ -1,5 +1,7 @@
 #include "LinearScanner.h"
 
+LinearScanner::LinearScanner(): file(file), cursor(cursor), cursorIndex(cursorIndex), lastIndex(0) {}
+
 LinearScanner::LinearScanner(File& _file, Page& _cursor, off_t& _cursorIndex, const off_t& _lastIndex) :
 	file(_file), cursor(_cursor), cursorIndex(_cursorIndex), lastIndex(_lastIndex) {}
 
