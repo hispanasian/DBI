@@ -96,17 +96,16 @@ int SortedDBFile::GetNext (Record &fetchme) {
 
 int SortedDBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
 	Flush();
-	bool search = true; // Flag to check if we bother searching for records
 
 	// Check if we need to do a Binary Search
 	if(getNextState == NoCNF) {
 		getNextState = UseCNF;
 		OrderMaker query;
-		search = cnf.MakeQuery(*(sortInfo->myOrder), query);
-		search = search && BinarySearch(literal, query);
-	}
 
-	if(!search) return false;
+		// If we can make a query but the binary search fails, then we could not find any valid
+		// Record. Note that we should not fail just because we could not make a query.
+		if(cnf.MakeQuery(*(sortInfo->myOrder), query) && !BinarySearch(literal, query)) return false;
+	}
 
 	while(this->GetNext(fetchme)) {
 		if(comp.Compare(&fetchme, &literal, &cnf)) {
