@@ -182,6 +182,7 @@ bool SortedDBFile::BinarySearch(Record &literal, OrderMaker &query, ComparisonEn
 	off_t end = GetLength() - 1;
 	off_t mid;
 
+	int c;
 	while(start + 1 < end) {
 		mid = (start + end)/2; // super important to take 'floor'
 		cout << "start: " << start << endl;
@@ -190,15 +191,15 @@ bool SortedDBFile::BinarySearch(Record &literal, OrderMaker &query, ComparisonEn
 		cout << endl;
 		GetBSTPage(page, mid);
 		if(page.GetFirst(&rec) == 0) ++start; // This should only happen when page is cursor and cursor is empty
-		else if(comp.Compare(&rec, &literal, &query) < 0) start = mid;
+		else if((c = comp.Compare(&rec, &literal, &query)) < 0) start = mid;
 		else /* comp.Compare(&rec, &literal, &query) > 0 */ end = mid;
 	}
 
-	// Now it must be the case that mid == start == end
-	// mid is an index to a page that:
-	// a. contains a Record that conforms to the query/literal pair or
-	// b. precedes a Page with a Record that conforms to the query/literal pair
-	// Find the Page/Record and set it as the cursor if it exists.
+	// Now, it must be the case that mid either:
+	// a. has the left most Page whose first Record compares to 0 if there is at least one Page
+	// whose first Record compares to 0 or:
+	// b. it will have an "opposite" neighbor (ie, if it is positive, first will be negative).
+	if(c >= 0 && (mid - 1 > cursorIndex)) mid - 1;
 	return FindValidRecord(literal, query, mid);
 }
 
