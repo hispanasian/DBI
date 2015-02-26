@@ -94,11 +94,6 @@ private:
 	virtual void GetBSTPage(Page &page, off_t index);
 
 	/**
-	 * Same thing as GetNext but is provided the ComparisonEngine.
-	 */
-	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp);
-
-	/**
 	 * Looks for a valid record that "equals" the literal and query. Returns false if none can be
 	 * found. This will only look at the page pointed to by index and the following Page. If such a
 	 * page is found, this will set cursor and cursorIndex to the Page.

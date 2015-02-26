@@ -137,8 +137,6 @@ public:
 
 	virtual void GetBSTPage(Page &page, off_t index) { sorteddb -> GetBSTPage(page, index); }
 
-	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp) { return sorteddb -> GetNext(fetchme, cnf, literal, comp);}
-
 	virtual bool FindValidRecord(Record &literal, OrderMaker &query, off_t index, Record &rec, Page &page, Page &buff, ComparisonEngine &comp) { return sorteddb -> FindValidRecord(literal, query, index, rec, page, buff, comp); }
 };
 
