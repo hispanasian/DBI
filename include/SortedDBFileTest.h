@@ -54,7 +54,6 @@ public:
 //	virtual bool BinarySearch(Record &literal, OrderMaker &query);
 	virtual bool BinarySearch(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page);
 //	virtual void GetBSTPage(Page &page, off_t index);
-	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp);
 //	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index);
 	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index, Record &rec, Page &page, Page &buff, ComparisonEngine &comp);
 };
