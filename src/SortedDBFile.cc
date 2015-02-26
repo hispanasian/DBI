@@ -18,14 +18,16 @@ SortedDBFile::SortedDBFile(): GenericDBFile() {
 	f_path = NULL;
 	in = NULL;
 	out = NULL;
-	recordAdded = false;
+	rwState = Reading;
+	getNextState = NoCNF;
 }
 
 SortedDBFile::SortedDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp, char *_f_path, SortInfo *_sortInfo):
 GenericDBFile(file, rfile, config, comp), f_path(_f_path), sortInfo(_sortInfo) {
 	in = NULL;
 	out = NULL;
-	recordAdded = false;
+	rwState = Reading;
+	getNextState = NoCNF;
 	Initialize();
 }
 
@@ -63,7 +65,7 @@ int SortedDBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
 }
 
 void SortedDBFile::Flush() {
-	if(recordAdded) {
+	if(rwState == Writing) {
 		File file;
 		Flush(file);
 	}

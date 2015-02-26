@@ -26,6 +26,9 @@ struct MergeData {
 	TPMMS *tpmms;
 };
 
+enum RWState { Reading, Writing };
+enum GetNextState { UseCNF, NoCNF };
+
 /**
  *	SortedDBFile will store records in a sorted manner.
  *	Load and Add should always set the recordAdded flag to true adn the Close, Read, and MoveFirst
@@ -39,9 +42,11 @@ friend class PartialSortedDBFileMock;
 private:
 	SortInfo *sortInfo;
 	char *f_path;
-	bool recordAdded;
+	// bool recordAdded;
 	Pipe *in;
 	Pipe *out; // The Pipe used to get the added Records
+	RWState rwState; // flag to denote reading/writing mode
+	GetNextState getNextState; // flag to denote if using previously provided CNF
 
 	/**
 	 * This is a function will be called by the public Load and it will provide it's own Record.

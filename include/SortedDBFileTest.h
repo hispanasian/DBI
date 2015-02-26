@@ -107,9 +107,9 @@ public:
 
 	Pipe * GetOut() { return sorteddb -> out;}
 
-	void SetRecordAdded(bool flag) { sorteddb -> recordAdded = flag; }
+	void SetRWState(RWState state) { sorteddb -> rwState = state; }
 
-	bool GetRecordAdded() { return sorteddb -> recordAdded; }
+	bool GetRWState() { return sorteddb -> rwState; }
 };
 
 #endif
