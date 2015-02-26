@@ -105,7 +105,9 @@ OrderMaker :: OrderMaker(Schema *schema) {
 
 OrderMaker :: OrderMaker(std::string str) {
 	numAtts = 0;
-	char *tokens = strtok((char*)str.c_str(), " ");
+	char buff[str.length()];
+	strcpy(buff, str.c_str());
+	char *tokens = strtok(buff, " ");
 	while(tokens != NULL) {
 		whichAtts[numAtts] = stoi(tokens);
 		tokens = strtok(NULL, " ");
