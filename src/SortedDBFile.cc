@@ -40,11 +40,18 @@ SortedDBFile::~SortedDBFile () {
 }
 
 void SortedDBFile::Load (Schema &f_schema, char *loadpath) {
-
+	Record r;
+	Load(f_schema, loadpath, r);
 }
 
 void SortedDBFile::Load (Schema &f_schema, char *loadpath, Record &record) {
-
+	if(!rfile.FileExists(loadpath)) throw std::runtime_error(loadpath + std::string(" could not be found."));
+	// File exists
+	FILE *file = fopen(loadpath, "r");
+	while(record.SuckNextRecord(&f_schema, file)) {
+		Add(record);
+	}
+	fclose(file);
 }
 
 void SortedDBFile::MoveFirst () {
