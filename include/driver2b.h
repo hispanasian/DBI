@@ -12,9 +12,9 @@ using namespace std;
 
 // make sure that the information below is correct
 
-char *catalog_path = "catalog"; 
-char *dbfile_dir = ""; 
-char *tpch_dir ="/cise/tmp/dbi_sp11/DATA/1G/"; 
+char *catalog_path = "data/catalog"; 
+char *dbfile_dir = "data/10M/"; 
+char *tpch_dir ="data/"; 
 
 
 extern "C" {
