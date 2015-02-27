@@ -5,6 +5,7 @@
 #include "File.h"
 
 class LinearScanner {
+	friend class MockLinearScanner;
 private:
 	File& file;
 	Page& cursor;
@@ -12,6 +13,7 @@ private:
 	const off_t& lastIndex;
 	const off_t NEGATIVE_ONE = -1;
 	int GetLength();
+	LinearScanner();
 public:
 	/*
 	 * Reads from the first record of cursor, and records from subsequent pages

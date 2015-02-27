@@ -33,11 +33,6 @@ bool PartialSortedDBFileMock::BinarySearch(Record &literal, OrderMaker &query,
 	SortedDBFile::BinarySearch(literal, query, comp, rec, page);
 }
 
-int PartialSortedDBFileMock::GetNext (Record &fetchme, CNF &cnf, Record &literal,
-		ComparisonEngine &comp) {
-	SortedDBFile::GetNext(fetchme, cnf, literal, comp);
-}
-
 bool PartialSortedDBFileMock::FindValidRecord(Record &literal, OrderMaker &query, int index,
 		Record &rec, Page &page, Page &buff, ComparisonEngine &comp){
 	return SortedDBFile::FindValidRecord(literal, query, index, rec, page, buff, comp);

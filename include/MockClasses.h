@@ -15,6 +15,7 @@
 #include "SortedDBFile.h"
 #include "TreeDBFile.h"
 #include "PipedPage.h"
+#include "LinearScanner.h"
 
 class MockRecord: public Record {
 public:
@@ -267,8 +268,6 @@ public:
 	MOCK_METHOD5(BinarySearch, bool(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page));
 //	virtual void GetBSTPage(Page &page, off_t index);
 	MOCK_METHOD2(SortedDBFile, void(Page &page, off_t index));
-//	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp);
-	MOCK_METHOD4(GetNext, int(Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp));
 //	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index);
 	MOCK_METHOD3(FindValidRecord, bool(Record &literal, OrderMaker &query, int index));
 //	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index, Record &rec, Page &page, Page &buff, ComparisonEngine &comp);
@@ -310,10 +309,11 @@ public:
 };
 
 class MockCNF: public CNF {
+public:
 //	int GetSortOrders (OrderMaker &left, OrderMaker &right);
 	MOCK_METHOD2(GetSortOrders, int(OrderMaker &left, OrderMaker &right));
 //	bool MakeQuery(const OrderMaker *sortOrder, OrderMaker &query);
-	MOCK_METHOD2(MakeQuery, bool(const OrderMaker *sortOrder, OrderMaker &query));
+	MOCK_METHOD2(MakeQuery, bool(const OrderMaker &sortOrder, OrderMaker &query));
 //	bool IsSortableAttribute(const int &attr);
 	MOCK_METHOD1(IsSortableAttribute, bool(const int &attr));
 //	void Print ();
@@ -322,6 +322,12 @@ class MockCNF: public CNF {
 	MOCK_METHOD4(GrowFromParseTree, void(struct AndList *parseTree, Schema *leftSchema, Schema *rightSchema, Record &literal));
 //	void GrowFromParseTree (struct AndList *parseTree, Schema *mySchema, Record &literal);
 	MOCK_METHOD3(GrowFromParseTree, void(struct AndList *parseTree, Schema *mySchema, Record &literal));
+};
+
+class MockLinearScanner: public LinearScanner {
+public:
+//	virtual int GetNext(Record& rec);
+	MOCK_METHOD1(GetNext, int(Record &rec));
 };
 
 #endif

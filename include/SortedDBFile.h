@@ -9,6 +9,7 @@
 #include "Pipe.h"
 #include "BigQ.h"
 #include "HeapDBFile.h"
+#include "LinearScanner.h"
 
 #ifndef INCLUDE_SORTEDDBFILE_H_
 #define INCLUDE_SORTEDDBFILE_H_
@@ -47,7 +48,8 @@ private:
 	RWState rwState; // flag to denote reading/writing mode
 	GetNextState getNextState; // flag to denote if using previously provided CNF
 	Page* cursor;
-	int cursorIndex;
+	off_t cursorIndex;
+	LinearScanner *scanner;
 
 	/**
 	 * This is a function will be called by the public Load and it will provide it's own Record.
@@ -90,11 +92,6 @@ private:
 	 * @param index		The index being looked for
 	 */
 	virtual void GetBSTPage(Page &page, off_t index);
-
-	/**
-	 * Same thing as GetNext but is provided the ComparisonEngine.
-	 */
-	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp);
 
 	/**
 	 * Looks for a valid record that "equals" the literal and query. Returns false if none can be

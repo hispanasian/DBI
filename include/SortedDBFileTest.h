@@ -11,6 +11,7 @@
 #include "../include/File.h"
 #include "../include/Schema.h"
 #include "SortedDBFile.h"
+#include "../include/LinearScanner.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -53,7 +54,6 @@ public:
 //	virtual bool BinarySearch(Record &literal, OrderMaker &query);
 	virtual bool BinarySearch(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page);
 //	virtual void GetBSTPage(Page &page, off_t index);
-	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp);
 //	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index);
 	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index, Record &rec, Page &page, Page &buff, ComparisonEngine &comp);
 };
@@ -130,11 +130,11 @@ public:
 
 	int GetCursorIndex() { return sorteddb->cursorIndex;}
 
+	void SetLinearScanner(LinearScanner *scanner) { sorteddb->scanner = scanner; }
+
 	virtual bool BinarySearch(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page) { return sorteddb -> BinarySearch(literal, query, comp, rec, page); }
 
 	virtual void GetBSTPage(Page &page, off_t index) { sorteddb -> GetBSTPage(page, index); }
-
-	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp) { return sorteddb -> GetNext(fetchme, cnf, literal, comp);}
 
 	virtual bool FindValidRecord(Record &literal, OrderMaker &query, off_t index, Record &rec, Page &page, Page &buff, ComparisonEngine &comp) { return sorteddb -> FindValidRecord(literal, query, index, rec, page, buff, comp); }
 };

@@ -1,5 +1,7 @@
 #include "LinearScanner.h"
 
+LinearScanner::LinearScanner(): file(file), cursor(cursor), cursorIndex(cursorIndex), lastIndex(0) {}
+
 LinearScanner::LinearScanner(File& _file, Page& _cursor, off_t& _cursorIndex, const off_t& _lastIndex) :
 	file(_file), cursor(_cursor), cursorIndex(_cursorIndex), lastIndex(_lastIndex) {}
 
@@ -10,8 +12,6 @@ LinearScanner::LinearScanner(File& _file, Page& _cursor, off_t& _cursorIndex) :
 LinearScanner::~LinearScanner() {}
 
 int LinearScanner::GetNext(Record& rec) {
-	// cout << lastIndex << endl;
-	// cout << GetLength() << endl;
 	if(GetLength() == 0) {
 		// this file is empty, we can't return any records
 		return 0;

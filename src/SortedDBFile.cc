@@ -9,6 +9,7 @@
 #include "DBFile.h"
 #include "Defs.h"
 #include "../include/HeapDBFile.h"
+#include "../include/LinearScanner.h"
 #include <iostream>
 #include <string.h>
 #include <stdio.h>
@@ -20,6 +21,7 @@ SortedDBFile::SortedDBFile(): GenericDBFile() {
 	out = NULL;
 	cursor = new Page();
 	cursorIndex = 0;
+	scanner = new LinearScanner(file, *cursor, cursorIndex);
 	rwState = Reading;
 	getNextState = NoCNF;
 }
@@ -32,11 +34,13 @@ GenericDBFile(file, rfile, config, comp), f_path(_f_path), sortInfo(_sortInfo), 
 	getNextState = NoCNF;
 	cursorIndex = 0;
 	cursor = new Page();
+	scanner = new LinearScanner(file, *cursor, cursorIndex);
 }
 
 SortedDBFile::~SortedDBFile () {
 	Reset();
 	delete cursor;
+	delete scanner;
 }
 
 void SortedDBFile::Load (Schema &f_schema, char *loadpath) {
@@ -82,19 +86,30 @@ void SortedDBFile::Add (Record &rec) {
 }
 
 int SortedDBFile::GetNext (Record &fetchme) {
-	return 0;
-}
-
-int SortedDBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp){
-	return 0;
+	Flush();
+	return scanner->GetNext(fetchme);
 }
 
 int SortedDBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
+	Flush();
+	bool search = true; // Flag to check if we bother searching for records
+
+	// Check if we need to do a Binary Search
+	if(getNextState == NoCNF) {
+		getNextState = UseCNF;
+		OrderMaker query;
+		search = cnf.MakeQuery(*(sortInfo->myOrder), query);
+		search = search && BinarySearch(literal, query);
+	}
+
+	if(!search) return false;
+
 	while(this->GetNext(fetchme)) {
 		if(comp.Compare(&fetchme, &literal, &cnf)) {
 			return 1;
 		}
 	}
+
 	return 0;
 }
 
