@@ -6,15 +6,17 @@
 #include "Pipe.h"
 #include "File.h"
 #include "Record.h"
+#include "PipedPage.h"
 
 using namespace std;
 
 class BigQ {
-
+friend class MockBigQ;
+private:
+	BigQ();
 public:
-
 	BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen);
-	~BigQ ();
+	virtual ~BigQ ();
 };
 
 class TPMMS {
@@ -107,6 +109,13 @@ public:
 	 * to out.
 	 */
 	virtual void Sort();
+
+	/**
+	 * Merges p1 and p2 and puts the sorted output into out.
+	 * @param p1	One of the Pages getting merged
+	 * @param p2	One of the Pages getting merged
+	 */
+	virtual void Merge(PipedPage *p1, PipedPage *p2);
 };
 
 /**

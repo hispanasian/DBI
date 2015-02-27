@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "RawFile.h"
+#include <string>
 
 using namespace std;
 
@@ -232,4 +233,14 @@ TEST(RawFile, LSeek) {
     cmd = "rm " + fname;
     ret = system(cmd.c_str());
     ASSERT_EQ(0, ret);
+}
+
+TEST(RawFile, MakeTemp) {
+	char temp[] = "tempfileXXXXXX";
+	RawFile test;
+	test.MakeTemp(temp);
+	string help = string(temp);
+	EXPECT_EQ(true, test.FileExists(temp));
+	EXPECT_GE(1, help.find("tempfile"));
+	remove(temp);
 }
