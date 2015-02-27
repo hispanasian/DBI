@@ -76,6 +76,10 @@ int SortedDBFile::GetNext (Record &fetchme) {
 	return 0;
 }
 
+int SortedDBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp){
+	return 0;
+}
+
 int SortedDBFile::GetNext (Record &fetchme, CNF &cnf, Record &literal) {
 	while(this->GetNext(fetchme)) {
 		if(comp.Compare(&fetchme, &literal, &cnf)) {
@@ -167,4 +171,86 @@ void SortedDBFile::Initialize() {
 	if(in == NULL) in = new Pipe(PIPE_SIZE);
 	if(out == NULL) out = new Pipe(PIPE_SIZE);
 	if(create) BigQ(*in, *out, *(sortInfo->myOrder), sortInfo->runLength);
+}
+
+bool SortedDBFile::BinarySearch(Record &literal, OrderMaker &query) {
+	Record rec;
+	Page page;
+	ComparisonEngine comp;
+	return BinarySearch(literal, query, comp, rec, page);
+}
+
+bool SortedDBFile::BinarySearch(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page) {
+	off_t start = cursorIndex;
+	off_t end = GetLength() - 1;
+	off_t mid;
+
+	int c;
+	while(start + 1 < end) {
+		mid = (start + end)/2; // super important to take 'floor'
+		GetBSTPage(page, mid);
+		if(page.GetFirst(&rec) == 0) ++start; // This should only happen when page is cursor and cursor is empty
+		else if((c = comp.Compare(&rec, &literal, &query)) < 0) start = mid;
+		else /* comp.Compare(&rec, &literal, &query) >= 0 */ end = mid;
+	}
+
+	// Now, it must be the case that mid either:
+	// a. has the left most Page whose first Record compares to 0 if there is at least one Page
+	// whose first Record compares to 0 or:
+	// b. it will have an "opposite" neighbor (ie, if it is positive, first will be negative).
+	if(c >= 0 && (mid > cursorIndex)) --mid;
+	return FindValidRecord(literal, query, mid);
+}
+
+void SortedDBFile::GetBSTPage(Page &page, off_t index) {
+	if(index == cursorIndex) {
+		char *bits = new (std::nothrow) char[PAGE_SIZE];
+		cursor->ToBinary(bits);
+		page.FromBinary(bits);
+	}
+	else file.GetPage(&page, index);
+}
+
+bool SortedDBFile::FindValidRecord(Record &literal, OrderMaker &query, off_t index) {
+	Record rec;
+	Page page;
+	Page buff;
+	ComparisonEngine comp;
+	return FindValidRecord(literal, query, index, rec, page, buff, comp);
+}
+
+bool SortedDBFile::FindValidRecord(Record &literal, OrderMaker &query, off_t index, Record &rec,
+		Page &page, Page &buff, ComparisonEngine &comp) {
+
+	int c;
+
+	// Look for a valid record in the first page
+	GetBSTPage(page, index);
+	while(page.GetFirst(&rec) != 0 && (c = comp.Compare(&rec, &literal, &query)) <= 0) {
+		if(c == 0) break;
+	}
+
+	// Look for a valid Record in the following page if none exists in the current one. If
+	// c != 0, then the previous loop failed because it ran out of Records
+	if(c < 0 && index < GetLength() - 1) {
+		++index;
+		GetBSTPage(page, index);
+		while(page.GetFirst(&rec) != 0 && (c = comp.Compare(&rec, &literal, &query)) <= 0) {
+			if(c == 0) break;
+		}
+	}
+
+	// Again, if c != 0, then the previous loop ran out of Records without finding a matching Record
+	if(c != 0) return false;
+	// Copy remaining Records into buff and update cursor and cursorIndex
+	buff.Append(&rec); // Add the first correct Record
+	while(page.GetFirst(&rec) != 0) { buff.Append(&rec); }
+
+	// Update cursor
+	char *bits = new (std::nothrow) char[PAGE_SIZE];
+	buff.ToBinary(bits);
+	cursor->FromBinary(bits);
+	cursorIndex = index;
+
+	return true;
 }

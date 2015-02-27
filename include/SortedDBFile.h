@@ -68,6 +68,46 @@ private:
 	 */
 	virtual void Flush(HeapDBFile &temp);
 
+	/**
+	 * Sets the cursor and cursorIndex in the first position (ie, the first GetFiist class will get
+	 * the Record) where a Record is found to match literal and query.
+	 * @param literal	The Record used to compare against
+	 * @param query		The order being compared on
+	 * @return			True if a match was found
+	 */
+	virtual bool BinarySearch(Record &literal, OrderMaker &query);
+
+	/**
+	 * Same thing as BinarySearch with two arguments but with the provided ComparisonEngine, Record,
+	 * and Page.
+	 */
+	virtual bool BinarySearch(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page);
+
+	/**
+	 * Puts the requested Page into page. If index corresponds to the cursorIndex, puts a copy
+	 * of cursor into page.
+	 * @param page		The page that will hold the Page
+	 * @param index		The index being looked for
+	 */
+	virtual void GetBSTPage(Page &page, off_t index);
+
+	/**
+	 * Same thing as GetNext but is provided the ComparisonEngine.
+	 */
+	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal, ComparisonEngine &comp);
+
+	/**
+	 * Looks for a valid record that "equals" the literal and query. Returns false if none can be
+	 * found. This will only look at the page pointed to by index and the following Page. If such a
+	 * page is found, this will set cursor and cursorIndex to the Page.
+	 */
+	virtual bool FindValidRecord(Record &literal, OrderMaker &query, off_t index);
+
+	/**
+	 * Note that all the Records and pages are assumed to be empty.
+	 */
+	virtual bool FindValidRecord(Record &literal, OrderMaker &query, off_t index, Record &rec, Page &page, Page &buff, ComparisonEngine &comp);
+
 	SortedDBFile();
 
 public:
