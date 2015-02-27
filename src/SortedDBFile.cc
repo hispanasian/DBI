@@ -142,6 +142,9 @@ void SortedDBFile::Flush(File &temp) {
 	if(rfile.Remove(name) != 0) throw runtime_error("SortedDBFile::Flush failed to remove a file");;
 	if(rfile.Rename(tempname, name) != 0) throw runtime_error("SortedDBFile::Flush failed to rename a file");
 	file.Open(1, name);
+
+	// Now that we're looking at a new file, MoveFirst so we're in a known state
+	MoveFirst();
 }
 
 void SortedDBFile::Flush(HeapDBFile &temp) {
