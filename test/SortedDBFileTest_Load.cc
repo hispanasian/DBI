@@ -95,6 +95,9 @@ TEST_F(SortedDBFileTest, Load3) {
 			Times(AtLeast(1)).
 			WillRepeatedly(Return(false));
 	EXPECT_THROW(Load(schema, path, record), std::runtime_error);
+
+	EXPECT_EQ(Writing, GetRWState());
+	EXPECT_EQ(NoCNF, GetGetNextState());
 }
 
 /*
