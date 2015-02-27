@@ -122,7 +122,8 @@ void SortedDBFile::Flush() {
 }
 
 void SortedDBFile::Flush(File &temp) {
-	char *tempname = "tempXXXXXX";
+	// char *tempname = "tempXXXXXX";
+	char tempname[] = "tempXXXXXX";
 	rfile.MakeTemp(tempname);
 	string buf(f_path);
 	buf.append(".bin");
