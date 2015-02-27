@@ -88,7 +88,7 @@ public:
 
 	File GetFile() { return file.file; }
 
-	void Load(Schema &myschema, char *loadpath, Record &record) { file.Load(myschema, loadpath, record); }
+	void Load(Schema &myschema, char *loadpath, Record &record) { sorteddb->Load(myschema, loadpath, record); }
 
 	void SetDBTosorteddb() {
 		file.delegate = sorteddb;
