@@ -119,6 +119,8 @@ OrderMaker :: OrderMaker(std::string str) {
 		tokens = strtok(NULL, " ");
 		++numAtts;
 	}
+	cout << "Printing the ordermaker" << endl;
+	this->Print();
 }
 
 

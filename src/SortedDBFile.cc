@@ -14,6 +14,8 @@
 #include <string.h>
 #include <stdio.h>
 
+using namespace std;
+
 SortedDBFile::SortedDBFile(): GenericDBFile() {
 	sortInfo = NULL;
 	f_path = NULL;
@@ -28,6 +30,8 @@ SortedDBFile::SortedDBFile(): GenericDBFile() {
 
 SortedDBFile::SortedDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp, char *_f_path, SortInfo *_sortInfo):
 GenericDBFile(file, rfile, config, comp), f_path(_f_path), sortInfo(_sortInfo), cursor(new Page()) {
+	cout << "SortedDBFile::Constructor : ";
+	sortInfo->myOrder->Print();
 	in = NULL;
 	out = NULL;
 	rwState = Reading;
@@ -41,8 +45,8 @@ SortedDBFile::~SortedDBFile () {
 	Reset();
 	delete cursor;
 	delete scanner;
-	delete sortInfo->myOrder;
-	delete sortInfo;
+	// delete sortInfo->myOrder;
+	// delete sortInfo;
 }
 
 void SortedDBFile::Load (Schema &f_schema, char *loadpath) {
@@ -129,7 +133,8 @@ void SortedDBFile::Flush(File &temp) {
 	rfile.MakeTemp(tempname);
 	string buf(f_path);
 	buf.append(".bin");
-	char *name = (char*)buf.c_str();
+	// cout << "name1 = " <<  << endl;
+	// char *name = (char*)buf.c_str();
 	RawFile temprfile;
 	DBConfig tempconfig;
 	ComparisonEngine tempcomp;
@@ -142,9 +147,13 @@ void SortedDBFile::Flush(File &temp) {
 	// Cleanup and re-assign files
 	temp.Close();
 	file.Close();
-	if(rfile.Remove(name) != 0) throw runtime_error("SortedDBFile::Flush failed to remove a file");;
-	if(rfile.Rename(tempname, name) != 0) throw runtime_error("SortedDBFile::Flush failed to rename a file");
-	file.Open(1, name);
+	cout << "name = " << buf << endl;
+	int ret = rfile.Remove(buf.c_str());
+	cout << strerror(errno);
+	if(ret != 0) throw runtime_error("SortedDBFile::Flush failed to remove a file");;
+	// if(rfile.Remove(name) != 0) throw runtime_error("SortedDBFile::Flush failed to remove a file");;
+	if(rfile.Rename(tempname, buf.c_str()) != 0) throw runtime_error("SortedDBFile::Flush failed to rename a file");
+	file.Open(1, buf.c_str());
 
 	// Now that we're looking at a new file, MoveFirst so we're in a known state
 	MoveFirst();
@@ -157,6 +166,8 @@ void SortedDBFile::Flush(HeapDBFile &temp) {
 	pthread_t worker;
 	Pipe sortedrecs;
 	int runlen = 1;
+	cout << (sortInfo == NULL) << endl;
+	cout << (sortInfo->myOrder == NULL) << endl;
 	TPMMS tpmms = TPMMS(sortedrecs, sortedrecs, *(sortInfo->myOrder), runlen);
 	MergeData *data = new MergeData { &p1, &p2, &tpmms };
 

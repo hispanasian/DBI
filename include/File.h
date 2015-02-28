@@ -64,7 +64,7 @@ public:
 	// the file; if notNew is zero, then the file is created and any other
 	// file located at that location is erased.  Otherwise, the file is
 	// simply opened
-	virtual void Open (int length, char *fName);
+	virtual void Open (int length, const char *fName);
 
 	// allows someone to explicitly get a specified page from the file
 	virtual void GetPage (Page *putItHere, off_t whichPage);

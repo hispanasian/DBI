@@ -10,15 +10,16 @@
 // returns a -1, 0, or 1 depending upon whether left is less then, equal to, or greater
 // than right, depending upon the OrderMaker
 int ComparisonEngine :: Compare(Record *left, Record *right, OrderMaker *orderUs) {
-
+	cout << "Printing from ComparisonEngine::Compare: ";
+	orderUs->Print();
 	char *val1, *val2;
 
 	char *left_bits = left->GetBits();
 	char *right_bits = right->GetBits();
 
 	for (int i = 0; i < orderUs->numAtts; i++) {
-		val1 = left_bits + ((int *) left_bits)[orderUs->whichAtts[i] + 1];
 		val2 = right_bits + ((int *) right_bits)[orderUs->whichAtts[i] + 1];
+		val1 = left_bits + ((int *) left_bits)[orderUs->whichAtts[i] + 1];
 	
 		// these are used to store the two operands, depending on their type
 		int val1Int, val2Int;

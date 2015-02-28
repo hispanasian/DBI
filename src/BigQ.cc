@@ -167,6 +167,7 @@ void TPMMS::Phase2() {
 	}
 
 	while(runsLeft > 0) {
+		cout << "FindMin time" << endl;
 		minIndex = FindMin(totalRuns, heads);
 		out.Insert(heads[minIndex]);
 		GetNextRecord(minIndex, heads, runIndex, pages, runsLeft);

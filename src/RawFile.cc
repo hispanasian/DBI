@@ -92,10 +92,10 @@ void RawFile::MakeTemp(char *scheme) {
 	close(fd);
 }
 
-int RawFile::Rename(char *oldName, char *newName) {
+int RawFile::Rename(const char *oldName, const char *newName) {
 	return rename(oldName, newName);
 }
 
-int RawFile::Remove(char *name) {
+int RawFile::Remove(const char *name) {
 	return remove(name);
 }
