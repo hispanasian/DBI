@@ -132,7 +132,7 @@ void SortedDBFile::Flush(File &temp) {
 	char tempname[] = "tempXXXXXX";
 	rfile.MakeTemp(tempname);
 	string buf(f_path);
-	buf.append(".bin");
+	// buf.append(".bin");
 	// cout << "name1 = " <<  << endl;
 	// char *name = (char*)buf.c_str();
 	RawFile temprfile;
@@ -156,7 +156,7 @@ void SortedDBFile::Flush(File &temp) {
 	file.Open(1, buf.c_str());
 
 	// Now that we're looking at a new file, MoveFirst so we're in a known state
-	MoveFirst();
+	// MoveFirst();
 }
 
 void SortedDBFile::Flush(HeapDBFile &temp) {
