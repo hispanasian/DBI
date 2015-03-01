@@ -132,7 +132,7 @@ Schema :: Schema (char *fName, char *relName) {
 }
 
 Schema :: ~Schema () {
-	delete fileName;
+	free(fileName);
 	delete [] myAtts;
 	myAtts = 0;
 }
