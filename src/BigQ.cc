@@ -219,10 +219,12 @@ void TPMMS::Merge(PipedPage *p1, PipedPage *p2) {
 	// Check to make sure the pages are full
 	if(pages[0]->GetFirst(heads[0]) == 0) {
 		--runsLeft;
+		delete heads[0];
 		heads[0] = NULL;
 	}
 	if(pages[1]->GetFirst(heads[1]) == 0) {
 		--runsLeft;
+		delete heads[1];
 		heads[1] = NULL;
 	}
 	runPos.clear();
@@ -238,12 +240,10 @@ void TPMMS::Merge(PipedPage *p1, PipedPage *p2) {
 
 	// Clean up
 	out.ShutDown();
-	// for(int i = 0; i < totalRuns; i++) {
-	// 	delete heads[i];
-	// }
+	for(int i = 0; i < totalRuns; i++) {
+		delete heads[i];
+	}
 	cout << "Deleting stuff in Merge" << endl;
-	delete heads[0];
-	delete heads[1];
 	delete []heads;
 	delete []runIndex;
 	delete []pages;
