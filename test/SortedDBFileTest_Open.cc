@@ -6,7 +6,7 @@
  */
 TEST_F(SortedDBFileTest, Open1) {
 	Sequence s1, s2, s3;
-	SortInfo *info = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), 10 };
+	SortInfo *info = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), new int(10) };
 	MakeSortedDBFile(info);
 
 	// s1
@@ -54,7 +54,7 @@ TEST_F(SortedDBFileTest, Open1) {
  */
 TEST_F(SortedDBFileTest, Open2) {
 	Sequence s1, s2, s3;
-	SortInfo *info = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), 5 };
+	SortInfo *info = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), new int(5) };
 
 	// s1
 	EXPECT_CALL(mockFile, Open(1, path)).
@@ -101,7 +101,7 @@ TEST_F(SortedDBFileTest, Open2) {
  */
 TEST_F(SortedDBFileTest, Open3) {
 	Sequence s1, s2, s3;
-	SortInfo *info = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), 5 };
+	SortInfo *info = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), new int(5) };
 
 	// s1
 	EXPECT_CALL(mockFile, Open(1, path)).

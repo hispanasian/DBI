@@ -68,7 +68,7 @@ public:
 	StrictMock<MockPage> last;
 	StrictMock<MockSchema> schema;
 	PartialSortedDBFileMock *mock = NULL;
-	SortInfo *sortInfo = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), 5 };
+	SortInfo *sortInfo = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), new int(5) };
 
 	char *path = "asdasdasd";
 	char *header = "asdasdasd.header";
@@ -106,7 +106,7 @@ public:
 
 	OrderMaker* GetOrder() { return ((SortedDBFile*)file.delegate)-> sortInfo -> myOrder; }
 
-	int GetRunLength() { return sorteddb -> sortInfo -> runLength; }
+	int GetRunLength() { return *sorteddb -> sortInfo -> runLength; }
 
 	void SetIn(Pipe *in) { sorteddb -> in = in; }
 

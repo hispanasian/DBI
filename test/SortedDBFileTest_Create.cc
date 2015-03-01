@@ -7,7 +7,7 @@
  */
 TEST_F(SortedDBFileTest, CreateSorted1) {
 	Sequence s1, s2, s3, s4, s5;
-	SortInfo *info = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), 5 };
+	SortInfo *info = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), new int(5) };
 
 	EXPECT_CALL(config, Clear()).
 			InSequence(s2, s3, s4, s5);
@@ -80,7 +80,7 @@ TEST_F(SortedDBFileTest, CreateSorted2) {
  */
 TEST_F(SortedDBFileTest, CreateSorted3) {
 	Sequence s1, s2, s3, s4, s5;
-	SortInfo *info = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), -1 };
+	SortInfo *info = new SortInfo{ new OrderMaker("0 int 5 string 6 int"), new int(-1) };
 
 	EXPECT_CALL(config, Clear()).
 			InSequence(s2, s3, s4, s5);
@@ -115,7 +115,7 @@ TEST_F(SortedDBFileTest, CreateSorted3) {
  */
 TEST_F(SortedDBFileTest, CreateSorted4) {
 	Sequence s1, s2, s3, s4, s5;
-	SortInfo *info = new SortInfo{ NULL, 5 };
+	SortInfo *info = new SortInfo{ NULL, new int(5) };
 
 	EXPECT_CALL(config, Clear()).
 			InSequence(s2, s3, s4, s5);
