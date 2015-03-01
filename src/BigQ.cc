@@ -177,9 +177,9 @@ void TPMMS::Phase2() {
 		delete heads[i];
 		delete pages[i];
 	}
-	delete heads;
-	delete runIndex;
-	delete pages;
+	delete []heads;
+	delete []runIndex;
+	delete []pages;
 }
 
 void TPMMS::Sort() {
@@ -240,7 +240,7 @@ void TPMMS::Merge(PipedPage *p1, PipedPage *p2) {
 	for(int i = 0; i < totalRuns; i++) {
 		delete heads[i];
 	}
-	delete heads;
-	delete runIndex;
-	delete pages;
+	delete []heads;
+	delete []runIndex;
+	delete []pages;
 }
