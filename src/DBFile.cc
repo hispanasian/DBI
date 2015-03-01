@@ -58,11 +58,11 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 			case sorted:
 				{
 					SortInfo *sort = (SortInfo*) startup;
-					if(sort == NULL || sort->myOrder == NULL || sort->runLength < 1) success = false;
+					if(sort == NULL || sort->myOrder == NULL || *sort->runLength < 1) success = false;
 					else {
 						config.AddKey("fType", "sorted");
 						config.AddKey("order", sort->myOrder->ToString());
-						config.AddKey("runLength", to_string(sort->runLength));
+						config.AddKey("runLength", to_string(*sort->runLength));
 						delegate = new SortedDBFile(file, rfile, config, comp, f_path, sort);
 					}
 				}
@@ -124,8 +124,15 @@ int DBFile::Open (char *f_path) {
 							strcmp("", config.GetKey("runLength").c_str()) == 0 ||
 							stoi((char*)config.GetKey("runLength").c_str()) < 1) success = false;
 					else {
+						int* rl = new int(stoi((char*)config.GetKey("runLength").c_str()));
+						// SortInfo *sort = new SortInfo{ new OrderMaker(config.GetKey("order")),
+						// 	stoi((char*)config.GetKey("runLength").c_str()) };
 						SortInfo *sort = new SortInfo{ new OrderMaker(config.GetKey("order")),
-							stoi((char*)config.GetKey("runLength").c_str()) };
+							rl };
+						// OrderMaker om(config.GetKey("order"));
+						// SortInfo sort()
+						// SortInfo *sort = new SortInfo{ &om,
+						// 	stoi((char*)config.GetKey("runLength").c_str()) };
 						delegate = new SortedDBFile(file, rfile, config, comp, f_path, sort);
 					}
 				}

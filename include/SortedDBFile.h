@@ -16,9 +16,17 @@
 
 #define PIPE_SIZE 100
 
-struct SortInfo {
+// struct SortInfo {
+// 	OrderMaker *myOrder;
+// 	int& runLength;
+// };
+
+class SortInfo {
+public:
 	OrderMaker *myOrder;
-	int runLength;
+	int* runLength;
+	SortInfo(OrderMaker* _myOrder, int* _runLength): myOrder(_myOrder), runLength(_runLength) {}
+	~SortInfo() { delete myOrder; delete runLength; }
 };
 
 struct MergeData {

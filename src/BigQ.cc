@@ -52,6 +52,7 @@ TPMMS::TPMMS(Pipe &_in, Pipe &_out, OrderMaker &_sortorder, int &_runlen):
 }
 
 TPMMS::~TPMMS() {
+	// delete rec;
 }
 
 void TPMMS::SortRun() {
@@ -237,10 +238,14 @@ void TPMMS::Merge(PipedPage *p1, PipedPage *p2) {
 
 	// Clean up
 	out.ShutDown();
-	for(int i = 0; i < totalRuns; i++) {
-		delete heads[i];
-	}
+	// for(int i = 0; i < totalRuns; i++) {
+	// 	delete heads[i];
+	// }
+	cout << "Deleting stuff in Merge" << endl;
+	delete heads[0];
+	delete heads[1];
 	delete []heads;
 	delete []runIndex;
 	delete []pages;
+	delete rec;
 }

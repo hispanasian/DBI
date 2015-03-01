@@ -8,6 +8,7 @@
 #include "Pipe.h"
 #include "DBFile.h"
 #include "Record.h"
+#include "SortedDBFile.h"
 using namespace std;
 
 // make sure that the information below is correct

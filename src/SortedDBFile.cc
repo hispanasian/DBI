@@ -35,7 +35,6 @@ GenericDBFile(file, rfile, config, comp), f_path(_f_path), sortInfo(_sortInfo), 
 	rwState = Reading;
 	getNextState = NoCNF;
 	cursorIndex = 0;
-	cursor = new Page();
 	scanner = new LinearScanner(file, *cursor, cursorIndex);
 }
 
@@ -43,8 +42,7 @@ SortedDBFile::~SortedDBFile () {
 	Reset();
 	delete cursor;
 	delete scanner;
-	// delete sortInfo->myOrder;
-	// delete sortInfo;
+	delete sortInfo;
 }
 
 void SortedDBFile::Load (Schema &f_schema, char *loadpath) {
@@ -194,7 +192,7 @@ void SortedDBFile::Initialize() {
 	bool create = (in == NULL || out == NULL);
 	if(in == NULL) in = new Pipe(PIPE_SIZE);
 	if(out == NULL) out = new Pipe(PIPE_SIZE);
-	if(create) BigQ(*in, *out, *(sortInfo->myOrder), sortInfo->runLength);
+	if(create) BigQ(*in, *out, *sortInfo->myOrder, *sortInfo->runLength);
 }
 
 bool SortedDBFile::BinarySearch(Record &literal, OrderMaker &query) {

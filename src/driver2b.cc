@@ -35,11 +35,12 @@ void test1 () {
 		cout << "\t\n specify runlength:\n\t ";
 		cin >> runlen;
 	}
-	struct {OrderMaker *o; int l;} startup = {&o, runlen};
+	SortInfo *startup = new SortInfo{new OrderMaker(o.ToString()), new int(runlen)};
+
 
 	DBFile dbfile;
 	cout << "\n output to dbfile : " << rel->path () << endl;
-	dbfile.Create (rel->path(), sorted, &startup);
+	dbfile.Create (rel->path(), sorted, startup);
 	dbfile.Close ();
 
 	char tbl_path[100];
