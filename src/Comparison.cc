@@ -218,7 +218,8 @@ bool CNF::MakeQuery(const OrderMaker &sortOrder, OrderMaker &query) {
 	for(int i = 0; i < sortOrder.numAtts; i++) {
 		if(IsSortableAttribute(sortOrder.whichAtts[i])) {
 			query.numAtts++;
-			query.whichAtts[i] = sortOrder.whichAtts[i];
+			// query.whichAtts[i] = sortOrder.whichAtts[i];
+			query.whichAtts[i] = i;
 			query.whichTypes[i] = sortOrder.whichTypes[i];
 		}
 		else break;

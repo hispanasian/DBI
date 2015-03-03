@@ -212,7 +212,7 @@ bool SortedDBFile::BinarySearch(Record &literal, OrderMaker &query, ComparisonEn
 		mid = (start + end)/2; // super important to take 'floor'
 		GetBSTPage(page, mid);
 		if(page.GetFirst(&rec) == 0) ++start; // This should only happen when page is cursor and cursor is empty
-		else if((c = comp.Compare(&rec, &literal, &query)) < 0) start = mid;
+		else if((c = comp.CompareForSearch(&rec, sortInfo->myOrder, &literal, &query)) < 0) start = mid;
 		else /* comp.Compare(&rec, &literal, &query) >= 0 */ end = mid;
 	}
 
@@ -248,7 +248,7 @@ bool SortedDBFile::FindValidRecord(Record &literal, OrderMaker &query, off_t ind
 
 	// Look for a valid record in the first page
 	GetBSTPage(page, index);
-	while(page.GetFirst(&rec) != 0 && (c = comp.Compare(&rec, &literal, &query)) <= 0) {
+	while(page.GetFirst(&rec) != 0 && (c = comp.CompareForSearch(&rec, sortInfo->myOrder, &literal, &query)) <= 0) {
 		if(c == 0) break;
 	}
 
@@ -257,7 +257,7 @@ bool SortedDBFile::FindValidRecord(Record &literal, OrderMaker &query, off_t ind
 	if(c < 0 && index < GetLength() - 1) {
 		++index;
 		GetBSTPage(page, index);
-		while(page.GetFirst(&rec) != 0 && (c = comp.Compare(&rec, &literal, &query)) <= 0) {
+		while(page.GetFirst(&rec) != 0 && (c = comp.CompareForSearch(&rec, sortInfo->myOrder, &literal, &query)) <= 0) {
 			if(c == 0) break;
 		}
 	}
