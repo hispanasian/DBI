@@ -28,11 +28,11 @@ TEST_F(SortedDBFileTest, FindValidRecord1) {
 			Times(6).
 			InSequence(s1).
 			WillRepeatedly(Return(1));
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+	EXPECT_CALL(comp, CompareForSearch(&rec, sortInfo->myOrder, &lit, &query)).
 			Times(5).
 			InSequence(s2).
 			WillRepeatedly(Return(-5));
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+	EXPECT_CALL(comp, CompareForSearch(&rec, sortInfo->myOrder, &lit, &query)).
 			InSequence(s2).
 			WillOnce(Return(0));
 
@@ -90,7 +90,7 @@ TEST_F(SortedDBFileTest, FindValidRecord2) {
 	EXPECT_CALL(page, GetFirst(&rec)).
 			InSequence(s1).
 			WillOnce(Return(1));
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+	EXPECT_CALL(comp, CompareForSearch(&rec, sortInfo->myOrder, &lit, &query)).
 			InSequence(s2).
 			WillOnce(Return(0));
 
@@ -151,7 +151,7 @@ TEST_F(SortedDBFileTest, FindValidRecord3) {
 	EXPECT_CALL(page, GetFirst(&rec)).
 			InSequence(s1).
 			WillOnce(Return(0));
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+	EXPECT_CALL(comp, CompareForSearch(&rec, sortInfo->myOrder, &lit, &query)).
 			Times(5).
 			InSequence(s2).
 			WillRepeatedly(Return(-5));
@@ -161,10 +161,10 @@ TEST_F(SortedDBFileTest, FindValidRecord3) {
 			Times(2).
 			InSequence(s1).
 			WillRepeatedly(Return(1));
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+	EXPECT_CALL(comp, CompareForSearch(&rec, sortInfo->myOrder, &lit, &query)).
 			InSequence(s2).
 			WillOnce(Return(-4));
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+	EXPECT_CALL(comp, CompareForSearch(&rec, sortInfo->myOrder, &lit, &query)).
 			InSequence(s2).
 			WillOnce(Return(0));
 
@@ -233,7 +233,7 @@ TEST_F(SortedDBFileTest, FindValidRecord4) {
 	EXPECT_CALL(page, GetFirst(&rec)).
 			InSequence(s1).
 			WillOnce(Return(0));
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+	EXPECT_CALL(comp, CompareForSearch(&rec, sortInfo->myOrder, &lit, &query)).
 			WillRepeatedly(Return(-5));
 
 	// Arbitrary calls
@@ -272,7 +272,7 @@ TEST_F(SortedDBFileTest, FindValidRecord5) {
 	EXPECT_CALL(page, GetFirst(&rec)).
 			InSequence(s1).
 			WillOnce(Return(1));
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+	EXPECT_CALL(comp, CompareForSearch(&rec, sortInfo->myOrder, &lit, &query)).
 			WillRepeatedly(Return(5));
 
 	// Arbitrary calls
@@ -315,7 +315,7 @@ TEST_F(SortedDBFileTest, FindValidRecord6) {
 	EXPECT_CALL(page, GetFirst(&rec)).
 			InSequence(s1).
 			WillOnce(Return(0));
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+	EXPECT_CALL(comp, CompareForSearch(&rec, sortInfo->myOrder, &lit, &query)).
 			WillRepeatedly(Return(-5));
 
 	// Arbitrary calls
@@ -358,7 +358,7 @@ TEST_F(SortedDBFileTest, FindValidRecord7) {
 	EXPECT_CALL(page, GetFirst(&rec)).
 			InSequence(s1).
 			WillOnce(Return(0));
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+	EXPECT_CALL(comp, CompareForSearch(&rec, sortInfo->myOrder, &lit, &query)).
 			Times(5).
 			InSequence(s2).
 			WillRepeatedly(Return(-5));
@@ -368,10 +368,10 @@ TEST_F(SortedDBFileTest, FindValidRecord7) {
 			Times(2).
 			InSequence(s1).
 			WillRepeatedly(Return(1));
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+	EXPECT_CALL(comp, CompareForSearch(&rec, sortInfo->myOrder, &lit, &query)).
 			InSequence(s2).
 			WillOnce(Return(-4));
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+	EXPECT_CALL(comp, CompareForSearch(&rec, sortInfo->myOrder, &lit, &query)).
 			InSequence(s2).
 			WillOnce(Return(5));
 
@@ -416,7 +416,7 @@ TEST_F(SortedDBFileTest, FindValidRecord8) {
 	EXPECT_CALL(page, GetFirst(&rec)).
 			InSequence(s1).
 			WillOnce(Return(0));
-	EXPECT_CALL(comp, Compare(&rec, &lit, &query)).
+	EXPECT_CALL(comp, CompareForSearch(&rec, sortInfo->myOrder, &lit, &query)).
 			Times(5).
 			InSequence(s2).
 			WillRepeatedly(Return(-5));

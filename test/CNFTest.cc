@@ -174,7 +174,7 @@ TEST_F(CNFTest, MakeQuery4) {
 	SetComparison(GetOrList(2,0), Left, 5, Literal, 5, Int, Equals);
 
 	EXPECT_EQ(true, cnf.MakeQuery(sortOrder, query));
-	EXPECT_EQ(0, strcmp("2 int 1 double", query.ToString().c_str()));
+	EXPECT_EQ(0, strcmp("0 int 1 double", query.ToString().c_str()));
 }
 
 /**

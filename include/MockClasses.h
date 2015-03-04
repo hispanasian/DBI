@@ -160,6 +160,9 @@ public:
 
     // int Compare(Record *left, Record *literal, CNF *myComparison);
     MOCK_METHOD3(Compare, int(Record *left, Record *literal, CNF *myComparison));
+
+    // int CompareForSearch(Record *left, OrderMaker *order_left, Record *right, OrderMaker *order_right);
+    MOCK_METHOD4(CompareForSearch, int(Record *left, OrderMaker *order_left, Record *right, OrderMaker *order_right));
 };
 
 class MockBigQ: public BigQ {
