@@ -13,7 +13,7 @@ RawFile::~RawFile() {
 bool RawFile::Open(std::string fname) {
 	filename = fname;
 	std::string mode("r+");
-	if(!fileExists(fname.c_str())) {
+	if(!FileExists(fname.c_str())) {
 		mode = "w+";
 	}
 	file = fopen(fname.c_str(), mode.c_str());
@@ -83,6 +83,19 @@ void RawFile::LSeek(off_t offset) {
 	fseek(file, offset, SEEK_SET);
 }
 
-bool RawFile::fileExists(const char* fileName) {
+bool RawFile::FileExists(const char* fileName) {
 	return access(fileName, F_OK) != -1;
+}
+
+void RawFile::MakeTemp(char *scheme) {
+	int fd = mkstemp(scheme);
+	close(fd);
+}
+
+int RawFile::Rename(const char *oldName, const char *newName) {
+	return rename(oldName, newName);
+}
+
+int RawFile::Remove(const char *name) {
+	return remove(name);
 }

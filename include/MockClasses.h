@@ -12,6 +12,10 @@
 #include "ComparisonEngine.h"
 #include "BigQ.h"
 #include "Pipe.h"
+#include "SortedDBFile.h"
+#include "TreeDBFile.h"
+#include "PipedPage.h"
+#include "LinearScanner.h"
 
 class MockRecord: public Record {
 public:
@@ -52,7 +56,7 @@ public:
 //	virtual off_t GetLength ();
 	MOCK_METHOD0(GetLength, off_t());
     //virtual void Open (int length, char *fName);
-    MOCK_METHOD2(Open, void(int length, char *fname));
+    MOCK_METHOD2(Open, void(int length, const char *fname));
     //virtual void GetPage (Page *putItHere, off_t whichPage);
     MOCK_METHOD2(GetPage, void(Page *putItHere, off_t whichPage));
     //virtual void AddPage (Page *addMe, off_t whichPage);
@@ -79,6 +83,14 @@ public:
     MOCK_METHOD0(Truncate, bool());
 //    virtual void LSeek(off_t offset);
     MOCK_METHOD1(LSeek, void(off_t offset));
+//    virtual bool RawFile::FileExists(const char* fileName);
+    MOCK_METHOD1(FileExists, bool(const char* fileName));
+//    virtual void MakeTemp(char *scheme);
+    MOCK_METHOD1(MakeTemp, void(char *scheme));
+//    virtual int Rename(char *oldName, char *newName);
+    MOCK_METHOD2(Rename, int(const char *oldName, const char *newName));
+//    virtual int Remove(char *name);
+    MOCK_METHOD1(Remove, int(const char *name));
 };
 
 class MockDBConfig: public DBConfig {
@@ -148,6 +160,9 @@ public:
 
     // int Compare(Record *left, Record *literal, CNF *myComparison);
     MOCK_METHOD3(Compare, int(Record *left, Record *literal, CNF *myComparison));
+
+    // int CompareForSearch(Record *left, OrderMaker *order_left, Record *right, OrderMaker *order_right);
+    MOCK_METHOD4(CompareForSearch, int(Record *left, OrderMaker *order_left, Record *right, OrderMaker *order_right));
 };
 
 class MockBigQ: public BigQ {
@@ -184,6 +199,138 @@ public:
 	MOCK_METHOD5(GetNextRecord, void(int min, Record **&heads, off_t *&runIndex, Page **&pages, int &runsLeft));
 //	virtual int FindMin(int size, Record **&heads);
 	MOCK_METHOD2(FindMin, int(int size, Record **&heads));
+//	virtual void Merge(PipedPage *p1, PipedPage *p2);
+	MOCK_METHOD2(Merge, void(PipedPage *p1, PipedPage *p2));
 };
 
-#endif MOCKCLASSES_H
+class MockGenericDBFile: public GenericDBFile {
+public:
+//	virtual void Load (Schema &myschema, char *loadpath);
+	MOCK_METHOD2(Load, void(Schema &myschema, char *loadpath));
+//	virtual void MoveFirst ();
+	MOCK_METHOD0(MoveFirst, void());
+//	virtual void Add (Record &addme);
+	MOCK_METHOD1(Add, void(Record &addme));
+//	virtual int GetNext (Record &fetchme);
+	MOCK_METHOD1(GetNext, int(Record &fetchme));
+//	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal);
+	MOCK_METHOD3(GetNext, int(Record &fetchme, CNF &cnf, Record &literal));
+//	virtual void Reset();
+	MOCK_METHOD0(Reset, void());
+//	virtual bool Flush();
+	MOCK_METHOD0(Flush, void());
+//	virtual void Initialize();
+	MOCK_METHOD0(Initialize, void());
+};
+
+class MockHeapDBFile: public HeapDBFile {
+public:
+//	virtual void Load (Schema &myschema, char *loadpath);
+	MOCK_METHOD2(Load, void(Schema &myschema, char *loadpath));
+//	virtual void MoveFirst ();
+	MOCK_METHOD0(MoveFirst, void());
+//	virtual void Add (Record &addme);
+	MOCK_METHOD1(Add, void(Record &addme));
+//	virtual int GetNext (Record &fetchme);
+	MOCK_METHOD1(GetNext, int(Record &fetchme));
+//	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal);
+	MOCK_METHOD3(GetNext, int(Record &fetchme, CNF &cnf, Record &literal));
+//	virtual void Reset();
+	MOCK_METHOD0(Reset, void());
+//	virtual bool Flush();
+	MOCK_METHOD0(Flush, void());
+//	virtual void Initialize();
+	MOCK_METHOD0(Initialize, void());
+};
+
+class MockSortedDBFile: public SortedDBFile {
+public:
+//	virtual void Load (Schema &myschema, char *loadpath);
+	MOCK_METHOD2(Load, void(Schema &myschema, char *loadpath));
+//	virtual void MoveFirst ();
+	MOCK_METHOD0(MoveFirst, void());
+//	virtual void Add (Record &addme);
+	MOCK_METHOD1(Add, void(Record &addme));
+//	virtual int GetNext (Record &fetchme);
+	MOCK_METHOD1(GetNext, int(Record &fetchme));
+//	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal);
+	MOCK_METHOD3(GetNext, int(Record &fetchme, CNF &cnf, Record &literal));
+//	virtual void Reset();
+	MOCK_METHOD0(Reset, void());
+//	virtual bool Flush();
+	MOCK_METHOD0(Flush, void());
+//	virtual void Initialize();
+	MOCK_METHOD0(Initialize, void());
+//	virtual void Flush(File &temp);
+	MOCK_METHOD1(Flush, void(File &temp));
+//	virtual void Flush(HeapDBFile &temp);
+	MOCK_METHOD1(Flush, void(HeapDBFile &temp));
+//	virtual bool BinarySearch(Record &literal, OrderMaker &query);
+	MOCK_METHOD2(BinarySearch, bool(Record &literal, OrderMaker &query));
+	//	virtual bool BinarySearch(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page);
+	MOCK_METHOD5(BinarySearch, bool(Record &literal, OrderMaker &query, ComparisonEngine &comp, Record &rec, Page &page));
+//	virtual void GetBSTPage(Page &page, off_t index);
+	MOCK_METHOD2(SortedDBFile, void(Page &page, off_t index));
+//	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index);
+	MOCK_METHOD3(FindValidRecord, bool(Record &literal, OrderMaker &query, int index));
+//	virtual bool FindValidRecord(Record &literal, OrderMaker &query, int index, Record &rec, Page &page, Page &buff, ComparisonEngine &comp);
+	MOCK_METHOD7(FindValidRecord, bool(Record &literal, OrderMaker &query, int index, Record &rec, Page &page, Page &buff, ComparisonEngine &comp));
+};
+
+class MockTreeDBFile: public TreeDBFile {
+public:
+//	virtual void Load (Schema &myschema, char *loadpath);
+	MOCK_METHOD2(Load, void(Schema &myschema, char *loadpath));
+//	virtual void MoveFirst ();
+	MOCK_METHOD0(MoveFirst, void());
+//	virtual void Add (Record &addme);
+	MOCK_METHOD1(Add, void(Record &addme));
+//	virtual int GetNext (Record &fetchme);
+	MOCK_METHOD1(GetNext, int(Record &fetchme));
+//	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal);
+	MOCK_METHOD3(GetNext, int(Record &fetchme, CNF &cnf, Record &literal));
+//	virtual void Reset();
+	MOCK_METHOD0(Reset, void());
+//	virtual bool Flush();
+	MOCK_METHOD0(Flush, void());
+//	virtual void Initialize();
+	MOCK_METHOD0(Initialize, void());
+};
+
+class MockPipedPage: public PipedPage {
+public:
+    //virtual void ToBinary (char *bits);
+    MOCK_METHOD1(ToBinary, void(char *bits));
+    //virtual void FromBinary (char *bits);
+    MOCK_METHOD1(FromBinary, void(char *bits));
+    //virtual int GetFirst (Record *firstOne);
+    MOCK_METHOD1(GetFirst, int(Record *firstOne));
+    //virtual int Append (Record *addMe);
+    MOCK_METHOD1(Append, int(Record *addMe));
+    //virtual void EmptyItOut ();
+    MOCK_METHOD0(EmptyItOut, void());
+};
+
+class MockCNF: public CNF {
+public:
+//	int GetSortOrders (OrderMaker &left, OrderMaker &right);
+	MOCK_METHOD2(GetSortOrders, int(OrderMaker &left, OrderMaker &right));
+//	bool MakeQuery(const OrderMaker *sortOrder, OrderMaker &query);
+	MOCK_METHOD2(MakeQuery, bool(const OrderMaker &sortOrder, OrderMaker &query));
+//	bool IsSortableAttribute(const int &attr);
+	MOCK_METHOD1(IsSortableAttribute, bool(const int &attr));
+//	void Print ();
+	MOCK_METHOD0(Print, void());
+//	void GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema, Schema *rightSchema, Record &literal);
+	MOCK_METHOD4(GrowFromParseTree, void(struct AndList *parseTree, Schema *leftSchema, Schema *rightSchema, Record &literal));
+//	void GrowFromParseTree (struct AndList *parseTree, Schema *mySchema, Record &literal);
+	MOCK_METHOD3(GrowFromParseTree, void(struct AndList *parseTree, Schema *mySchema, Record &literal));
+};
+
+class MockLinearScanner: public LinearScanner {
+public:
+//	virtual int GetNext(Record& rec);
+	MOCK_METHOD1(GetNext, int(Record &rec));
+};
+
+#endif

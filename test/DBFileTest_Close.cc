@@ -1,155 +1,101 @@
 #include "DBFileTest.h"
 
 /**
- * DBFile::Close should call File.Close, write last to disk, and clear out last, cursor, lastIndex,
- * and cursorIndex. It should then return 1.
+ * DBFileTest::Close should be tested with a mocked GenericDBFile
+ */
+
+/**
+ * When close is called, DBFile should
+ * - Flush its file delegate
+ * - Close its delegate
+ * - Write out its metadata file
+ * - Close its metadata file
+ * - Return 1 when successful
  */
 TEST_F(DBFileTest, Close1) {
-	SetCursorIndex(5);
-	SetLastIndex(6);
-	SetCursor(cursor);
-	SetLast(last);
-
-	Sequence s1, s2;
+	StrictMock<MockGenericDBFile>& mockGeneric = *(new StrictMock<MockGenericDBFile>());
+	SetDB(&mockGeneric);
+	EXPECT_CALL(mockGeneric, Flush());
+	EXPECT_CALL(mockGeneric, Reset());
+	EXPECT_CALL(mockFile, Close()).
+		WillOnce(Return(1));
 	EXPECT_CALL(config, Write(Ref(rfile))).
-			InSequence(s1, s2).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, Clear()).
-			InSequence(s1);
+		WillOnce(Return(true));
+	EXPECT_CALL(config, Clear());
 	EXPECT_CALL(rfile, Close()).
-			InSequence(s2).
-			WillOnce(Return(true));
-
-	Sequence s3;
-	EXPECT_CALL(mockFile, AddPage(&last, 6)).
-			InSequence(s3);
-	EXPECT_CALL(last, EmptyItOut()).
-			InSequence(s3);
-
-	// Order doesn't matter
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(mockFile, Close());
+		WillOnce(Return(true));
 
 
-	EXPECT_EQ(1, file.Close());
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
-
-	SetCursorNull();
-	SetLastNull();
+	ASSERT_EQ(1, file.Close());
+	ASSERT_EQ(NULL, GetDB());
+	// TODO: does not check that the memory was actually deallocated
 }
 
 /**
- * DBFile::Close should return false if DBConfig::Write fails, but it should still close RawFile,
- * clear config, zero out the indexes, and write out last.
+ * When close is called and config does not close properly,
+ * the method should return 0
  */
 TEST_F(DBFileTest, Close2) {
-	SetCursorIndex(5);
-	SetLastIndex(6);
-	SetCursor(cursor);
-	SetLast(last);
-
-	Sequence s1, s2;
+	StrictMock<MockGenericDBFile>& mockGeneric = *(new StrictMock<MockGenericDBFile>());
+	SetDB(&mockGeneric);
+	EXPECT_CALL(mockGeneric, Flush());
+	EXPECT_CALL(mockGeneric, Reset());
+	EXPECT_CALL(mockFile, Close()).
+		WillOnce(Return(1));
 	EXPECT_CALL(config, Write(Ref(rfile))).
-			InSequence(s1, s2).
-			WillOnce(Return(false));
-	EXPECT_CALL(config, Clear()).
-			InSequence(s1);
+		WillOnce(Return(false));
+	EXPECT_CALL(config, Clear());
 	EXPECT_CALL(rfile, Close()).
-			InSequence(s2).
-			WillOnce(Return(true));
+		WillOnce(Return(true));
 
-	Sequence s3;
-	EXPECT_CALL(mockFile, AddPage(&last, 6)).
-			InSequence(s3);
-	EXPECT_CALL(last, EmptyItOut()).
-			InSequence(s3);
 
-	// Order doesn't matter
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(mockFile, Close());
-
-	EXPECT_EQ(0, file.Close());
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
-
-	SetCursorNull();
-	SetLastNull();
+	ASSERT_EQ(0, file.Close());
+	ASSERT_EQ(NULL, GetDB());
+	// TODO: does not check that the memory was actually deallocated
 }
 
 /**
- * DBFile::Close should add page to File if a record has been added to the current page. However,
- * it should also return false if RawFile::Close fails. It should also still write out the last
- * page and zero out the indexes.
+ * When close is called and the raw file does not close properly,
+ * the method should return 0
+ */
+TEST_F(DBFileTest, Close3) {
+	StrictMock<MockGenericDBFile>& mockGeneric = *(new StrictMock<MockGenericDBFile>());
+	SetDB(&mockGeneric);
+	EXPECT_CALL(mockGeneric, Flush());
+	EXPECT_CALL(mockGeneric, Reset());
+	EXPECT_CALL(mockFile, Close()).
+		WillOnce(Return(1));
+	EXPECT_CALL(config, Write(Ref(rfile))).
+		WillOnce(Return(true));
+	EXPECT_CALL(config, Clear());
+	EXPECT_CALL(rfile, Close()).
+		WillOnce(Return(false));
+
+
+	ASSERT_EQ(0, file.Close());
+	ASSERT_EQ(NULL, GetDB());
+	// TODO: does not check that the memory was actually deallocated
+}
+
+/**
+ * When close is called and the config and raw file do not close properly,
+ * the method should return 0
  */
 TEST_F(DBFileTest, Close4) {
-	SetCursorIndex(5);
-	SetLastIndex(6);
-	SetCursor(cursor);
-	SetLast(last);
-
-	Sequence s1, s2;
+	StrictMock<MockGenericDBFile>& mockGeneric = *(new StrictMock<MockGenericDBFile>());
+	SetDB(&mockGeneric);
+	EXPECT_CALL(mockGeneric, Flush());
+	EXPECT_CALL(mockGeneric, Reset());
+	EXPECT_CALL(mockFile, Close()).
+		WillOnce(Return(1));
 	EXPECT_CALL(config, Write(Ref(rfile))).
-			InSequence(s1, s2).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, Clear()).
-			InSequence(s1);
+		WillOnce(Return(false));
+	EXPECT_CALL(config, Clear());
 	EXPECT_CALL(rfile, Close()).
-			InSequence(s2).
-			WillOnce(Return(false));
+		WillOnce(Return(false));
 
-	Sequence s3;
-	EXPECT_CALL(mockFile, AddPage(&last, 6)).
-			InSequence(s3);
-	EXPECT_CALL(last, EmptyItOut()).
-			InSequence(s3);
 
-	// Order doesn't matter
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(mockFile, Close());
-
-	EXPECT_EQ(0, file.Close());
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
-
-	SetCursorNull();
-	SetLastNull();
-}
-
-/**
- * DBFile::Close should write last to disk, even if last is the first page (or there are no other
- * pages).
- */
-TEST_F(DBFileTest, Close5) {
-	SetCursorIndex(0);
-	SetLastIndex(0);
-	SetCursor(cursor);
-	SetLast(last);
-
-	Sequence s1, s2;
-	EXPECT_CALL(config, Write(Ref(rfile))).
-			InSequence(s1, s2).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, Clear()).
-			InSequence(s1);
-	EXPECT_CALL(rfile, Close()).
-			InSequence(s2).
-			WillOnce(Return(true));
-
-	Sequence s3;
-	EXPECT_CALL(mockFile, AddPage(&last, 0)).
-			InSequence(s3);
-	EXPECT_CALL(last, EmptyItOut()).
-			InSequence(s3);
-
-	// Order doesn't matter
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(mockFile, Close());
-
-	EXPECT_EQ(1, file.Close());
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
-
-	SetCursorNull();
-	SetLastNull();
+	ASSERT_EQ(0, file.Close());
+	ASSERT_EQ(NULL, GetDB());
+	// TODO: does not check that the memory was actually deallocated
 }

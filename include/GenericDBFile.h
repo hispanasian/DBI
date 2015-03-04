@@ -1,8 +1,6 @@
-#ifndef DBFILE_H
-#define DBFILE_H
+#ifndef GENERICDBFILE_H
+#define GENERICDBFILE_H
 
-#include "HeapDBFile.h"
-#include "GenericDBFile.h"
 #include "TwoWayList.h"
 #include "Record.h"
 #include "Schema.h"
@@ -13,15 +11,14 @@
 #include "DBConfig.h"
 #include <sys/stat.h>
 
-typedef enum {heap, sorted, tree} fType;
-
-// stub DBFile header..replace it with your own DBFile.h 
-
-class DBFile {
-friend class DBFileTest;
-friend class HeapDBFileTest;
-friend class SortedDBFileTest;
-private:
+/**
+ *	GenericDBFile is an interface that will be used by DBFile to utilize various DBFile types (heap,
+ *	sorted, and tree)
+ */
+class GenericDBFile {
+friend class DBFile;
+friend class MockGenericDBFile;
+protected:
 	File &file;
 	File myFile;
 	RawFile &rfile;
@@ -30,18 +27,11 @@ private:
 	DBConfig myConfig;
 	ComparisonEngine &comp;
 	ComparisonEngine myComp;
-	GenericDBFile *delegate;
-
-	DBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp); // Strictly for Testing.
 
 	/**
-	 * Puts DBFile into an initial state.
+	 * Returns the length of file.
 	 */
-	virtual void Reset();
-	/*
-	 * Initializes the DBFile.
-	 */
-	void Initialize();
+	int GetLength();
 
 	/**
 	 * This is a function will be called by the public Load and it will provide it's own Record.
@@ -51,39 +41,14 @@ private:
 	virtual void Load (Schema &myschema, char *loadpath, Record &record);
 
 public:
-	DBFile ();
-    virtual ~DBFile();
+	// GenericDBFile() : file(myFile), rfile(myRFile), config(myConfig), comp(myComp){}
+	GenericDBFile();
 
-    /**
-	 * Creates a file at fpath of file_type heap, sorted, or tree. It will also create a file to
-	 * store meta-data located at filepath.header.
-	 * @param fpath		The path to the file that should be created.
-	 * @param file_type	The type of the file as defined by ftype
-	 * @param startup	Unknown
-	 * @return			1 if successful and 0 if failure.
-	 */
-	virtual int Create (char *fpath, fType file_type, void *startup);
+	// GenericDBFile(File &_file, RawFile &_rfile, DBConfig &_config, ComparisonEngine &_comp) :
+	// 	file(_file), rfile(_rfile), config(_config), comp(_comp){}
+	GenericDBFile(File &_file, RawFile &_rfile, DBConfig &_config, ComparisonEngine &_comp);
 
-    /**
-	 * Opens the file and associated header located at fpath and fpath.header respectively. This
-	 * function does not load any data from the file into memory.
-	 * @param fpath	The path to the DBFile
-	 * @return 		1 if successful and 0 if failure.
-	 */
-	virtual int Open (char *fpath);
-
-	/**
-	 * Closes the file held by this object.
-	 * @return 1 if successful and 0 if failure.
-	 */
-	virtual int Close ();
-
-	/**
-	 * Appends the data located at loadpath to memory.
-	 * @param myschema	The schema of the file being loaded to memory
-	 * @param loadpath	The path to the file being loaded
-	 */
-	virtual void Load (Schema &myschema, char *loadpath);
+    virtual ~GenericDBFile();
 
 	/**
 	 * Moves the pointer from the current record to the first record of the first page.
@@ -115,6 +80,21 @@ public:
 	 * @return			0 if there is no valid record to be returned.
 	 */
 	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal);
+
+	/**
+	 * Writes out any changes to disk
+	 */
+	virtual void Flush();
+
+	/**
+	 * Initializes this DBFile
+	 */
+	virtual void Initialize();
+
+	/**
+	 * Puts DBFile into an initial state.
+	 */
+	virtual void Reset();
 };
 
 #endif

@@ -10,6 +10,7 @@
 #include "../include/DBFile.h"
 #include "../include/File.h"
 #include "../include/Schema.h"
+#include "GenericDBFile.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -25,6 +26,8 @@ using ::testing::SetArgPointee;
 using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Ref;
+using ::testing::Pointee;
+using ::testing::NotNull;
 
 class DBFileTest: public ::testing::Test {
 public:
@@ -40,35 +43,14 @@ public:
 	char *path = "asdasdasd";
 	char *header = "asdasdasd.header";
 
-	off_t CursorIndex() { return file.cursorIndex; }
-
-	void SetCursorIndex(off_t offset) { file.cursorIndex = offset; }
-
-	off_t LastIndex() { return file.lastIndex; }
-
-	void SetLastIndex(off_t offset) { file.lastIndex = offset; }
-
-	File GetFile() { return file.file; }
-
-	Page *GetCursor() { return file.cursor; }
-
-	void SetCursor(Page &page) {
-		delete file.cursor;
-		file.cursor = &page;
-	}
-
-	void SetCursorNull() { file.cursor= NULL; }
-
-	Page *GetLast() { return file.last; }
-
-	void SetLast(Page &page) {
-		delete file.last;
-		file.last = &page;
-	}
-
-	void SetLastNull() { file.last = NULL; }
-
 	void Load(Schema &myschema, char *loadpath, Record &record) { file.Load(myschema, loadpath, record); }
+
+	void SetDB(GenericDBFile *db) {
+		delete file.delegate;
+		file.delegate = db;
+	}
+
+	GenericDBFile* GetDB() { return file.delegate; }
 };
 
 #endif

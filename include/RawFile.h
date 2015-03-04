@@ -10,7 +10,6 @@ private:
 	FILE* file = NULL;
 	char buffer[4096];
 	std::string filename;
-	bool fileExists(const char* fileName);
 public:
     RawFile();
     virtual ~RawFile();
@@ -23,6 +22,16 @@ public:
     virtual bool Append(std::string value);
     virtual bool Truncate();
     virtual void LSeek(off_t offset);
+    virtual bool FileExists(const char* fileName);
+    virtual int Rename(const char *oldName, const char *newName);
+    virtual int Remove(const char *name);
+
+    /*
+     * Takes in a char array scheme with the following pattern: filenameXXXXXX where the X's will
+     * be replaced accordingly and used to generate and create a unique file. Note that char* is
+     * not constant because it WILL be changed. Note that this must end with 6 trailing X's
+     */
+    virtual void MakeTemp(char *scheme);
 };
 
 #endif RAWFILE_H
