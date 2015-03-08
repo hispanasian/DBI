@@ -5,6 +5,11 @@ Carlos Vasquez
 *****Note*****
 Because of an outdated version of GCC (4.6.4) on the storm server, building our project will result in build errors. It is recommended to test our project on a machine with version 4.8.2, such as any of the computers in E113 (e.g., lin113-01.cise.ufl.edu).
 
+Additionally, our project can take a long time to build, especially the unit tests. Thus, to significantly speed up build times, it is recommended to use the -j option with make, which takes an integer specifying the number of processes to use to build.
+
+For example, to build the unit tests with 4 processes, use this command:
+make -j 4 test
+
 Build Instructions:
 make (Builds the following binaries: bin/test, bin/driver, bin/main)
 make test (Builds bin/test)
