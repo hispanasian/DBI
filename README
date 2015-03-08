@@ -5,14 +5,16 @@ Carlos Vasquez
 Build Instructions:
 make (Builds the following binaries: bin/test, bin/driver, bin/main)
 make test (Builds bin/test)
-make driver (Builds bin/driver)
-make main (Biulds bin/main)
+make driver2a (Builds bin/driver2a, the driver for Assignment 2 part I)
+make driver2b (Builds bin/driver2b, the driver for Assignment 2 part II)
+make main (Builds bin/main)
 
-Run all unit tests:
+Run all unit tests for parts I and II:
 ./bin/test
 
 Run driverX (where X corresponds to the assignment, ie 1, 2a, 2b, etc.)
 ./bin/driverX
+
 
 File Structure:
 bin - stores the binaries
