@@ -9,6 +9,10 @@
 #define INCLUDE_RELATIONALOP_H_
 
 class RelationalOp {
+protected:
+	int thread_id;
+	pthread_t worker;
+
 public:
 	// blocks the caller until the particular relational operator
 	// has run to completion
