@@ -1,6 +1,6 @@
 /*
  * SelectPipe.h
- * The Select Operator
+ * The Select Operator. This object live past the thread it spawns or the thread will fail.
  *  Created on: Mar 12, 2015
  *      Author: cvasquez
  */
@@ -8,11 +8,13 @@
 #ifndef INCLUDE_SELECTPIPE_H_
 #define INCLUDE_SELECTPIPE_H_
 
+#include <pthread.h>
 #include "RelationalOp.h"
+#include "Pipe.h"
+#include "Comparison.h"
+#include "ComparisonEngine.h"
 
 class SelectPipe : public RelationalOp {
-private:
-
 public:
 	SelectPipe();
 	virtual ~SelectPipe();
@@ -37,6 +39,25 @@ public:
 	 * This method does nothing
 	 */
 	virtual void Use_n_Pages (int n);
+
+	/**
+	 * Select performs the work done by Run (effectively, this is a thread-less version of Run).
+	 * This is where the Select logic is put.
+	 */
+	virtual void Select(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal);
+
+	/**
+	 * A Select that accepts a ComparisonEngine and Record (for testing purposes).
+	 */
+	virtual void Select(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, Record &rec);
+};
+
+struct SelectPipeData {
+	Pipe &in;
+	Pipe &out;
+	CNF &selOp;
+	Record &literal;
+	SelectPipe &op;
 };
 
 #endif /* INCLUDE_SELECTPIPE_H_ */

@@ -7,25 +7,24 @@
 
 #include "../include/SelectPipe.h"
 
-SelectPipe::SelectPipe() {
+SelectPipe::SelectPipe() {/* Do nothing */}
 
-
-}
-
-SelectPipe::~SelectPipe() {
-
-}
+SelectPipe::~SelectPipe() {/* Do nothing */}
 
 void SelectPipe::Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal) {
+	SelectPipeData *data = new SelectPipeData { inPipe, outPipe, selOp, literal, *this };
 
+	thread_id = pthread_create(&worker, NULL, [] (void* args) -> void* {
+		SelectPipeData *data = (SelectPipeData*)args;
+		data->op.Select(data->in, data->out, data->selOp, data->literal);
+		delete data;
+	}, (void*) data);
 }
 
 
-void SelectPipe::WaitUntilDone () {/* Do nothing */}
+void SelectPipe::WaitUntilDone () { (void) pthread_join(worker, NULL); }
 
-void SelectPipe::Use_n_Pages (int n) {
-
-}
+void SelectPipe::Use_n_Pages (int n) {/* Do nothing */}
 
 void SelectPipe::Select(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal) {
 	ComparisonEngine comp;
