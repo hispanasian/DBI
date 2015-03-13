@@ -34,6 +34,8 @@ public:
     int numAttsRight, int *attsToKeep, int numAttsToKeep, int startOfRight));
     // void Print (Schema *mySchema);
     MOCK_METHOD1(Print, void(Schema *mySchema));
+    // string ToSTring (Schema *mySchema);
+	MOCK_METHOD1(ToString, string(Schema *mySchema));
 //    int Size();
     MOCK_METHOD0(Size, int());
 };
@@ -70,6 +72,8 @@ class MockRawFile: public RawFile {
 public:
 //    virtual bool Open(std::string fname);
     MOCK_METHOD1(Open, bool(std::string fname));
+//    virtual bool Open(FILE *_file);
+	MOCK_METHOD1(Open, bool(FILE *_file));
 //    virtual bool Close();
     MOCK_METHOD0(Close, bool());
 //    virtual int Read(void* buf, size_t count);
