@@ -17,6 +17,7 @@
 #include "PipedPage.h"
 #include "LinearScanner.h"
 #include "SelectPipe.h"
+#include "WriteItOut.h"
 
 class MockRecord: public Record {
 public:
