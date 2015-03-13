@@ -48,7 +48,7 @@ public:
 };
 
 struct SelectFileData {
-	Pipe &in;
+	DBFile &in;
 	Pipe &out;
 	CNF &selOp;
 	Record &literal;
