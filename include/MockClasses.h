@@ -350,4 +350,16 @@ public:
 	MOCK_METHOD6(Select, void(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, Record &rec));
 };
 
+class MockWriteItOut: public WriteItOut {
+public:
+//	virtual void Run (Pipe &inPipe, FILE *outFile, Schema &mySchema);
+	MOCK_METHOD3(Run, void(Pipe &inPipe, FILE *outFile, Schema &mySchema));
+//	virtual void Use_n_Pages (int n);
+	MOCK_METHOD1(Use_n_Pages, void(int n));
+//	virtual void Write(Pipe &inPipe, FILE *outFile, Schema &mySchema);
+	MOCK_METHOD3(Write, void(Pipe &inPipe, FILE *outFile, Schema &mySchema));
+//	virtual void Write(Pipe &inPipe, FILE *outFile, Schema &mySchema, RawFile &file, Record &rec);
+	MOCK_METHOD5(Write, void(Pipe &inPipe, FILE *outFile, Schema &mySchema, RawFile &file, Record &rec));
+};
+
 #endif
