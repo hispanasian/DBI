@@ -17,6 +17,7 @@
 #include "PipedPage.h"
 #include "LinearScanner.h"
 #include "SelectPipe.h"
+#include "SelectFile.h"
 
 class MockRecord: public Record {
 public:
@@ -115,6 +116,7 @@ public:
 };
 
 class MockDBFile: public DBFile {
+public:
 //	virtual int Create (char *fpath, fType file_type, void *startup);
 	MOCK_METHOD3(Create, int(char *fpath, fType file_type, void *startup));
 //	virtual int Open (char *fpath);
@@ -344,6 +346,18 @@ public:
 	MOCK_METHOD4(Select, void(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal));
 //	virtual void Select(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, Record &rec);
 	MOCK_METHOD6(Select, void(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, Record &rec));
+};
+
+class MockSelectFile: public SelectPipe {
+public:
+//	virtual void Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal);
+	MOCK_METHOD4(Run, void(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal));
+//	virtual void Use_n_Pages (int n);
+	MOCK_METHOD1(Use_n_Pages, void(int n));
+//	virtual void Select(DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal);
+	MOCK_METHOD4(Select, void(DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal));
+//	virtual void Select(DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, Record &rec);
+	MOCK_METHOD6(Select, void(DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, Record &rec));
 };
 
 #endif

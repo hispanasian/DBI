@@ -1,6 +1,6 @@
 /*
  * SelectFile.h
- *
+ *	The Select Operator that takes input from a DBFile
  *  Created on: Mar 12, 2015
  *      Author: cvasquez
  */
