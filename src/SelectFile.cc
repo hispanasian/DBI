@@ -5,7 +5,7 @@
  *      Author: cvasquez
  */
 
-#include "../SelectFile.h"
+#include "../include/SelectFile.h"
 
 SelectFile::SelectFile() {/* Do nothing */}
 

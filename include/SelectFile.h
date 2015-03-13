@@ -13,6 +13,7 @@
 #include "Pipe.h"
 #include "Comparison.h"
 #include "ComparisonEngine.h"
+#include "DBFile.h"
 
 class SelectFile: public RelationalOp {
 public:
