@@ -13,7 +13,7 @@
 #include "Pipe.h"
 #include "Record.h"
 
-class Project {
+class Project:RelationalOp {
 public:
 	Project();
 	virtual ~Project();
@@ -51,6 +51,7 @@ struct ProjectData {
 	int *keepMe;
 	int numAttsInput;
 	int numAttsOutput;
+	Project &op;
 };
 
 #endif /* INCLUDE_PROJECT_H_ */
