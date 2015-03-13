@@ -16,6 +16,7 @@
 #include "TreeDBFile.h"
 #include "PipedPage.h"
 #include "LinearScanner.h"
+#include "SelectPipe.h"
 
 class MockRecord: public Record {
 public:
@@ -331,6 +332,20 @@ class MockLinearScanner: public LinearScanner {
 public:
 //	virtual int GetNext(Record& rec);
 	MOCK_METHOD1(GetNext, int(Record &rec));
+};
+
+class MockSelectPipe: public SelectPipe {
+public:
+//	virtual void Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal);
+	MOCK_METHOD4(Run, void(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal));
+//	virtual void WaitUntilDone ();
+	MOCK_METHOD0(WaitUntilDone, void());
+//	virtual void Use_n_Pages (int n);
+	MOCK_METHOD1(Use_n_Pages, void(int n));
+//	virtual void Select(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal);
+	MOCK_METHOD4(Select, void(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal));
+//	virtual void Select(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, Record &rec);
+	MOCK_METHOD6(Select, void(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, Record &rec));
 };
 
 #endif
