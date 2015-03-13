@@ -15,7 +15,7 @@
 #include "Record.h"
 #include "RawFile.h"
 
-class WriteItOut {
+class WriteItOut: public RelationalOp {
 public:
 	WriteItOut();
 	virtual ~WriteItOut();
@@ -47,8 +47,9 @@ public:
 
 struct WriteItOutData {
 	Pipe &in;
-	FILE *outFile;
-	Schema &mySchema;
+	FILE *out;
+	Schema &schema;
+	WriteItOut &op;
 };
 
 #endif /* INCLUDE_WRITEITOUT_H_ */
