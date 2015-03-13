@@ -52,4 +52,12 @@ public:
 	virtual int GetPageLimit();
 };
 
+struct DuplicateRemovalData {
+	Pipe &in;
+	Pipe &out;
+	Schema &schema;
+	DuplicateRemoval &op;
+};
+
+
 #endif /* INCLUDE_DUPLICATEREMOVAL_H_ */
