@@ -15,6 +15,7 @@ public:
     virtual ~RawFile();
 
     virtual bool Open(std::string fname);
+    virtual bool Open(FILE *_file);
     virtual bool Close();
     virtual int Read(void* buf, size_t count);
     virtual int Write(const void* buf, size_t count);
