@@ -30,12 +30,6 @@ public:
 	virtual void Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal);
 
 	/**
-	 * blocks the caller until the particular relational operator
-	 * has run to completion
-	 */
-	virtual void WaitUntilDone ();
-
-	/**
 	 * This method does nothing
 	 */
 	virtual void Use_n_Pages (int n);

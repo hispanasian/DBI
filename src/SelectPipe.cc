@@ -21,9 +21,6 @@ void SelectPipe::Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal) 
 	}, (void*) data);
 }
 
-
-void SelectPipe::WaitUntilDone () { (void) pthread_join(worker, NULL); }
-
 void SelectPipe::Use_n_Pages (int n) {/* Do nothing */}
 
 void SelectPipe::Select(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal) {

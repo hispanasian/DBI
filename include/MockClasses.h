@@ -338,8 +338,6 @@ class MockSelectPipe: public SelectPipe {
 public:
 //	virtual void Run (Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal);
 	MOCK_METHOD4(Run, void(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal));
-//	virtual void WaitUntilDone ();
-	MOCK_METHOD0(WaitUntilDone, void());
 //	virtual void Use_n_Pages (int n);
 	MOCK_METHOD1(Use_n_Pages, void(int n));
 //	virtual void Select(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal);

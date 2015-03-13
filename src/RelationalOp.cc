@@ -7,3 +7,5 @@ RelationalOp::RelationalOp() {
 RelationalOp::~RelationalOp() {
 
 }
+
+void RelationalOp::WaitUntilDone () { (void) pthread_join(worker, NULL); }
