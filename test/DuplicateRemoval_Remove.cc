@@ -8,45 +8,35 @@
 TEST_F(DuplicateRemovalTest, Remove1) {
 	Sequence s1;
 	EXPECT_CALL(in, Remove(&r)).
-			InSequence(s1).
 			Times(5).
+			InSequence(s1).
 			WillRepeatedly(Return(1));
 	EXPECT_CALL(in, Remove(&r)).
 			InSequence(s1).
 			WillOnce(Return(0));
 
 	Sequence s2;
-	EXPECT_CALL(r, Copy(NotNull())).
-			InSequence(s2);
-	EXPECT_CALL(prev, Consume(NotNull())).
+	EXPECT_CALL(prev, Copy(&r)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(NotNull(),NotNull(),&order)).
 			InSequence(s2).
 			WillOnce(Return(5));
-	EXPECT_CALL(r, Copy(NotNull())).
-			InSequence(s2);
-	EXPECT_CALL(prev, Consume(NotNull())).
+	EXPECT_CALL(prev, Copy(&r)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(NotNull(),NotNull(),&order)).
 			InSequence(s2).
 			WillOnce(Return(5));
-	EXPECT_CALL(r, Copy(NotNull())).
-			InSequence(s2);
-	EXPECT_CALL(prev, Consume(NotNull())).
+	EXPECT_CALL(prev, Copy(&r)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(NotNull(),NotNull(),&order)).
 			InSequence(s2).
 			WillOnce(Return(5));
-	EXPECT_CALL(r, Copy(NotNull())).
-			InSequence(s2);
-	EXPECT_CALL(prev, Consume(NotNull())).
+	EXPECT_CALL(prev, Copy(&r)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(NotNull(),NotNull(),&order)).
 			InSequence(s2).
 			WillOnce(Return(5));
-	EXPECT_CALL(r, Copy(NotNull())).
-			InSequence(s2);
-	EXPECT_CALL(prev, Consume(NotNull())).
+	EXPECT_CALL(prev, Copy(&r)).
 			InSequence(s2);
 
 	// Last Call
@@ -65,8 +55,8 @@ TEST_F(DuplicateRemovalTest, Remove1) {
 TEST_F(DuplicateRemovalTest, Remove2) {
 	Sequence s1;
 	EXPECT_CALL(in, Remove(&r)).
-			InSequence(s1).
 			Times(5).
+			InSequence(s1).
 			WillRepeatedly(Return(1));
 	EXPECT_CALL(in, Remove(&r)).
 			InSequence(s1).
@@ -74,8 +64,8 @@ TEST_F(DuplicateRemovalTest, Remove2) {
 
 	Sequence s2;
 	EXPECT_CALL(comp, Compare(NotNull(),NotNull(),&order)).
-			InSequence(s2).
 			Times(4).
+			InSequence(s2).
 			WillRepeatedly(Return(0));
 
 	// Last Call
@@ -83,12 +73,10 @@ TEST_F(DuplicateRemovalTest, Remove2) {
 			InSequence(s1);
 
 	EXPECT_CALL(out, Insert(&r)).
-			Times(5);
+			Times(1);
 
 	// "Arbitrary" calls
-	EXPECT_CALL(r, Copy(NotNull())).
-			Times(AtMost(5));
-	EXPECT_CALL(prev, Consume(NotNull())).
+	EXPECT_CALL(prev, Copy(&r)).
 			Times(AtMost(5));
 
 	op.Remove(in, out, schema,r, prev, comp, order);
@@ -101,50 +89,38 @@ TEST_F(DuplicateRemovalTest, Remove2) {
 TEST_F(DuplicateRemovalTest, Remove3) {
 	Sequence s1;
 	EXPECT_CALL(in, Remove(&r)).
-			InSequence(s1).
 			Times(5).
+			InSequence(s1).
 			WillRepeatedly(Return(1));
 	EXPECT_CALL(in, Remove(&r)).
 			InSequence(s1).
 			WillOnce(Return(0));
 
 	Sequence s2;
-	EXPECT_CALL(r, Copy(NotNull())).
-			InSequence(s2);
-	EXPECT_CALL(prev, Consume(NotNull())).
+	EXPECT_CALL(prev, Copy(&r)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(NotNull(),NotNull(),&order)).
 			InSequence(s2).
 			WillOnce(Return(0));
-	EXPECT_CALL(r, Copy(NotNull())).
-			InSequence(s2).
-			Times(AtMost(1));
-	EXPECT_CALL(prev, Consume(NotNull())).
-			InSequence(s2).
-			Times(AtMost(1));
-	EXPECT_CALL(comp, Compare(NotNull(),NotNull(),&order)).
-			InSequence(s2).
-			WillOnce(Return(5));
-	EXPECT_CALL(r, Copy(NotNull())).
-			InSequence(s2);
-	EXPECT_CALL(prev, Consume(NotNull())).
+	EXPECT_CALL(prev, Copy(&r)).
+			Times(AtMost(1)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(NotNull(),NotNull(),&order)).
 			InSequence(s2).
 			WillOnce(Return(5));
-	EXPECT_CALL(r, Copy(NotNull())).
+	EXPECT_CALL(prev, Copy(&r)).
 			InSequence(s2);
-	EXPECT_CALL(prev, Consume(NotNull())).
+	EXPECT_CALL(comp, Compare(NotNull(),NotNull(),&order)).
+			InSequence(s2).
+			WillOnce(Return(5));
+	EXPECT_CALL(prev, Copy(&r)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(NotNull(),NotNull(),&order)).
 			InSequence(s2).
 			WillOnce(Return(0));
-	EXPECT_CALL(r, Copy(NotNull())).
-			InSequence(s2).
-			Times(AtMost(1));
-	EXPECT_CALL(prev, Consume(NotNull())).
-			InSequence(s2).
-			Times(AtMost(1));
+	EXPECT_CALL(prev, Copy(&r)).
+			Times(AtMost(1)).
+			InSequence(s2);
 
 	// Last Call
 	EXPECT_CALL(out, ShutDown()).
