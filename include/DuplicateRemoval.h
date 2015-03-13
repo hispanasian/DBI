@@ -44,7 +44,7 @@ public:
 	 * This is where the logic of the Removal goes. This is meant for testing and the other Remove
 	 * should be used
 	 */
-	virtual void Remove(Pipe &inPipe, Pipe &outPipe, Schema &mySchema, Record &rec, ComparisonEngine &comp, OrderMaker &order);
+	virtual void Remove(Pipe &inPipe, Pipe &outPipe, Schema &mySchema, Record &rec, Record &prev, ComparisonEngine &comp, OrderMaker &order);
 
 	/*
 	 * Returns the pageLimit
