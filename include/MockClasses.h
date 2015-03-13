@@ -17,6 +17,7 @@
 #include "PipedPage.h"
 #include "LinearScanner.h"
 #include "SelectPipe.h"
+#include "Project.h"
 
 class MockRecord: public Record {
 public:
@@ -344,6 +345,18 @@ public:
 	MOCK_METHOD4(Select, void(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal));
 //	virtual void Select(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, Record &rec);
 	MOCK_METHOD6(Select, void(Pipe &inPipe, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, Record &rec));
+};
+
+class MockProject: public Project {
+public:
+//	virtual void Run (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput)
+	MOCK_METHOD5(Run, void(Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput));
+//	virtual void Use_n_Pages (int n);
+	MOCK_METHOD1(Use_n_Pages, void(int n));
+//	virtual void Work (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput);
+	MOCK_METHOD5(Work, void((Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput)));
+//	virtual void Work (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput, Record &rec);
+	MOCK_METHOD6(Work, void(Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput, Record &rec));
 };
 
 #endif
