@@ -10,6 +10,14 @@ Record :: Record () {
 	bits = NULL;
 }
 
+Record :: Record (int rec) {
+	bits = NULL;
+}
+
+Record :: Record (double rec) {
+	bits = NULL;
+}
+
 Record :: ~Record () {
 	if (bits != NULL) {
 		delete [] bits;

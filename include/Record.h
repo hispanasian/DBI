@@ -36,6 +36,8 @@ public:
 	char *bits;
 
 	Record ();
+	Record (int rec);
+	Record (double rec);
 	virtual ~Record();
 
 	// suck the contents of the record fromMe into this; note that after
