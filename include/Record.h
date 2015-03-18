@@ -69,6 +69,9 @@ public:
 	// that the schema also be given so that the record can be interpreted
 	virtual void Print (Schema *mySchema);
 
+	// returns a string representation of the Record
+	virtual std::string ToString(Schema *mySchema);
+
 	// Returns the size of the Record
 	virtual int Size();
 };

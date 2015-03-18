@@ -20,6 +20,11 @@ bool RawFile::Open(std::string fname) {
 	return file != NULL;
 }
 
+bool RawFile::Open(FILE *_file) {
+	file = _file;
+	return true;
+}
+
 bool RawFile::Close() {
 	int ret = fclose(file);
 	file = NULL;
