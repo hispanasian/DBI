@@ -49,7 +49,7 @@ bool FileRelation::Add(Relation &rel) {
 }
 
 bool FileRelation::GetNext(Record *&rec) {
-	return false;
+	return relation.GetNext(*rec);
 }
 
 void FileRelation::Reset() {

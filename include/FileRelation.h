@@ -73,7 +73,7 @@ public:
 
 	/**
 	 * Returns the next Record in the Relation and puts it in rec. Returns false once we have run
-	 * out of Records.
+	 * out of Records. Note that rec should not be NULL and should have been allocated.
 	 * @param rec	The Record that will be returned (this is consumed).
 	 * @return		False if no Records remain
 	 */
