@@ -53,6 +53,7 @@ bool FileRelation::GetNext(Record *&rec) {
 }
 
 void FileRelation::Reset() {
+	relation.MoveFirst();
 }
 
 void FileRelation::Clear() {
