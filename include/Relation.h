@@ -21,7 +21,7 @@ public:
 	 * @param memLimit	The maximum amount of memory that will be given to the Records
 	 */
 	Relation(int memLimit = PAGE_SIZE);
-	virtual ~Relation() {}
+	virtual ~Relation() {};
 
 	/**
 	 * Adds rec to the relation and returns true if successful (typically if memLimit is exceeded)
