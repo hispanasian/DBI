@@ -35,8 +35,8 @@ public:
 	int memLimit = 100;
 	InMemoryRelation rel = InMemoryRelation(memLimit);
 
-	int GetCount() { return rel.count; }
-	void SetCount(int count) { rel.count = count; }
+	int GetSize() { return rel.size; }
+	void SetSize(int count) { rel.size = count; }
 	int GetMemUsed() { return rel.memUsed; }
 	void SetMemUsed(int memUsed) { rel.memUsed = memUsed; }
 	std::vector<Record*> &GetRelation() { return rel.relation; }

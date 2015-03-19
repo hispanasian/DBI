@@ -21,14 +21,14 @@ TEST_F(InMemoryRelationTest, GetNext1) {
 	GetRelation().push_back(d);
 
 	SetIndex(0);
-	SetCount(2);
+	SetSize(2);
 
 
 	EXPECT_EQ(0, GetIndex());
 	EXPECT_EQ(4, GetRelation().size());
 	EXPECT_EQ(true, rel.GetNext(test));
 	EXPECT_EQ(1, GetIndex());
-	EXPECT_EQ(2, GetCount());
+	EXPECT_EQ(2, GetSize());
 	EXPECT_EQ(4, GetRelation().size());
 	EXPECT_EQ(a, test);
 }
@@ -51,11 +51,11 @@ TEST_F(InMemoryRelationTest, GetNext2) {
 	GetRelation().push_back(d);
 
 	SetIndex(3);
-	SetCount(3);
+	SetSize(3);
 
 	EXPECT_EQ(4, GetRelation().size());
 	EXPECT_EQ(false, rel.GetNext(test));
-	EXPECT_EQ(3, GetCount());
+	EXPECT_EQ(3, GetSize());
 	EXPECT_EQ(4, GetRelation().size());
 }
 
@@ -67,11 +67,11 @@ TEST_F(InMemoryRelationTest, GetNext3) {
 	Record *test;
 
 	SetIndex(0);
-	SetCount(0);
+	SetSize(0);
 
 	EXPECT_EQ(0, GetRelation().size());
 	EXPECT_EQ(false, rel.GetNext(test));
-	EXPECT_EQ(0, GetCount());
+	EXPECT_EQ(0, GetSize());
 	EXPECT_EQ(0, GetRelation().size());
 }
 
@@ -93,32 +93,32 @@ TEST_F(InMemoryRelationTest, GetNext4) {
 	GetRelation().push_back(d);
 
 	SetIndex(1);
-	SetCount(4);
+	SetSize(4);
 
 	EXPECT_EQ(1, GetIndex());
 	EXPECT_EQ(4, GetRelation().size());
 	EXPECT_EQ(true, rel.GetNext(test));
 	EXPECT_EQ(2, GetIndex());
-	EXPECT_EQ(4, GetCount());
+	EXPECT_EQ(4, GetSize());
 	EXPECT_EQ(4, GetRelation().size());
 	EXPECT_EQ(b, test);
 
 	EXPECT_EQ(4, GetRelation().size());
 	EXPECT_EQ(true, rel.GetNext(test));
 	EXPECT_EQ(3, GetIndex());
-	EXPECT_EQ(4, GetCount());
+	EXPECT_EQ(4, GetSize());
 	EXPECT_EQ(4, GetRelation().size());
 	EXPECT_EQ(c, test);
 
 	EXPECT_EQ(4, GetRelation().size());
 	EXPECT_EQ(true, rel.GetNext(test));
 	EXPECT_EQ(4, GetIndex());
-	EXPECT_EQ(4, GetCount());
+	EXPECT_EQ(4, GetSize());
 	EXPECT_EQ(4, GetRelation().size());
 	EXPECT_EQ(d, test);
 
 	EXPECT_EQ(4, GetRelation().size());
 	EXPECT_EQ(false, rel.GetNext(test));
-	EXPECT_EQ(4, GetCount());
+	EXPECT_EQ(4, GetSize());
 	EXPECT_EQ(4, GetRelation().size());
 }

@@ -17,7 +17,7 @@ friend class InMemoryRelationTest;
 
 private:
 	std::vector<Record*> relation;
-	int count;
+	int size;
 	int memUsed;
 	int index;
 

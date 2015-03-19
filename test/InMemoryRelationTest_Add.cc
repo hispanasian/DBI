@@ -12,12 +12,12 @@ TEST_F(InMemoryRelationTest, Add1) {
 			WillRepeatedly(Return(50));
 
 	EXPECT_EQ(0, GetIndex());
-	EXPECT_EQ(0, GetCount());
+	EXPECT_EQ(0, GetSize());
 	EXPECT_EQ(0, GetMemUsed());
 	EXPECT_EQ(0, GetRelation().size());
 	EXPECT_EQ(true, rel.Add(&rec));
 	EXPECT_EQ(0, GetIndex());
-	EXPECT_EQ(1, GetCount());
+	EXPECT_EQ(1, GetSize());
 	EXPECT_EQ(50, GetMemUsed());
 	EXPECT_EQ(1, GetRelation().size());
 }
@@ -31,12 +31,12 @@ TEST_F(InMemoryRelationTest, Add2) {
 			WillRepeatedly(Return(150));
 
 	EXPECT_EQ(0, GetIndex());
-	EXPECT_EQ(0, GetCount());
+	EXPECT_EQ(0, GetSize());
 	EXPECT_EQ(0, GetMemUsed());
 	EXPECT_EQ(0, GetRelation().size());
 	EXPECT_EQ(false, rel.Add(&rec));
 	EXPECT_EQ(0, GetIndex());
-	EXPECT_EQ(0, GetCount());
+	EXPECT_EQ(0, GetSize());
 	EXPECT_EQ(0, GetMemUsed());
 	EXPECT_EQ(0, GetRelation().size());
 }
@@ -55,18 +55,18 @@ TEST_F(InMemoryRelationTest, Add3) {
 	GetRelation().push_back(NULL);
 	GetRelation().push_back(NULL);
 
-	SetCount(1);
+	SetSize(1);
 	SetIndex(0);
 	SetMemUsed(10);
 
 	EXPECT_EQ(0, GetIndex());
-	EXPECT_EQ(1, GetCount());
+	EXPECT_EQ(1, GetSize());
 	EXPECT_EQ(10, GetMemUsed());
 	EXPECT_EQ(3, GetRelation().size());
 	EXPECT_EQ(true, rel.Add(&rec));
 	EXPECT_NE(false, GetRelation()[1] != NULL);
 	EXPECT_EQ(0, GetIndex());
-	EXPECT_EQ(2, GetCount());
+	EXPECT_EQ(2, GetSize());
 	EXPECT_EQ(60, GetMemUsed());
 	EXPECT_EQ(3, GetRelation().size());
 }

@@ -21,13 +21,13 @@ TEST_F(InMemoryRelationTest, Reset1) {
 	GetRelation().push_back(d);
 
 	SetIndex(2);
-	SetCount(3);
+	SetSize(3);
 
 	rel.Reset();
 
 	EXPECT_EQ(0, GetIndex());
 	EXPECT_EQ(4, GetRelation().size());
-	EXPECT_EQ(3, GetCount());
+	EXPECT_EQ(3, GetSize());
 }
 
 /**
@@ -48,11 +48,11 @@ TEST_F(InMemoryRelationTest, Reset2) {
 	GetRelation().push_back(d);
 
 	SetIndex(0);
-	SetCount(3);
+	SetSize(3);
 
 	rel.Reset();
 
 	EXPECT_EQ(0, GetIndex());
 	EXPECT_EQ(4, GetRelation().size());
-	EXPECT_EQ(3, GetCount());
+	EXPECT_EQ(3, GetSize());
 }
