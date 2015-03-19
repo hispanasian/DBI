@@ -5,8 +5,17 @@
 #include <stdlib.h>
 #include <iostream>
 
+using namespace std;
 
 Record :: Record () {
+	bits = NULL;
+}
+
+Record :: Record (int rec) {
+	bits = NULL;
+}
+
+Record :: Record (double rec) {
 	bits = NULL;
 }
 
@@ -338,18 +347,18 @@ void Record :: Print (Schema *mySchema) {
 		// first is integer
 		if (atts[i].myType == Int) {
 			int *myInt = (int *) &(bits[pointer]);
-			cout << *myInt;	
+			cout << *myInt;
 
 		// then is a double
 		} else if (atts[i].myType == Double) {
 			double *myDouble = (double *) &(bits[pointer]);
-			cout << *myDouble;	
+			cout << *myDouble;
 
 		// then is a character string
 		} else if (atts[i].myType == String) {
 			char *myString = (char *) &(bits[pointer]);
-			cout << myString;	
-		} 
+			cout << myString;
+		}
 
 		cout << "]";
 
@@ -360,6 +369,55 @@ void Record :: Print (Schema *mySchema) {
 	}
 
 	cout << "\n";
+}
+
+std::string Record :: ToString (Schema *mySchema) {
+	std::string str = "";
+	int n = mySchema->GetNumAtts();
+	Attribute *atts = mySchema->GetAtts();
+
+	// loop through all of the attributes
+	for (int i = 0; i < n; i++) {
+
+		// print the attribute name
+		str += atts[i].name;
+		str += ": ";
+
+		// use the i^th slot at the head of the record to get the
+		// offset to the correct attribute in the record
+		int pointer = ((int *) bits)[i + 1];
+
+		// here we determine the type, which given in the schema;
+		// depending on the type we then print out the contents
+		str.append("[");
+
+		// first is integer
+		if (atts[i].myType == Int) {
+			int *myInt = (int *) &(bits[pointer]);
+			str += std::to_string(*myInt);
+
+		// then is a double
+		} else if (atts[i].myType == Double) {
+			double *myDouble = (double *) &(bits[pointer]);
+			str += std::to_string(*myDouble);
+
+		// then is a character string
+		} else if (atts[i].myType == String) {
+			char *myString = (char *) &(bits[pointer]);
+			str += myString;
+		}
+
+		str += "]";
+
+		// print out a comma as needed to make things pretty
+		if (i != n - 1) {
+			str += ", ";
+		}
+	}
+
+	str += "\n";
+
+	return str;
 }
 
 int Record :: Size () {
