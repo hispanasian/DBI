@@ -14,6 +14,7 @@ class JoinRelation {
 friend class JoinRelationTest;
 protected:
 	Relation *delegate;
+	bool memory;
 public:
 	JoinRelation(int memLimit);
 	virtual ~JoinRelation();
@@ -42,6 +43,12 @@ public:
 	 * Deletes Records from the Relation.
 	 */
 	virtual void Clear();
+
+	/**
+	 * Returns true if the Relation used is an in-memory relation and false if it is a file
+	 * relation.
+	 */
+	virtual bool IsMemoryMode();
 };
 
 #endif /* INCLUDE_JOINRELATION_H_ */

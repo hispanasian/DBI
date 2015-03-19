@@ -8,7 +8,7 @@
 #include "JoinRelation.h"
 
 JoinRelation::JoinRelation(int memLimit): Relation(memLimit) {
-	// TODO Auto-generated constructor stub
+	memory = true;
 
 }
 
@@ -30,4 +30,8 @@ void JoinRelation::Reset() {
 
 void JoinRelation::Clear() {
 
+}
+
+bool JoinRelation::IsMemoryMode() {
+	return memory;
 }
