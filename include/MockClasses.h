@@ -18,6 +18,7 @@
 #include "LinearScanner.h"
 #include "SelectPipe.h"
 #include "SelectFile.h"
+#include "WriteItOut.h"
 
 class MockRecord: public Record {
 public:
@@ -35,6 +36,8 @@ public:
     int numAttsRight, int *attsToKeep, int numAttsToKeep, int startOfRight));
     // void Print (Schema *mySchema);
     MOCK_METHOD1(Print, void(Schema *mySchema));
+    // string ToSTring (Schema *mySchema);
+	MOCK_METHOD1(ToString, string(Schema *mySchema));
 //    int Size();
     MOCK_METHOD0(Size, int());
 };
@@ -71,6 +74,8 @@ class MockRawFile: public RawFile {
 public:
 //    virtual bool Open(std::string fname);
     MOCK_METHOD1(Open, bool(std::string fname));
+//    virtual bool Open(FILE *_file);
+	MOCK_METHOD1(Open, bool(FILE *_file));
 //    virtual bool Close();
     MOCK_METHOD0(Close, bool());
 //    virtual int Read(void* buf, size_t count);
@@ -358,6 +363,18 @@ public:
 	MOCK_METHOD4(Select, void(DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal));
 //	virtual void Select(DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, Record &rec);
 	MOCK_METHOD6(Select, void(DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, Record &rec));
+};
+
+class MockWriteItOut: public WriteItOut {
+public:
+//	virtual void Run (Pipe &inPipe, FILE *outFile, Schema &mySchema);
+	MOCK_METHOD3(Run, void(Pipe &inPipe, FILE *outFile, Schema &mySchema));
+//	virtual void Use_n_Pages (int n);
+	MOCK_METHOD1(Use_n_Pages, void(int n));
+//	virtual void Write(Pipe &inPipe, FILE *outFile, Schema &mySchema);
+	MOCK_METHOD3(Write, void(Pipe &inPipe, FILE *outFile, Schema &mySchema));
+//	virtual void Write(Pipe &inPipe, FILE *outFile, Schema &mySchema, RawFile &file, Record &rec);
+	MOCK_METHOD5(Write, void(Pipe &inPipe, FILE *outFile, Schema &mySchema, RawFile &file, Record &rec));
 };
 
 #endif
