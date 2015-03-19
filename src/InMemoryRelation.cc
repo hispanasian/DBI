@@ -33,8 +33,13 @@ bool InMemoryRelation::Add(Record *rec) {
 	return false;
 }
 
-bool InMemoryRelation::GetNext(Record *rec) {
-	return true;
+bool InMemoryRelation::GetNext(Record *&rec) {
+	if(index < count) {
+		rec = relation[index];
+		++index;
+		return true;
+	}
+	return false;
 }
 
 void InMemoryRelation::Reset() {
