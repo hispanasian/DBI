@@ -14,7 +14,13 @@ Sum::~Sum() {/* Do nothing */}
 void Sum::Use_n_Pages(int n) {/* Do nothing */}
 
 void Sum::Run(Pipe &inPipe, Pipe &outPipe, Function &computeMe) {
+	SumData *data = new SumData { inPipe, outPipe, computeMe, *this };
 
+	thread_id = pthread_create(&worker, NULL, [] (void* args) -> void* {
+		SumData *data = (SumData*)args;
+		data->op.Work(data->in, data->out, data->computeMe);
+		delete data;
+	}, (void*) data);
 }
 
 void Sum::Work (Pipe &inPipe, Pipe &outPipe, Function &computeMe) {
