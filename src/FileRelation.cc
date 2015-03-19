@@ -28,6 +28,14 @@ bool FileRelation::Add(Record *rec) {
 }
 
 bool FileRelation::Add(Pipe &in) {
+	Record rec;
+	return Add(in, rec);
+}
+
+bool FileRelation::Add(Pipe &in, Record &temp) {
+	while(in.Remove(&temp)) {
+		relation.Add(temp);
+	}
 	return true;
 }
 

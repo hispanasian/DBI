@@ -34,6 +34,13 @@ protected:
 	char *name = "FileRelationXXXXXX";
 
 	FileRelation(RawFile &_rfile, File &_file, DBConfig &_config, ComparisonEngine &_comp, HeapDBFile &_relation);
+	/**
+	 * Adds all the Records from in to the Relation
+	 * @param in		The input Pipe
+	 * @param temp		The Record that will be used to remove Records from Pipe
+	 * @param return	Always returns true
+	 */
+	virtual bool Add(Pipe &in, Record &temp);
 
 public:
 	/**

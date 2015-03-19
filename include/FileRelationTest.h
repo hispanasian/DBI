@@ -38,6 +38,8 @@ public:
 	StrictMock<MockComparisonEngine> comp;
 	StrictMock<MockHeapDBFile> relation;
 	FileRelation rel = FileRelation(rfile, file, config, comp, relation);
+
+	bool Add(Pipe &in, Record &rec) { return rel.Add(in, rec); }
 };
 
 #endif /* INCLUDE_FILERELATIONTEST_H_ */
