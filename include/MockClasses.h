@@ -23,6 +23,7 @@
 #include "WriteItOut.h"
 #include "Function.h"
 #include "Sum.h"
+#include "Relation.h"
 
 class MockRecord: public Record {
 public:
@@ -431,6 +432,18 @@ public:
 	MOCK_METHOD3(Work, void(Pipe &inPipe, Pipe &outPipe, Function &computeMe));
 //	virtual void Work (Pipe &inPipe, Pipe &outPipe, Function &computeMe, Record &rec);
 	MOCK_METHOD4(Work, void(Pipe &inPipe, Pipe &outPipe, Function &computeMe, Record &rec));
+};
+
+class MockRelation: public Relation {
+public:
+//	virtual bool Add(Record *rec) = 0;
+	MOCK_METHOD1(Add, bool(Record *rec));
+//	virtual bool GetNext(Record *rec) = 0;
+	MOCK_METHOD1(GetNext, bool(Record *rec));
+//	virtual void Reset() = 0;
+	MOCK_METHOD0(Reset, void());
+//	virtual void Clear() = 0;
+	MOCK_METHOD0(Clear, void());
 };
 
 #endif
