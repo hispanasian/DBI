@@ -12,11 +12,25 @@ Record :: Record () {
 }
 
 Record :: Record (int rec) {
-	bits = NULL;
+    bits = new (std::nothrow) char[sizeof (int) * 3];
+	((int *)bits)[0] = sizeof(int) * 3;
+	((int *)bits)[1] = sizeof(int) * 2;
+	((int *)bits)[2] = rec;
 }
 
 Record :: Record (double rec) {
-	bits = NULL;
+    int currentPosInRec = sizeof (int) * 2;
+
+	// make sure that we are starting at a double-aligned position;
+	// if not, then we put some extra space in there
+	while (currentPosInRec % sizeof(double) != 0) {
+		currentPosInRec += sizeof (int);
+	}
+
+	bits = new (std::nothrow) char[currentPosInRec + sizeof(double)];
+	((int *)bits)[0] = currentPosInRec + sizeof(double);
+	((int *)bits)[1] = currentPosInRec;
+	*((double *) &(bits[currentPosInRec])) = rec;
 }
 
 Record :: ~Record () {
@@ -26,7 +40,6 @@ Record :: ~Record () {
 	bits = NULL;
 
 }
-
 
 int Record :: SuckNextRecord (Schema *mySchema, FILE *textFile) {
 

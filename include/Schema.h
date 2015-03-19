@@ -22,6 +22,8 @@ struct Attribute {
 class OrderMaker;
 class Schema {
 
+	friend class RecordTest;
+
 	// gives the attributes in the schema
 	int numAtts;
 	Attribute *myAtts;
@@ -32,14 +34,6 @@ class Schema {
 	friend class Record;
 	friend class DBFileTest;
 	friend class MockSchema;
-
-private:
-	// Strictly for testing
-	Schema() {
-		fileName = NULL;
-		numAtts = NULL;
-		myAtts = NULL;
-	}
 
 public:
 
@@ -65,6 +59,13 @@ public:
 	int GetSortOrder (OrderMaker &order);
 
 	virtual ~Schema ();
+
+	// Strictly for testing
+	Schema() {
+		fileName = NULL;
+		numAtts = NULL;
+		myAtts = NULL;
+	}
 
 };
 
