@@ -32,11 +32,11 @@ using ::testing::SetArgReferee;
 
 class FileRelationTest: public ::testing::Test {
 public:
-	StrictMock<MockRawFile> rfile;
-	StrictMock<MockFile> file;
-	StrictMock<MockDBConfig> config;
-	StrictMock<MockComparisonEngine> comp;
-	StrictMock<MockHeapDBFile> relation;
+	MockRawFile rfile;
+	MockFile file;
+	MockDBConfig config;
+	MockComparisonEngine comp;
+	MockHeapDBFile relation;
 	FileRelation rel = FileRelation(rfile, file, config, comp, relation);
 
 	bool Add(Pipe &in, Record &rec) { return rel.Add(in, rec); }
