@@ -17,3 +17,18 @@ InMemoryRelation::~InMemoryRelation() {
 	// TODO Auto-generated destructor stub
 }
 
+bool InMemoryRelation::Add(Record *rec) {
+	return true;
+}
+
+bool InMemoryRelation::GetNext(Record *rec) {
+	return true;
+}
+
+void InMemoryRelation::Reset() {
+
+}
+
+void InMemoryRelation::Clear() {
+
+}
