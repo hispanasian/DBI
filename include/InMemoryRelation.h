@@ -19,6 +19,7 @@ private:
 	std::vector<Record*> relation;
 	int count;
 	int memUsed;
+	int index;
 
 public:
 	InMemoryRelation(int memLimit);
