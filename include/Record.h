@@ -36,6 +36,8 @@ public:
 	char *bits;
 
 	Record ();
+	Record (int rec);
+	Record (double rec);
 	virtual ~Record();
 
 	// suck the contents of the record fromMe into this; note that after
@@ -66,6 +68,9 @@ public:
 	// prints the contents of the record; this requires
 	// that the schema also be given so that the record can be interpreted
 	virtual void Print (Schema *mySchema);
+
+	// returns a string representation of the Record
+	virtual std::string ToString(Schema *mySchema);
 
 	// Returns the size of the Record
 	virtual int Size();
