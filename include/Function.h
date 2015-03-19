@@ -20,7 +20,7 @@ struct Arithmatic {
 };
 
 class Function {
-
+friend class SumTest;
 private:
 
 	Arithmatic *opList;
