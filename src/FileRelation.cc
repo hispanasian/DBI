@@ -23,7 +23,8 @@ FileRelation::~FileRelation() {
 }
 
 bool FileRelation::Add(Record *rec) {
-	return false;
+	relation.Add(*rec);
+	return true;
 }
 
 bool FileRelation::Add(Pipe &in) {
