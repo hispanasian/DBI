@@ -8,33 +8,34 @@
 #include "../include/InMemoryRelation.h"
 
 InMemoryRelation::InMemoryRelation(int memLimit): Relation(memLimit) {
-	count = 0;
+	size = 0;
 	memUsed = 0;
 	index = 0;
 }
 
 InMemoryRelation::~InMemoryRelation() {
-	// TODO Auto-generated destructor stub
+	Clear();
+	relation.clear();
 }
 
 bool InMemoryRelation::Add(Record *rec) {
 	if(rec->Size() + memUsed <= memLimit) {
 		memUsed += rec->Size();
-		++count;
+		++size;
 
 		// Check if vector needs to be resized
-		if(relation.size() < count) relation.push_back(NULL);
+		if(relation.size() < size) relation.push_back(NULL);
 
 		Record *temp = new Record;
 		temp->Consume(rec);
-		relation[count-1] = temp;
+		relation[size-1] = temp;
 		return true;
 	}
 	return false;
 }
 
 bool InMemoryRelation::GetNext(Record *&rec) {
-	if(index < count) {
+	if(index < size) {
 		rec = relation[index];
 		++index;
 		return true;
@@ -47,5 +48,10 @@ void InMemoryRelation::Reset() {
 }
 
 void InMemoryRelation::Clear() {
-
+	for(int i = 0; i < relation.size(); i++) {
+		delete relation[i];
+		relation[i] = NULL;
+	}
+	index = 0;
+	size = 0;
 }
