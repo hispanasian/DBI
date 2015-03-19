@@ -32,6 +32,7 @@
 # Directories
 build/*
 bin/*
+!bin/placeholder.txt
 data/*
 !data/catalog # Esception for data/catalog
 
