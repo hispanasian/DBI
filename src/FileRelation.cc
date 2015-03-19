@@ -40,6 +40,11 @@ bool FileRelation::Add(Pipe &in, Record &temp) {
 }
 
 bool FileRelation::Add(Relation &rel) {
+	Record *rec = NULL;
+	rel.Reset(); // Make sure to get all the Records
+	while(rel.GetNext(rec)) {
+		relation.Add(*rec);
+	}
 	return true;
 }
 
