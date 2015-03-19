@@ -375,6 +375,8 @@ public:
 	MOCK_METHOD0(Print, void());
 //	Type Apply (Record &toMe, int &intResult, double &doubleResult);
 	MOCK_METHOD3(Apply, Type(Record &toMe, int &intResult, double &doubleResult));
+//	bool ReturnsInt();
+	MOCK_METHOD0(ReturnsInt, bool());
 };
 
 class MockSum: public Sum {
