@@ -8,9 +8,8 @@
 #include "../include/InMemoryRelation.h"
 
 InMemoryRelation::InMemoryRelation(int memLimit): Relation(memLimit) {
-
-	// TODO Auto-generated constructor stub
-
+	count = 0;
+	memUsed = 0;
 }
 
 InMemoryRelation::~InMemoryRelation() {
@@ -18,7 +17,14 @@ InMemoryRelation::~InMemoryRelation() {
 }
 
 bool InMemoryRelation::Add(Record *rec) {
-	return true;
+	if(rec->Size() + memUsed <= memLimit) {
+		memUsed += rec->Size();
+		Record *temp = new Record;
+		temp->Consume(rec);
+		relation.push_back(temp);
+		return true;
+	}
+	return false;
 }
 
 bool InMemoryRelation::GetNext(Record *rec) {
