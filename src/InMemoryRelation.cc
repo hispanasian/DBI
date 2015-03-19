@@ -43,7 +43,7 @@ bool InMemoryRelation::GetNext(Record *&rec) {
 }
 
 void InMemoryRelation::Reset() {
-
+	index = 0;
 }
 
 void InMemoryRelation::Clear() {
