@@ -36,7 +36,7 @@ public:
 	 * @param rec	The Record that will be returned (this is consumed).
 	 * @return		False if no Records remain
 	 */
-	virtual bool GetNext(Record *rec) { return true; }
+	virtual bool GetNext(Record *&rec) { return true; }
 
 	/**
 	 * Returns the Relation to the beginning.
