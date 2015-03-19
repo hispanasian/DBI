@@ -7,6 +7,10 @@ Function :: Function () {
 	opList = new Arithmatic[MAX_DEPTH];
 }
 
+Function :: ~Function() {
+
+}
+
 Type Function :: RecursivelyBuild (struct FuncOperator *parseTree, Schema &mySchema) {
 
 	// different cases; in the first case, simple, unary operation
@@ -356,4 +360,6 @@ Type Function :: Apply (Record &toMe, int &intResult, double &doubleResult) {
 	
 }
 
-
+bool Function::ReturnsInt() {
+	return returnsInt != 0;
+}

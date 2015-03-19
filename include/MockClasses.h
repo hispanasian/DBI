@@ -21,6 +21,8 @@
 #include "Project.h"
 #include "SelectFile.h"
 #include "WriteItOut.h"
+#include "Function.h"
+#include "Sum.h"
 
 class MockRecord: public Record {
 public:
@@ -403,6 +405,32 @@ public:
 	MOCK_METHOD3(Write, void(Pipe &inPipe, FILE *outFile, Schema &mySchema));
 //	virtual void Write(Pipe &inPipe, FILE *outFile, Schema &mySchema, RawFile &file, Record &rec);
 	MOCK_METHOD5(Write, void(Pipe &inPipe, FILE *outFile, Schema &mySchema, RawFile &file, Record &rec));
+};
+
+class MockFunction: public Function {
+public:
+//	void GrowFromParseTree (struct FuncOperator *parseTree, Schema &mySchema);
+	MOCK_METHOD2(GrowFromParseTree, void(struct FuncOperator *parseTree, Schema &mySchema));
+//	Type RecursivelyBuild (struct FuncOperator *parseTree, Schema &mySchema);
+	MOCK_METHOD2(RecursivelyBuild, Type(struct FuncOperator *parseTree, Schema &mySchema));
+//	void Print ();
+	MOCK_METHOD0(Print, void());
+//	Type Apply (Record &toMe, int &intResult, double &doubleResult);
+	MOCK_METHOD3(Apply, Type(Record &toMe, int &intResult, double &doubleResult));
+//	bool ReturnsInt();
+	MOCK_METHOD0(ReturnsInt, bool());
+};
+
+class MockSum: public Sum {
+public:
+//	virtual void Run (Pipe &inPipe, Pipe &outPipe, Function &computeMe);
+	MOCK_METHOD3(Run, void(Pipe &inPipe, FILE *outFile, Schema &mySchema));
+//	virtual void Use_n_Pages (int n);
+	MOCK_METHOD1(Use_n_Pages, void(int n));
+//	virtual void Work (Pipe &inPipe, Pipe &outPipe, Function &computeMe);
+	MOCK_METHOD3(Work, void(Pipe &inPipe, Pipe &outPipe, Function &computeMe));
+//	virtual void Work (Pipe &inPipe, Pipe &outPipe, Function &computeMe, Record &rec);
+	MOCK_METHOD4(Work, void(Pipe &inPipe, Pipe &outPipe, Function &computeMe, Record &rec));
 };
 
 #endif
