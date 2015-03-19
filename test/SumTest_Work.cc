@@ -32,6 +32,10 @@ TEST_F(SumTest, Work1) {
 			InSequence(s2).
 			WillOnce(DoAll(SetArgReferee<1>(5), Return(Int)));
 
+	// Arbitrary
+	EXPECT_CALL(fun, ReturnsInt()).
+			WillRepeatedly(Return(true));
+
 	op.Work(in, out, fun, r);
 
 	Record result;
@@ -71,6 +75,10 @@ TEST_F(SumTest, Work2) {
 			InSequence(s2).
 			WillOnce(DoAll(SetArgReferee<2>(0.5), Return(Double)));
 
+	// Arbitrary
+	EXPECT_CALL(fun, ReturnsInt()).
+			WillRepeatedly(Return(false));
+
 	op.Work(in, out, fun, r);
 
 	Record result;
@@ -88,6 +96,10 @@ TEST_F(SumTest, Work3) {
 			InSequence(s1).
 			WillOnce(Return(0));
 
+	// Arbitrary
+	EXPECT_CALL(fun, ReturnsInt()).
+			WillRepeatedly(Return(true));
+
 	op.Work(in, out, fun, r);
 
 	Record result;
@@ -104,6 +116,10 @@ TEST_F(SumTest, Work4) {
 	EXPECT_CALL(in, Remove(&r)).
 			InSequence(s1).
 			WillOnce(Return(0));
+
+	// Arbitrary
+	EXPECT_CALL(fun, ReturnsInt()).
+			WillRepeatedly(Return(false));
 
 	op.Work(in, out, fun, r);
 
