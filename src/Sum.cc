@@ -18,9 +18,31 @@ void Sum::Run(Pipe &inPipe, Pipe &outPipe, Function &computeMe) {
 }
 
 void Sum::Work (Pipe &inPipe, Pipe &outPipe, Function &computeMe) {
-
+	Record rec;
+	Work(inPipe, outPipe, computeMe, rec);
 }
 
 void Sum::Work (Pipe &inPipe, Pipe &outPipe, Function &computeMe, Record &rec) {
+	int intSum = 0;
+	double doubleSum = 0;
 
+	int intResult = 0;
+	double doubleResult = 0;
+
+	while(inPipe.Remove(&rec)) {
+		computeMe.Apply(rec, intResult, doubleResult);
+		intSum += intResult;
+		doubleSum += doubleResult;
+	}
+
+	if(computeMe.ReturnsInt()) {
+		Record sum = Record(intSum);
+		outPipe.Insert(&sum);
+	}
+	else {
+		Record sum = Record(doubleSum);
+		outPipe.Insert(&sum);
+	}
+
+	outPipe.ShutDown();
 }

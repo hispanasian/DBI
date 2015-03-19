@@ -39,7 +39,7 @@ TEST_F(SumTest, Work1) {
 	op.Work(in, out, fun, r);
 
 	Record result;
-	out.Remove(&r);
+	out.Remove(&result);
 	EXPECT_EQ(15, GetInt(result));
 }
 
@@ -82,7 +82,7 @@ TEST_F(SumTest, Work2) {
 	op.Work(in, out, fun, r);
 
 	Record result;
-	out.Remove(&r);
+	out.Remove(&result);
 	EXPECT_EQ(1.5, GetDouble(result));
 }
 
@@ -103,7 +103,7 @@ TEST_F(SumTest, Work3) {
 	op.Work(in, out, fun, r);
 
 	Record result;
-	out.Remove(&r);
+	out.Remove(&result);
 	EXPECT_EQ(0, GetInt(result));
 }
 
@@ -124,6 +124,6 @@ TEST_F(SumTest, Work4) {
 	op.Work(in, out, fun, r);
 
 	Record result;
-	out.Remove(&r);
-	EXPECT_EQ(0, GetInt(result));
+	out.Remove(&result);
+	EXPECT_EQ(0, GetDouble(result));
 }
