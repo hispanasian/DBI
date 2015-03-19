@@ -360,4 +360,6 @@ Type Function :: Apply (Record &toMe, int &intResult, double &doubleResult) {
 	
 }
 
-
+bool Function::ReturnsInt() {
+	return returnsInt != 0;
+}

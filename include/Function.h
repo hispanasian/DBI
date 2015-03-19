@@ -47,6 +47,9 @@ public:
 
 	// applies the function to the given record and returns the result
 	virtual Type Apply (Record &toMe, int &intResult, double &doubleResult);
+
+	// Returns true if this returns an int
+	virtual bool ReturnsInt();
 };
 
 #endif
