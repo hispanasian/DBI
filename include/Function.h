@@ -1,4 +1,7 @@
 
+#ifndef INCLUDE_FUNCTION_H_
+#define INCLUDE_FUNCTION_H_
+
 #include "Record.h"
 #include "ParseFunc.h"
 
@@ -28,19 +31,22 @@ private:
 public:
 
 	Function ();
+	virtual ~Function();
 
 	// this grows the specified function from a parse tree and converts
 	// it into an accumulator-based computation over the attributes in
 	// a record with the given schema; the record "literal" is produced
 	// by the GrowFromParseTree method
-	void GrowFromParseTree (struct FuncOperator *parseTree, Schema &mySchema);
+	virtual void GrowFromParseTree (struct FuncOperator *parseTree, Schema &mySchema);
 
 	// helper function
-	Type RecursivelyBuild (struct FuncOperator *parseTree, Schema &mySchema);
+	virtual Type RecursivelyBuild (struct FuncOperator *parseTree, Schema &mySchema);
 
 	// prints out the function to the screen
-	void Print ();
+	virtual void Print ();
 
 	// applies the function to the given record and returns the result
-	Type Apply (Record &toMe, int &intResult, double &doubleResult);
+	virtual Type Apply (Record &toMe, int &intResult, double &doubleResult);
 };
+
+#endif
