@@ -58,10 +58,37 @@ void Join::BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &sel
 
 }
 
-void Join::MergeRelations(Relation &R, Relation &S, Record &rec) {
+void Join::MergeRelations(Relation &R, Relation &S, Record &rec, Pipe &out) {
 
 }
 
-void Join::MergeRelations(Relation &R, Relation &S, Record &rec, ComparisonEngine &comp, Record &literal, CNF &cnf) {
+void Join::MergeRelations(Relation &R, Relation &S, Record &rec, Pipe &out, ComparisonEngine &comp, Record &literal, CNF &cnf) {
+	// It's important that the pointers we use to get the Records or not NULL, but can be memory managed
+	Record tempR, tempS;
+	Record* recR = &tempR;
+	Record *recS = &tempS;
 
+	// First, Get the first Records and create the merge data
+	R.GetNext(recR);
+	S.GetNext(recS);
+	int numAttsLeft = recR->NumAtts();
+	int numAttsRight = recS->NumAtts();
+	int numAttsToKeep = numAttsLeft + numAttsRight;
+	int startOfRight = numAttsLeft;
+	int attsToKeep[numAttsLeft + numAttsRight];
+
+	for(int i = 0; i < numAttsLeft; i++) { attsToKeep[i] = i; }
+	for(int i = 0; i < numAttsRight; i++) { attsToKeep[i + numAttsLeft] = i; }
+
+	// Outer loop on S and inner loop on R
+	do {
+		do {
+			if(comp.Compare(recR, recS, &literal, &cnf)) {
+				rec.MergeRecords(recR, recS, numAttsLeft, numAttsRight, attsToKeep, numAttsToKeep, startOfRight);
+				out.Insert(&rec);
+			}
+		} while(R.GetNext(recR));
+		R.Reset(); // Rest R so we can go through it again
+		R.GetNext(recR); // Get the next Record again
+	} while(S.GetNext(recS));
 }
