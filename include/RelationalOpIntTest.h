@@ -5,6 +5,7 @@
 #include "Schema.h"
 #include "Record.h"
 #include "Pipe.h"
+#include "Function.h"
 
 extern "C" {
 	int yyparse(void);   // defined in y.tab.c
@@ -16,6 +17,7 @@ extern "C" {
 }
 
 extern struct AndList *final;
+extern struct FuncOperator *finalfunc;
 
 class RelationalOpIntTest: public ::testing::Test {
 public:
@@ -27,6 +29,16 @@ public:
 		}
 		cnf_pred.GrowFromParseTree (final, left, literal); // constructs CNF predicate
 		close_lexical_parser ();
+	}
+
+	void SetupCNF (char *input, Schema *left, Function &fn_pred) {
+			init_lexical_parser_func (input);
+	  		if (yyfuncparse() != 0) {
+				cout << " Error: can't parse your arithmetic expr. " << input << endl;
+				exit (1);
+			}
+			fn_pred.GrowFromParseTree (finalfunc, *left); // constructs CNF predicate
+			close_lexical_parser_func ();
 	}
 };
 
