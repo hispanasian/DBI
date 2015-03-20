@@ -85,7 +85,7 @@ public:
 	virtual void Reset();
 
 	/**
-	 * Deletes the Records in memory
+	 * Deletes the Records in memory and clears the file
 	 */
 	virtual void Clear();
 };

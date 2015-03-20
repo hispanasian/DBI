@@ -61,5 +61,7 @@ void FileRelation::Reset() {
 }
 
 void FileRelation::Clear() {
-
+	file.Close();
+	file.Open(0, name);
+	relation.MoveFirst();
 }
