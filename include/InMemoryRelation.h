@@ -56,6 +56,11 @@ public:
 	 * @return	the amount of memory used by this Relation (in bytes).
 	 */
 	virtual int MemUsed();
+
+	/**
+	 * Resets the memLimit to limit
+	 */
+	virtual void SetMemLimit(int limit);
 };
 
 #endif /* INCLUDE_INMEMORYRELATION_H_ */

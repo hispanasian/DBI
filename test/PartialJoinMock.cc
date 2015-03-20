@@ -16,6 +16,6 @@ void PartialJoinMock::Work(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &sel
 void PartialJoinMock::SortMergeJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, OrderMaker &orderL, OrderMaker &orderR, JoinRelation &relR, JoinRelation &relS, Record &tempL, Record &tempR) {
 	Join::SortMergeJoin(pipeL, pipeR, outPipe, orderL, orderR, relR, relS, tempL, tempR);
 }
-void PartialJoinMock::BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal, JoinRelation &relS, InMemoryRelation &relR) {
-	Join::BlockNestedLoopJoin(pipeL, pipeR, outPipe, selOp, literal, relS, relR);
+void PartialJoinMock::BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal, JoinRelation &relS, InMemoryRelation &relR, Record &rec) {
+	Join::BlockNestedLoopJoin(pipeL, pipeR, outPipe, selOp, literal, relS, relR, rec);
 }

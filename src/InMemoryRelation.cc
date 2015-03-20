@@ -60,3 +60,7 @@ void InMemoryRelation::Clear() {
 int InMemoryRelation::MemUsed() {
 	return memUsed;
 }
+
+void InMemoryRelation::SetMemLimit(int limit) {
+	memLimit = limit;
+}

@@ -20,7 +20,6 @@
 class Join: public RelationalOp {
 friend class JoinTest;
 friend class PartialMockJoin;
-
 protected:
 	int pageLimit;
 	int memLimit;
@@ -60,7 +59,7 @@ protected:
 	 * @param relS		The S relation
 	 * @param rec		The record that will be used to merge Records and put them in the outPipe
 	 */
-	void BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal, JoinRelation &relS, InMemoryRelation &relR);
+	void BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal, JoinRelation &relS, InMemoryRelation &relR, Record &rec);
 
 public:
 	Join();

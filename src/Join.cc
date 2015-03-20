@@ -54,7 +54,7 @@ void Join::BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &sel
 }
 
 void Join::BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal,
-		JoinRelation &relS, InMemoryRelation &relR) {
+		JoinRelation &relS, InMemoryRelation &relR, Record &rec) {
 
 }
 

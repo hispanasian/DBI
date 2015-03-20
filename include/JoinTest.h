@@ -42,7 +42,7 @@ public:
 //	virtual void Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal);
 	void Work(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, OrderMaker &orderL, OrderMaker &orderR);
 	void SortMergeJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, OrderMaker &orderL, OrderMaker &orderR, JoinRelation &relR, JoinRelation &relS, Record &tempL, Record &tempR);
-	void BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal, JoinRelation &relS, InMemoryRelation &relR);
+	void BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipR, Pipe &outPipe, CNF &selOp, Record &literal, JoinRelation &relS, InMemoryRelation &relR, Record &rec);
 };
 
 class JoinTest: public ::testing::Test {
@@ -53,15 +53,16 @@ public:
 	StrictMock<MockPipe> out;
 	StrictMock<MockCNF> cnf;
 	StrictMock<MockRecord> literal;
+	StrictMock<MockRecord> rec;
 	StrictMock<MockRecord> tempL;
 	StrictMock<MockRecord> tempR;
-	StrictMock<OrderMaker> orderL;
-	StrictMock<OrderMaker> orderR;
-	StrictMock<ComparisonEngine> comp;
-	StrictMock<JoinRelation> jrel;
-	StrictMock<JoinRelation> relR;
-	StrictMock<JoinRelation> relS;
-	StrictMock<InMemoryRelation> imrel;
+	StrictMock<MockOrderMaker> orderL;
+	StrictMock<MockOrderMaker> orderR;
+	StrictMock<MockComparisonEngine> comp;
+	StrictMock<MockJoinRelation> jrel;
+	StrictMock<MockJoinRelation> relR;
+	StrictMock<MockJoinRelation> relS;
+	StrictMock<MockInMemoryRelation> imrel;
 
 	void Work(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, OrderMaker &orderL, OrderMaker &orderR) {
 		op.Work(inPipeL, inPipeR, outPipe, selOp, literal, comp, orderL, orderR);
@@ -69,9 +70,14 @@ public:
 	void SortMergeJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, OrderMaker &orderL, OrderMaker &orderR, JoinRelation &relR, JoinRelation &relS, Record &tempL, Record &tempR) {
 		op.SortMergeJoin(pipeL, pipeR, outPipe, orderL, orderR, relR, relS, tempL, tempR);
 	}
-	void BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal, JoinRelation &relS, InMemoryRelation &relR) {
-		op.BlockNestedLoopJoin(pipeL, pipeR, outPipe, selOp, literal, relS, relR);
+	void BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal, JoinRelation &relS, InMemoryRelation &relR, Record &rec) {
+		op.BlockNestedLoopJoin(pipeL, pipeR, outPipe, selOp, literal, relS, relR, rec);
 	}
+
+	int GetMemLimit() { return op.memLimit; }
+	void SetMemLimit(int lim) { op.memLimit = lim; }
+	int GetPageLimit() { return op.pageLimit; }
+	void SetPageLimit(int lim) { op.pageLimit = lim; }
 };
 
 #endif
