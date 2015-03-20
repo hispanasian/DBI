@@ -24,13 +24,19 @@ void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record 
 
 }
 
+void Join::Work(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal) {
+	ComparisonEngine comp;
+	OrderMaker orderL, orderR;
+	Work(inPipeL, inPipeR, outPipe, selOp, literal, comp, orderL, orderR);
+}
+
 void Join::Work(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal,
 		ComparisonEngine &comp, OrderMaker &orderL, OrderMaker &orderR) {
 
-}
-
-void Join::Work(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal) {
-
+	// We can do a sort-merge join
+	if(selOp.GetSortOrders(orderL, orderR)) SortMergeJoin(inPipeL, inPipeR, outPipe, orderL, orderR);
+	// We have to do a block nested loop join
+	else BlockNestedLoopJoin(inPipeL, inPipeR, outPipe, selOp, literal);
 }
 
 void Join::SortMergeJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, OrderMaker &orderL,
@@ -43,11 +49,11 @@ void Join::SortMergeJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, OrderMaker &or
 
 }
 
-void Join::BlocknestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal) {
+void Join::BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal) {
 
 }
 
-void Join::BlocknestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal,
+void Join::BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal,
 		JoinRelation &relS, InMemoryRelation &relR) {
 
 }

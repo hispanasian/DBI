@@ -60,7 +60,7 @@ protected:
 	 * @param relS		The S relation
 	 * @param rec		The record that will be used to merge Records and put them in the outPipe
 	 */
-	void BlocknestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal, JoinRelation &relS, InMemoryRelation &relR);
+	void BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal, JoinRelation &relS, InMemoryRelation &relR);
 
 public:
 	Join();
@@ -97,7 +97,7 @@ public:
 	 * This is the BlockNestedLoopJoin that should be called by any method that wants to perform a
 	 * block nested loop join.
 	 */
-	virtual void BlocknestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal);
+	virtual void BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal);
 };
 
 struct JoinData {

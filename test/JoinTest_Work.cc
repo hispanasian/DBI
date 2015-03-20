@@ -10,7 +10,9 @@ TEST_F(JoinTest, Work1) {
 	InSequence seq;
 	EXPECT_CALL(cnf, GetSortOrders(Ref(orderL), Ref(orderR))).
 			WillOnce(Return(0));
-//	EXPECT_CALL(op, BlockNestedLoopJoin(_,_,_,_,_));
+	EXPECT_CALL(op, BlockNestedLoopJoin(Ref(inL), Ref(inR), Ref(out), Ref(cnf), Ref(literal)));
+
+	Work(inL, inR, out, cnf, literal, comp, orderL, orderR);
 }
 
 /**
@@ -20,5 +22,6 @@ TEST_F(JoinTest, Work2) {
 	InSequence seq;
 	EXPECT_CALL(cnf, GetSortOrders(Ref(orderL), Ref(orderR))).
 			WillOnce(Return(1));
-//	EXPECT_CALL(op, SortMergeJoin(_,_,_,_,_));
+	EXPECT_CALL(op, SortMergeJoin(Ref(inL), Ref(inR), Ref(out), Ref(orderL), Ref(orderR)));
+	Work(inL, inR, out, cnf, literal, comp, orderL, orderR);
 }
