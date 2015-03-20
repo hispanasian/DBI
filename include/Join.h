@@ -16,6 +16,7 @@
 #include "Record.h"
 #include "JoinRelation.h"
 #include "InMemoryRelation.h"
+#include "Relation.h"
 
 class Join: public RelationalOp {
 friend class JoinTest;
@@ -60,6 +61,26 @@ protected:
 	 * @param rec		The record that will be used to merge Records and put them in the outPipe
 	 */
 	void BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal, JoinRelation &relS, InMemoryRelation &relR, Record &rec);
+
+	/**
+	 *	Merges relations R and S. This method expects that neither R nor S will be empty
+	 *	@param R	The Relation R
+	 *	@param S	The Relation S
+	 *	@param rec	The Record that will actually do the merge
+	 */
+	virtual void MergeRelations(Relation &R, Relation &S, Record &rec);
+
+	/**
+	 * Merges relations R and S according to the comparison between the records in R, L, and
+	 * literal given cnf. This method expects that neither R nor S will be empty
+	 *	@param R		The Relation R
+	 *	@param S		The Relation S
+	 *	@param rec		The Record that will actually do the merge
+	 *	@param comp		The comparison engine that will compare the Records with cnf
+	 *	@param literal	The literal that will be used in the comparison
+	 *	@param cnf		The CNF that will be used in the comparison
+	 */
+	virtual void MergeRelations(Relation &R, Relation &S, Record &rec, ComparisonEngine &comp, Record &literal, CNF &cnf);
 
 public:
 	Join();

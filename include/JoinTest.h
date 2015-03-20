@@ -35,6 +35,10 @@ public:
 //	void BlocknestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal);
 	MOCK_METHOD5(BlockNestedLoopJoin, void(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal));
 	MOCK_METHOD5(Run, void(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal));
+//	void MergeRelations(Relation &R, Relation &S, Record &rec);
+	MOCK_METHOD3(MergeRelations, void(Relation &R, Relation &S, Record &rec));
+//	void MergeRelations(Relation &R, Relation &S, Record &rec, ComparisonEngine &comp, Record &literal, CNF &cnf);
+	MOCK_METHOD6(MergeRelations, void(Relation &R, Relation &S, Record &rec, ComparisonEngine &comp, Record &literal, CNF &cnf));
 
 	PartialJoinMock();
 	virtual ~PartialJoinMock();
@@ -48,6 +52,7 @@ public:
 class JoinTest: public ::testing::Test {
 public:
 	PartialJoinMock op;
+	Join join;
 	StrictMock<MockPipe> inL;
 	StrictMock<MockPipe> inR;
 	StrictMock<MockPipe> out;
@@ -78,6 +83,14 @@ public:
 	void SetMemLimit(int lim) { op.memLimit = lim; }
 	int GetPageLimit() { return op.pageLimit; }
 	void SetPageLimit(int lim) { op.pageLimit = lim; }
+
+	void MergeRelations(Relation &R, Relation &S, Record &rec) {
+		join.MergeRelations(R, S, rec);
+	}
+
+	void MergeRelations(Relation &R, Relation &S, Record &rec, ComparisonEngine &comp, Record &literal, CNF &cnf) {
+		join.MergeRelations(R, S, rec, comp, literal, cnf);
+	}
 };
 
 #endif

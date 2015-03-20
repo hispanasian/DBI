@@ -58,3 +58,10 @@ void Join::BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &sel
 
 }
 
+void Join::MergeRelations(Relation &R, Relation &S, Record &rec) {
+
+}
+
+void Join::MergeRelations(Relation &R, Relation &S, Record &rec, ComparisonEngine &comp, Record &literal, CNF &cnf) {
+
+}
