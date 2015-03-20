@@ -21,6 +21,7 @@ struct Arithmatic {
 
 class Function {
 friend class SumTest;
+friend class GroupByTest;
 private:
 
 	Arithmatic *opList;
