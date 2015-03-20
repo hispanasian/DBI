@@ -67,8 +67,9 @@ protected:
 	 *	@param R	The Relation R
 	 *	@param S	The Relation S
 	 *	@param rec	The Record that will actually do the merge
+	 *	@param out	The pipe that will hold the merged Records
 	 */
-	virtual void MergeRelations(Relation &R, Relation &S, Record &rec);
+	virtual void MergeRelations(Relation &R, Relation &S, Record &rec, Pipe &out);
 
 	/**
 	 * Merges relations R and S according to the comparison between the records in R, L, and
@@ -76,11 +77,12 @@ protected:
 	 *	@param R		The Relation R
 	 *	@param S		The Relation S
 	 *	@param rec		The Record that will actually do the merge
+	 *	@param out	The pipe that will hold the merged Records
 	 *	@param comp		The comparison engine that will compare the Records with cnf
 	 *	@param literal	The literal that will be used in the comparison
 	 *	@param cnf		The CNF that will be used in the comparison
 	 */
-	virtual void MergeRelations(Relation &R, Relation &S, Record &rec, ComparisonEngine &comp, Record &literal, CNF &cnf);
+	virtual void MergeRelations(Relation &R, Relation &S, Record &rec, Pipe &out, ComparisonEngine &comp, Record &literal, CNF &cnf);
 
 public:
 	Join();
