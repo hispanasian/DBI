@@ -55,3 +55,7 @@ void JoinRelation::Clear() {
 bool JoinRelation::IsMemoryMode() {
 	return memory;
 }
+
+int JoinRelation::MemUsed() {
+	return delegate->MemUsed();
+}

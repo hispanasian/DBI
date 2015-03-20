@@ -468,24 +468,22 @@ public:
 	MOCK_METHOD0(Reset, void());
 //	virtual void Clear() = 0;
 	MOCK_METHOD0(Clear, void());
+//	virtual int MemUsed();
+	MOCK_METHOD0(MemUsed, int());
 };
 
 class MockGroupBy: public GroupBy {
 public:
 	// void Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe);
 	MOCK_METHOD4(Run, void(Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe));
-
 	// virtual void Use_n_Pages (int n);
 	MOCK_METHOD1(Use_n_Pages, void(int n));
-
 	// virtual void Work (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe);
 	MOCK_METHOD4(Work, void(Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe));
-
 	// virtual void Work (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe, Record &rec, Record &prev, ComparisonEngine &comp);
 	MOCK_METHOD8(Work, void(Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe,
 		Record &rec, Record &prev, Record& mergeInto, ComparisonEngine &comp));
-
-	// virtual int GetPageLimit();
+	// virtual int GetPageLimit();1
 	MOCK_METHOD0(GetPageLimit, int());
 };
 

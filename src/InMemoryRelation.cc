@@ -55,3 +55,7 @@ void InMemoryRelation::Clear() {
 	index = 0;
 	size = 0;
 }
+
+int InMemoryRelation::MemUsed() {
+	return memUsed;
+}

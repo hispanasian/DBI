@@ -6,6 +6,7 @@
  */
 
 #include "../include/FileRelation.h"
+#include "Defs.h"
 
 FileRelation::FileRelation(): Relation(), rfile(_Rfile), file(_File), config(_Config),
 	comp(_Comp), relation(_Relation) {
@@ -62,4 +63,8 @@ void FileRelation::Reset() {
 
 void FileRelation::Clear() {
 
+}
+
+int FileRelation::MemUsed() {
+	return PAGE_SIZE;
 }

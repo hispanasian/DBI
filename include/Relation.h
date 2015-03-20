@@ -47,6 +47,12 @@ public:
 	 * Deletes Records from the Relation.
 	 */
 	virtual void Clear() {}
+
+	/**
+	 * Returns the amount of memory used by this Relation (in bytes).
+	 * @return	the amount of memory used by this Relation (in bytes).
+	 */
+	virtual int MemUsed();
 };
 
 
