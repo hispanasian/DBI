@@ -23,7 +23,7 @@ TEST_F(InMemoryRelationTest, Add1) {
 }
 
 /**
- * Add should return false and not add the Record if it exceeds the memSize
+ * Add should add the Record if it is the first Record even if it exceeds the memory limit
  */
 TEST_F(InMemoryRelationTest, Add2) {
 	StrictMock<MockRecord> rec;
@@ -34,11 +34,11 @@ TEST_F(InMemoryRelationTest, Add2) {
 	EXPECT_EQ(0, GetSize());
 	EXPECT_EQ(0, GetMemUsed());
 	EXPECT_EQ(0, GetRelation().size());
-	EXPECT_EQ(false, rel.Add(&rec));
+	EXPECT_EQ(true, rel.Add(&rec));
 	EXPECT_EQ(0, GetIndex());
-	EXPECT_EQ(0, GetSize());
-	EXPECT_EQ(0, GetMemUsed());
-	EXPECT_EQ(0, GetRelation().size());
+	EXPECT_EQ(1, GetSize());
+	EXPECT_EQ(150, GetMemUsed());
+	EXPECT_EQ(1, GetRelation().size());
 }
 
 
@@ -68,5 +68,32 @@ TEST_F(InMemoryRelationTest, Add3) {
 	EXPECT_EQ(0, GetIndex());
 	EXPECT_EQ(2, GetSize());
 	EXPECT_EQ(60, GetMemUsed());
+	EXPECT_EQ(3, GetRelation().size());
+}
+
+/**
+ * Add should not add more Records if it exceeds the memory limit and it is not the first Record
+ */
+TEST_F(InMemoryRelationTest, Add4) {
+	StrictMock<MockRecord> rec;
+	EXPECT_CALL(rec, Size()).
+			WillRepeatedly(Return(150));
+
+	GetRelation().push_back(NULL);
+	GetRelation().push_back(NULL);
+	GetRelation().push_back(NULL);
+
+	SetSize(1);
+	SetIndex(0);
+	SetMemUsed(10);
+
+	EXPECT_EQ(0, GetIndex());
+	EXPECT_EQ(1, GetSize());
+	EXPECT_EQ(10, GetMemUsed());
+	EXPECT_EQ(3, GetRelation().size());
+	EXPECT_EQ(false, rel.Add(&rec));
+	EXPECT_EQ(0, GetIndex());
+	EXPECT_EQ(1, GetSize());
+	EXPECT_EQ(10, GetMemUsed());
 	EXPECT_EQ(3, GetRelation().size());
 }
