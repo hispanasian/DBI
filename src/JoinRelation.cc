@@ -32,6 +32,14 @@ bool JoinRelation::Add(Record *rec) {
 	return memory;
 }
 
+bool JoinRelation::Populate(Pipe &in) {
+	Record rec;
+	while(in.Remove(&rec)) {
+		Add(&rec);
+	}
+	return memory;
+}
+
 bool JoinRelation::GetNext(Record *&rec) {
 	return delegate->GetNext(rec);
 }

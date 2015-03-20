@@ -28,6 +28,14 @@ public:
 	virtual bool Add(Record *rec);
 
 	/**
+	 * Populates this relation with all the Records from in. This will return true if it was able
+	 * to keep all the Records in memory.
+	 * @param in	The source of the Records for this relation
+	 * @return		True if in fits in memory, false otherwise.
+	 */
+	virtual bool Populate(Pipe &in);
+
+	/**
 	 * Returns the next Record in the Relation and puts it in rec. Returns false once we have run
 	 * out of Records. rec should not be NULL and should be instantiated.
 	 * @param rec	The Record that will be returned (this is consumed).
