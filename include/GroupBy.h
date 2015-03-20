@@ -12,6 +12,8 @@ class GroupBy : public RelationalOp {
 
 private:
 	int pageLimit;
+	void computeAndOutputSum(int intSum, double doubleSum, Function& func,
+	Record& mergeWith, OrderMaker &groupAtts, int* attsToKeep, Pipe& outPipe);
 
 public:
 	GroupBy();

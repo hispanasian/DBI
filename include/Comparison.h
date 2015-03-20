@@ -65,6 +65,15 @@ public:
 	// OrderMaker = (whichAtt whichType)*
 	OrderMaker(std::string str);
 
+	// gets the number of attributes
+	int GetNumAtts();
+
+	// gets the index of the ith attribute
+	int GetAttIndex(int i);
+
+	// get the Type of the ith attribute
+	Type GetAttType(int i);
+
 	// print to the screen
 	void Print ();
 

@@ -179,6 +179,11 @@ public:
     MOCK_METHOD4(CompareForSearch, int(Record *left, OrderMaker *order_left, Record *right, OrderMaker *order_right));
 };
 
+class MockOrderMaker: public OrderMaker {
+public:
+	
+};
+
 class MockBigQ: public BigQ {
 
 };
