@@ -437,3 +437,13 @@ int Record :: Size () {
 	return ((int *) bits)[0];
 }
 
+int Record :: NumAtts () {
+	// According to the spec:
+	//	1) First sizeof(int) bytes: length of the record in bytes
+	//	2) Next sizeof(int) bytes: byte offset to the start of the first att
+	// Hence, (((int *)bits)[1] holds the position of the first attribute and everything between
+	// (((int *)bits)[1] and the start should all be ints that provide some offset. The number of
+	// ints between (((int *)bits)[1] and the first attribute (include (((int *)bits)[1]) should
+	// give the number of attributes in Record
+	return (((int *)bits)[1] - sizeof(int))/sizeof(int); // subtract one sizeof(int) to ignore the 0th int
+}

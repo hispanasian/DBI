@@ -50,6 +50,8 @@ public:
 	MOCK_METHOD1(ToString, string(Schema *mySchema));
 //    int Size();
     MOCK_METHOD0(Size, int());
+//    virtual int NumAtts();
+    MOCK_METHOD0(NumAtts, int());
 };
 
 class MockPage: public Page {
@@ -488,6 +490,8 @@ public:
 	MOCK_METHOD0(Clear, void());
 //	virtual int MemUsed();
 	MOCK_METHOD0(MemUsed, int());
+//	virtual void SetMemLimit(int limit);
+	MOCK_METHOD1(SetMemLimit, void(int limit));
 };
 
 class MockFileRelation: public FileRelation {
