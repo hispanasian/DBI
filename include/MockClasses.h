@@ -24,7 +24,11 @@
 #include "Function.h"
 #include "Sum.h"
 #include "Relation.h"
+#include "InMemoryRelation.h"
+#include "FileRelation.h"
+#include "JoinRelation.h"
 #include "GroupBy.h"
+#include "Join.h"
 
 class MockRecord: public Record {
 public:
@@ -472,6 +476,56 @@ public:
 	MOCK_METHOD0(MemUsed, int());
 };
 
+class MockInMemoryRelation: public InMemoryRelation {
+public:
+//	virtual bool Add(Record *rec) = 0;
+	MOCK_METHOD1(Add, bool(Record *rec));
+//	virtual bool GetNext(Record *&rec) = 0;
+	MOCK_METHOD1(GetNext, bool(Record *&rec));
+//	virtual void Reset() = 0;
+	MOCK_METHOD0(Reset, void());
+//	virtual void Clear() = 0;
+	MOCK_METHOD0(Clear, void());
+//	virtual int MemUsed();
+	MOCK_METHOD0(MemUsed, int());
+};
+
+class MockFileRelation: public FileRelation {
+public:
+//	virtual bool Add(Record *rec) = 0;
+	MOCK_METHOD1(Add, bool(Record *rec));
+//	virtual bool Add(Pipe &pipe) = 0;
+	MOCK_METHOD1(Add, bool(Pipe &pipe));
+//	virtual bool Add(Relation &rel) = 0;
+	MOCK_METHOD1(Add, bool(Relation &rel));
+//	virtual bool GetNext(Record *&rec) = 0;
+	MOCK_METHOD1(GetNext, bool(Record *&rec));
+//	virtual void Reset() = 0;
+	MOCK_METHOD0(Reset, void());
+//	virtual void Clear() = 0;
+	MOCK_METHOD0(Clear, void());
+//	virtual int MemUsed();
+	MOCK_METHOD0(MemUsed, int());
+};
+
+class MockJoinRelation: public JoinRelation {
+public:
+//	virtual bool Add(Record *rec) = 0;
+	MOCK_METHOD1(Add, bool(Record *rec));
+//	virtual bool Populate(Pipe &in);
+	MOCK_METHOD1(Populate, bool(Pipe &in));
+//	virtual bool GetNext(Record *&rec) = 0;
+	MOCK_METHOD1(GetNext, bool(Record *&rec));
+//	virtual void Reset() = 0;
+	MOCK_METHOD0(Reset, void());
+//	virtual void Clear() = 0;
+	MOCK_METHOD0(Clear, void());
+//	virtual int MemUsed();
+	MOCK_METHOD0(MemUsed, int());
+//	virtual bool IsMemoryMode();
+	MOCK_METHOD0(IsMemoryMode, bool());
+};
+
 class MockGroupBy: public GroupBy {
 public:
 	// void Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe);
@@ -487,4 +541,11 @@ public:
 	MOCK_METHOD0(GetPageLimit, int());
 };
 
+class MockJoin: public Join{
+public:
+//	virtual void Use_n_Pages (int n);
+	MOCK_METHOD1(Use_n_Pages, void(int n));
+//	virtual void Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal);
+	MOCK_METHOD5(Run, void(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal));
+};
 #endif

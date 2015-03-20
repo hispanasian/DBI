@@ -11,6 +11,7 @@
 
 #include "Relation.h"
 #include <vector>
+#include "Defs.h"
 
 class InMemoryRelation: public Relation {
 friend class InMemoryRelationTest;
@@ -22,7 +23,7 @@ private:
 	int index;
 
 public:
-	InMemoryRelation(int memLimit);
+	InMemoryRelation(int memLimit = PAGE_SIZE);
 	virtual ~InMemoryRelation();
 
 	/**
