@@ -11,7 +11,7 @@
 
 JoinRelation::JoinRelation(int memLimit): Relation(memLimit) {
 	memory = true;
-
+	delegate = new InMemoryRelation(memLimit);
 }
 
 JoinRelation::~JoinRelation() {
@@ -33,15 +33,15 @@ bool JoinRelation::Add(Record *rec) {
 }
 
 bool JoinRelation::GetNext(Record *&rec) {
-	return true;
+	return delegate->GetNext(rec);
 }
 
 void JoinRelation::Reset() {
-
+	return delegate->Reset();
 }
 
 void JoinRelation::Clear() {
-
+	return delegate->Clear();
 }
 
 bool JoinRelation::IsMemoryMode() {
