@@ -6,6 +6,8 @@
  */
 
 #include "JoinRelation.h"
+#include "InMemoryRelation.h"
+#include "FileRelation.h"
 
 JoinRelation::JoinRelation(int memLimit): Relation(memLimit) {
 	memory = true;
@@ -13,11 +15,21 @@ JoinRelation::JoinRelation(int memLimit): Relation(memLimit) {
 }
 
 JoinRelation::~JoinRelation() {
-	// TODO Auto-generated destructor stub
+	delete delegate;
 }
 
 bool JoinRelation::Add(Record *rec) {
-	return true;
+	// This should only return false if it is a InMemoryRelation, in which case we now need to
+	// switch it to be a FileRelation and change memory
+	if(!delegate->Add(rec)) {
+		memory = false;
+		FileRelation *temp = new FileRelation();
+		temp->Add(*delegate); // Populate the new relation
+		delete delegate;
+		delegate = temp;
+		delegate->Add(rec); // Add the Record that failed to get added
+	}
+	return memory;
 }
 
 bool JoinRelation::GetNext(Record *&rec) {

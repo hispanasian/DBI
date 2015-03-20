@@ -10,7 +10,7 @@
 
 #include "Relation.h"
 
-class JoinRelation {
+class JoinRelation: public Relation {
 friend class JoinRelationTest;
 protected:
 	Relation *delegate;
@@ -20,9 +20,10 @@ public:
 	virtual ~JoinRelation();
 
 	/**
-	 * Adds rec to the relation and returns true if memLimit is not exceeded
+	 * Adds rec to the relation
 	 * @param rec		The Record that will be added to the Relation (this is consumed)
-	 * @param return	True if rec was successfully added
+	 * @param return	true if the record was added with a in memory relation and false if it was
+	 * 					added to a file relation.
 	 */
 	virtual bool Add(Record *rec);
 
