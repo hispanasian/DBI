@@ -5,9 +5,6 @@ RawFile::RawFile() {
 }
 
 RawFile::~RawFile() {
-	if(file != NULL) {
-		fclose(file);
-	}
 }
 
 bool RawFile::Open(std::string fname) {
