@@ -31,7 +31,7 @@ protected:
 	ComparisonEngine _Comp;
 	HeapDBFile &relation;
 	HeapDBFile _Relation = HeapDBFile(file, rfile, config, comp);
-	char *name = "FileRelationXXXXXX";
+	char name[9] = { 'F', 'R', 'X', 'X', 'X', 'X', 'X', 'X', '\0' }; //= "FileRelationXXXXXX";
 
 	FileRelation(RawFile &_rfile, File &_file, DBConfig &_config, ComparisonEngine &_comp, HeapDBFile &_relation);
 	/**
