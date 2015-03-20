@@ -17,19 +17,17 @@ extern "C" {
 
 extern struct AndList *final;
 
-void SetupCNF(char *input, Schema *left, CNF &cnf_pred, Record &literal) {
-	init_lexical_parser (input);
-  	if (yyparse() != 0) {
-		cout << " Error: can't parse your CNF " << input << endl;
-		exit (1);
-	}
-	cnf_pred.GrowFromParseTree (final, left, literal); // constructs CNF predicate
-	close_lexical_parser ();
-}
-
 class RelationalOpIntTest: public ::testing::Test {
 public:
-	
+	void SetupCNF(char *input, Schema *left, CNF &cnf_pred, Record &literal) {
+		init_lexical_parser (input);
+		if (yyparse() != 0) {
+			cout << " Error: can't parse your CNF " << input << endl;
+			exit (1);
+		}
+		cnf_pred.GrowFromParseTree (final, left, literal); // constructs CNF predicate
+		close_lexical_parser ();
+	}
 };
 
 #endif /* RELATIONALOPINTTES_H */
