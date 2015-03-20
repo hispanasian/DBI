@@ -49,7 +49,12 @@ void JoinRelation::Reset() {
 }
 
 void JoinRelation::Clear() {
-	return delegate->Clear();
+	if(!memory) {
+		delete delegate;
+		delegate = new InMemoryRelation(memLimit);
+		memory = true;
+	}
+	else delegate->Clear();
 }
 
 bool JoinRelation::IsMemoryMode() {

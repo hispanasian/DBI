@@ -50,7 +50,8 @@ public:
 	virtual void Reset();
 
 	/**
-	 * Deletes Records from the Relation.
+	 * Deletes Records from the Relation and, if this is not in memory mode, makes this into an
+	 * in memory relation.
 	 */
 	virtual void Clear();
 
