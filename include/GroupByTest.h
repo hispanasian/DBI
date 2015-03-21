@@ -28,10 +28,11 @@ public:
 	GroupBy op;
 	StrictMock<MockPipe> in;
 	Pipe out = Pipe(10);
-	OrderMaker groupAtts;
+	StrictMock<MockOrderMaker> groupAtts;
 	StrictMock<MockFunction> func;
 	StrictMock<MockRecord> rec;
 	StrictMock<MockRecord> prev;
+	StrictMock<MockRecord> mergeInto;
 	StrictMock<MockComparisonEngine> comp;
 
 	void MakeDouble(Function &func) {
@@ -48,6 +49,10 @@ public:
 
 	double GetDouble(Record &rec) {
 		return *((double *) &(rec.bits[((int *)rec.bits)[1]]));
+	}
+
+	void SetBits(Record& r, char* bits) {
+		r.bits = bits;
 	}
 };
 

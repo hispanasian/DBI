@@ -13,7 +13,7 @@ class GroupBy : public RelationalOp {
 private:
 	int pageLimit;
 	void computeAndOutputSum(int intSum, double doubleSum, Function& func,
-	Record& mergeWith, OrderMaker &groupAtts, int* attsToKeep, Pipe& outPipe);
+	Record& mergeWith, Record& mergeInto, OrderMaker &groupAtts, int* attsToKeep, Pipe& outPipe);
 
 public:
 	GroupBy();
@@ -40,7 +40,8 @@ public:
 	/**
 	 * This method will do the single threaded work for GroupBy
 	 */
-	virtual void Work (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe, Record &rec, Record &prev, ComparisonEngine &comp);
+	virtual void Work (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe,
+		Record &rec, Record &prev, Record& mergeInto, ComparisonEngine &comp);
 
 	/*
 	 * Returns the pageLimit

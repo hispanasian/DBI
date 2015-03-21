@@ -14,7 +14,7 @@ void GroupBy::Use_n_Pages (int n) { pageLimit = n; }
 void GroupBy::Work (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe) {}
 
 void GroupBy::Work (Pipe &sorted, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe,
-	Record &rec, Record &prev, ComparisonEngine &comp) {
+	Record &rec, Record &prev, Record& mergeInto, ComparisonEngine &comp) {
 	int intSum = 0, intResult = 0;
 	double doubleSum = 0.0, doubleResult = 0.0;
 
@@ -43,7 +43,7 @@ void GroupBy::Work (Pipe &sorted, Pipe &outPipe, OrderMaker &groupAtts, Function
 			// We've scanned through an entire group
 
 			// create 
-			computeAndOutputSum(intSum, doubleSum, computeMe, prev,
+			computeAndOutputSum(intSum, doubleSum, computeMe, prev, mergeInto,
 				groupAtts, attsToKeep, outPipe);
 
 
@@ -57,25 +57,28 @@ void GroupBy::Work (Pipe &sorted, Pipe &outPipe, OrderMaker &groupAtts, Function
 	}
 
 	if(!multipleRecords) {
-		computeAndOutputSum(intSum, doubleSum, computeMe, prev,
+		computeAndOutputSum(intSum, doubleSum, computeMe, prev, mergeInto,
 				groupAtts, attsToKeep, outPipe);
 	}
+	std::cout << "Almost done" << std::endl;
 
 	delete[] attsToKeep;
 	// close the output pipe
 	outPipe.ShutDown();
 }
 
-void GroupBy::computeAndOutputSum(int intSum, double doubleSum, Function& func,
+void GroupBy::computeAndOutputSum(int intSum, double doubleSum, Function& func, Record& mergeInto,
 	Record& mergeWith, OrderMaker &groupAtts, int* attsToKeep, Pipe& outPipe) {
 	if(func.ReturnsInt()) {
 		Record sum = Record(intSum);
-		Record merged;
-		// merged.merge()
-		outPipe.Insert(&merged);
+		mergeInto.MergeRecords(&sum, &mergeWith, 1, groupAtts.GetNumAtts(),
+			attsToKeep, 1 + groupAtts.GetNumAtts(), 1);
+		outPipe.Insert(&mergeInto);
 	} else {
 		Record sum = Record(doubleSum);
-		outPipe.Insert(&sum);
+		mergeInto.MergeRecords(&sum, &mergeWith, 1, groupAtts.GetNumAtts(),
+			attsToKeep, 1 + groupAtts.GetNumAtts(), 1);
+		outPipe.Insert(&mergeInto);
 	}
 }
 

@@ -66,20 +66,20 @@ public:
 	OrderMaker(std::string str);
 
 	// gets the number of attributes
-	int GetNumAtts();
+	virtual int GetNumAtts();
 
 	// gets the index of the ith attribute
-	int GetAttIndex(int i);
+	virtual int GetAttIndex(int i);
 
 	// get the Type of the ith attribute
-	Type GetAttType(int i);
+	virtual Type GetAttType(int i);
 
 	// print to the screen
-	void Print ();
+	virtual void Print ();
 
 	// returns a string representation of OrderMaker in the following format:
 	// OrderMaker = (whichAtt whichType)*
-	std::string ToString();
+	virtual std::string ToString();
 };
 
 class Record;

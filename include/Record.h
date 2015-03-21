@@ -27,6 +27,7 @@ class Record {
 friend class ComparisonEngine;
 friend class Page;
 friend class SumTest;
+friend class GroupByTest;
 
 private:
 	char* GetBits ();

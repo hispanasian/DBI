@@ -181,7 +181,25 @@ public:
 
 class MockOrderMaker: public OrderMaker {
 public:
-	
+	// int GetNumAtts();
+	MOCK_METHOD0(GetNumAtts, int());
+
+	// gets the index of the ith attribute
+	// int GetAttIndex(int i);
+	MOCK_METHOD1(GetAttIndex, int(int i));
+
+	// get the Type of the ith attribute
+	// Type GetAttType(int i);
+	MOCK_METHOD1(GetAttType, Type(int i));
+
+	// print to the screen
+	// void Print ();
+	MOCK_METHOD0(Print, void());
+
+	// returns a string representation of OrderMaker in the following format:
+	// OrderMaker = (whichAtt whichType)*
+	// std::string ToString();
+	MOCK_METHOD0(ToString, std::string());
 };
 
 class MockBigQ: public BigQ {
@@ -464,7 +482,8 @@ public:
 	MOCK_METHOD4(Work, void(Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe));
 
 	// virtual void Work (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe, Record &rec, Record &prev, ComparisonEngine &comp);
-	MOCK_METHOD7(Work, void(Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe, Record &rec, Record &prev, ComparisonEngine &comp));
+	MOCK_METHOD8(Work, void(Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe,
+		Record &rec, Record &prev, Record& mergeInto, ComparisonEngine &comp));
 
 	// virtual int GetPageLimit();
 	MOCK_METHOD0(GetPageLimit, int());

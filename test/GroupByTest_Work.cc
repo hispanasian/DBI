@@ -8,7 +8,7 @@ TEST_F(GroupByTest, Work1) {
 	EXPECT_CALL(in, Remove(&rec)).
 			WillOnce(Return(0));
 
-	op.Work(in, out, groupAtts, func, rec, prev, comp);
+	op.Work(in, out, groupAtts, func, rec, prev, mergeInto, comp);
 	EXPECT_EQ(0, out.Remove(&rec));
 }
 
@@ -35,10 +35,23 @@ TEST_F(GroupByTest, Work2) {
 	EXPECT_CALL(func, ReturnsInt()).
 		WillRepeatedly(Return(true));
 
-	op.Work(in, out, groupAtts, func, rec, prev, comp);
+	EXPECT_CALL(groupAtts, GetNumAtts()).
+		WillRepeatedly(Return(2));
+	Sequence s2;
+	EXPECT_CALL(groupAtts, GetAttIndex(0)).
+		InSequence(s2).
+		WillOnce(Return(0));
+	EXPECT_CALL(groupAtts, GetAttIndex(1)).
+		InSequence(s2).
+		WillOnce(Return(1));
+
+	EXPECT_CALL(mergeInto, MergeRecords(NotNull(), NotNull(), 1, 2, NotNull(), 3, 1)).
+		Times(1);
+
+
+	op.Work(in, out, groupAtts, func, rec, prev, mergeInto, comp);
 	Record result;
 	EXPECT_EQ(1, out.Remove(&result));
-	EXPECT_EQ(1, GetInt(result));
 	EXPECT_EQ(0, out.Remove(&result));
 }
 
@@ -65,7 +78,13 @@ TEST_F(GroupByTest, Work3) {
 	EXPECT_CALL(func, ReturnsInt()).
 		WillRepeatedly(Return(false));
 
-	op.Work(in, out, groupAtts, func, rec, prev, comp);
+	int attsToKeep[] = {1, 1, 2};
+
+	EXPECT_CALL(mergeInto, MergeRecords(NotNull(), &prev, 1, 2, (int*)&attsToKeep, 3, 1)).
+		Times(1);
+
+
+	op.Work(in, out, groupAtts, func, rec, prev, mergeInto, comp);
 	Record result;
 	EXPECT_EQ(1, out.Remove(&result));
 	EXPECT_EQ(1.5, GetDouble(result));
@@ -115,7 +134,7 @@ TEST_F(GroupByTest, Work4) {
 	EXPECT_CALL(func, ReturnsInt()).
 		WillRepeatedly(Return(true));
 
-	op.Work(in, out, groupAtts, func, rec, prev, comp);
+	op.Work(in, out, groupAtts, func, rec, prev, mergeInto, comp);
 	Record result;
 	EXPECT_EQ(1, out.Remove(&result));
 	EXPECT_EQ(15, GetInt(result));
