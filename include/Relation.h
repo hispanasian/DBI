@@ -18,10 +18,10 @@ protected:
 public:
 	/**
 	 * Creates a Relation with the provided memory limit
-	 * @param memLimit	The maximum amount of memory that will be given to the Records
+	 * @param memLimit	The maximum amount of memory that will be given to the Records (in bytes)
 	 */
-	Relation(int memLimit = PAGE_SIZE);
-	virtual ~Relation() {}
+	Relation(int _memLimit = PAGE_SIZE) { memLimit = _memLimit; }
+	virtual ~Relation() {};
 
 	/**
 	 * Adds rec to the relation and returns true if successful (typically if memLimit is exceeded)
@@ -36,7 +36,7 @@ public:
 	 * @param rec	The Record that will be returned (this is consumed).
 	 * @return		False if no Records remain
 	 */
-	virtual bool GetNext(Record *rec) { return true; }
+	virtual bool GetNext(Record *&rec) { return true; }
 
 	/**
 	 * Returns the Relation to the beginning.

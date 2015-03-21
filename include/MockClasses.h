@@ -462,8 +462,8 @@ class MockRelation: public Relation {
 public:
 //	virtual bool Add(Record *rec) = 0;
 	MOCK_METHOD1(Add, bool(Record *rec));
-//	virtual bool GetNext(Record *rec) = 0;
-	MOCK_METHOD1(GetNext, bool(Record *rec));
+//	virtual bool GetNext(Record *&rec) = 0;
+	MOCK_METHOD1(GetNext, bool(Record *&rec));
 //	virtual void Reset() = 0;
 	MOCK_METHOD0(Reset, void());
 //	virtual void Clear() = 0;
