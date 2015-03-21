@@ -26,7 +26,7 @@ TEST_F(GroupByTest, Work2) {
 			InSequence(s1).
 			WillOnce(Return(0));
 
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			Times(1);
 
 	EXPECT_CALL(func, Apply(Ref(prev), _, _)).
@@ -67,7 +67,7 @@ TEST_F(GroupByTest, Work3) {
 			InSequence(s1).
 			WillOnce(Return(0));
 
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			Times(1);
 
 	EXPECT_CALL(func, Apply(Ref(prev), _, _)).
@@ -108,7 +108,7 @@ TEST_F(GroupByTest, Work4) {
 
 
 	Sequence s2;
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			InSequence(s2);
 	EXPECT_CALL(func, Apply(Ref(prev), _, _)).
 			InSequence(s2).
@@ -119,7 +119,7 @@ TEST_F(GroupByTest, Work4) {
 	EXPECT_CALL(func, Apply(Ref(rec), _, _)).
 			InSequence(s2).
 			WillOnce(DoAll(SetArgReferee<1>(2), Return(Int)));
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(&prev, &rec, &groupAtts)).
 			InSequence(s2).
@@ -127,7 +127,7 @@ TEST_F(GroupByTest, Work4) {
 	EXPECT_CALL(func, Apply(Ref(rec), _, _)).
 			InSequence(s2).
 			WillOnce(DoAll(SetArgReferee<1>(3), Return(Int)));
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(&prev, &rec, &groupAtts)).
 			InSequence(s2).
@@ -135,7 +135,7 @@ TEST_F(GroupByTest, Work4) {
 	EXPECT_CALL(func, Apply(Ref(rec), _, _)).
 			InSequence(s2).
 			WillOnce(DoAll(SetArgReferee<1>(4), Return(Int)));
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(&prev, &rec, &groupAtts)).
 			InSequence(s2).
@@ -143,7 +143,7 @@ TEST_F(GroupByTest, Work4) {
 	EXPECT_CALL(func, Apply(Ref(rec), _, _)).
 			InSequence(s2).
 			WillOnce(DoAll(SetArgReferee<1>(5), Return(Int)));
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			InSequence(s2);
 
 	
@@ -182,7 +182,7 @@ TEST_F(GroupByTest, Work5) {
 
 
 	Sequence s2;
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			InSequence(s2);
 	EXPECT_CALL(func, Apply(Ref(prev), _, _)).
 			InSequence(s2).
@@ -196,7 +196,7 @@ TEST_F(GroupByTest, Work5) {
 	EXPECT_CALL(func, Apply(Ref(rec), _, _)).
 			InSequence(s2).
 			WillOnce(DoAll(SetArgReferee<1>(1), Return(Int)));	
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(&prev, &rec, &groupAtts)).
 			InSequence(s2).
@@ -207,7 +207,7 @@ TEST_F(GroupByTest, Work5) {
 	EXPECT_CALL(func, Apply(Ref(rec), _, _)).
 			InSequence(s2).
 			WillOnce(DoAll(SetArgReferee<1>(2), Return(Int)));	
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			InSequence(s2);
 	EXPECT_CALL(mergeInto, MergeRecords(NotNull(), NotNull(), 1, 2, NotNull(), 3, 1)).
 			Times(1).
@@ -250,7 +250,7 @@ TEST_F(GroupByTest, Work6) {
 
 
 	Sequence s2;
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			InSequence(s2);
 	EXPECT_CALL(func, Apply(Ref(prev), _, _)).
 			InSequence(s2).
@@ -261,7 +261,7 @@ TEST_F(GroupByTest, Work6) {
 	EXPECT_CALL(func, Apply(Ref(rec), _, _)).
 			InSequence(s2).
 			WillOnce(DoAll(SetArgReferee<1>(1), Return(Int)));	
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(&prev, &rec, &groupAtts)).
 			InSequence(s2).
@@ -272,7 +272,7 @@ TEST_F(GroupByTest, Work6) {
 	EXPECT_CALL(func, Apply(Ref(rec), _, _)).
 			InSequence(s2).
 			WillOnce(DoAll(SetArgReferee<1>(2), Return(Int)));	
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(&prev, &rec, &groupAtts)).
 			InSequence(s2).
@@ -280,7 +280,7 @@ TEST_F(GroupByTest, Work6) {
 	EXPECT_CALL(func, Apply(Ref(rec), _, _)).
 			InSequence(s2).
 			WillOnce(DoAll(SetArgReferee<1>(2), Return(Int)));	
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(&prev, &rec, &groupAtts)).
 			InSequence(s2).
@@ -291,7 +291,7 @@ TEST_F(GroupByTest, Work6) {
 	EXPECT_CALL(func, Apply(Ref(rec), _, _)).
 			InSequence(s2).
 			WillOnce(DoAll(SetArgReferee<1>(2), Return(Int)));	
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			InSequence(s2);
 	EXPECT_CALL(comp, Compare(&prev, &rec, &groupAtts)).
 			InSequence(s2).
@@ -299,7 +299,7 @@ TEST_F(GroupByTest, Work6) {
 	EXPECT_CALL(func, Apply(Ref(rec), _, _)).
 			InSequence(s2).
 			WillOnce(DoAll(SetArgReferee<1>(2), Return(Int)));	
-	EXPECT_CALL(prev, Copy(&rec)).
+	EXPECT_CALL(prev, Consume(&rec)).
 			InSequence(s2);
 	EXPECT_CALL(mergeInto, MergeRecords(NotNull(), NotNull(), 1, 2, NotNull(), 3, 1)).
 			Times(1).

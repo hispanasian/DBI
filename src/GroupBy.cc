@@ -33,7 +33,7 @@ void GroupBy::Work (Pipe &sorted, Pipe &outPipe, OrderMaker &groupAtts, Function
 	double doubleSum = 0.0, doubleResult = 0.0;
 
 	if(sorted.Remove(&rec)) {
-		prev.Copy(&rec);
+		prev.Consume(&rec);
 	} else { // there are no records in the input pipe, we're done
 		// close the output pipe
 		outPipe.ShutDown();
@@ -63,7 +63,7 @@ void GroupBy::Work (Pipe &sorted, Pipe &outPipe, OrderMaker &groupAtts, Function
 		computeMe.Apply(rec, intResult, doubleResult);
 		intSum += intResult;
 		doubleSum += doubleResult;
-		prev.Copy(&rec);
+		prev.Consume(&rec);
 	}
 
 	// compute the result for the last group
