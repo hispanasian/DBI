@@ -3,8 +3,6 @@
 #include "Record.h"
 #include "Pipe.h"
 #include "SelectPipe.h"
-// #include "../src/y.tab.c"
-
 
 extern "C" {
 	int yyparse(void);   // defined in y.tab.c
@@ -17,7 +15,7 @@ extern "C" {
 
 extern struct AndList *final;
 
-void GetCNF(char *input, Schema *left, CNF &cnf_pred, Record &literal) {
+void SetupCNF(char *input, Schema *left, CNF &cnf_pred, Record &literal) {
 	init_lexical_parser (input);
   	if (yyparse() != 0) {
 		cout << " Error: can't parse your CNF " << input << endl;
@@ -27,6 +25,7 @@ void GetCNF(char *input, Schema *left, CNF &cnf_pred, Record &literal) {
 	close_lexical_parser ();
 }
 
+// Simple test, 25 records expected
 TEST(SelectPipeIntegrationTest, Test1) {
 	FILE *tableFile = fopen ("data/10M/lineitem.tbl", "r");
 	Record temp;
@@ -39,7 +38,7 @@ TEST(SelectPipeIntegrationTest, Test1) {
 	// because the output pipe will fill up before the input pipe
 	// can be emptied. You'll need another thread.
 	char* predicate = "(l_orderkey < 10)";
-	GetCNF (predicate, &schema, cnf, lit);
+	SetupCNF (predicate, &schema, cnf, lit);
 	Pipe in(100);
 	Pipe out(100);
 
