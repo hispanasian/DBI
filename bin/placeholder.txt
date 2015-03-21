@@ -1,1 +1,0 @@
-This is a placeholder so the bin/ directory can always be there. Without it, it won't build right away.

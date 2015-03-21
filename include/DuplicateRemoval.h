@@ -14,7 +14,7 @@
 #include "Comparison.h"
 #include "ComparisonEngine.h"
 
-class DuplicateRemoval:RelationalOp {
+class DuplicateRemoval: public RelationalOp {
 private:
 	int pageLimit;
 public:

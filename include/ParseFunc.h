@@ -14,7 +14,7 @@
 #ifndef NAME
 #define NAME 4
 #endif
-
+/*
 struct FuncOperand {
 
 	// this tells us the type of the operand: FLOAT, INT, STRING...
@@ -34,6 +34,6 @@ struct FuncOperator {
 	struct FuncOperand *leftOperand;
 	struct FuncOperator *right;	
 
-};
+};*/
 
 #endif

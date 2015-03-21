@@ -1,10 +1,10 @@
-#include "WriteItOutTest.h"
+#include "WriteOutTest.h"
 
 /*
  * Write will return the first record if it matches the CNF
  */
 
-TEST_F(WriteItOutTest, Write1) {
+TEST_F(WriteOutTest, Write1) {
 	Sequence s1;
 
 	// First Call
@@ -47,7 +47,7 @@ TEST_F(WriteItOutTest, Write1) {
  * Write should not fail if there are no Records
  */
 
-TEST_F(WriteItOutTest, Write2) {
+TEST_F(WriteOutTest, Write2) {
 	Sequence s1;
 
 	// First Call
