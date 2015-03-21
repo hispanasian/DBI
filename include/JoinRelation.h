@@ -59,6 +59,12 @@ public:
 	 * relation.
 	 */
 	virtual bool IsMemoryMode();
+
+	/**
+	 * Returns the amount of memory used by this Relation (in bytes).
+	 * @return	the amount of memory used by this Relation (in bytes).
+	 */
+	virtual int MemUsed();
 };
 
 #endif /* INCLUDE_JOINRELATION_H_ */

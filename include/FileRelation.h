@@ -88,6 +88,12 @@ public:
 	 * Deletes the Records in memory and clears the file
 	 */
 	virtual void Clear();
+
+	/**
+	 * Returns the amount of memory used by this Relation (in bytes). This will simply be PAGE_SIZE
+	 * @return	the amount of memory used by this Relation (in bytes).
+	 */
+	virtual int MemUsed();
 };
 
 
