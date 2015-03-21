@@ -28,6 +28,7 @@ TEST_F(InMemoryRelationTest, Clear1) {
 
 	EXPECT_EQ(0, GetIndex());
 	EXPECT_EQ(0, GetSize());
+	EXPECT_EQ(0, GetMemUsed());
 	EXPECT_EQ(4, GetRelation().size());
 	EXPECT_EQ(true, GetRelation()[0] == NULL);
 	EXPECT_EQ(true, GetRelation()[1] == NULL);
@@ -49,6 +50,7 @@ TEST_F(InMemoryRelationTest, Clear2) {
 
 	EXPECT_EQ(0, GetIndex());
 	EXPECT_EQ(0, GetSize());
+	EXPECT_EQ(0, GetMemUsed());
 	EXPECT_EQ(0, GetRelation().size());
 }
 
@@ -77,6 +79,7 @@ TEST_F(InMemoryRelationTest, Clear3) {
 
 	EXPECT_EQ(0, GetIndex());
 	EXPECT_EQ(0, GetSize());
+	EXPECT_EQ(0, GetMemUsed());
 	EXPECT_EQ(4, GetRelation().size());
 	EXPECT_EQ(true, GetRelation()[0] == NULL);
 	EXPECT_EQ(true, GetRelation()[1] == NULL);
