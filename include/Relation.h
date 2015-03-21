@@ -52,7 +52,7 @@ public:
 	 * Returns the amount of memory used by this Relation (in bytes).
 	 * @return	the amount of memory used by this Relation (in bytes).
 	 */
-	virtual int MemUsed();
+	int MemUsed() {return 0;}
 };
 
 
