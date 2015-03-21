@@ -27,7 +27,7 @@ void GroupBy::Work (Pipe &sorted, Pipe &outPipe, OrderMaker &groupAtts, Function
 	}
 
 	// compute sum for the first record
-	computeMe.Apply(rec, intResult, doubleResult);
+	computeMe.Apply(prev, intResult, doubleResult);
 	intSum += intResult; doubleSum += doubleResult;
 
 	int* attsToKeep = new int[groupAtts.GetNumAtts() + 1];
@@ -36,39 +36,33 @@ void GroupBy::Work (Pipe &sorted, Pipe &outPipe, OrderMaker &groupAtts, Function
     	attsToKeep[i+1] = groupAtts.GetAttIndex(i);
     }
 
-	bool multipleRecords = false;
 	while(sorted.Remove(&rec)) {
-		multipleRecords = true;
 		if(comp.Compare(&prev, &rec, &groupAtts) != 0) {
 			// We've scanned through an entire group
-
-			// create 
 			computeAndOutputSum(intSum, doubleSum, computeMe, prev, mergeInto,
 				groupAtts, attsToKeep, outPipe);
-
 
 			// reset our sums
 			intSum = 0, intResult = 0;
 			doubleSum = 0.0, doubleResult = 0.0;
-		} else {
-
 		}
-
+		computeMe.Apply(rec, intResult, doubleResult);
+		intSum += intResult;
+		doubleSum += doubleResult;
+		prev.Copy(&rec);
 	}
 
-	if(!multipleRecords) {
-		computeAndOutputSum(intSum, doubleSum, computeMe, prev, mergeInto,
-				groupAtts, attsToKeep, outPipe);
-	}
-	std::cout << "Almost done" << std::endl;
+	// compute the result for the last group
+	computeAndOutputSum(intSum, doubleSum, computeMe, prev, mergeInto,
+			groupAtts, attsToKeep, outPipe);
 
 	delete[] attsToKeep;
 	// close the output pipe
 	outPipe.ShutDown();
 }
 
-void GroupBy::computeAndOutputSum(int intSum, double doubleSum, Function& func, Record& mergeInto,
-	Record& mergeWith, OrderMaker &groupAtts, int* attsToKeep, Pipe& outPipe) {
+void GroupBy::computeAndOutputSum(int intSum, double doubleSum, Function& func, Record& mergeWith,
+	Record& mergeInto, OrderMaker &groupAtts, int* attsToKeep, Pipe& outPipe) {
 	if(func.ReturnsInt()) {
 		Record sum = Record(intSum);
 		mergeInto.MergeRecords(&sum, &mergeWith, 1, groupAtts.GetNumAtts(),
