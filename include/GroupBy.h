@@ -49,4 +49,12 @@ public:
 	virtual int GetPageLimit();
 };
 
+struct GroupByData {
+	Pipe &inPipe;
+	Pipe &outPipe;
+	OrderMaker &groupAtts;
+	Function &computeMe;
+	GroupBy &op;
+};
+
 #endif /* INCLUDE_GROUPBY_H_ */

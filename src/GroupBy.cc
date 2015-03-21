@@ -7,11 +7,25 @@ GroupBy::GroupBy() {
 
 GroupBy::~GroupBy() {}
 
-void GroupBy::Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe) {}
+void GroupBy::Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe) {
+	GroupByData* data = new GroupByData{ inPipe, outPipe, groupAtts, computeMe, *this };
 
-void GroupBy::Use_n_Pages (int n) { pageLimit = n; }
+	thread_id = pthread_create(&worker, NULL, [] (void* args) -> void* {
+		GroupByData* data = (GroupByData*) data;
 
-void GroupBy::Work (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe) {}
+		// Sort the input data
+		Pipe sortedInput;
+		BigQ q = BigQ(data->inPipe, sortedInput, data->groupAtts, data->op.GetPageLimit());
+
+		data->op.Work(sortedInput, data->outPipe, data->groupAtts, data->computeMe);
+		delete data;
+	}, (void*) data);
+}
+
+void GroupBy::Work (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe) {
+	Record rec; Record prev; Record mergeInto; ComparisonEngine comp;
+	Work(inPipe, outPipe, groupAtts, computeMe, rec, prev, mergeInto, comp);
+}
 
 void GroupBy::Work (Pipe &sorted, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe,
 	Record &rec, Record &prev, Record& mergeInto, ComparisonEngine &comp) {
@@ -75,5 +89,7 @@ void GroupBy::computeAndOutputSum(int intSum, double doubleSum, Function& func, 
 		outPipe.Insert(&mergeInto);
 	}
 }
+
+void GroupBy::Use_n_Pages (int n) { pageLimit = n; }
 
 int GroupBy::GetPageLimit() { return pageLimit; }
