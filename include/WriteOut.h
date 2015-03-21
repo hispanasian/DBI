@@ -1,12 +1,12 @@
 /*
- * WriteItOut.h
- * WritItOut will write Records to a FILE
+ * WriteOut.h
+ * WritOut will write Records to a FILE
  *  Created on: Mar 12, 2015
  *      Author: cvasquez
  */
 
-#ifndef INCLUDE_WRITEITOUT_H_
-#define INCLUDE_WRITEITOUT_H_
+#ifndef INCLUDE_WRITEOUT_H_
+#define INCLUDE_WRITEOUT_H_
 
 #include <pthread.h>
 #include "RelationalOp.h"
@@ -15,10 +15,10 @@
 #include "Record.h"
 #include "RawFile.h"
 
-class WriteItOut: public RelationalOp {
+class WriteOut: public RelationalOp {
 public:
-	WriteItOut();
-	virtual ~WriteItOut();
+	WriteOut();
+	virtual ~WriteOut();
 
 	/**
 	 * Writes the Records from inPipe to outFile with the given mySchema
@@ -45,11 +45,11 @@ public:
 	virtual void Write(Pipe &inPipe, FILE *outFile, Schema &mySchema, RawFile &file, Record &rec);
 };
 
-struct WriteItOutData {
+struct WriteOutData {
 	Pipe &in;
 	FILE *out;
 	Schema &schema;
-	WriteItOut &op;
+	WriteOut &op;
 };
 
-#endif /* INCLUDE_WRITEITOUT_H_ */
+#endif /* INCLUDE_WRITEOUT_H_ */

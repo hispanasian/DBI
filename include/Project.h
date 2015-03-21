@@ -13,7 +13,7 @@
 #include "Pipe.h"
 #include "Record.h"
 
-class Project:RelationalOp {
+class Project: public RelationalOp {
 public:
 	Project();
 	virtual ~Project();

@@ -10,7 +10,7 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include "WriteItOut.h"
+#include "WriteOut.h"
 #include "MockClasses.h"
 
 using ::testing::_;
@@ -28,9 +28,9 @@ using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Ref;
 
-class WriteItOutTest: public ::testing::Test {
+class WriteOutTest: public ::testing::Test {
 public:
-	WriteItOut op;
+	WriteOut op;
 	FILE *f;
 	StrictMock<MockPipe> in;
 	StrictMock<MockRawFile> file;

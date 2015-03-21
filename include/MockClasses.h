@@ -20,7 +20,7 @@
 #include "DuplicateRemoval.h"
 #include "Project.h"
 #include "SelectFile.h"
-#include "WriteItOut.h"
+#include "WriteOut.h"
 #include "Function.h"
 #include "Sum.h"
 #include "Relation.h"
@@ -396,7 +396,7 @@ public:
 	MOCK_METHOD6(Select, void(DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal, ComparisonEngine &comp, Record &rec));
 };
 
-class MockWriteItOut: public WriteItOut {
+class MockWriteOut: public WriteOut {
 public:
 //	virtual void Run (Pipe &inPipe, FILE *outFile, Schema &mySchema);
 	MOCK_METHOD3(Run, void(Pipe &inPipe, FILE *outFile, Schema &mySchema));
