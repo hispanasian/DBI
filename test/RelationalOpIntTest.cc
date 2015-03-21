@@ -22,6 +22,7 @@ TEST_F(RelationalOpIntTest, SelectPipe) {
 	Pipe out(100);
 
 	SelectPipe op;
+	op.Use_n_Pages(10);
 	op.Run(in, out, cnf, lit);
 
 	// fill the input pipe
@@ -29,7 +30,7 @@ TEST_F(RelationalOpIntTest, SelectPipe) {
 		in.Insert(&temp);
     }
     in.ShutDown();
-
+    op.WaitUntilDone();
     // count the number of records in the output
     int count = 0;
     while(out.Remove(&temp)) {
@@ -56,12 +57,11 @@ TEST_F(RelationalOpIntTest, SelectFile) {
 	char* predicate = "(l_orderkey < 10)";
 	SetupCNF (predicate, &schema, cnf, lit);
 
-	char* tempFilename = "tempSelectFileTest";
-	char* tempHeaderFilename = "tempSelectFileTest.header";
+	char* tempFilename = "tempSelectFileTest.bin";
+	char* tempHeaderFilename = "tempSelectFileTest.bin.header";
 	DBFile in;
 	in.Create(tempFilename, heap, NULL);
 	Pipe out(100);
-
 
 	// fill the input file
 	in.Open(tempFilename);
@@ -69,14 +69,20 @@ TEST_F(RelationalOpIntTest, SelectFile) {
 		in.Add(temp);
     }
     in.Close();
-	SelectFile op;
-	op.Run(in, out, cnf, lit);
 
+
+	SelectFile op;
+	in.Open(tempFilename); // responsibility of the caller
+	op.Use_n_Pages(10);
+	op.Run(in, out, cnf, lit);
+	op.WaitUntilDone();
+	
     // count the number of records in the output
     int count = 0;
     while(out.Remove(&temp)) {
     	++count;
     }
+    in.Close();
 
 	fclose(tableFile);
 	remove(tempFilename);
