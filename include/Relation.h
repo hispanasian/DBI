@@ -18,7 +18,7 @@ protected:
 public:
 	/**
 	 * Creates a Relation with the provided memory limit
-	 * @param memLimit	The maximum amount of memory that will be given to the Records
+	 * @param memLimit	The maximum amount of memory that will be given to the Records (in bytes)
 	 */
 	Relation(int _memLimit = PAGE_SIZE) { memLimit = _memLimit; }
 	virtual ~Relation() {};
