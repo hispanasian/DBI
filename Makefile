@@ -24,6 +24,8 @@ LIBDIR := lib
 INCLUDEDIR := include
 TARGETDIR := bin
 
+MKDIR_P = mkdir -p
+
 SRCEXT := cc
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 ALL_OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
@@ -57,7 +59,14 @@ endif
 ###### Main Build ######
 # Build all
 .PHONY: all
-all: main driver1 driver2a driver2b test
+all: dirs main driver1 driver2a driver2b test
+
+# Create directories
+.PHONY: dirs
+dirs: $(TARGETDIR)
+
+$(TARGETDIR):
+	$(MKDIR_P) $(TARGETDIR)
 
 # Build main
 .PHONY: main
