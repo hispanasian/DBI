@@ -30,7 +30,7 @@ public:
 	virtual void Run (Pipe &inPipe, Pipe &outPipe, Schema &mySchema);
 
 	/**
-	 * This method does nothing
+	 * Sets the number of pages to use in the BigQ for soring
 	 */
 	virtual void Use_n_Pages (int n);
 

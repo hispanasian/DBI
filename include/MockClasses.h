@@ -24,6 +24,7 @@
 #include "Function.h"
 #include "Sum.h"
 #include "Relation.h"
+#include "GroupBy.h"
 
 class MockRecord: public Record {
 public:
@@ -176,6 +177,29 @@ public:
 
     // int CompareForSearch(Record *left, OrderMaker *order_left, Record *right, OrderMaker *order_right);
     MOCK_METHOD4(CompareForSearch, int(Record *left, OrderMaker *order_left, Record *right, OrderMaker *order_right));
+};
+
+class MockOrderMaker: public OrderMaker {
+public:
+	// int GetNumAtts();
+	MOCK_METHOD0(GetNumAtts, int());
+
+	// gets the index of the ith attribute
+	// int GetAttIndex(int i);
+	MOCK_METHOD1(GetAttIndex, int(int i));
+
+	// get the Type of the ith attribute
+	// Type GetAttType(int i);
+	MOCK_METHOD1(GetAttType, Type(int i));
+
+	// print to the screen
+	// void Print ();
+	MOCK_METHOD0(Print, void());
+
+	// returns a string representation of OrderMaker in the following format:
+	// OrderMaker = (whichAtt whichType)*
+	// std::string ToString();
+	MOCK_METHOD0(ToString, std::string());
 };
 
 class MockBigQ: public BigQ {
@@ -444,6 +468,25 @@ public:
 	MOCK_METHOD0(Reset, void());
 //	virtual void Clear() = 0;
 	MOCK_METHOD0(Clear, void());
+};
+
+class MockGroupBy: public GroupBy {
+public:
+	// void Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe);
+	MOCK_METHOD4(Run, void(Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe));
+
+	// virtual void Use_n_Pages (int n);
+	MOCK_METHOD1(Use_n_Pages, void(int n));
+
+	// virtual void Work (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe);
+	MOCK_METHOD4(Work, void(Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe));
+
+	// virtual void Work (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe, Record &rec, Record &prev, ComparisonEngine &comp);
+	MOCK_METHOD8(Work, void(Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe,
+		Record &rec, Record &prev, Record& mergeInto, ComparisonEngine &comp));
+
+	// virtual int GetPageLimit();
+	MOCK_METHOD0(GetPageLimit, int());
 };
 
 #endif
