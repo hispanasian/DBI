@@ -6,6 +6,7 @@
  */
 
 #include "Join.h"
+#include "BigQ.h"
 
 Join::Join() {
 	memLimit = 0;
