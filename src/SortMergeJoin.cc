@@ -26,5 +26,23 @@ bool SortMergeJoin::AlignGroups(Pipe &inPipeL, Pipe &inPipeR, Record& tempL, Rec
 	}
 }
 
+bool SortMergeJoin::InitRightGroup(Pipe& inPipeR, Record& groupRec, Record& tempR, JoinRelation& relR,
+		OrderMaker& orderR, ComparisonEngine& comp) {
+	relR.Add(&groupRec);
+	while(true) {
+		if(inPipeR.Remove(&tempR) == 0) { // the pipe is empty
+			return true;
+		} else { // we read a record
+			if(comp.Compare(&groupRec, &tempR, &orderR) == 0) { // this record is part of the same group
+				relR.Add(&tempR);
+			} else { // we've reached the end of this group
+					 // and we've set tempR to the first record
+					 // from the next group
+				return false;
+			}
+		}
+	}
+}
+
 void SortMergeJoin::Join(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp,
 		Record &literal, OrderMaker &orderL, OrderMaker &orderR) {}

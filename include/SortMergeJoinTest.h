@@ -32,17 +32,23 @@ public:
 	StrictMock<MockCNF> cnf;
 	StrictMock<MockRecord> tempL;
 	StrictMock<MockRecord> tempR;
+	StrictMock<MockRecord> groupRecR;
 	StrictMock<MockOrderMaker> orderL;
 	StrictMock<MockOrderMaker> orderR;
 	StrictMock<MockComparisonEngine> comp;
 	StrictMock<MockJoinRelation> jrel;
+	StrictMock<MockJoinRelation> relL;
 	StrictMock<MockJoinRelation> relR;
-	StrictMock<MockJoinRelation> relS;
 	StrictMock<MockInMemoryRelation> imrel;
 
 	bool AlignGroups(Pipe &inPipeL, Pipe &inPipeR, Record& tempL, Record& tempR,
 			OrderMaker& orderL, OrderMaker& orderR, ComparisonEngine& comp) {
 		return join.AlignGroups(inPipeL, inPipeR, tempL, tempR, orderR, orderL, comp);
+	}
+
+	bool InitRightGroup(Pipe& inPipeR, Record& groupRecR, Record& tempR, JoinRelation& relR,
+		OrderMaker& orderR, ComparisonEngine& comp) {
+		return join.InitRightGroup(inPipeR, groupRecR, tempR, relR, orderR, comp);
 	}
 
 };
