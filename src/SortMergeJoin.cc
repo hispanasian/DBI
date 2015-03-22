@@ -71,7 +71,40 @@ bool SortMergeJoin::StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& te
 	}
 }
 
-void SortMergeJoin::MergeRelations(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe) {}
+void SortMergeJoin::MergeRelations(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, Record& rec) {
+	relL.Reset();
+	relR.Reset();
+	// It's important that the pointers we use to get the Records or not NULL, but can be memory managed
+	Record tempL, tempR;
+	Record* recL = &tempL;
+	Record* recR = &tempR;
+
+	// First, Get the first Records and create the merge data
+	relL.GetNext(recL);
+	relR.GetNext(recR);
+	int numAttsLeft = recL->NumAtts();
+	int numAttsRight = recR->NumAtts();
+	int numAttsToKeep = numAttsLeft + numAttsRight;
+	int startOfRight = numAttsLeft;
+	int attsToKeep[numAttsLeft + numAttsRight];
+
+	for(int i = 0; i < numAttsLeft; i++) { attsToKeep[i] = i; }
+	for(int i = 0; i < numAttsRight; i++) { attsToKeep[i + numAttsLeft] = i; }
+
+	// Outer loop on right and inner loop on left
+	// because if right is a file, we only want to read it once
+	do {
+		do {
+			rec.MergeRecords(recL, recR, numAttsLeft, numAttsRight,
+				attsToKeep, numAttsToKeep, startOfRight);
+			out.Insert(&rec);		
+		} while(relL.GetNext(recL));
+		relL.Reset(); // Rest R so we can go through it again
+		relL.GetNext(recL); // Get the next Record again
+	} while(relR.GetNext(recR));
+}
 
 void SortMergeJoin::Join(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp,
-		Record &literal, OrderMaker &orderL, OrderMaker &orderR) {}
+		Record &literal, OrderMaker &orderL, OrderMaker &orderR) {
+	
+}
