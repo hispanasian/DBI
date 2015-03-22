@@ -4,6 +4,7 @@
 #include "Project.h"
 #include "ComparisonEngine.h"
 #include "DBFile.h"
+#include "DuplicateRemoval.h"
 
 
 // Simple test, 25 records expected
@@ -162,4 +163,33 @@ TEST_F(RelationalOpIntTest, Project) {
 	remove(tempHeaderFilename);
 
 	EXPECT_EQ(28, count);
+}
+
+// put a bunch of the same record in the input,
+// and only one should come out
+TEST_F(RelationalOpIntTest, DuplicateRemoval) {
+	Record rec;
+	Attribute* atts = new Attribute[3];
+    atts[0] = *new Attribute{"int", Int};
+    atts[1] = *new Attribute{"double", Double};
+    atts[2] = *new Attribute{"string", String};
+    char* schemaName = new (std::nothrow) char[3];
+    Schema schema(schemaName, 3, atts);
+
+    Pipe in = Pipe(10);
+    Pipe out = Pipe(10);
+
+    DuplicateRemoval op;
+    op.Use_n_Pages(10);
+    op.Run(in, out, schema);
+	for(int i = 0; i < 7; ++i) {
+		rec.ComposeRecord(&schema, "1|2.0|Three|");
+		in.Insert(&rec);
+	}
+	in.ShutDown();
+	op.WaitUntilDone();
+	EXPECT_EQ(1, out.Remove(&rec));
+	// rec.Print(&schema);
+	EXPECT_STREQ("int: [1], double: [2.000000], string: [Three]\n", rec.ToString(&schema).c_str());
+	EXPECT_EQ(0, out.Remove(&rec));
 }

@@ -56,6 +56,14 @@ public:
 	// if there is an error and returns a 1 otherwise
 	virtual int SuckNextRecord (Schema *mySchema, FILE *textFile);
 
+	// Given a schema, and a representation of a record in a string form,
+	// compose this record from the given info
+	// the string is of the form val1|val2|val3| etc,
+	// where values are separated by the "|" symbol
+	// IMPORTANT: always ends the tuple of values with a "|",
+	// even if it is a single value tuple
+	int ComposeRecord (Schema *mySchema, const char *src);
+
 	// this projects away various attributes...
 	// the array attsToKeep should be sorted, and lists all of the attributes
 	// that should still be in the record after Project is called.  numAttsNow
