@@ -44,5 +44,34 @@ bool SortMergeJoin::InitRightGroup(Pipe& inPipeR, Record& groupRec, Record& temp
 	}
 }
 
+bool SortMergeJoin::StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL,
+		InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, int memLimit, OrderMaker& orderL, ComparisonEngine& comp) {
+	relL.SetMemLimit(memLimit - relR.MemUsed());
+	// relL.Add(&groupRecL);
+
+	while(true) {
+		if(inPipeL.Remove(&tempL) == 0) { // if the pipe is empty
+			// merge what we have
+			MergeRelations(relL, relR, outPipe);
+			return true;
+		} else if(comp.Compare(&groupRecL, &tempL, &orderL) == 0) { // this record is part of the group
+			if(relL.Add(&tempL)) {
+				// we added it successfully
+			} else {
+				// we're out of space, time to merge
+				MergeRelations(relL, relR, outPipe);
+				// make some room
+				relL.Clear();
+				relL.Add(&tempL);
+			}
+		} else { // this record is part of the next group
+			MergeRelations(relL, relR, outPipe);
+			return false;
+		}
+	}
+}
+
+void SortMergeJoin::MergeRelations(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe) {}
+
 void SortMergeJoin::Join(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp,
 		Record &literal, OrderMaker &orderL, OrderMaker &orderR) {}

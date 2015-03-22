@@ -3,9 +3,11 @@
 
 #include "JoinStrategy.h"
 #include "JoinRelation.h"
+#include "InMemoryRelation.h"
 
 class SortMergeJoin : public JoinStrategy {
 friend class SortMergeJoinTest;
+friend class PartialSortMergeJoin;
 private:
 	
 	// Aligns tempL and tempR to both be in equal groups, if possible
@@ -26,6 +28,23 @@ private:
 	// Returns true if the right relation has been exhausted, and false otherwise
 	virtual bool InitRightGroup(Pipe& inPipeR, Record& groupRecR, Record& tempR, JoinRelation& relR,
 		OrderMaker& orderR, ComparisonEngine& comp);
+
+	// Reads the current group from left relation, buffering as much as possible in memory
+	// before merging the buffer with right relation
+	// Preconditions:
+	// 1. relL has been cleared and reset
+	// 2. groupRecL is properly initialized
+	// 3. a COPY of groupRecL has already been added to relL
+	// 4. relR has been filled
+	// Postconditions:
+	// 1. tempL is set to the record from the next group if there is a next group
+	// Returns true if the left relation has been exhausted, and false otherwise
+	virtual bool StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL,
+		InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, int memLimit, OrderMaker& orderL, ComparisonEngine& comp);
+
+	// Creates a merged tuple for each pair of tuples from relL and relR and inserts
+	// each merged tuple in outPipe
+	virtual void MergeRelations(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe);
 public:
 	SortMergeJoin();
 	~SortMergeJoin();

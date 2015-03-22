@@ -23,23 +23,36 @@ using ::testing::Ref;
 using ::testing::SetArgReferee;
 using ::testing::DoAll;
 
+class PartialSortMergeJoin: public SortMergeJoin {
+public:
+	// virtual void MergeRelations(InMemoryRelation relL, JoinRelation relR, Pipe& outPipe);
+	MOCK_METHOD3(MergeRelations, void(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe));
+	PartialSortMergeJoin();
+	virtual ~PartialSortMergeJoin();
+	bool StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL,
+		InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, int memLimit, OrderMaker& orderL, ComparisonEngine& comp);
+};
+
 class SortMergeJoinTest: public ::testing::Test {
 public:
 	SortMergeJoin join;
+	PartialSortMergeJoin mock;
 	StrictMock<MockPipe> inL;
 	StrictMock<MockPipe> inR;
 	StrictMock<MockPipe> out;
 	StrictMock<MockCNF> cnf;
 	StrictMock<MockRecord> tempL;
 	StrictMock<MockRecord> tempR;
+	StrictMock<MockRecord> groupRecL;
 	StrictMock<MockRecord> groupRecR;
 	StrictMock<MockOrderMaker> orderL;
 	StrictMock<MockOrderMaker> orderR;
 	StrictMock<MockComparisonEngine> comp;
 	StrictMock<MockJoinRelation> jrel;
-	StrictMock<MockJoinRelation> relL;
+	StrictMock<MockInMemoryRelation> relL;
 	StrictMock<MockJoinRelation> relR;
 	StrictMock<MockInMemoryRelation> imrel;
+	int memLimit = 1000;
 
 	bool AlignGroups(Pipe &inPipeL, Pipe &inPipeR, Record& tempL, Record& tempR,
 			OrderMaker& orderL, OrderMaker& orderR, ComparisonEngine& comp) {
@@ -49,6 +62,11 @@ public:
 	bool InitRightGroup(Pipe& inPipeR, Record& groupRecR, Record& tempR, JoinRelation& relR,
 		OrderMaker& orderR, ComparisonEngine& comp) {
 		return join.InitRightGroup(inPipeR, groupRecR, tempR, relR, orderR, comp);
+	}
+
+	bool StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL,
+		InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, int memLimit, OrderMaker& orderL, ComparisonEngine& comp) {
+		return mock.StreamLeftGroup(inPipeL, groupRecL, tempL, relL, relR, outPipe, memLimit, orderL, comp);
 	}
 
 };
