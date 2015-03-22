@@ -34,7 +34,13 @@ void Join::Work(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record 
 		ComparisonEngine &comp, OrderMaker &orderL, OrderMaker &orderR) {
 
 	// We can do a sort-merge join
-	if(selOp.GetSortOrders(orderL, orderR)) SortMergeJoin(inPipeL, inPipeR, outPipe, orderL, orderR);
+	if(selOp.GetSortOrders(orderL, orderR)) {
+		Pipe sortedLeft;
+		BigQ left = BigQ(inPipeL, sortedLeft, orderL, pageLimit);
+		Pipe sortedRight;
+		BigQ right = BigQ(inPipeR, sortedRight, orderR, pageLimit);
+		SortMergeJoin(inPipeL, inPipeR, outPipe, orderL, orderR);	
+	} 
 	// We have to do a block nested loop join
 	else BlockNestedLoopJoin(inPipeL, inPipeR, outPipe, selOp, literal);
 }
