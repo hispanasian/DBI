@@ -26,10 +26,10 @@ using ::testing::DoAll;
 class PartialSortMergeJoin: public SortMergeJoin {
 public:
 	// virtual void MergeRelations(InMemoryRelation relL, JoinRelation relR, Pipe& outPipe);
-	MOCK_METHOD3(MergeRelations, void(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe));
+	MOCK_METHOD4(MergeRelations, void(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, Record& rec));
 	PartialSortMergeJoin();
 	virtual ~PartialSortMergeJoin();
-	bool StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL,
+	bool StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL, Record& mergeInto,
 		InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, int memLimit, OrderMaker& orderL, ComparisonEngine& comp);
 };
 
@@ -45,6 +45,7 @@ public:
 	StrictMock<MockRecord> tempR;
 	StrictMock<MockRecord> groupRecL;
 	StrictMock<MockRecord> groupRecR;
+	StrictMock<MockRecord> mergeInto;
 	StrictMock<MockOrderMaker> orderL;
 	StrictMock<MockOrderMaker> orderR;
 	StrictMock<MockComparisonEngine> comp;
@@ -64,9 +65,9 @@ public:
 		return join.InitRightGroup(inPipeR, groupRecR, tempR, relR, orderR, comp);
 	}
 
-	bool StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL,
+	bool StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL, Record& mergeInto,
 		InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, int memLimit, OrderMaker& orderL, ComparisonEngine& comp) {
-		return mock.StreamLeftGroup(inPipeL, groupRecL, tempL, relL, relR, outPipe, memLimit, orderL, comp);
+		return mock.StreamLeftGroup(inPipeL, groupRecL, tempL, mergeInto, relL, relR, outPipe, memLimit, orderL, comp);
 	}
 
 };

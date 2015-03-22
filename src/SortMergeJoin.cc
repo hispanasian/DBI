@@ -44,34 +44,33 @@ bool SortMergeJoin::InitRightGroup(Pipe& inPipeR, Record& groupRec, Record& temp
 	}
 }
 
-bool SortMergeJoin::StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL,
+bool SortMergeJoin::StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL, Record& mergeInto,
 		InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, int memLimit, OrderMaker& orderL, ComparisonEngine& comp) {
 	relL.SetMemLimit(memLimit - relR.MemUsed());
-	// relL.Add(&groupRecL);
 
 	while(true) {
 		if(inPipeL.Remove(&tempL) == 0) { // if the pipe is empty
 			// merge what we have
-			MergeRelations(relL, relR, outPipe);
+			MergeRelations(relL, relR, outPipe, mergeInto);
 			return true;
 		} else if(comp.Compare(&groupRecL, &tempL, &orderL) == 0) { // this record is part of the group
 			if(relL.Add(&tempL)) {
 				// we added it successfully
 			} else {
 				// we're out of space, time to merge
-				MergeRelations(relL, relR, outPipe);
+				MergeRelations(relL, relR, outPipe, mergeInto);
 				// make some room
 				relL.Clear();
 				relL.Add(&tempL);
 			}
 		} else { // this record is part of the next group
-			MergeRelations(relL, relR, outPipe);
+			MergeRelations(relL, relR, outPipe, mergeInto);
 			return false;
 		}
 	}
 }
 
-void SortMergeJoin::MergeRelations(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, Record& rec) {
+void SortMergeJoin::MergeRelations(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, Record& mergeInto) {
 	relL.Reset();
 	relR.Reset();
 	// It's important that the pointers we use to get the Records or not NULL, but can be memory managed
@@ -95,9 +94,9 @@ void SortMergeJoin::MergeRelations(InMemoryRelation& relL, JoinRelation& relR, P
 	// because if right is a file, we only want to read it once
 	do {
 		do {
-			rec.MergeRecords(recL, recR, numAttsLeft, numAttsRight,
+			mergeInto.MergeRecords(recL, recR, numAttsLeft, numAttsRight,
 				attsToKeep, numAttsToKeep, startOfRight);
-			out.Insert(&rec);		
+			outPipe.Insert(&mergeInto);		
 		} while(relL.GetNext(recL));
 		relL.Reset(); // Rest R so we can go through it again
 		relL.GetNext(recL); // Get the next Record again
@@ -106,5 +105,5 @@ void SortMergeJoin::MergeRelations(InMemoryRelation& relL, JoinRelation& relR, P
 
 void SortMergeJoin::Join(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp,
 		Record &literal, OrderMaker &orderL, OrderMaker &orderR) {
-	
+
 }

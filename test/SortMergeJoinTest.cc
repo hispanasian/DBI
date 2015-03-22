@@ -173,10 +173,10 @@ TEST_F(SortMergeJoinTest, StreamLeftGroup1) {
 	EXPECT_CALL(inL, Remove(&tempL)).
 		WillOnce(Return(0));
 
-	EXPECT_CALL(mock, MergeRelations(Ref(relL), Ref(relR), Ref(out))).
+	EXPECT_CALL(mock, MergeRelations(Ref(relL), Ref(relR), Ref(out), Ref(mergeInto))).
 		Times(1);
 
-	EXPECT_EQ(true, StreamLeftGroup(inL, groupRecL, tempL, relL, relR, out, memLimit, orderL, comp));
+	EXPECT_EQ(true, StreamLeftGroup(inL, groupRecL, tempL, mergeInto, relL, relR, out, memLimit, orderL, comp));
 }
 
 // The next record in the pipe is not part of this group
@@ -192,10 +192,10 @@ TEST_F(SortMergeJoinTest, StreamLeftGroup2) {
 	EXPECT_CALL(comp, Compare(&groupRecL, &tempL, &orderL)).
 		WillOnce(Return(1));
 
-	EXPECT_CALL(mock, MergeRelations(Ref(relL), Ref(relR), Ref(out))).
+	EXPECT_CALL(mock, MergeRelations(Ref(relL), Ref(relR), Ref(out), Ref(mergeInto))).
 		Times(1);
 
-	EXPECT_EQ(false, StreamLeftGroup(inL, groupRecL, tempL, relL, relR, out, memLimit, orderL, comp));
+	EXPECT_EQ(false, StreamLeftGroup(inL, groupRecL, tempL, mergeInto, relL, relR, out, memLimit, orderL, comp));
 }
 
 // The next 4 records in the pipe are part of the group,
@@ -224,10 +224,10 @@ TEST_F(SortMergeJoinTest, StreamLeftGroup3) {
 		Times(4).
 		WillRepeatedly(Return(true));
 
-	EXPECT_CALL(mock, MergeRelations(Ref(relL), Ref(relR), Ref(out))).
+	EXPECT_CALL(mock, MergeRelations(Ref(relL), Ref(relR), Ref(out), Ref(mergeInto))).
 		Times(1);
 
-	EXPECT_EQ(false, StreamLeftGroup(inL, groupRecL, tempL, relL, relR, out, memLimit, orderL, comp));
+	EXPECT_EQ(false, StreamLeftGroup(inL, groupRecL, tempL, mergeInto, relL, relR, out, memLimit, orderL, comp));
 }
 
 // The next 4 records in the pipe are part of the group,
@@ -268,10 +268,10 @@ TEST_F(SortMergeJoinTest, StreamLeftGroup4) {
 	EXPECT_CALL(relL, Clear()).
 		Times(1);
 
-	EXPECT_CALL(mock, MergeRelations(Ref(relL), Ref(relR), Ref(out))).
+	EXPECT_CALL(mock, MergeRelations(Ref(relL), Ref(relR), Ref(out), Ref(mergeInto))).
 		Times(2);
 
-	EXPECT_EQ(false, StreamLeftGroup(inL, groupRecL, tempL, relL, relR, out, memLimit, orderL, comp));
+	EXPECT_EQ(false, StreamLeftGroup(inL, groupRecL, tempL, mergeInto, relL, relR, out, memLimit, orderL, comp));
 }
 
 // The next 4 records in the pipe are part of the group,
@@ -300,10 +300,10 @@ TEST_F(SortMergeJoinTest, StreamLeftGroup5) {
 		Times(4).
 		WillRepeatedly(Return(true));
 
-	EXPECT_CALL(mock, MergeRelations(Ref(relL), Ref(relR), Ref(out))).
+	EXPECT_CALL(mock, MergeRelations(Ref(relL), Ref(relR), Ref(out), Ref(mergeInto))).
 		Times(1);
 
-	EXPECT_EQ(true, StreamLeftGroup(inL, groupRecL, tempL, relL, relR, out, memLimit, orderL, comp));
+	EXPECT_EQ(true, StreamLeftGroup(inL, groupRecL, tempL, mergeInto, relL, relR, out, memLimit, orderL, comp));
 }
 
 // The next 4 records in the pipe are part of the group,
@@ -344,8 +344,8 @@ TEST_F(SortMergeJoinTest, StreamLeftGroup6) {
 	EXPECT_CALL(relL, Clear()).
 		Times(1);
 
-	EXPECT_CALL(mock, MergeRelations(Ref(relL), Ref(relR), Ref(out))).
+	EXPECT_CALL(mock, MergeRelations(Ref(relL), Ref(relR), Ref(out), Ref(mergeInto))).
 		Times(2);
 
-	EXPECT_EQ(true, StreamLeftGroup(inL, groupRecL, tempL, relL, relR, out, memLimit, orderL, comp));
+	EXPECT_EQ(true, StreamLeftGroup(inL, groupRecL, tempL, mergeInto, relL, relR, out, memLimit, orderL, comp));
 }

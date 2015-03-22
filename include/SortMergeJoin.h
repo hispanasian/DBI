@@ -39,12 +39,12 @@ private:
 	// Postconditions:
 	// 1. tempL is set to the record from the next group if there is a next group
 	// Returns true if the left relation has been exhausted, and false otherwise
-	virtual bool StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL,
+	virtual bool StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL, Record& mergeInto,
 		InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, int memLimit, OrderMaker& orderL, ComparisonEngine& comp);
 
 	// Creates a merged tuple for each pair of tuples from relL and relR and inserts
 	// each merged tuple in outPipe
-	virtual void MergeRelations(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe);
+	virtual void MergeRelations(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, Record& rec);
 public:
 	SortMergeJoin();
 	~SortMergeJoin();
