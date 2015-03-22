@@ -27,7 +27,8 @@ public:
 	virtual ~InMemoryRelation();
 
 	/**
-	 * Adds rec to the relation and returns true if memLimit is not exceeded
+	 * Adds rec to the relation and returns true if memLimit is not exceeded unless there are no
+	 * Records in this Relation (in which case this is automatically added).
 	 * @param rec		The Record that will be added to the Relation (this is consumed)
 	 * @param return	True if rec was successfully added
 	 */
