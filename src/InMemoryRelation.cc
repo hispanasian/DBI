@@ -19,7 +19,7 @@ InMemoryRelation::~InMemoryRelation() {
 }
 
 bool InMemoryRelation::Add(Record *rec) {
-	if(rec->Size() + memUsed <= memLimit) {
+	if(rec->Size() + memUsed <= memLimit || size == 0) {
 		memUsed += rec->Size();
 		++size;
 
@@ -59,4 +59,8 @@ void InMemoryRelation::Clear() {
 
 int InMemoryRelation::MemUsed() {
 	return memUsed;
+}
+
+void InMemoryRelation::SetMemLimit(int limit) {
+	memLimit = limit;
 }

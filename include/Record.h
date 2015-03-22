@@ -84,6 +84,9 @@ public:
 
 	// Returns the size of the Record
 	virtual int Size();
+
+	// Returns the number of attributes in the Record
+	virtual int NumAtts();
 };
 
 #endif

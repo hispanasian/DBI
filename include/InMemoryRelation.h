@@ -11,6 +11,7 @@
 
 #include "Relation.h"
 #include <vector>
+#include "Defs.h"
 
 class InMemoryRelation: public Relation {
 friend class InMemoryRelationTest;
@@ -22,11 +23,12 @@ private:
 	int index;
 
 public:
-	InMemoryRelation(int memLimit);
+	InMemoryRelation(int memLimit = PAGE_SIZE);
 	virtual ~InMemoryRelation();
 
 	/**
-	 * Adds rec to the relation and returns true if memLimit is not exceeded
+	 * Adds rec to the relation and returns true if memLimit is not exceeded unless there are no
+	 * Records in this Relation (in which case this is automatically added).
 	 * @param rec		The Record that will be added to the Relation (this is consumed)
 	 * @param return	True if rec was successfully added
 	 */
@@ -55,6 +57,11 @@ public:
 	 * @return	the amount of memory used by this Relation (in bytes).
 	 */
 	virtual int MemUsed();
+
+	/**
+	 * Resets the memLimit to limit
+	 */
+	virtual void SetMemLimit(int limit);
 };
 
 #endif /* INCLUDE_INMEMORYRELATION_H_ */

@@ -10,6 +10,7 @@
 
 #include "Relation.h"
 #include "Pipe.h"
+#include "Defs.h"
 
 class JoinRelation: public Relation {
 friend class JoinRelationTest;
@@ -17,7 +18,7 @@ protected:
 	Relation *delegate;
 	bool memory;
 public:
-	JoinRelation(int memLimit);
+	JoinRelation(int memLimit = PAGE_SIZE);
 	virtual ~JoinRelation();
 
 	/**
@@ -50,7 +51,8 @@ public:
 	virtual void Reset();
 
 	/**
-	 * Deletes Records from the Relation.
+	 * Deletes Records from the Relation and, if this is not in memory mode, makes this into an
+	 * in memory relation.
 	 */
 	virtual void Clear();
 
