@@ -5,9 +5,6 @@ RawFile::RawFile() {
 }
 
 RawFile::~RawFile() {
-	if(file != NULL) {
-		fclose(file);
-	}
 }
 
 bool RawFile::Open(std::string fname) {
@@ -18,6 +15,11 @@ bool RawFile::Open(std::string fname) {
 	}
 	file = fopen(fname.c_str(), mode.c_str());
 	return file != NULL;
+}
+
+bool RawFile::Open(FILE *_file) {
+	file = _file;
+	return true;
 }
 
 bool RawFile::Close() {

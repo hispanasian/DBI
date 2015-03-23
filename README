@@ -27,7 +27,7 @@ Run driverX (where X corresponds to the assignment, ie 1, 2a, 2b, etc.)
 File Structure:
 bin - stores the binaries
 build - stores all the object files
-data - contains catalog and 10M directory. Also the location where the database files get written to
+data - contains catalog, TPCH, and database files (data/TPCH/10M, data/DB/10M)
 include - stores the header files
 inputs - stores input files used to run the drivers with automation
 lib - stores the google mock, google test, and dbgen libraries
@@ -36,8 +36,8 @@ test - stores all the unit test source files
 
 Instructions to the run drivers
 The catalog is searched for in data/catalog
-The tables are searched for in data/10M
-The binary heap file is stored in data/*.bin
+The tables are searched for in data/TPCH/10M/
+The binary heap file is stored in data/DB/10M/
 The header files for the binary heap files are stored in data/*.bin.header
 Simply run './bin/driver1' or './bin/driver2a' to run the corresponding program
 

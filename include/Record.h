@@ -26,15 +26,20 @@ class Record {
 
 friend class ComparisonEngine;
 friend class Page;
+friend class SumTest;
+friend class GroupByTest;
 
 private:
-	char *bits;
 	char* GetBits ();
 	void SetBits (char *bits);
 	void CopyBits(char *bits, int b_len);
 
 public:
+	char *bits;
+
 	Record ();
+	Record (int rec);
+	Record (double rec);
 	virtual ~Record();
 
 	// suck the contents of the record fromMe into this; note that after
@@ -51,6 +56,14 @@ public:
 	// if there is an error and returns a 1 otherwise
 	virtual int SuckNextRecord (Schema *mySchema, FILE *textFile);
 
+	// Given a schema, and a representation of a record in a string form,
+	// compose this record from the given info
+	// the string is of the form val1|val2|val3| etc,
+	// where values are separated by the "|" symbol
+	// IMPORTANT: always ends the tuple of values with a "|",
+	// even if it is a single value tuple
+	int ComposeRecord (Schema *mySchema, const char *src);
+
 	// this projects away various attributes...
 	// the array attsToKeep should be sorted, and lists all of the attributes
 	// that should still be in the record after Project is called.  numAttsNow
@@ -66,8 +79,14 @@ public:
 	// that the schema also be given so that the record can be interpreted
 	virtual void Print (Schema *mySchema);
 
+	// returns a string representation of the Record
+	virtual std::string ToString(Schema *mySchema);
+
 	// Returns the size of the Record
 	virtual int Size();
+
+	// Returns the number of attributes in the Record
+	virtual int NumAtts();
 };
 
 #endif
