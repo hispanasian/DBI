@@ -16,6 +16,7 @@
 //Attribute DA = {"double", Double};
 
 // Simple test, expect a 7996 Records (the number of unique (partkey,suppkey) pairs in lineitem)
+// use spike/IntegrationTestGrouBy.py to find this number
 TEST_F(RelationalOpIntTest, GroupBy) {
 	Schema schema ("data/catalog", "lineitem");
 	Record temp;
