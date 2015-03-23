@@ -9,8 +9,8 @@
 #include "BigQ.h"
 
 Join::Join() {
-	memLimit = 0;
-	pageLimit = 0;
+	memLimit = PAGE_SIZE;
+	pageLimit = 1;
 }
 
 Join::~Join() {

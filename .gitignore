@@ -123,3 +123,6 @@ src/yyfunc.tab.c
 ### Data Files ###
 *.header
 *.bin
+
+*.tmp
+

@@ -5,12 +5,15 @@
 #include "Project.h"
 #include "Sum.h"
 #include "WriteOut.h"
+#include "Join.h"
+#include "GroupBy.h"
 #include "DuplicateRemoval.h"
 #include <pthread.h>
 
-Attribute IA = {"int", Int};
-Attribute SA = {"string", String};
-Attribute DA = {"double", Double};
+
+Attribute* IA = new Attribute{"int", Int};
+Attribute* SA = new Attribute{"string", String};
+Attribute* DA = new Attribute{"double", Double};
 
 int clear_pipe (Pipe &in_pipe, Schema *schema, bool print) {
 	Record rec;
@@ -103,9 +106,9 @@ void q1 () {
 	init_SF_ps (pred_ps, 100);
 
 	SF_ps.Run (dbf_ps, _ps, cnf_ps, lit_ps);
-	SF_ps.WaitUntilDone ();
+	// SF_ps.WaitUntilDone ();
 
-	int cnt = clear_pipe (_ps, ps->schema (), true);
+	int cnt = clear_pipe (_ps, ps->schema (), false);
 	cout << "\n\n query1 returned " << cnt << " records \n";
 
 	dbf_ps.Close ();
@@ -132,13 +135,18 @@ void q2 () {
 	SF_p.WaitUntilDone ();
 	P_p.WaitUntilDone ();
 
-	Attribute att3[] = {IA, SA, DA};
+	Attribute *att3 = new Attribute[3];
+	att3[0] = *IA;
+	att3[1] = *SA;
+	att3[2] = *DA;
 	Schema out_sch ("out_sch", numAttsOut, att3);
 	int cnt = clear_pipe (_p, p->schema (), true);
 
 	cout << "\n\n query2 returned " << cnt << " records \n";
 
 	dbf_p.Close ();
+	//cleanup
+//	delete att3;
 }
 
 // select sum (s_acctbal + (s_acctbal * 1.05)) from supplier;
@@ -162,7 +170,7 @@ void q3 () {
 	SF_s.WaitUntilDone ();
 	T.WaitUntilDone ();
 
-	Schema out_sch ("out_sch", 1, &DA);
+	Schema out_sch ("out_sch", 1, DA);
 	int cnt = clear_pipe (_out, &out_sch, true);
 
 	cout << "\n\n query3 returned " << cnt << " records \n";
@@ -175,8 +183,6 @@ void q3 () {
 // where s_suppkey = ps_suppkey;
 // expected output: 4.00406e+08
 void q4 () {
-
-	/* TODO: Commented out until Join is in the feature branch
 	cout << " query4 \n";
 	char *pred_s = "(s_suppkey = s_suppkey)";
 	init_SF_s (pred_s, 100);
@@ -186,6 +192,7 @@ void q4 () {
 	init_SF_ps (pred_ps, 100);
 
 	Join J;
+	J.Use_n_Pages(100000);
 		// left _s
 		// right _ps
 		Pipe _s_ps (pipesz);
@@ -194,8 +201,20 @@ void q4 () {
 		get_cnf ("(s_suppkey = ps_suppkey)", s->schema(), ps->schema(), cnf_p_ps, lit_p_ps);
 
 	int outAtts = sAtts + psAtts;
-	Attribute ps_supplycost = {"ps_supplycost", Double};
-	Attribute joinatt[] = {IA,SA,SA,IA,SA,DA,SA, IA,IA,IA,ps_supplycost,SA};
+	Attribute *ps_supplycost = new Attribute {"ps_supplycost", Double};
+	Attribute *joinatt = new Attribute[12];
+	joinatt[0] = *IA;
+	joinatt[1] = *SA;
+	joinatt[2] = *SA;
+	joinatt[3] = *IA;
+	joinatt[4] = *SA;
+	joinatt[5] = *DA;
+	joinatt[6] = *SA;
+	joinatt[7] = *IA;
+	joinatt[8] = *IA;
+	joinatt[9] = *IA;
+	joinatt[10] = *ps_supplycost;
+	joinatt[11] = *SA;
 	Schema join_sch ("join_sch", outAtts, joinatt);
 
 	Sum T;
@@ -205,7 +224,7 @@ void q4 () {
 			char *str_sum = "(ps_supplycost)";
 			get_cnf (str_sum, &join_sch, func);
 			func.Print ();
-	T.Use_n_Pages (1);
+	T.Use_n_Pages (100);
 
 	SF_ps.Run (dbf_ps, _ps, cnf_ps, lit_ps); // 161 recs qualified
 	J.Run (_s, _ps, _s_ps, cnf_p_ps, lit_p_ps);
@@ -215,10 +234,12 @@ void q4 () {
 	J.WaitUntilDone ();
 	T.WaitUntilDone ();
 
-	Schema sum_sch ("sum_sch", 1, &DA);
+	Schema sum_sch ("sum_sch", 1, DA);
 	int cnt = clear_pipe (_out, &sum_sch, true);
 	cout << " query4 returned " << cnt << " recs \n";
-	*/
+	//cleanup
+//	delete ps_supplycost;
+//	delete joinatt;
 }
 
 // select distinct ps_suppkey from partsupp where ps_supplycost < 100.11;
@@ -238,7 +259,7 @@ void q5 () {
 	DuplicateRemoval D;
 		// inpipe = __ps
 		Pipe ___ps (pipesz);
-		Schema __ps_sch ("__ps", 1, &IA);
+		Schema __ps_sch ("__ps", 1, IA);
 		
 	WriteOut W;
 		// inpipe = ___ps
@@ -262,8 +283,6 @@ void q5 () {
 // where s_suppkey = ps_suppkey groupby s_nationkey;
 // expected output: 25 rows
 void q6 () {
-
-	/* TODO: Commented out until Join and GroupBy are in the feature branch
 	cout << " query6 \n";
 	char *pred_s = "(s_suppkey = s_suppkey)";
 	init_SF_s (pred_s, 100);
@@ -281,9 +300,21 @@ void q6 () {
 		get_cnf ("(s_suppkey = ps_suppkey)", s->schema(), ps->schema(), cnf_p_ps, lit_p_ps);
 
 	int outAtts = sAtts + psAtts;
-	Attribute s_nationkey = {"s_nationkey", Int};
-	Attribute ps_supplycost = {"ps_supplycost", Double};
-	Attribute joinatt[] = {IA,SA,SA,s_nationkey,SA,DA,SA,IA,IA,IA,ps_supplycost,SA};
+	Attribute *s_nationkey = new Attribute{"s_nationkey", Int};
+	Attribute *ps_supplycost = new Attribute{"ps_supplycost", Double};
+	Attribute *joinatt = new Attribute[12];
+	joinatt[0] = *IA;
+	joinatt[1] = *SA;
+	joinatt[2] = *SA;
+	joinatt[3] = *s_nationkey;
+	joinatt[4] = *SA;
+	joinatt[5] = *DA;
+	joinatt[6] = *SA;
+	joinatt[7] = *IA;
+	joinatt[8] = *IA;
+	joinatt[9] = *IA;
+	joinatt[10] = *ps_supplycost;
+	joinatt[11] = *SA;
 	Schema join_sch ("join_sch", outAtts, joinatt);
 
 	GroupBy G;
@@ -300,14 +331,17 @@ void q6 () {
 	J.Run (_s, _ps, _s_ps, cnf_p_ps, lit_p_ps);
 	G.Run (_s_ps, _out, grp_order, func);
 
-	SF_ps.WaitUntilDone ();
-	J.WaitUntilDone ();
-	G.WaitUntilDone ();
+	// SF_ps.WaitUntilDone ();
+	// J.WaitUntilDone ();
+	// G.WaitUntilDone ();
 
-	Schema sum_sch ("sum_sch", 1, &DA);
-	int cnt = clear_pipe (_out, &sum_sch, true);
-	cout << " query6 returned sum for " << cnt << " groups (expected 25 groups)\n"; 
-	*/
+	Schema sum_sch ("sum_sch", 1, DA);
+	int cnt = clear_pipe (_out, &sum_sch, false);
+	cout << " query6 returned sum for " << cnt << " groups (expected 25 groups)\n";
+	//cleanup
+//	delete s_nationkey;
+//	delete ps_supplycost;
+//	delete joinatt;
 }
 
 void q7 () { 
@@ -387,4 +421,7 @@ int main (int argc, char *argv[]) {
 	else {
 		cout << " ERROR!!!!\n";
 	}
+//	delete IA;
+//	delete SA;
+//	delete DA;
 }
