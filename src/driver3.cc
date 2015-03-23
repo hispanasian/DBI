@@ -8,9 +8,10 @@
 #include "DuplicateRemoval.h"
 #include <pthread.h>
 
-Attribute IA = {"int", Int};
-Attribute SA = {"string", String};
-Attribute DA = {"double", Double};
+
+Attribute &IA = *new Attribute{"int", Int};
+Attribute &SA = *new Attribute{"string", String};
+Attribute &DA = *new Attribute{"double", Double};
 
 int clear_pipe (Pipe &in_pipe, Schema *schema, bool print) {
 	Record rec;
