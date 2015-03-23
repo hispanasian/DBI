@@ -5,13 +5,15 @@
 #include "Project.h"
 #include "Sum.h"
 #include "WriteOut.h"
+#include "Join.h"
+#include "GroupBy.h"
 #include "DuplicateRemoval.h"
 #include <pthread.h>
 
 
-Attribute &IA = *new Attribute{"int", Int};
-Attribute &SA = *new Attribute{"string", String};
-Attribute &DA = *new Attribute{"double", Double};
+Attribute* IA = new Attribute{"int", Int};
+Attribute* SA = new Attribute{"string", String};
+Attribute* DA = new Attribute{"double", Double};
 
 int clear_pipe (Pipe &in_pipe, Schema *schema, bool print) {
 	Record rec;
@@ -133,7 +135,7 @@ void q2 () {
 	SF_p.WaitUntilDone ();
 	P_p.WaitUntilDone ();
 
-	Attribute att3[] = {IA, SA, DA};
+	Attribute att3[] = {*IA, *SA, *DA};
 	Schema out_sch ("out_sch", numAttsOut, att3);
 	int cnt = clear_pipe (_p, p->schema (), true);
 
@@ -163,7 +165,7 @@ void q3 () {
 	SF_s.WaitUntilDone ();
 	T.WaitUntilDone ();
 
-	Schema out_sch ("out_sch", 1, &DA);
+	Schema out_sch ("out_sch", 1, DA);
 	int cnt = clear_pipe (_out, &out_sch, true);
 
 	cout << "\n\n query3 returned " << cnt << " records \n";
@@ -239,7 +241,7 @@ void q5 () {
 	DuplicateRemoval D;
 		// inpipe = __ps
 		Pipe ___ps (pipesz);
-		Schema __ps_sch ("__ps", 1, &IA);
+		Schema __ps_sch ("__ps", 1, IA);
 		
 	WriteOut W;
 		// inpipe = ___ps
@@ -263,8 +265,6 @@ void q5 () {
 // where s_suppkey = ps_suppkey groupby s_nationkey;
 // expected output: 25 rows
 void q6 () {
-
-	/* TODO: Commented out until Join and GroupBy are in the feature branch
 	cout << " query6 \n";
 	char *pred_s = "(s_suppkey = s_suppkey)";
 	init_SF_s (pred_s, 100);
@@ -284,7 +284,7 @@ void q6 () {
 	int outAtts = sAtts + psAtts;
 	Attribute s_nationkey = {"s_nationkey", Int};
 	Attribute ps_supplycost = {"ps_supplycost", Double};
-	Attribute joinatt[] = {IA,SA,SA,s_nationkey,SA,DA,SA,IA,IA,IA,ps_supplycost,SA};
+	Attribute joinatt[] = {*IA,*SA,*SA,s_nationkey,*SA,*DA,*SA,*IA,*IA,*IA,ps_supplycost,*SA};
 	Schema join_sch ("join_sch", outAtts, joinatt);
 
 	GroupBy G;
@@ -305,10 +305,9 @@ void q6 () {
 	J.WaitUntilDone ();
 	G.WaitUntilDone ();
 
-	Schema sum_sch ("sum_sch", 1, &DA);
+	Schema sum_sch ("sum_sch", 1, DA);
 	int cnt = clear_pipe (_out, &sum_sch, true);
 	cout << " query6 returned sum for " << cnt << " groups (expected 25 groups)\n"; 
-	*/
 }
 
 void q7 () { 
