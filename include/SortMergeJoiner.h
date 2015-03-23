@@ -1,13 +1,13 @@
-#ifndef SORTMERGEJOIN_H
-#define SORTMERGEJOIN_H
+#ifndef SORTMERGEJOINER_H
+#define SORTMERGEJOINER_H
 
 #include "JoinStrategy.h"
 #include "JoinRelation.h"
 #include "InMemoryRelation.h"
 
-class SortMergeJoin : public JoinStrategy {
-friend class SortMergeJoinTest;
-friend class PartialSortMergeJoin;
+class SortMergeJoiner : public JoinStrategy {
+friend class SortMergeJoinerTest;
+friend class PartialSortMergeJoiner;
 private:
 	
 	// Aligns tempL and tempR to both be in equal groups, if possible
@@ -52,11 +52,11 @@ private:
 	// Empties the left and right input pipes and shuts down the output pipe
 	virtual void Exit(Pipe& inPipeL, Pipe& inPipeR, Pipe& outPipe);
 public:
-	SortMergeJoin();
-	~SortMergeJoin();
+	SortMergeJoiner();
+	~SortMergeJoiner();
 
-	virtual void Join(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp,
-		Record &literal, OrderMaker &orderL, OrderMaker &orderR, int memLimit);
+	virtual void Join(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, 
+		OrderMaker &orderL, OrderMaker &orderR, int memLimit);
 };
 
-#endif /* SORTMERGEJOIN_H */
+#endif /* SORTMERGEJOINER_H */

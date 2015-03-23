@@ -1,10 +1,10 @@
-#include "SortMergeJoin.h"
+#include "SortMergeJoiner.h"
 
-SortMergeJoin::SortMergeJoin() {}
+SortMergeJoiner::SortMergeJoiner() {}
 
-SortMergeJoin::~SortMergeJoin() {}
+SortMergeJoiner::~SortMergeJoiner() {}
 
-bool SortMergeJoin::AlignGroups(Pipe &inPipeL, Pipe &inPipeR, Record& tempL, Record& tempR,
+bool SortMergeJoiner::AlignGroups(Pipe &inPipeL, Pipe &inPipeR, Record& tempL, Record& tempR,
 		OrderMaker& orderL, OrderMaker& orderR, ComparisonEngine& comp) { 
 	while(true) {
 		// check if the recs are in the same group
@@ -26,7 +26,7 @@ bool SortMergeJoin::AlignGroups(Pipe &inPipeL, Pipe &inPipeR, Record& tempL, Rec
 	}
 }
 
-bool SortMergeJoin::InitRightGroup(Pipe& inPipeR, Record& groupRec, Record& tempR, JoinRelation& relR,
+bool SortMergeJoiner::InitRightGroup(Pipe& inPipeR, Record& groupRec, Record& tempR, JoinRelation& relR,
 		OrderMaker& orderR, ComparisonEngine& comp) {
 	// relR.Add(&groupRec);
 	while(true) {
@@ -44,7 +44,7 @@ bool SortMergeJoin::InitRightGroup(Pipe& inPipeR, Record& groupRec, Record& temp
 	}
 }
 
-bool SortMergeJoin::StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL, Record& mergeInto,
+bool SortMergeJoiner::StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL, Record& mergeInto,
 		InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, int memLimit, OrderMaker& orderL, ComparisonEngine& comp) {
 	relL.SetMemLimit(memLimit - relR.MemUsed());
 
@@ -70,7 +70,7 @@ bool SortMergeJoin::StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& te
 	}
 }
 
-void SortMergeJoin::MergeRelations(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, Record& mergeInto) {
+void SortMergeJoiner::MergeRelations(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, Record& mergeInto) {
 	relL.Reset();
 	relR.Reset();
 	// It's important that the pointers we use to get the Records or not NULL, but can be memory managed
@@ -103,7 +103,7 @@ void SortMergeJoin::MergeRelations(InMemoryRelation& relL, JoinRelation& relR, P
 	} while(relR.GetNext(recR));
 }
 
-void SortMergeJoin::Exit(Pipe& inPipeL, Pipe& inPipeR, Pipe& outPipe) {
+void SortMergeJoiner::Exit(Pipe& inPipeL, Pipe& inPipeR, Pipe& outPipe) {
 	Record rec;
 	while(inPipeL.Remove(&rec)) {
 		// do nothing
@@ -114,8 +114,9 @@ void SortMergeJoin::Exit(Pipe& inPipeL, Pipe& inPipeR, Pipe& outPipe) {
 	outPipe.ShutDown();
 }
 
-void SortMergeJoin::Join(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp,
-		Record &literal, OrderMaker &orderL, OrderMaker &orderR, int memLimit) {
+void SortMergeJoiner::Join(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, 
+	OrderMaker &orderL, OrderMaker &orderR, int memLimit) {
+	
 	Record nextL;
 	Record nextR;
 

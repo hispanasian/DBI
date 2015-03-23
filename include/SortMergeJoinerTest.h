@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "MockClasses.h"
-#include "SortMergeJoin.h"
+#include "SortMergeJoiner.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -23,20 +23,20 @@ using ::testing::Ref;
 using ::testing::SetArgReferee;
 using ::testing::DoAll;
 
-class PartialSortMergeJoin: public SortMergeJoin {
+class PartialSortMergeJoiner: public SortMergeJoiner {
 public:
 	// virtual void MergeRelations(InMemoryRelation relL, JoinRelation relR, Pipe& outPipe);
 	MOCK_METHOD4(MergeRelations, void(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, Record& rec));
-	PartialSortMergeJoin();
-	virtual ~PartialSortMergeJoin();
+	PartialSortMergeJoiner();
+	virtual ~PartialSortMergeJoiner();
 	bool StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Record& tempL, Record& mergeInto,
 		InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, int memLimit, OrderMaker& orderL, ComparisonEngine& comp);
 };
 
-class SortMergeJoinTest: public ::testing::Test {
+class SortMergeJoinerTest: public ::testing::Test {
 public:
-	SortMergeJoin join;
-	PartialSortMergeJoin mock;
+	SortMergeJoiner join;
+	PartialSortMergeJoiner mock;
 	StrictMock<MockPipe> inL;
 	StrictMock<MockPipe> inR;
 	StrictMock<MockPipe> out;

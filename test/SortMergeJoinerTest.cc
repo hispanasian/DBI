@@ -1,8 +1,8 @@
-#include "SortMergeJoinTest.h"
+#include "SortMergeJoinerTest.h"
 
 
 // All records on left are > those on right
-TEST_F(SortMergeJoinTest, AlignGroups1) {
+TEST_F(SortMergeJoinerTest, AlignGroups1) {
 	Sequence s2;
 	EXPECT_CALL(inR, Remove(&tempR)).
 		Times(3).
@@ -20,7 +20,7 @@ TEST_F(SortMergeJoinTest, AlignGroups1) {
 }
 
 // All records on left are < those on right
-TEST_F(SortMergeJoinTest, AlignGroups2) {
+TEST_F(SortMergeJoinerTest, AlignGroups2) {
 	Sequence s1;
 	EXPECT_CALL(inL, Remove(&tempL)).
 		Times(3).
@@ -38,7 +38,7 @@ TEST_F(SortMergeJoinTest, AlignGroups2) {
 }
 
 // The the given records match
-TEST_F(SortMergeJoinTest, AlignGroups3) {
+TEST_F(SortMergeJoinerTest, AlignGroups3) {
 	EXPECT_CALL(comp, Compare(&tempL, &orderL, &tempR, &orderR)).
 		WillRepeatedly(Return(0));
 
@@ -46,7 +46,7 @@ TEST_F(SortMergeJoinTest, AlignGroups3) {
 }
 
 // A match is found after advancing the left
-TEST_F(SortMergeJoinTest, AlignGroups4) {
+TEST_F(SortMergeJoinerTest, AlignGroups4) {
 	EXPECT_CALL(inL, Remove(&tempL)).
 		Times(3).
 		WillRepeatedly(Return(1));
@@ -65,7 +65,7 @@ TEST_F(SortMergeJoinTest, AlignGroups4) {
 }
 
 // A match is found after advancing the right
-TEST_F(SortMergeJoinTest, AlignGroups5) {
+TEST_F(SortMergeJoinerTest, AlignGroups5) {
 	EXPECT_CALL(inR, Remove(&tempR)).
 		Times(3).
 		WillRepeatedly(Return(1));
@@ -84,7 +84,7 @@ TEST_F(SortMergeJoinTest, AlignGroups5) {
 }
 
 // The right pipe is empty
-TEST_F(SortMergeJoinTest, InitRightGroup1) {
+TEST_F(SortMergeJoinerTest, InitRightGroup1) {
 	EXPECT_CALL(inR, Remove(&tempR)).
 		WillOnce(Return(0));
 
@@ -92,7 +92,7 @@ TEST_F(SortMergeJoinTest, InitRightGroup1) {
 }
 
 // The next record in the pipe is not part of this group
-TEST_F(SortMergeJoinTest, InitRightGroup2) {
+TEST_F(SortMergeJoinerTest, InitRightGroup2) {
 	EXPECT_CALL(inR, Remove(&tempR)).
 		WillOnce(Return(1));
 
@@ -104,7 +104,7 @@ TEST_F(SortMergeJoinTest, InitRightGroup2) {
 
 // The next 3 records in the pipe are part of the group,
 // but the 4th is not in the group
-TEST_F(SortMergeJoinTest, InitRightGroup3) {
+TEST_F(SortMergeJoinerTest, InitRightGroup3) {
 	Sequence s1;
 	EXPECT_CALL(inR, Remove(&tempR)).
 		Times(4).
@@ -129,7 +129,7 @@ TEST_F(SortMergeJoinTest, InitRightGroup3) {
 
 // The next 3 records in the pipe are part of the group,
 // and they are the final records in the pipe
-TEST_F(SortMergeJoinTest, InitRightGroup4) {
+TEST_F(SortMergeJoinerTest, InitRightGroup4) {
 	Sequence s1;
 	EXPECT_CALL(inR, Remove(&tempR)).
 		Times(3).
@@ -152,7 +152,7 @@ TEST_F(SortMergeJoinTest, InitRightGroup4) {
 }
 
 // The left pipe is empty
-TEST_F(SortMergeJoinTest, StreamLeftGroup1) {
+TEST_F(SortMergeJoinerTest, StreamLeftGroup1) {
 	EXPECT_CALL(relR, MemUsed()).
 		WillOnce(Return(500));
 	EXPECT_CALL(relL, SetMemLimit(500)).
@@ -168,7 +168,7 @@ TEST_F(SortMergeJoinTest, StreamLeftGroup1) {
 }
 
 // The next record in the pipe is not part of this group
-TEST_F(SortMergeJoinTest, StreamLeftGroup2) {
+TEST_F(SortMergeJoinerTest, StreamLeftGroup2) {
 	EXPECT_CALL(relR, MemUsed()).
 		WillOnce(Return(500));
 	EXPECT_CALL(relL, SetMemLimit(500)).
@@ -189,7 +189,7 @@ TEST_F(SortMergeJoinTest, StreamLeftGroup2) {
 // The next 4 records in the pipe are part of the group,
 // and they all fit in memory
 // but the 5th is not in the group
-TEST_F(SortMergeJoinTest, StreamLeftGroup3) {
+TEST_F(SortMergeJoinerTest, StreamLeftGroup3) {
 	EXPECT_CALL(relR, MemUsed()).
 		WillOnce(Return(500));
 	EXPECT_CALL(relL, SetMemLimit(500)).
@@ -221,7 +221,7 @@ TEST_F(SortMergeJoinTest, StreamLeftGroup3) {
 // The next 4 records in the pipe are part of the group,
 // but only 2 at a time fit in memory,
 // and the 5th is not in the group
-TEST_F(SortMergeJoinTest, StreamLeftGroup4) {
+TEST_F(SortMergeJoinerTest, StreamLeftGroup4) {
 	EXPECT_CALL(relR, MemUsed()).
 		WillOnce(Return(500));
 	EXPECT_CALL(relL, SetMemLimit(500)).
@@ -265,7 +265,7 @@ TEST_F(SortMergeJoinTest, StreamLeftGroup4) {
 // The next 4 records in the pipe are part of the group,
 // and they all fit in memory
 // and they are the final records in the pipe
-TEST_F(SortMergeJoinTest, StreamLeftGroup5) {
+TEST_F(SortMergeJoinerTest, StreamLeftGroup5) {
 	Sequence s3;
 	EXPECT_CALL(inL, Remove(&tempL)).
 		Times(4).
@@ -297,7 +297,7 @@ TEST_F(SortMergeJoinTest, StreamLeftGroup5) {
 // The next 4 records in the pipe are part of the group,
 // but only 2 at a time fit in memory,
 /// and they are the final records in the pipe
-TEST_F(SortMergeJoinTest, StreamLeftGroup6) {
+TEST_F(SortMergeJoinerTest, StreamLeftGroup6) {
 	Sequence s3;
 	EXPECT_CALL(inL, Remove(&tempL)).
 		Times(4).
@@ -339,7 +339,7 @@ TEST_F(SortMergeJoinTest, StreamLeftGroup6) {
 }
 
 // Both the left and right have 1 record each
-TEST_F(SortMergeJoinTest, MergeRelations1) {
+TEST_F(SortMergeJoinerTest, MergeRelations1) {
 	StrictMock<MockRecord> recL;
 	StrictMock<MockRecord> recR;
 
@@ -386,7 +386,7 @@ TEST_F(SortMergeJoinTest, MergeRelations1) {
 }
 
 // The left has 3 records and the right has 1 record
-TEST_F(SortMergeJoinTest, MergeRelations2) {
+TEST_F(SortMergeJoinerTest, MergeRelations2) {
 	StrictMock<MockRecord> recL;
 	StrictMock<MockRecord> recR;
 
@@ -434,7 +434,7 @@ TEST_F(SortMergeJoinTest, MergeRelations2) {
 }
 
 // The left has 1 record and the right has 3 record
-TEST_F(SortMergeJoinTest, MergeRelations3) {
+TEST_F(SortMergeJoinerTest, MergeRelations3) {
 	StrictMock<MockRecord> recL;
 	StrictMock<MockRecord> recR;
 
@@ -500,7 +500,7 @@ TEST_F(SortMergeJoinTest, MergeRelations3) {
 }
 
 // The left and right have 3 records each
-TEST_F(SortMergeJoinTest, MergeRelations4) {
+TEST_F(SortMergeJoinerTest, MergeRelations4) {
 	StrictMock<MockRecord> recL;
 	StrictMock<MockRecord> recR;
 
