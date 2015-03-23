@@ -103,7 +103,71 @@ void SortMergeJoin::MergeRelations(InMemoryRelation& relL, JoinRelation& relR, P
 	} while(relR.GetNext(recR));
 }
 
-void SortMergeJoin::Join(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp,
-		Record &literal, OrderMaker &orderL, OrderMaker &orderR) {
+void SortMergeJoin::Exit(Pipe& inPipeL, Pipe& inPipeR, Pipe& outPipe) {
+	Record rec;
+	while(inPipeL.Remove(&rec)) {
+		// do nothing
+	}
+	while(inPipeR.Remove(&rec)) {
+		// do nothing
+	}
+	outPipe.ShutDown();
+}
 
+void SortMergeJoin::Join(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp,
+		Record &literal, OrderMaker &orderL, OrderMaker &orderR, int memLimit) {
+	Record nextL;
+	Record nextR;
+
+	// check if either pipe is empty and
+	// initialize our cursors
+	if(inPipeL.Remove(&nextL) == 0) {
+		return Exit(inPipeL, inPipeR, outPipe);
+	}
+
+	if(inPipeR.Remove(&nextR) == 0) {
+		return Exit(inPipeL, inPipeR, outPipe);
+	}
+
+	InMemoryRelation relL;
+	JoinRelation relR = JoinRelation(memLimit);
+	ComparisonEngine comp;
+
+	bool leftDone = false;
+	bool rightDone = false;
+	while(true) {
+		if(AlignGroups(inPipeL, inPipeR, nextL, nextR, orderL, orderR, comp)) {
+			// no matching groups were found, no need to merge
+			return Exit(inPipeL, inPipeR, outPipe);
+		}
+
+		Record copyR;
+		Record tempR;
+		copyR.Copy(&nextR);
+		relR.Add(&copyR);
+		if(InitRightGroup(inPipeR, nextR, tempR, relR, orderR, comp)) {
+			rightDone = true;
+		}
+
+		Record copyL;
+		Record tempL;
+		Record mergeInto;
+		copyL.Copy(&nextL);
+		relL.Add(&copyL);
+		if(StreamLeftGroup(inPipeL, nextL, tempL, mergeInto,
+			relL, relR, outPipe, memLimit, orderL, comp)) {
+			leftDone = true;
+		}
+
+		if(leftDone || rightDone) {
+			return Exit(inPipeL, inPipeR, outPipe);
+		}
+
+		// clear relL and relR
+		relL.Clear();
+		relR.Clear();
+		// consume tempR/L to nextR/L
+		nextL.Consume(&tempL);
+		nextR.Consume(&tempR);
+	}
 }

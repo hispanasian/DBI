@@ -8,7 +8,7 @@
 class JoinStrategy {
 public:
 	virtual void Join(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp,
-		Record &literal, OrderMaker &orderL, OrderMaker &orderR) = 0;
+		Record &literal, OrderMaker &orderL, OrderMaker &orderR, int memLimit) = 0;
 };
 
 #endif /* JOINSTRATEGY_H */

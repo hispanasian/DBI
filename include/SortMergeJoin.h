@@ -48,12 +48,15 @@ private:
 	// Creates a merged tuple for each pair of tuples from relL and relR and inserts
 	// each merged tuple in outPipe
 	virtual void MergeRelations(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, Record& rec);
+
+	// Empties the left and right input pipes and shuts down the output pipe
+	virtual void Exit(Pipe& inPipeL, Pipe& inPipeR, Pipe& outPipe);
 public:
 	SortMergeJoin();
 	~SortMergeJoin();
 
 	virtual void Join(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp,
-		Record &literal, OrderMaker &orderL, OrderMaker &orderR);
+		Record &literal, OrderMaker &orderL, OrderMaker &orderR, int memLimit);
 };
 
 #endif /* SORTMERGEJOIN_H */
