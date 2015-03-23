@@ -106,9 +106,9 @@ void q1 () {
 	init_SF_ps (pred_ps, 100);
 
 	SF_ps.Run (dbf_ps, _ps, cnf_ps, lit_ps);
-	SF_ps.WaitUntilDone ();
+	// SF_ps.WaitUntilDone ();
 
-	int cnt = clear_pipe (_ps, ps->schema (), true);
+	int cnt = clear_pipe (_ps, ps->schema (), false);
 	cout << "\n\n query1 returned " << cnt << " records \n";
 
 	dbf_ps.Close ();
