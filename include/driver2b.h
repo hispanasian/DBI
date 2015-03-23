@@ -14,7 +14,7 @@ using namespace std;
 // make sure that the information below is correct
 
 char *catalog_path = "data/catalog"; 
-char *dbfile_dir = "data/DB/10M";
+char *dbfile_dir = "data/DB/10M/";
 char *tpch_dir ="data/TPCH/10M/";
 
 
