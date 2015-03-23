@@ -135,7 +135,10 @@ void q2 () {
 	SF_p.WaitUntilDone ();
 	P_p.WaitUntilDone ();
 
-	Attribute att3[] = {*IA, *SA, *DA};
+	Attribute *att3 = new Attribute[3];
+	att3[0] = *IA;
+	att3[1] = *SA;
+	att3[2] = *DA;
 	Schema out_sch ("out_sch", numAttsOut, att3);
 	int cnt = clear_pipe (_p, p->schema (), true);
 
