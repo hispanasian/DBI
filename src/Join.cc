@@ -57,12 +57,37 @@ void Join::SortMergeJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, OrderMaker &or
 }
 
 void Join::BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal) {
-
+	JoinRelation relS = JoinRelation(memLimit);
+	InMemoryRelation relR;
+	Record rec;
+	BlockNestedLoopJoin(pipeL, pipeR, outPipe, selOp, literal, relS, relR, rec);
 }
 
 void Join::BlockNestedLoopJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, CNF &selOp, Record &literal,
 		JoinRelation &relS, InMemoryRelation &relR, Record &rec) {
+	Record *temp = &rec;
+	ComparisonEngine comp;
 
+	relS.Populate(pipeR);
+	if(relS.MemUsed() > 0) { // There is work to be done
+		relR.SetMemLimit(memLimit - relS.MemUsed());
+
+		// Start getting Records from pipeL and put them into relR. Merge relR and relS when relR
+		// becomes full
+		while(pipeL.Remove(temp)) {
+			if(!relR.Add(temp)) {
+				MergeRelations(relR, relS, rec, outPipe, comp, literal, selOp);
+
+				// Once the relations have been merged, clear relR and add the record that could
+				// not be put in
+				relR.Clear();
+				relR.Add(temp);
+			}
+		}
+		// Merge any Records that may have been left over
+		if(relR.MemUsed() > 0) MergeRelations(relR, relS, rec, outPipe, comp, literal, selOp);
+	}
+	outPipe.ShutDown();
 }
 
 void Join::MergeRelations(Relation &R, Relation &S, Record &rec, Pipe &out) {
