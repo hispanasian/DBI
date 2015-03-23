@@ -140,7 +140,7 @@ void q2 () {
 	att3[1] = *SA;
 	att3[2] = *DA;
 	Schema out_sch ("out_sch", numAttsOut, att3);
-	int cnt = clear_pipe (_p, p->schema (), true);
+	int cnt = clear_pipe (_out, p->schema (), false);
 
 	cout << "\n\n query2 returned " << cnt << " records \n";
 
