@@ -28,7 +28,7 @@ bool SortMergeJoin::AlignGroups(Pipe &inPipeL, Pipe &inPipeR, Record& tempL, Rec
 
 bool SortMergeJoin::InitRightGroup(Pipe& inPipeR, Record& groupRec, Record& tempR, JoinRelation& relR,
 		OrderMaker& orderR, ComparisonEngine& comp) {
-	relR.Add(&groupRec);
+	// relR.Add(&groupRec);
 	while(true) {
 		if(inPipeR.Remove(&tempR) == 0) { // the pipe is empty
 			return true;

@@ -12,9 +12,11 @@ private:
 	
 	// Aligns tempL and tempR to both be in equal groups, if possible
 	// Preconditons:
-	// 1. Both pipes are not empty
-	// 2. tempL and tempR are set to records from their respective pipes
-	// Returns true if at least one of the pipes has been emptied
+	// 1. tempL and tempR are set to records from their respective pipes
+	// Postconditions:
+	// 1. tempL and tempR are set to first of records from the left and right
+	//    which are in the same group
+	// Returns true if at least one of the relations has been exhausted
 	// and returns false otherwise
 	virtual bool AlignGroups(Pipe &inPipeL, Pipe &inPipeR, Record& tempL, Record& tempR,
 		OrderMaker& orderL, OrderMaker& orderR, ComparisonEngine& comp);
@@ -23,6 +25,7 @@ private:
 	// Preconditions:
 	// 1. groupRec is not null
 	// 2. relR is already cleared and reset
+	// 3. A COPY of groupRecR has been added to relR
 	// Postconditions:
 	// 1. tempR is set to the record from the next group if there is a next group
 	// Returns true if the right relation has been exhausted, and false otherwise

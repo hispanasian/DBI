@@ -88,9 +88,6 @@ TEST_F(SortMergeJoinTest, InitRightGroup1) {
 	EXPECT_CALL(inR, Remove(&tempR)).
 		WillOnce(Return(0));
 
-	EXPECT_CALL(relR, Add(&groupRecR)).
-		WillOnce(Return(true));
-
 	EXPECT_EQ(true, InitRightGroup(inR, groupRecR, tempR, relR, orderR, comp));
 }
 
@@ -101,9 +98,6 @@ TEST_F(SortMergeJoinTest, InitRightGroup2) {
 
 	EXPECT_CALL(comp, Compare(&groupRecR, &tempR, &orderR)).
 		WillOnce(Return(1));
-
-	EXPECT_CALL(relR, Add(&groupRecR)).
-		WillOnce(Return(true));
 
 	EXPECT_EQ(false, InitRightGroup(inR, groupRecR, tempR, relR, orderR, comp));
 }
@@ -125,9 +119,6 @@ TEST_F(SortMergeJoinTest, InitRightGroup3) {
 	EXPECT_CALL(comp, Compare(&groupRecR, &tempR, &orderR)).
 		InSequence(s2).
 		WillOnce(Return(1));
-
-	EXPECT_CALL(relR, Add(&groupRecR)).	
-		WillOnce(Return(true));
 
 	EXPECT_CALL(relR, Add(&tempR)).
 		Times(3).
@@ -152,9 +143,6 @@ TEST_F(SortMergeJoinTest, InitRightGroup4) {
 	EXPECT_CALL(comp, Compare(&groupRecR, &tempR, &orderR)).
 		Times(3).
 		WillRepeatedly(Return(0));
-
-	EXPECT_CALL(relR, Add(&groupRecR)).	
-		WillOnce(Return(true));
 
 	EXPECT_CALL(relR, Add(&tempR)).
 		Times(3).
