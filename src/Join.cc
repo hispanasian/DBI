@@ -6,6 +6,7 @@
  */
 
 #include "Join.h"
+#include "BigQ.h"
 
 Join::Join() {
 	memLimit = 0;
@@ -17,11 +18,18 @@ Join::~Join() {
 }
 
 void Join::Use_n_Pages (int n) {
-
+	pageLimit = n;
+	memLimit = pageLimit * PAGE_SIZE;
 }
 
 void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal) {
+	JoinData *data = new JoinData { inPipeL, inPipeR, outPipe, selOp, literal, *this };
 
+	thread_id = pthread_create(&worker, NULL, [] (void* args) -> void* {
+		JoinData *data = (JoinData*)args;
+		data->op.Work(data->inL, data->inR, data->out, data->selOp, data->literal);
+		delete data;
+	}, (void*) data);
 }
 
 void Join::Work(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal) {
@@ -35,13 +43,18 @@ void Join::Work(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record 
 
 	// We can do a sort-merge join
 	if(selOp.GetSortOrders(orderL, orderR)) SortMergeJoin(inPipeL, inPipeR, outPipe, orderL, orderR);
+		
 	// We have to do a block nested loop join
 	else BlockNestedLoopJoin(inPipeL, inPipeR, outPipe, selOp, literal);
 }
 
-void Join::SortMergeJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, OrderMaker &orderL,
-		OrderMaker &orderR) {
-
+void Join::SortMergeJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, OrderMaker &orderL, OrderMaker &orderR) {
+	Pipe sortedLeft;
+	BigQ left = BigQ(pipeL, sortedLeft, orderL, pageLimit);
+	Pipe sortedRight;
+	BigQ right = BigQ(pipeR, sortedRight, orderR, pageLimit);	
+	SortMergeJoiner smj;
+	smj.Join(sortedLeft, sortedRight, outPipe, orderL, orderR, memLimit);
 }
 
 void Join::SortMergeJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, OrderMaker &orderL,

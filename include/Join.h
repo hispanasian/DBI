@@ -17,6 +17,7 @@
 #include "JoinRelation.h"
 #include "InMemoryRelation.h"
 #include "Relation.h"
+#include "SortMergeJoiner.h"
 
 class Join: public RelationalOp {
 friend class JoinTest;
