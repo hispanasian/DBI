@@ -40,6 +40,16 @@ public:
 			fn_pred.GrowFromParseTree (finalfunc, *left); // constructs CNF predicate
 			close_lexical_parser_func ();
 	}
+
+	void SetupCNF (char *input, Schema *left, Schema *right, CNF &cnf_pred, Record &literal) {
+		init_lexical_parser (input);
+	  	if (yyparse() != 0) {
+			cout << " Error: can't parse your CNF " << input << endl;
+			exit (1);
+		}
+		cnf_pred.GrowFromParseTree (final, left, right, literal); // constructs CNF predicate
+		close_lexical_parser ();
+	}
 };
 
 #endif /* RELATIONALOPINTTES_H */
