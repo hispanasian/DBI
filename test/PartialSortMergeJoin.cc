@@ -9,8 +9,3 @@ bool PartialSortMergeJoin::StreamLeftGroup(Pipe& inPipeL, Record& groupRecL, Rec
 		InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, int memLimt, OrderMaker& orderL, ComparisonEngine& comp) {
 	SortMergeJoin::StreamLeftGroup(inPipeL, groupRecL, tempL, mergeInto, relL, relR, outPipe, memLimt, orderL, comp);
 }
-
-// void PartialSortMergeJoin::Join(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp,
-// 		Record &literal, OrderMaker &orderL, OrderMaker &orderR) {
-// 	SortMergeJoin::Join(inPipeL, inPipeR, outPipe, selOp, literal, orderL, orderR);
-// }

@@ -70,6 +70,10 @@ public:
 		return mock.StreamLeftGroup(inPipeL, groupRecL, tempL, mergeInto, relL, relR, outPipe, memLimit, orderL, comp);
 	}
 
+	void MergeRelations(InMemoryRelation& relL, JoinRelation& relR, Pipe& outPipe, Record& rec) {
+		join.MergeRelations(relL, relR, outPipe, rec);
+	}
+
 };
 
 #endif

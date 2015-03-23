@@ -349,3 +349,233 @@ TEST_F(SortMergeJoinTest, StreamLeftGroup6) {
 
 	EXPECT_EQ(true, StreamLeftGroup(inL, groupRecL, tempL, mergeInto, relL, relR, out, memLimit, orderL, comp));
 }
+
+// Both the left and right have 1 record each
+TEST_F(SortMergeJoinTest, MergeRelations1) {
+	StrictMock<MockRecord> recL;
+	StrictMock<MockRecord> recR;
+
+	Sequence s1;
+	EXPECT_CALL(relL, Reset()).
+		Times(1).
+		InSequence(s1);
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(DoAll(SetArgReferee<0>(&recL), Return(true)));
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillRepeatedly(Return(false));
+	EXPECT_CALL(relL, Reset()).
+		Times(1).
+		InSequence(s1);
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(DoAll(SetArgReferee<0>(&recL), Return(true)));
+
+	Sequence s2;
+	EXPECT_CALL(relR, Reset()).
+		Times(1).
+		InSequence(s2);
+	EXPECT_CALL(relR, GetNext(NotNull())).
+		InSequence(s2).
+		WillOnce(DoAll(SetArgReferee<0>(&recR), Return(true)));
+	EXPECT_CALL(relR, GetNext(NotNull())).
+		InSequence(s2).
+		WillRepeatedly(Return(false));
+
+	EXPECT_CALL(recL, NumAtts()).
+		WillOnce(Return(2));
+	EXPECT_CALL(recR, NumAtts()).
+		WillOnce(Return(3));
+
+	EXPECT_CALL(mergeInto, MergeRecords(NotNull(), NotNull(), 2, 3, NotNull(), 5, 2)).
+		Times(1);
+
+	EXPECT_CALL(out, Insert(&mergeInto)).
+		Times(1);
+
+	MergeRelations(relL, relR, out, mergeInto);
+}
+
+// The left has 3 records and the right has 1 record
+TEST_F(SortMergeJoinTest, MergeRelations2) {
+	StrictMock<MockRecord> recL;
+	StrictMock<MockRecord> recR;
+
+	Sequence s1;
+	EXPECT_CALL(relL, Reset()).
+		Times(1).
+		InSequence(s1);
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		Times(3).
+		InSequence(s1).
+		WillRepeatedly(DoAll(SetArgReferee<0>(&recL), Return(true)));
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(Return(false));
+	EXPECT_CALL(relL, Reset()).
+		Times(1).
+		InSequence(s1);
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(DoAll(SetArgReferee<0>(&recL), Return(true)));
+
+	Sequence s2;
+	EXPECT_CALL(relR, Reset()).
+		Times(1).
+		InSequence(s2);
+	EXPECT_CALL(relR, GetNext(NotNull())).
+		InSequence(s2).
+		WillOnce(DoAll(SetArgReferee<0>(&recR), Return(true)));
+	EXPECT_CALL(relR, GetNext(NotNull())).
+		InSequence(s2).
+		WillRepeatedly(Return(false));
+
+	EXPECT_CALL(recL, NumAtts()).
+		WillOnce(Return(2));
+	EXPECT_CALL(recR, NumAtts()).
+		WillOnce(Return(3));
+
+	EXPECT_CALL(mergeInto, MergeRecords(NotNull(), NotNull(), 2, 3, NotNull(), 5, 2)).
+		Times(3);
+
+	EXPECT_CALL(out, Insert(&mergeInto)).
+		Times(3);
+
+	MergeRelations(relL, relR, out, mergeInto);
+}
+
+// The left has 1 record and the right has 3 record
+TEST_F(SortMergeJoinTest, MergeRelations3) {
+	StrictMock<MockRecord> recL;
+	StrictMock<MockRecord> recR;
+
+	Sequence s1;
+	EXPECT_CALL(relL, Reset()).
+		Times(1).
+		InSequence(s1);
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(DoAll(SetArgReferee<0>(&recL), Return(true)));
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(Return(false));
+	EXPECT_CALL(relL, Reset()).
+		Times(1).
+		InSequence(s1);
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(DoAll(SetArgReferee<0>(&recL), Return(true)));
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(Return(false));
+	EXPECT_CALL(relL, Reset()).
+		Times(1).
+		InSequence(s1);
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(DoAll(SetArgReferee<0>(&recL), Return(true)));
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(Return(false));
+	EXPECT_CALL(relL, Reset()).
+		Times(1).
+		InSequence(s1);
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(DoAll(SetArgReferee<0>(&recL), Return(true)));
+
+	Sequence s2;
+	EXPECT_CALL(relR, Reset()).
+		Times(1).
+		InSequence(s2);
+	EXPECT_CALL(relR, GetNext(NotNull())).
+		Times(3).
+		InSequence(s2).
+		WillRepeatedly(DoAll(SetArgReferee<0>(&recR), Return(true)));
+	EXPECT_CALL(relR, GetNext(NotNull())).
+		InSequence(s2).
+		WillRepeatedly(Return(false));
+
+	EXPECT_CALL(recL, NumAtts()).
+		WillOnce(Return(2));
+	EXPECT_CALL(recR, NumAtts()).
+		WillOnce(Return(3));
+
+	EXPECT_CALL(mergeInto, MergeRecords(NotNull(), NotNull(), 2, 3, NotNull(), 5, 2)).
+		Times(3);
+
+	EXPECT_CALL(out, Insert(&mergeInto)).
+		Times(3);
+
+	MergeRelations(relL, relR, out, mergeInto);
+}
+
+// The left and right have 3 records each
+TEST_F(SortMergeJoinTest, MergeRelations4) {
+	StrictMock<MockRecord> recL;
+	StrictMock<MockRecord> recR;
+
+	Sequence s1;
+	EXPECT_CALL(relL, Reset()).
+		Times(1).
+		InSequence(s1);
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		Times(3).
+		InSequence(s1).
+		WillRepeatedly(DoAll(SetArgReferee<0>(&recL), Return(true)));
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(Return(false));
+	EXPECT_CALL(relL, Reset()).
+		Times(1).
+		InSequence(s1);
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		Times(3).
+		InSequence(s1).
+		WillRepeatedly(DoAll(SetArgReferee<0>(&recL), Return(true)));
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(Return(false));
+	EXPECT_CALL(relL, Reset()).
+		Times(1).
+		InSequence(s1);
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		Times(3).
+		InSequence(s1).
+		WillRepeatedly(DoAll(SetArgReferee<0>(&recL), Return(true)));
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(Return(false));
+	EXPECT_CALL(relL, Reset()).
+		Times(1).
+		InSequence(s1);
+	EXPECT_CALL(relL, GetNext(NotNull())).
+		InSequence(s1).
+		WillOnce(DoAll(SetArgReferee<0>(&recL), Return(true)));
+
+	Sequence s2;
+	EXPECT_CALL(relR, Reset()).
+		Times(1).
+		InSequence(s2);
+	EXPECT_CALL(relR, GetNext(NotNull())).
+		Times(3).
+		InSequence(s2).
+		WillRepeatedly(DoAll(SetArgReferee<0>(&recR), Return(true)));
+	EXPECT_CALL(relR, GetNext(NotNull())).
+		InSequence(s2).
+		WillRepeatedly(Return(false));
+
+	EXPECT_CALL(recL, NumAtts()).
+		WillOnce(Return(2));
+	EXPECT_CALL(recR, NumAtts()).
+		WillOnce(Return(3));
+
+	EXPECT_CALL(mergeInto, MergeRecords(NotNull(), NotNull(), 2, 3, NotNull(), 5, 2)).
+		Times(9);
+
+	EXPECT_CALL(out, Insert(&mergeInto)).
+		Times(9);
+
+	MergeRelations(relL, relR, out, mergeInto);
+}
