@@ -10,7 +10,7 @@
 
 // Simple test, 25 records expected
 TEST_F(RelationalOpIntTest, SelectPipe) {
-	FILE *tableFile = fopen ("data/10M/lineitem.tbl", "r");
+	FILE *tableFile = fopen ("data/TPCH/10M/lineitem.tbl", "r");
 	Record temp;
 	Schema schema ("data/catalog", "lineitem");
 	Record lit;
@@ -48,7 +48,7 @@ TEST_F(RelationalOpIntTest, SelectPipe) {
 
 // Simple test, 25 records expected
 TEST_F(RelationalOpIntTest, SelectFile) {
-	FILE *tableFile = fopen ("data/10M/lineitem.tbl", "r");
+	FILE *tableFile = fopen ("data/TPCH/10M/lineitem.tbl", "r");
 	Record temp;
 	Schema schema ("data/catalog", "lineitem");
 	Record lit;
@@ -102,7 +102,7 @@ TEST_F(RelationalOpIntTest, SelectFile) {
 // Note: we're using a DBFile here to get records with a value
 // that we expect 
 TEST_F(RelationalOpIntTest, Project) {
-	FILE *tableFile = fopen ("data/10M/lineitem.tbl", "r");
+	FILE *tableFile = fopen ("data/TPCH/10M/lineitem.tbl", "r");
 	Record temp;
 	Schema schema ("data/catalog", "lineitem");
 	Record lit;

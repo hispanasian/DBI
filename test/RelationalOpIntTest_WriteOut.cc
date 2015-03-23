@@ -13,7 +13,7 @@ TEST_F(RelationalOpIntTest, WriteOut) {
 	char name[] = "WriteOutTestXXXXXX";
 	RawFile rfile;
 	rfile.MakeTemp(name);
-	FILE *tableFile = fopen ("data/10M/customer.tbl", "r");
+	FILE *tableFile = fopen ("data/TPCH/10M/customer.tbl", "r");
 	FILE *outFile = fopen(name, "w");
 	Record temp;
 	Schema schema ("data/catalog", "customer");
