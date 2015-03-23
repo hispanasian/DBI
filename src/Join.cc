@@ -23,7 +23,13 @@ void Join::Use_n_Pages (int n) {
 }
 
 void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal) {
+	JoinData *data = new JoinData { inPipeL, inPipeR, outPipe, selOp, literal, *this };
 
+	thread_id = pthread_create(&worker, NULL, [] (void* args) -> void* {
+		JoinData *data = (JoinData*)args;
+		data->op.Work(data->inL, data->inR, data->out, data->selOp, data->literal);
+		delete data;
+	}, (void*) data);
 }
 
 void Join::Work(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal) {
