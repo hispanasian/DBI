@@ -92,7 +92,7 @@ int main () {
 	}
 
 	int findx = 0;
-	while (findx < 1 || findx > 7) {
+	while (findx < 1 || findx > 8) {
 		cout << "\n select table: \n";
 		cout << "\t 1. supplier \n";
 		cout << "\t 2. nation \n";
