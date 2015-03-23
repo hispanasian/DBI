@@ -145,6 +145,8 @@ void q2 () {
 	cout << "\n\n query2 returned " << cnt << " records \n";
 
 	dbf_p.Close ();
+	//cleanup
+	delete att3;
 }
 
 // select sum (s_acctbal + (s_acctbal * 1.05)) from supplier;
@@ -285,9 +287,21 @@ void q6 () {
 		get_cnf ("(s_suppkey = ps_suppkey)", s->schema(), ps->schema(), cnf_p_ps, lit_p_ps);
 
 	int outAtts = sAtts + psAtts;
-	Attribute s_nationkey = {"s_nationkey", Int};
-	Attribute ps_supplycost = {"ps_supplycost", Double};
-	Attribute joinatt[] = {*IA,*SA,*SA,s_nationkey,*SA,*DA,*SA,*IA,*IA,*IA,ps_supplycost,*SA};
+	Attribute *s_nationkey = new Attribute{"s_nationkey", Int};
+	Attribute *ps_supplycost = new Attribute{"ps_supplycost", Double};
+	Attribute *joinatt = new Attribute[12];
+	joinatt[0] = *IA;
+	joinatt[1] = *SA;
+	joinatt[2] = *SA;
+	joinatt[3] = *s_nationkey;
+	joinatt[4] = *SA;
+	joinatt[5] = *DA;
+	joinatt[6] = *SA;
+	joinatt[7] = *IA;
+	joinatt[8] = *IA;
+	joinatt[9] = *IA;
+	joinatt[10] = *ps_supplycost;
+	joinatt[11] = *SA;
 	Schema join_sch ("join_sch", outAtts, joinatt);
 
 	GroupBy G;
@@ -389,5 +403,8 @@ int main (int argc, char *argv[]) {
 	}
 	else {
 		cout << " ERROR!!!!\n";
+		delete IA;
+		delete SA;
+		delete DA;
 	}
 }
