@@ -146,7 +146,7 @@ void q2 () {
 
 	dbf_p.Close ();
 	//cleanup
-	delete att3;
+//	delete att3;
 }
 
 // select sum (s_acctbal + (s_acctbal * 1.05)) from supplier;
@@ -183,8 +183,6 @@ void q3 () {
 // where s_suppkey = ps_suppkey;
 // expected output: 4.00406e+08
 void q4 () {
-
-	/* TODO: Commented out until Join is in the feature branch
 	cout << " query4 \n";
 	char *pred_s = "(s_suppkey = s_suppkey)";
 	init_SF_s (pred_s, 100);
@@ -202,8 +200,20 @@ void q4 () {
 		get_cnf ("(s_suppkey = ps_suppkey)", s->schema(), ps->schema(), cnf_p_ps, lit_p_ps);
 
 	int outAtts = sAtts + psAtts;
-	Attribute ps_supplycost = {"ps_supplycost", Double};
-	Attribute joinatt[] = {IA,SA,SA,IA,SA,DA,SA, IA,IA,IA,ps_supplycost,SA};
+	Attribute *ps_supplycost = new Attribute {"ps_supplycost", Double};
+	Attribute *joinatt = new Attribute[12];
+	joinatt[0] = *IA;
+	joinatt[1] = *SA;
+	joinatt[2] = *SA;
+	joinatt[3] = *IA;
+	joinatt[4] = *SA;
+	joinatt[5] = *DA;
+	joinatt[6] = *SA;
+	joinatt[7] = *IA;
+	joinatt[8] = *IA;
+	joinatt[9] = *IA;
+	joinatt[10] = *ps_supplycost;
+	joinatt[11] = *SA;
 	Schema join_sch ("join_sch", outAtts, joinatt);
 
 	Sum T;
@@ -223,10 +233,12 @@ void q4 () {
 	J.WaitUntilDone ();
 	T.WaitUntilDone ();
 
-	Schema sum_sch ("sum_sch", 1, &DA);
+	Schema sum_sch ("sum_sch", 1, DA);
 	int cnt = clear_pipe (_out, &sum_sch, true);
 	cout << " query4 returned " << cnt << " recs \n";
-	*/
+	//cleanup
+//	delete ps_supplycost;
+//	delete joinatt;
 }
 
 // select distinct ps_suppkey from partsupp where ps_supplycost < 100.11;
@@ -324,7 +336,11 @@ void q6 () {
 
 	Schema sum_sch ("sum_sch", 1, DA);
 	int cnt = clear_pipe (_out, &sum_sch, true);
-	cout << " query6 returned sum for " << cnt << " groups (expected 25 groups)\n"; 
+	cout << " query6 returned sum for " << cnt << " groups (expected 25 groups)\n";
+	//cleanup
+//	delete s_nationkey;
+//	delete ps_supplycost;
+//	delete joinatt;
 }
 
 void q7 () { 
@@ -403,8 +419,8 @@ int main (int argc, char *argv[]) {
 	}
 	else {
 		cout << " ERROR!!!!\n";
-		delete IA;
-		delete SA;
-		delete DA;
 	}
+//	delete IA;
+//	delete SA;
+//	delete DA;
 }
