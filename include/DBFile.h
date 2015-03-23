@@ -1,6 +1,8 @@
 #ifndef DBFILE_H
 #define DBFILE_H
 
+#include "HeapDBFile.h"
+#include "GenericDBFile.h"
 #include "TwoWayList.h"
 #include "Record.h"
 #include "Schema.h"
@@ -17,19 +19,19 @@ typedef enum {heap, sorted, tree} fType;
 
 class DBFile {
 friend class DBFileTest;
+friend class HeapDBFileTest;
+friend class SortedDBFileTest;
 private:
-	off_t cursorIndex;
-	off_t lastIndex;
 	File &file;
 	File myFile;
-	Page *cursor;		// Pointer to the current page
-	Page * last;		// Pointer to the last page
 	RawFile &rfile;
 	RawFile myRFile;
 	DBConfig &config;
 	DBConfig myConfig;
 	ComparisonEngine &comp;
 	ComparisonEngine myComp;
+	GenericDBFile *delegate;
+
 	DBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp); // Strictly for Testing.
 
 	/**
@@ -37,9 +39,9 @@ private:
 	 */
 	virtual void Reset();
 	/*
-	 * Initializes the cursor and last Page pointers
+	 * Initializes the DBFile.
 	 */
-	void InitializePages();
+	void Initialize();
 
 	/**
 	 * This is a function will be called by the public Load and it will provide it's own Record.
@@ -48,23 +50,22 @@ private:
 	 */
 	virtual void Load (Schema &myschema, char *loadpath, Record &record);
 
-	int GetLength();
 public:
 	DBFile ();
     virtual ~DBFile();
 
     /**
-     * Creates a file at fpath of file_type heap, sorted, or tree. It will also create a file to
-     * store meta-data located at filepath.header.
-     * @param fpath		The path to the file that should be created.
-     * @param file_type	The type of the file as defined by ftype
-     * @param startup	Unknown
-     * @return			1 if successful and 0 if failure.
-     */
+	 * Creates a file at fpath of file_type heap, sorted, or tree. It will also create a file to
+	 * store meta-data located at filepath.header.
+	 * @param fpath		The path to the file that should be created.
+	 * @param file_type	The type of the file as defined by ftype
+	 * @param startup	Unknown
+	 * @return			1 if successful and 0 if failure.
+	 */
 	virtual int Create (char *fpath, fType file_type, void *startup);
 
-	/**
-	 * Opens the file and associated header located at fpath and fpath.header respectivel. This
+    /**
+	 * Opens the file and associated header located at fpath and fpath.header respectively. This
 	 * function does not load any data from the file into memory.
 	 * @param fpath	The path to the DBFile
 	 * @return 		1 if successful and 0 if failure.
@@ -115,16 +116,5 @@ public:
 	 */
 	virtual int GetNext (Record &fetchme, CNF &cnf, Record &literal);
 };
-
-/**
- * Checks if a file located at path exists. This code was stolen from:
- * http://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
- * @param name	The name of the file
- * @return True if the file exists
- */
-inline bool FileExists(const std::string& name) {
-  struct stat buffer;
-  return (stat (name.c_str(), &buffer) == 0);
-}
 
 #endif

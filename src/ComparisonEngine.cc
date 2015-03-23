@@ -10,15 +10,14 @@
 // returns a -1, 0, or 1 depending upon whether left is less then, equal to, or greater
 // than right, depending upon the OrderMaker
 int ComparisonEngine :: Compare(Record *left, Record *right, OrderMaker *orderUs) {
-
 	char *val1, *val2;
 
 	char *left_bits = left->GetBits();
 	char *right_bits = right->GetBits();
 
 	for (int i = 0; i < orderUs->numAtts; i++) {
-		val1 = left_bits + ((int *) left_bits)[orderUs->whichAtts[i] + 1];
 		val2 = right_bits + ((int *) right_bits)[orderUs->whichAtts[i] + 1];
+		val1 = left_bits + ((int *) left_bits)[orderUs->whichAtts[i] + 1];
 	
 		// these are used to store the two operands, depending on their type
 		int val1Int, val2Int;
@@ -101,6 +100,76 @@ int ComparisonEngine :: Compare (Record *left, OrderMaker *order_left, Record *r
 			// cast the two bit strings to ints
 			val1Int = *((int *) val1);
 			val2Int = *((int *) val2);
+	
+			// and do the comparison
+			if (val1Int < val2Int) 
+				return -1;
+			else if (val1Int > val2Int)
+				return 1;
+	
+			break;
+	
+	
+			// second case: dealing with doubles
+			case Double:
+	
+			// cast the two bit strings to doubles
+			val1Double = *((double *) val1);
+			val2Double = *((double *) val2);
+	
+			// and do the comparison
+			if (val1Double < val2Double)
+				return -1;
+			else if (val1Double > val2Double)
+				return 1;
+	
+			break;
+	
+	
+			// last case: dealing with strings
+			default:
+			int sc = strcmp (val1, val2);
+			if (sc != 0)
+				return sc;
+
+			break;
+	
+		}
+	}
+
+	return 0;
+}
+
+// returns a -1, 0, or 1 depending upon whether left is less then, equal to, or greater
+// than right, depending upon the OrderMakers that are passed in.  This one is used for
+// joins, where you have to compare records *across* two input tables
+int ComparisonEngine :: CompareForSearch (Record *left, OrderMaker *order_left, Record *right, OrderMaker *order_right) {
+
+	char *val1, *val2;
+
+	char *left_bits = left->GetBits();
+	char *right_bits = right->GetBits();
+
+	int minLength = min(order_left->numAtts, order_right->numAtts);
+
+	for (int i = 0; i < minLength; i++) {
+		val1 = left_bits + ((int *) left_bits)[order_left->whichAtts[i] + 1];
+		val2 = right_bits + ((int *) right_bits)[order_right->whichAtts[i] + 1];
+	
+		// these are used to store the two operands, depending on their type
+		int val1Int, val2Int;
+		double val1Double, val2Double;
+		
+		// now check the type and do the comparison
+		switch (order_left->whichTypes[i]) {
+	
+			// first case: we are dealing with integers
+			case Int:
+	
+			// cast the two bit strings to ints
+			val1Int = *((int *) val1);
+			val2Int = *((int *) val2);
+			cout << "Comparing ints " << val1Int << " and " << val2Int << endl;
 	
 			// and do the comparison
 			if (val1Int < val2Int) 

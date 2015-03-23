@@ -110,6 +110,9 @@ install_manifest.txt
 include/y.tab.h
 src/lex.yy.c
 src/y.tab.c
+include/yyfunc.tab.h
+src/lex.yyfunc.c
+src/yyfunc.tab.c
 
 ### Eclipse ###
 .cproject
@@ -120,3 +123,6 @@ src/y.tab.c
 ### Data Files ###
 *.header
 *.bin
+
+*.tmp
+

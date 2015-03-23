@@ -1,8 +1,11 @@
 #include "BigQ.h"
 #include "Defs.h"
+#include "../include/PipedPage.h"
 #include <algorithm>
 #include <iostream>
 #include <cstdio>
+
+BigQ :: BigQ () {}
 
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
     TPMMS* tpmms = new TPMMS(in, out, sortorder, runlen);
@@ -49,6 +52,7 @@ TPMMS::TPMMS(Pipe &_in, Pipe &_out, OrderMaker &_sortorder, int &_runlen):
 }
 
 TPMMS::~TPMMS() {
+	// delete rec;
 }
 
 void TPMMS::SortRun() {
@@ -137,7 +141,7 @@ int TPMMS::FindMin(int size, Record **&heads) {
 	Record *min = NULL;
 
 	for(int i = 0; i < size; i++) {
-		if(heads[i] != NULL && ( min == NULL || comp.Compare(min, heads[i], &order) < 0 )) {
+		if(heads[i] != NULL && ( min == NULL || comp.Compare(min, heads[i], &order) > 0 )) {
 			min = heads[i];
 			minIndex = i;
 		}
@@ -174,9 +178,9 @@ void TPMMS::Phase2() {
 		delete heads[i];
 		delete pages[i];
 	}
-	delete heads;
-	delete runIndex;
-	delete pages;
+	delete []heads;
+	delete []runIndex;
+	delete []pages;
 }
 
 void TPMMS::Sort() {
@@ -193,4 +197,55 @@ void TPMMS::Sort() {
 	remove(fname);
 	delete rec;
 	runPos.clear();
+}
+
+void TPMMS::Merge(PipedPage *p1, PipedPage *p2) {
+	int minIndex = -1;
+	int totalRuns = 2;
+	int runsLeft = totalRuns;
+
+	// initialize
+	Record **heads = new Record*[totalRuns];
+	off_t *runIndex = new off_t[totalRuns];
+	Page **pages = new Page*[totalRuns];
+
+	heads[0] = new Record();
+	heads[1] = new Record();
+	runIndex[0] = 0;
+	runIndex[1] = 1;
+	pages[0] = p1;
+	pages[1] = p2;
+
+	// Check to make sure the pages are full
+	if(pages[0]->GetFirst(heads[0]) == 0) {
+		--runsLeft;
+		delete heads[0];
+		heads[0] = NULL;
+	}
+	if(pages[1]->GetFirst(heads[1]) == 0) {
+		--runsLeft;
+		delete heads[1];
+		heads[1] = NULL;
+	}
+	runPos.clear();
+	runPos.push_back(0);
+	runPos.push_back(0);
+	runPos.push_back(1);
+
+	while(runsLeft > 0) {
+		minIndex = FindMin(totalRuns, heads);
+		out.Insert(heads[minIndex]);
+		GetNextRecord(minIndex, heads, runIndex, pages, runsLeft);
+	}
+
+	// Clean up
+	out.ShutDown();
+	for(int i = 0; i < totalRuns; i++) {
+		delete heads[i];
+	}
+	cout << "Deleting stuff in Merge" << endl;
+	delete []heads;
+	delete []runIndex;
+	delete []pages;
+	delete rec;
 }

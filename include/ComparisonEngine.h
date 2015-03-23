@@ -37,6 +37,10 @@ public:
         // case where the two records come from different input relations
 	// it is used to do sorts for a sort-merge join
 	virtual int Compare(Record *left, OrderMaker *order_left, Record *right, OrderMaker *order_right);
+	
+	// Compares over the first m attributes of the two OrderMakers, where m is the mininum of the 
+	// number of attributes of the two OrderMakers
+	virtual int CompareForSearch(Record *left, OrderMaker *order_left, Record *right, OrderMaker *order_right);
 
 	// this applies the given CNF to the three records and either 
 	// accepts the records or rejects them.

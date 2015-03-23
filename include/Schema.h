@@ -15,12 +15,14 @@ struct Attribute {
 	char *name;
 	Type myType;
 	~Attribute(){
-        delete name;
+        free(name);
     }
 };
 
 class OrderMaker;
 class Schema {
+
+	friend class RecordTest;
 
 	// gives the attributes in the schema
 	int numAtts;
@@ -32,14 +34,6 @@ class Schema {
 	friend class Record;
 	friend class DBFileTest;
 	friend class MockSchema;
-
-private:
-	// Strictly for testing
-	Schema() {
-		fileName = NULL;
-		numAtts = NULL;
-		myAtts = NULL;
-	}
 
 public:
 
@@ -60,11 +54,21 @@ public:
 	// this reads the specification for the schema in from a file
 	Schema (char *fName, char *relName);
 
+	// this composes a schema instance in-memory
+	Schema (char *fName, int num_atts, Attribute *atts);
+
 	// this constructs a sort order structure that can be used to
 	// place a lexicographic ordering on the records using this type of schema
 	int GetSortOrder (OrderMaker &order);
 
 	virtual ~Schema ();
+
+	// Strictly for testing
+	Schema() {
+		fileName = NULL;
+		numAtts = NULL;
+		myAtts = NULL;
+	}
 
 };
 

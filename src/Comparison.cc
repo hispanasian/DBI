@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
+#include <stdexcept>
 
 #include "../include/Comparison.h"
 
@@ -102,6 +103,38 @@ OrderMaker :: OrderMaker(Schema *schema) {
         }
 }
 
+OrderMaker :: OrderMaker(std::string str) {
+	numAtts = 0;
+	char buff[str.length()];
+	strcpy(buff, str.c_str());
+	char *tokens = strtok(buff, " ");
+	while(tokens != NULL) {
+		whichAtts[numAtts] = stoi(tokens);
+		tokens = strtok(NULL, " ");
+		if(tokens != NULL) {
+			if(strcmp(tokens, "int") == 0) whichTypes[numAtts] = Int;
+			else if(strcmp(tokens, "double") == 0) whichTypes[numAtts] = Double;
+			else if(strcmp(tokens, "string") == 0) whichTypes[numAtts] = String;
+			else throw invalid_argument("Unexpected type: was found when creating OrderMaker. Type must be int, double, or string");
+		}
+		else throw invalid_argument("Expected a type but none was found when creating OrderMaker");
+		tokens = strtok(NULL, " ");
+		++numAtts;
+	}
+}
+
+int OrderMaker::GetNumAtts() {
+	return numAtts;
+}
+
+int OrderMaker::GetAttIndex(int i) {
+	return whichAtts[i];
+}
+
+Type OrderMaker::GetAttType(int i) {
+	return whichTypes[i];
+}
+
 
 void OrderMaker :: Print () {
 	printf("NumAtts = %5d\n", numAtts);
@@ -117,7 +150,20 @@ void OrderMaker :: Print () {
 	}
 }
 
+string OrderMaker :: ToString() {
+	string str;
+	for(int i = 0; i < numAtts; i++) {
+		str += to_string(whichAtts[i]);
+		if (whichTypes[i] == Int) str += " int";
+		else if (whichTypes[i] == Double) str += " double";
+		else str += " string";
+		if (i < numAtts - 1) str += " ";
+	}
 
+	return str;
+}
+
+CNF::~CNF() {}
 
 int CNF :: GetSortOrders (OrderMaker &left, OrderMaker &right) {
 
@@ -132,18 +178,18 @@ int CNF :: GetSortOrders (OrderMaker &left, OrderMaker &right) {
 		// if we don't have a disjunction of length one, then it
 		// can't be acceptable for use with a sort ordering
 		if (orLens[i] != 1) {
-			continue;
+//			continue;
 		}
 
 		// made it this far, so first verify that it is an equality check
 		if (orList[i][0].op != Equals) {
-			continue;
+//			continue;
 		}
 
 		// now verify that it operates over atts from both tables
 		if (!((orList[i][0].operand1 == Left && orList[i][0].operand2 == Right) ||
 		      (orList[i][0].operand2 == Left && orList[i][0].operand1 == Right))) {
-			continue;		
+//			continue;
 		}
 
 		// since we are here, we have found a join attribute!!!
@@ -176,6 +222,44 @@ int CNF :: GetSortOrders (OrderMaker &left, OrderMaker &right) {
 	
 	return left.numAtts;
 
+}
+
+bool CNF::MakeQuery(const OrderMaker &sortOrder, OrderMaker &query) {
+	// initialize the size of query
+	query.numAtts = 0;
+	for(int i = 0; i < sortOrder.numAtts; i++) {
+		if(IsSortableAttribute(sortOrder.whichAtts[i])) {
+			query.numAtts++;
+			// query.whichAtts[i] = sortOrder.whichAtts[i];
+			query.whichAtts[i] = i;
+			query.whichTypes[i] = sortOrder.whichTypes[i];
+		}
+		else break;
+	}
+	return query.numAtts > 0;
+}
+
+bool CNF::IsSortableAttribute(const int &attr) {
+
+	// loop through all of the disjunctions in the CNF and find those
+	// that are acceptable for use in a sort ordering with attr
+	for (int i = 0; i < numAnds; i++) {
+
+		// if we don't have a disjunction of length one, then it
+		// can't be acceptable for use with a sort ordering with attr
+		if (orLens[i] != 1) { continue;	}
+
+		// if it is not an equality check, then it can't be used with a sort ordering
+		if (orList[i][0].op != Equals) { continue; }
+
+		// now verify that it operates over atts
+		if ((orList[i][0].operand1 == Literal && orList[i][0].operand2 != Literal && orList[i][0].whichAtt2 == attr) ||
+			  (orList[i][0].operand2 == Literal && orList[i][0].operand1 != Literal && orList[i][0].whichAtt1 == attr)) {
+			return true;
+		}
+
+	}
+	return false;
 }
 
 

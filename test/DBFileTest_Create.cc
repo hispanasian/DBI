@@ -1,15 +1,15 @@
 #include "DBFileTest.h"
+#include <typeinfo>
 
 /**
  * DBFile:Create should check of a file called "asdasdasd" exists (and it should not). it should
  * then call Create on file and leave it's lastIndex unchanged. It should also create a header called
  * "asdasdasd.header". It should also make a key for "fType=heap" in the Config file when heap is
- * passed as the fType. It should also start off by clearing DBConfig.
+ * passed as the fType. It should also start off by clearing DBConfig. It should also create a
+ * delegate of type HeapDBFile.
  */
 TEST_F(DBFileTest, CreateHeap) {
 	Sequence s1, s2, s3;
-	SetLast(last);
-	SetCursor(cursor);
 
 	EXPECT_CALL(config, Clear()).
 			InSequence(s2, s3);
@@ -23,48 +23,16 @@ TEST_F(DBFileTest, CreateHeap) {
 	EXPECT_CALL(config, Write(_)).
 			InSequence(s2, s3).
 			WillOnce(Return(true));
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
+	EXPECT_CALL(mockFile, GetLength()).
+			WillRepeatedly(Return(1));
+
+	EXPECT_CALL(rfile, FileExists(Pointee(*path))).
+			WillRepeatedly(Return(false));
+	EXPECT_CALL(rfile, FileExists(Pointee(*header))).
+			WillRepeatedly(Return(false));
 
 	EXPECT_EQ(1, file.Create(path, heap, NULL));
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
-	SetLastNull();
-	SetCursorNull();
-}
-
-/**
- * DBFile:Create should check of a file called "asdasdasd" exists (and it should not). it should
- * then call Create on file and leave it's lastIndex unchanged. It should also create a header called
- * "asdasdasd.header". It should also make a key for "fType=sorted" in the Config file when sorted
- * is passed as the fType. It should also start off by clearing DBConfig.
- */
-TEST_F(DBFileTest, CreateSorted) {
-	Sequence s1, s2, s3;
-	SetLast(last);
-	SetCursor(cursor);
-
-	EXPECT_CALL(config, Clear()).
-				InSequence(s1, s2, s3);
-	EXPECT_CALL(mockFile, Open(0, path)).
-			InSequence(s1);
-	EXPECT_CALL(rfile, Open(header)).
-			InSequence(s2).
-			WillOnce(Return(true));
-	EXPECT_CALL(config, AddKey("fType", "sorted")).
-			InSequence(s3);
-	EXPECT_CALL(config, Write(_)).
-			InSequence(s2, s3).
-			WillOnce(Return(true));
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
-
-
-	EXPECT_EQ(1, file.Create(path, sorted, NULL));
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
-	SetLastNull();
-	SetCursorNull();
+	EXPECT_EQ(typeid(HeapDBFile), typeid(*GetDB()));
 }
 
 /**
@@ -75,8 +43,6 @@ TEST_F(DBFileTest, CreateSorted) {
  */
 TEST_F(DBFileTest, CreateTree) {
 	Sequence s1, s2, s3;
-	SetLast(last);
-	SetCursor(cursor);
 
 	EXPECT_CALL(config, Clear()).
 				InSequence(s1, s2, s3);
@@ -90,100 +56,71 @@ TEST_F(DBFileTest, CreateTree) {
 	EXPECT_CALL(config, Write(_)).
 			InSequence(s2, s3).
 			WillOnce(Return(true));
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
+
+	EXPECT_CALL(rfile, FileExists(Pointee(*path))).
+			WillRepeatedly(Return(false));
+	EXPECT_CALL(rfile, FileExists(Pointee(*header))).
+			WillRepeatedly(Return(false));
 
 	EXPECT_EQ(1, file.Create(path, tree, NULL));
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
-	SetLastNull();
-	SetCursorNull();
+	EXPECT_EQ(typeid(TreeDBFile), typeid(*GetDB()));
 }
 
 /**
- * DBFile::Create should first check if a file exists before attempting to create it. If it exists,
- * Create should exit with 0. It should also start off by clearing DBConfig. Should this return 0,
- * DBFile also needs to remove any files it created. This must be tested via integration testing.
- * However, DBFile should NOT remove any files that existed before it was run. DBFile should also
- * clear config again if it returns 0.
+ * DBFile::Create should first check if a file exists before attempting to create it. If it does
+ * exist, Create should exit with 0. It should also start off by clearing DBConfig. Should
+ * this return 0, DBFile also needs to remove any files it created. This must be tested via
+ * integration testing. However, DBFile should NOT remove any files that existed before it was run.
+ * DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create1) {
-	SetCursor(cursor);
-	SetLast(last);
-
-	FILE *temp = fopen(path, "w");
-	fprintf(temp, "stuff");
-	fclose(temp);
 	EXPECT_CALL(config, Clear());
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
+
+	EXPECT_CALL(rfile, FileExists(Pointee(*path))).
+			WillRepeatedly(Return(true));
 
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
-
-
-	// Cleanup
-	remove(path);
-	SetLastNull();
-	SetCursorNull();
+	EXPECT_EQ(NULL, GetDB());
 }
 
 /**
  * DBFile::Create should first check if a header exists before attempting to create it. If it
- * exists, exists, Create should exit with 0. It should also start off by clearing DBConfig. Should
+ * exists, Create should exit with 0. It should also start off by clearing DBConfig. Should
  * this return 0, DBFile should NOT remove a file that existed before it was called. DBFile should
  * also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create2) {
-	SetCursor(cursor);
-	SetLast(last);
-
-	FILE *temp = fopen(header, "w");
-	fprintf(temp, "stuff");
-	fclose(temp);
 	EXPECT_CALL(config, Clear());
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
+
+
+	EXPECT_CALL(rfile, FileExists(Pointee(*header))).
+			WillRepeatedly(Return(true));
 
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
-
-	// Cleanup
-	remove(header);
-	SetCursorNull();
-	SetLastNull();
+	EXPECT_EQ(NULL, GetDB());
 }
 
 /**
- * DBFile::Create should return 0 if both the header exist and path exist. It should also start off
- * by clearing DBConfig. Should this return 0. DBFile should NOT remove a file that existed before
- * it was called. DBFile should also clear config again if it returns 0.
+ * DBFile::Create should return 0 if both the header exist and path exist. It should also
+ * start off by clearing DBConfig. Should this return 0. DBFile should NOT remove a file that
+ * existed before it was called. DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create3) {
-	SetCursor(cursor);
-	SetLast(last);
-
 	FILE *temp = fopen(header, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
 	temp = fopen(path, "w");
 	fprintf(temp, "stuff");
 	fclose(temp);
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
+
+	EXPECT_CALL(rfile, FileExists(Pointee(*path))).
+			WillRepeatedly(Return(true));
+	EXPECT_CALL(rfile, FileExists(Pointee(*header))).
+			WillRepeatedly(Return(true));
 
 	EXPECT_CALL(config, Clear());
 	EXPECT_EQ(0, file.Create(path, heap, NULL));
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
-
-	// Cleanup
-	remove(path);
-	remove(header);
-	SetCursorNull();
-	SetLastNull();
+	EXPECT_EQ(NULL, GetDB());
 }
 
 
@@ -194,9 +131,6 @@ TEST_F(DBFileTest, Create3) {
  * DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create4) {
-	SetCursor(cursor);
-	SetLast(last);
-
 	Sequence s1, s2, s3;
 	EXPECT_CALL(config, Clear()).
 			InSequence(s1, s2, s3);
@@ -222,15 +156,13 @@ TEST_F(DBFileTest, Create4) {
 			InSequence(s3).
 			WillRepeatedly(Return(true));
 
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
+	EXPECT_CALL(rfile, FileExists(Pointee(*path))).
+			WillRepeatedly(Return(false));
+	EXPECT_CALL(rfile, FileExists(Pointee(*header))).
+			WillRepeatedly(Return(false));
 
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
-
-	SetCursorNull();
-	SetLastNull();
+	EXPECT_EQ(NULL, GetDB());
 }
 
 /**
@@ -241,9 +173,6 @@ TEST_F(DBFileTest, Create4) {
  * DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create5) {
-	SetCursor(cursor);
-	SetLast(last);
-
 	Sequence s1, s2, s3;
 
 	EXPECT_CALL(config, Clear()).
@@ -269,16 +198,13 @@ TEST_F(DBFileTest, Create5) {
 			InSequence(s2).
 			WillRepeatedly(Return(true));
 
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
+	EXPECT_CALL(rfile, FileExists(Pointee(*path))).
+			WillRepeatedly(Return(false));
+	EXPECT_CALL(rfile, FileExists(Pointee(*header))).
+			WillRepeatedly(Return(false));
 
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
-
-
-	SetCursorNull();
-	SetLastNull();
+	EXPECT_EQ(NULL, GetDB());
 }
 
 /**
@@ -287,9 +213,6 @@ TEST_F(DBFileTest, Create5) {
  * must be tested via integration testing. DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create6) {
-	SetCursor(cursor);
-	SetLast(last);
-
 	Sequence s1, s2, s3;
 
 	EXPECT_CALL(config, Clear()).
@@ -310,15 +233,13 @@ TEST_F(DBFileTest, Create6) {
 	EXPECT_CALL(config, Clear()).
 			InSequence(s1, s2);
 
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
+	EXPECT_CALL(rfile, FileExists(Pointee(*path))).
+			WillRepeatedly(Return(false));
+	EXPECT_CALL(rfile, FileExists(Pointee(*header))).
+			WillRepeatedly(Return(false));
 
 	EXPECT_EQ(0, file.Create(path, tree, NULL));
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());	
-	
-	SetCursorNull();
-	SetLastNull();
+	EXPECT_EQ(NULL, GetDB());
 }
 
 /**
@@ -326,18 +247,9 @@ TEST_F(DBFileTest, Create6) {
  * clearing DBConfig. DBFile should also clear config again if it returns 0.
  */
 TEST_F(DBFileTest, Create7) {
-	SetCursor(cursor);
-	SetLast(last);
-
 	EXPECT_CALL(config, Clear());
-	EXPECT_CALL(cursor, EmptyItOut());
-	EXPECT_CALL(last, EmptyItOut());
 
 	EXPECT_EQ(0, file.Create(NULL, heap, NULL));
-	EXPECT_EQ(0, CursorIndex());
-	EXPECT_EQ(0, LastIndex());
-
-	SetCursorNull();
-	SetLastNull();
+	EXPECT_EQ(NULL, GetDB());
 }
 
