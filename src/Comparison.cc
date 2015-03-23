@@ -123,6 +123,18 @@ OrderMaker :: OrderMaker(std::string str) {
 	}
 }
 
+int OrderMaker::GetNumAtts() {
+	return numAtts;
+}
+
+int OrderMaker::GetAttIndex(int i) {
+	return whichAtts[i];
+}
+
+Type OrderMaker::GetAttType(int i) {
+	return whichTypes[i];
+}
+
 
 void OrderMaker :: Print () {
 	printf("NumAtts = %5d\n", numAtts);
