@@ -11,7 +11,7 @@
 
 // Simple test, expect a Record with an int of 1802759573 (sum of orderkey)
 TEST_F(RelationalOpIntTest, SumInt) {
-	FILE *tableFile = fopen ("data/10M/lineitem.tbl", "r");
+	FILE *tableFile = fopen ("data/TPCH/10M/lineitem.tbl", "r");
 	Record temp;
 	Schema schema ("data/catalog", "lineitem");
 	Record lit;
@@ -41,8 +41,6 @@ TEST_F(RelationalOpIntTest, SumInt) {
 
 	fclose(tableFile);
 	char *attname = "i";
-//	char *attname = new char[4];
-//	attname[0] = 'i'; attname[1] = 'n'; attname[2] = 't'; attname[3] = ' ';
 	Attribute att = { attname, Int };
 	Attribute atts[] = { att };
 	char *path = "";
@@ -57,7 +55,7 @@ TEST_F(RelationalOpIntTest, SumInt) {
 
 // Simple test, expect a Record with a double of 2420.51 (sum of t)
 TEST_F(RelationalOpIntTest, SumDouble) {
-	FILE *tableFile = fopen ("data/10M/lineitem.tbl", "r");
+	FILE *tableFile = fopen ("data/TPCH/10M/lineitem.tbl", "r");
 	Record temp;
 	Schema schema ("data/catalog", "lineitem");
 	Record lit;
