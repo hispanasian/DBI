@@ -192,6 +192,7 @@ void q4 () {
 	init_SF_ps (pred_ps, 100);
 
 	Join J;
+	J.Use_n_Pages(100000);
 		// left _s
 		// right _ps
 		Pipe _s_ps (pipesz);
@@ -223,7 +224,7 @@ void q4 () {
 			char *str_sum = "(ps_supplycost)";
 			get_cnf (str_sum, &join_sch, func);
 			func.Print ();
-	T.Use_n_Pages (1);
+	T.Use_n_Pages (100);
 
 	SF_ps.Run (dbf_ps, _ps, cnf_ps, lit_ps); // 161 recs qualified
 	J.Run (_s, _ps, _s_ps, cnf_p_ps, lit_p_ps);
@@ -330,12 +331,12 @@ void q6 () {
 	J.Run (_s, _ps, _s_ps, cnf_p_ps, lit_p_ps);
 	G.Run (_s_ps, _out, grp_order, func);
 
-	SF_ps.WaitUntilDone ();
-	J.WaitUntilDone ();
-	G.WaitUntilDone ();
+	// SF_ps.WaitUntilDone ();
+	// J.WaitUntilDone ();
+	// G.WaitUntilDone ();
 
 	Schema sum_sch ("sum_sch", 1, DA);
-	int cnt = clear_pipe (_out, &sum_sch, true);
+	int cnt = clear_pipe (_out, &sum_sch, false);
 	cout << " query6 returned sum for " << cnt << " groups (expected 25 groups)\n";
 	//cleanup
 //	delete s_nationkey;
