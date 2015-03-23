@@ -11,7 +11,7 @@ void GroupBy::Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function 
 	GroupByData* data = new GroupByData{ inPipe, outPipe, groupAtts, computeMe, *this };
 
 	thread_id = pthread_create(&worker, NULL, [] (void* args) -> void* {
-		GroupByData* data = (GroupByData*) data;
+		GroupByData* data = (GroupByData*) args;
 
 		// Sort the input data
 		Pipe sortedInput;
