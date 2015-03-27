@@ -1,5 +1,6 @@
 #include "BigQ.h"
 #include "Defs.h"
+#include "RawFile.h"
 #include "../include/PipedPage.h"
 #include <algorithm>
 #include <iostream>
@@ -15,7 +16,7 @@ BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
     pthread_t worker;
     int ret = pthread_create(&worker, NULL, Work, (void*) tpmms);
     if(ret) {
-    	cout << "Unable to create thread " << ret << endl;
+    	cout << "Unable to create thread in BigQ: " << ret << endl;
     }
 }
 
@@ -187,8 +188,10 @@ void TPMMS::Phase2() {
 }
 
 void TPMMS::Sort() {
-	char* fname = tmpnam(NULL);
-	while(fname == NULL) { fname = tmpnam(NULL); } // a temp file name
+	char fname[] = "sortXXXXXX";
+	RawFile rfile;
+	rfile.MakeTemp(fname);
+
 	file.Open(0, fname);
 
 	Phase1();
