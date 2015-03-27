@@ -21,6 +21,9 @@ void Sum::Run(Pipe &inPipe, Pipe &outPipe, Function &computeMe) {
 		data->op.Work(data->in, data->out, data->computeMe);
 		delete data;
 	}, (void*) data);
+	if(thread_id) {
+    	cout << "Unable to create thread in Sum: " << thread_id << endl;
+    }
 }
 
 void Sum::Work (Pipe &inPipe, Pipe &outPipe, Function &computeMe) {

@@ -20,6 +20,9 @@ void SelectFile::Run (DBFile &inFile, Pipe &outPipe, CNF &selOp, Record &literal
 		data->op.Select(data->in, data->out, data->selOp, data->literal);
 		delete data;
 	}, (void*) data);
+	if(thread_id) {
+    	cout << "Unable to create thread in SelectFile: " << thread_id << endl;
+    }
 }
 
 void SelectFile::Use_n_Pages (int n) {/* Do nothing */}

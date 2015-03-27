@@ -21,6 +21,9 @@ void WriteOut::Run(Pipe &inPipe, FILE *outFile, Schema &mySchema) {
 		data->op.Write(data->in, data->out, data->schema);
 		delete data;
 	}, (void*) data);
+	if(thread_id) {
+    	cout << "Unable to create thread in WriteOut: " << thread_id << endl;
+    }
 }
 
 void WriteOut::Write(Pipe &inPipe, FILE *outFile, Schema &mySchema) {

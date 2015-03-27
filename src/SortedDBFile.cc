@@ -158,6 +158,9 @@ void SortedDBFile::Flush(HeapDBFile &temp) {
 		MergeData *data = (MergeData*)args;
 		data->tpmms->Merge(data->p1, data->p2);
 	}, (void*)data);
+	if(t) {
+    	cout << "Unable to create thread in SortedDBFile::Flush: " << t << endl;
+    }
 
 	// Read in the sorted Records into temp
 	Record rec;

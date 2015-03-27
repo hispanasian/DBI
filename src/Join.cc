@@ -30,6 +30,9 @@ void Join::Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record 
 		data->op.Work(data->inL, data->inR, data->out, data->selOp, data->literal);
 		delete data;
 	}, (void*) data);
+	if(thread_id) {
+    	cout << "Unable to create thread in Join: " << thread_id << endl;
+    }
 }
 
 void Join::Work(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal) {

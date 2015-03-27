@@ -32,6 +32,9 @@ void DuplicateRemoval::Run(Pipe &inPipe, Pipe &outPipe, Schema &mySchema) {
 		data->op.Remove(sortedRecs, data->out, data->schema);
 		delete data;
 	}, (void*) data);
+	if(thread_id) {
+    	cout << "Unable to create thread in DuplicateRemoval: " << thread_id << endl;
+    }
 }
 
 void DuplicateRemoval::Remove(Pipe &inPipe, Pipe &outPipe, Schema &mySchema) {

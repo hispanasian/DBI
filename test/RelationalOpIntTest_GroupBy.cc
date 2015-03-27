@@ -52,6 +52,12 @@ TEST_F(RelationalOpIntTest, GroupBy) {
 		fclose(tableFile);
 	}, (void*) data);
 
+	EXPECT_EQ(0, thread_id);
+
+	if(thread_id) {
+    	cout << "Unable to create thread in DuplicateRemoval: " << thread_id << endl;
+    }
+
     // count the number of records in the output
     int count = 0;
     while(out.Remove(&temp)) {

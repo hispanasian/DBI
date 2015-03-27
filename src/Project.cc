@@ -21,6 +21,9 @@ void Project::Run (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, i
 		data->op.Work(data->in, data->out, data->keepMe, data->numAttsInput, data->numAttsOutput);
 		delete data;
 	}, (void*) data);
+	if(thread_id) {
+    	cout << "Unable to create thread in Project: " << thread_id << endl;
+    }
 }
 
 void Project::Work (Pipe &inPipe, Pipe &outPipe, int *keepMe, int numAttsInput, int numAttsOutput) {
