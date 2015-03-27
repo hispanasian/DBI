@@ -97,6 +97,8 @@ public:
 	// for the given comparison
 	virtual int GetSortOrders (OrderMaker &left, OrderMaker &right);
 
+	virtual int GetSortOrder (OrderMaker &order);
+
 	// Looks for the attributes in sortOrder that can be sorted on based on this CNF and puts
 	// it in query.
 	virtual bool MakeQuery(const OrderMaker &sortOrder, OrderMaker &query);
