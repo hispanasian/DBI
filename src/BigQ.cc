@@ -8,6 +8,9 @@
 BigQ :: BigQ () {}
 
 BigQ :: BigQ (Pipe &in, Pipe &out, OrderMaker &sortorder, int runlen) {
+	if(runlen < 1) {
+		throw std::runtime_error("BigQ: runlen must be > 0");
+	}
     TPMMS* tpmms = new TPMMS(in, out, sortorder, runlen);
     pthread_t worker;
     int ret = pthread_create(&worker, NULL, Work, (void*) tpmms);

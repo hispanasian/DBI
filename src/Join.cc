@@ -50,9 +50,9 @@ void Join::Work(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record 
 
 void Join::SortMergeJoin(Pipe &pipeL, Pipe &pipeR, Pipe &outPipe, OrderMaker &orderL, OrderMaker &orderR) {
 	Pipe sortedLeft;
-	BigQ left = BigQ(pipeL, sortedLeft, orderL, pageLimit);
+	BigQ left = BigQ(pipeL, sortedLeft, orderL, (pageLimit+1) / 2);
 	Pipe sortedRight;
-	BigQ right = BigQ(pipeR, sortedRight, orderR, pageLimit);	
+	BigQ right = BigQ(pipeR, sortedRight, orderR, (pageLimit+1) / 2);	
 	SortMergeJoiner smj;
 	smj.Join(sortedLeft, sortedRight, outPipe, orderL, orderR, memLimit);
 }
