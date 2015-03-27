@@ -72,8 +72,7 @@ public:
 		Record literal;
 		CNF sort_pred;
 		sort_pred.GrowFromParseTree (final, schema (), literal); // constructs CNF predicate
-		OrderMaker dummy;
-		sort_pred.GetSortOrders (sortorder, dummy);
+		sort_pred.GetSortOrder (sortorder);
 	}
 };
 
