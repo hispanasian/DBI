@@ -169,7 +169,6 @@ int ComparisonEngine :: CompareForSearch (Record *left, OrderMaker *order_left, 
 			// cast the two bit strings to ints
 			val1Int = *((int *) val1);
 			val2Int = *((int *) val2);
-			cout << "Comparing ints " << val1Int << " and " << val2Int << endl;
 	
 			// and do the comparison
 			if (val1Int < val2Int) 
