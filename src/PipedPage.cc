@@ -41,6 +41,9 @@ PipedPage :: PipedPage (Pipe &_recs, File *_file): recs(_recs) {
 		data -> file = NULL;
 		delete data;
 	}, (void*)data);
+	if(ret) {
+    	cout << "Unable to create thread in PipedPage: " << ret << endl;
+    }
 }
 
 PipedPage :: PipedPage (Pipe &_recs): recs(_recs) {}

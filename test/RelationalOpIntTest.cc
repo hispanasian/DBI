@@ -255,8 +255,71 @@ TEST_F(RelationalOpIntTest, Join1) {
 	int count = 0;
 	while(out.Remove(&rec)) {
 		++count;
-		rec.Print(&schemaMerged);
 	}
 	EXPECT_EQ(17, count);
+}
+
+// Do an equi-join which will result in a sort-merge join
+TEST_F(RelationalOpIntTest, Join2) {
+	Record rec;
+	Attribute* attsLeft = new Attribute[3];
+    attsLeft[0] = *new Attribute{"l_int", Int};
+    attsLeft[1] = *new Attribute{"l_double", Double};
+    attsLeft[2] = *new Attribute{"l_string", String};
+    char* schemaNameLeft = new (std::nothrow) char[3];
+    Schema schemaLeft(schemaNameLeft, 3, attsLeft);
+
+    Attribute* attsRight = new Attribute[3];
+    attsRight[0] = *new Attribute{"r_int", Int};
+    attsRight[1] = *new Attribute{"r_double", Double};
+    attsRight[2] = *new Attribute{"r_string", String};
+    char* schemaNameRight = new (std::nothrow) char[3];
+    Schema schemaRight(schemaNameRight, 3, attsRight);
+
+    Attribute* attsMerged = new Attribute[6];
+    attsMerged[0] = *new Attribute{"l_int", Int};
+    attsMerged[1] = *new Attribute{"l_double", Double};
+    attsMerged[2] = *new Attribute{"l_string", String};
+    attsMerged[3] = *new Attribute{"r_int", Int};
+    attsMerged[4] = *new Attribute{"r_double", Double};
+    attsMerged[5] = *new Attribute{"r_string", String};
+    char* schemaNameMerged = new (std::nothrow) char[3];
+    Schema schemaMerged(schemaNameMerged, 6, attsMerged);
+
+    CNF cnf;
+    Record literal;
+    SetupCNF("(l_int > r_int)", &schemaLeft, &schemaRight, cnf, literal);
+
+    Pipe inLeft = Pipe(10);
+    Pipe inRight = Pipe(10);
+    Pipe out = Pipe(10);
+
+    Join op;
+    op.Use_n_Pages(10);
+    op.Run(inLeft, inRight, out, cnf, literal);
+
+	rec.ComposeRecord(&schemaLeft, "1|1.0|Three|"); inLeft.Insert(&rec);
+	rec.ComposeRecord(&schemaLeft, "1|2.0|Two|"); inLeft.Insert(&rec);
+	rec.ComposeRecord(&schemaLeft, "2|3.0|Three|"); inLeft.Insert(&rec);
+	rec.ComposeRecord(&schemaLeft, "2|4.0|Four|"); inLeft.Insert(&rec);
+	rec.ComposeRecord(&schemaLeft, "2|5.0|Five|"); inLeft.Insert(&rec);
+	rec.ComposeRecord(&schemaLeft, "3|6.0|Six|"); inLeft.Insert(&rec);
+	rec.ComposeRecord(&schemaLeft, "3|7.0|Seven|"); inLeft.Insert(&rec);
+	inLeft.ShutDown();
+
+	rec.ComposeRecord(&schemaRight, "1|8.0|Eight|"); inRight.Insert(&rec);
+	rec.ComposeRecord(&schemaRight, "1|9.0|Nine|"); inRight.Insert(&rec);
+	rec.ComposeRecord(&schemaRight, "2|10.0|One-Zero|"); inRight.Insert(&rec);
+	rec.ComposeRecord(&schemaRight, "2|11.0|One-One|"); inRight.Insert(&rec);
+	rec.ComposeRecord(&schemaRight, "2|12.0|One-Two|"); inRight.Insert(&rec);
+	rec.ComposeRecord(&schemaRight, "3|13.0|One-Three|"); inRight.Insert(&rec);
+	rec.ComposeRecord(&schemaRight, "3|14.0|One-Four|"); inRight.Insert(&rec);
+	inRight.ShutDown();
+
+	int count = 0;
+	while(out.Remove(&rec)) {
+		++count;
+	}
+	EXPECT_EQ(16, count);
 }
 

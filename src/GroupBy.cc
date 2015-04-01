@@ -20,6 +20,9 @@ void GroupBy::Run (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function 
 		data->op.Work(sortedInput, data->outPipe, data->groupAtts, data->computeMe);
 		delete data;
 	}, (void*) data);
+	if(thread_id) {
+    	cout << "Unable to create thread in GroupBy: " << thread_id << endl;
+    }
 }
 
 void GroupBy::Work (Pipe &inPipe, Pipe &outPipe, OrderMaker &groupAtts, Function &computeMe) {
