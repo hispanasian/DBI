@@ -37,6 +37,14 @@ public:
 	virtual void AddRel(char *relName, int numTuples);
 
 	/**
+	 * Copies the relation (including all of its attributes and statistics) from oldName to a
+	 * relation with the name newName. If old_name does not exist, a out_of_range exception.
+	 * @param oldName	The name of the relation to be copied
+	 * @param newName	The name of the relation that will contain the copy of oldName
+	 */
+	virtual void CopyRel(char *oldName, char *newName);
+
+	/**
 	 * Returns the number of tuples in the provided relName.
 	 * @param relName	The name of the relation whose statistics are being requested
 	 * @return			The number of tuples in relName or NULL if no such relation exists
