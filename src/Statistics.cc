@@ -40,5 +40,10 @@ int Statistics::NumTuples(char *relName) {
 }
 
 int Statistics::NumDistincts(char *relName, char *attName) {
-	return NULL;
+	try {
+		return relations.at(relName).atts.at(attName);
+	}
+	catch(out_of_range &e) {
+		return NULL;
+	}
 }
