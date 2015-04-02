@@ -25,6 +25,10 @@ void Statistics::AddRel(char *relName, int numTuples) {
 	relations[relName].numTuples = numTuples;
 }
 
+void Statistics::AddAtt(char *relName, char *attName, int numDistincts) {
+	relations.at(relName).atts[attName] = numDistincts;
+}
+
 int Statistics::NumTuples(char *relName) {
 	try {
 		return relations.at(relName).numTuples;
@@ -33,4 +37,8 @@ int Statistics::NumTuples(char *relName) {
 		// Relation does not exist, return NULL.
 		return NULL;
 	}
+}
+
+int Statistics::NumDistincts(char *relName, char *attName) {
+	return NULL;
 }
