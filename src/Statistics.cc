@@ -68,11 +68,37 @@ void Statistics::Read(char *fromWhere, RawFile &file) {
 }
 
 void Statistics::Write(char *fromWhere) {
-
+	RawFile file;
+	Write(fromWhere, file);
 }
 
 void Statistics::Write(char *fromWhere, RawFile &file) {
+	file.Open(fromWhere);
 
+	string rel;
+	string val;
+	// First, write the Relations
+	file.Append("Relations\n");
+	for(auto it = relations.begin(); it != relations.end(); ++it) {
+		rel = it->first;
+		val = to_string(it->second.numTuples);
+		file.Append(rel + "=" + val + "\n");
+	}
+
+	string att;
+	// Second, write the Attributes
+	file.Append("Attributes\n");
+	for(auto it = relations.begin(); it != relations.end(); ++it) {
+		rel = it->first;
+		val = to_string(it->second.numTuples);
+		for(auto a_it = relations.at(rel).atts.begin(); a_it != relations.at(rel).atts.end(); ++a_it) {
+			att = a_it->first;
+			val = to_string(a_it->second);
+			file.Append(rel + "." + att + "=" + val + "\n");
+		}
+	}
+
+	file.Close();
 }
 
 int Statistics::NumTuples(char *relName) {
