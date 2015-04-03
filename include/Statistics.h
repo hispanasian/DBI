@@ -37,6 +37,14 @@ public:
 	virtual void AddRel(char *relName, int numTuples);
 
 	/**
+	 * Copies the relation (including all of its attributes and statistics) from oldName to a
+	 * relation with the name newName. If old_name does not exist, a out_of_range exception.
+	 * @param oldName	The name of the relation to be copied
+	 * @param newName	The name of the relation that will contain the copy of oldName
+	 */
+	virtual void CopyRel(char *oldName, char *newName);
+
+    /*
 	 * Adds (or replaces if it exists) an attribute to this structure. A numDistincts of -1 will
 	 * signify that the number of distincts is assumed to be equal to the number of tuples in the
 	 * associated relation. Furthermore, this will throw a out_of_range exception if a relation
