@@ -82,6 +82,7 @@ void Statistics::Read(char *fromWhere, RawFile &file) {
 			rel = line.substr(0, equals);
 			val = line.substr(equals + 1, line.length() + 1);
 			relations[rel].numTuples = stoi(val);
+			relations[rel].set.insert(rel);
 		}
 	}
 
@@ -96,6 +97,7 @@ void Statistics::Read(char *fromWhere, RawFile &file) {
 			att = line.substr(dot+1, equals - dot - 1);
 			val = line.substr(equals + 1, line.length() + 1);
 			relations.at(rel).atts[att] = stoi(val);
+			lookup[att] = rel;
 		}
 	}
 
