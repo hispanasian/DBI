@@ -122,6 +122,36 @@ public:
 	void MergeSets(std::string rel1, std::string rel2);
 
 	/**
+	 * Checks to see if the relations in relNames can be joined. The relations can be joined if:
+	 * 1. The attributes listed in parseTree belong to the relations in relNames
+	 * 2. The relations in relNames all completely belong to the same set(s). Ie, there is no
+	 * relation in relNames that belongs to a set the contains another relation that is not in
+	 * relNames.
+	 * @param parseTree	The cnf of the join
+	 * @param relNames	The relations that will be joined
+	 * @param numToJoin	The number of relations in relNames
+	 * @return True if the join is valid.
+	 */
+	bool VerifyJoin(struct AndList *parseTree, char **relNames, int numToJoin);
+
+	/**
+	 * Checks to see if the attributes listed in parseTree belong to the relations in relNames.
+	 * Throws a runtime_error if this is not valid.
+	 * @return True if the above is true.
+	 */
+	bool VerifyJoinAttributes(struct AndList *parseTree, char **relNames, int numToJoin);
+
+	/**
+	 * Checks to see if the relations in relNames all completely belong to the same set(s). Ie,
+	 * there is no relation in relNames that belongs to a set the contains another relation that is
+	 * not in relNames. Throws a runtime_error if invalid. Throws a runtime_error if invalid.
+	 * @param relNames	The relations that will be joined
+	 * @param numToJoin	The number of relations in relNames
+	 * @return True if the join is valid.
+	 */
+	bool VerifyJoinSets(char **relNames, int numToJoin);
+
+	/**
 	 * Returns the relation associated with att
 	 * @param att	The attribute being looked up
 	 * @return		The relation associated with att. Empty if no relation exists.

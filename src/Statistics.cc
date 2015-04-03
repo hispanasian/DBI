@@ -10,9 +10,7 @@ using namespace std;
 #include "Statistics.h"
 #include <iostream>
 
-Statistics::Statistics(): relations(myRelations), lookup(myLookup) {
-
-}
+Statistics::Statistics(): relations(myRelations), lookup(myLookup) {}
 
 Statistics::Statistics(std::unordered_map<std::string, StatData> &_relations,
 		std::unordered_map<std::string, std::string> &_lookup):
@@ -207,6 +205,18 @@ void Statistics::MergeSets(std::string rel1, std::string rel2) {
 			relations[*it1].set.insert(*it2);
 		}
 	}
+}
+
+bool Statistics::VerifyJoin(struct AndList *parseTree, char **relNames, int numToJoin) {
+	return VerifyJoinAttributes(parseTree, relNames, numToJoin) && VerifyJoinSets(relNames, numToJoin);
+}
+
+bool Statistics::VerifyJoinAttributes(struct AndList *parseTree, char **relNames, int numToJoin) {
+	return true;
+}
+
+bool Statistics::VerifyJoinSets(char **relNames, int numToJoin) {
+	return true;
 }
 
 string Statistics::RelLookup(string att) {
