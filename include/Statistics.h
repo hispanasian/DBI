@@ -9,11 +9,11 @@
 #define INCLUDE_STATISTICS_H_
 
 #include <unordered_map>
+#include <set>
 #include <string>
 #include "RawFile.h"
-#include <set>
 
-struct StatPair {
+struct StatData {
 	int numTuples;
 	std::unordered_map<std::string, int> atts;
 	std::set<std::string> set;
@@ -23,21 +23,30 @@ class Statistics {
 friend class StatisticsTest;
 
 protected:
-	std::unordered_map<std::string, StatPair> &relations;
-	std::unordered_map<std::string, StatPair> myRelations;
+	std::unordered_map<std::string, StatData> &relations;
+	std::unordered_map<std::string, StatData> myRelations;
 	std::unordered_map<std::string, std::string> &lookup; // att -> rel mapping
 	std::unordered_map<std::string, std::string> myLookup;
 
-	Statistics(std::unordered_map<std::string, StatPair> &_relations, std::unordered_map<std::string, std::string> &_lookup);
+	Statistics(std::unordered_map<std::string, StatData> &_relations, std::unordered_map<std::string, std::string> &_lookup);
 	virtual void Read(char *fromWhere, RawFile &file);
 	virtual void Write(char *fromWhere, RawFile &file);
+
+	/**
+	 * Adds (or replaces if it exists) a base relation to this structure. This does not affect the
+	 * relations contained by the set of this relation.
+	 * @param relName	The name of the base relation
+	 * @param numTuples	The number of tuples in the relation
+	 */
+	virtual void UpdateRel(const char *relName, int numTuples);
 public:
 	Statistics();
 	Statistics(const Statistics &copyMe);
 	virtual ~Statistics();
 
 	/**
-	 * Adds (or replaces if it exists) a base relation to this structure.
+	 * Adds (or replaces if it exists) a base relation to this structure and any other relations
+	 * that exist in the set contained by this relation.
 	 * @param relName	The name of the base relation
 	 * @param numTuples	The number of tuples in the relation
 	 */
@@ -69,6 +78,8 @@ public:
     /**
 	 * Copies the relation (including all of its attributes and statistics) from oldName to a
 	 * relation with the name newName. If old_name does not exist, a out_of_range exception.
+	 * Note that CopyRel will NOT copy the set from oldName. newName will only have itself in its
+	 * set after CopyRel exectutes.
 	 * @param oldName	The name of the relation to be copied
 	 * @param newName	The name of the relation that will contain the copy of oldName
 	 */
@@ -108,6 +119,13 @@ public:
 	 * @return		The relation associated with att. Empty if no relation exists.
 	 */
 	std::string RelLookup(std::string att);
+
+	/**
+	 *  Returns the set with the associated relation
+	 *  @param rel	The relation associated with the set returned
+	 *  @return		The set associated with rel
+	 */
+	std::set<std::string> GetSet(std::string rel);
 };
 
 #endif /* INCLUDE_STATISTICS_H_ */

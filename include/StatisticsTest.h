@@ -30,13 +30,15 @@ using ::testing::Ref;
 
 class StatisticsTest: public::testing::Test {
 public:
-	std::unordered_map<std::string, StatPair> map;
+	std::unordered_map<std::string, StatData> map;
 	std::unordered_map<std::string, std::string> lookup;
 	Statistics stat = Statistics(map, lookup);
 
 	void Read(char *name, RawFile &file) { stat.Read(name, file); }
 
 	void Write(char *name, RawFile &file) { stat.Write(name, file); }
+
+	void UpdateRel(char *relName, int numTuples) { stat.UpdateRel(relName, numTuples); }
 };
 
 #endif /* INCLUDE_STATISTICSTEST_H_ */

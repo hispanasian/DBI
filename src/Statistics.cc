@@ -14,7 +14,7 @@ Statistics::Statistics(): relations(myRelations), lookup(myLookup) {
 
 }
 
-Statistics::Statistics(std::unordered_map<std::string, StatPair> &_relations,
+Statistics::Statistics(std::unordered_map<std::string, StatData> &_relations,
 		std::unordered_map<std::string, std::string> &_lookup):
 				relations(_relations), lookup(_lookup) {
 }
@@ -23,7 +23,7 @@ Statistics::Statistics(const Statistics &copyMe): relations(myRelations), lookup
 	string rel;
 	string att;
 	int val;
-	StatPair temp;
+	StatData temp;
 
 	for(auto it = copyMe.relations.begin(); it != copyMe.relations.end(); ++it) {
 		rel = it->first;
@@ -33,6 +33,9 @@ Statistics::Statistics(const Statistics &copyMe): relations(myRelations), lookup
 			att = a_it->first;
 			relations[rel].atts[a_it->first] =  a_it->second; // Copy the attribute
 		}
+		for(auto s_it = temp.set.begin(); s_it != temp.set.end(); ++s_it) {
+			relations[rel].set.insert(*s_it);
+		}
 	}
 }
 
@@ -41,6 +44,22 @@ Statistics::~Statistics() {
 }
 
 void Statistics::AddRel(char *relName, int numTuples) {
+	try {
+		set<string> &temp = relations.at(relName).set;
+
+		// Update the numTuples of every relation in the set
+		for(auto it = temp.begin(); it != temp.end(); ++it) {
+			UpdateRel((*it).c_str(), numTuples);
+		}
+	}
+	catch(out_of_range &e) {
+		// Relation does not exist, there is no set to update so just add relName to its own set
+		relations[relName].numTuples = numTuples;
+		relations[relName].set.insert(relName);
+	}
+}
+
+void Statistics::UpdateRel(const char *relName, int numTuples) {
 	relations[relName].numTuples = numTuples;
 }
 
@@ -125,6 +144,9 @@ void Statistics::CopyRel(char *oldName, char *newName) {
 	for(auto it = relations.at(oldName).atts.begin(); it != relations.at(oldName).atts.end(); ++it) {
 		relations[newName].atts[it->first] = it->second;
 	}
+
+	// Remember to add itself to its own set
+	relations[newName].set.insert(newName);
 }
 
 void Statistics::AddAtt(char *relName, char *attName, int numDistincts) {
@@ -177,3 +199,6 @@ string Statistics::RelLookup(string att) {
 	}
 }
 
+set<string> Statistics::GetSet(string rel) {
+	return relations.at(rel).set;
+}
