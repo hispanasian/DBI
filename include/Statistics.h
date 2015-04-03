@@ -27,6 +27,7 @@ protected:
 	Statistics(std::unordered_map<std::string, StatPair> &_relations);
 public:
 	Statistics();
+	Statistics(const Statistics &copyMe);
 	virtual ~Statistics();
 
 	/**

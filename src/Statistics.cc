@@ -14,7 +14,23 @@ Statistics::Statistics(): relations(myRelations) {
 }
 
 Statistics::Statistics(unordered_map<string, StatPair> &_relations): relations(_relations) {
+}
 
+Statistics::Statistics(const Statistics &copyMe): relations(myRelations) {
+	string rel;
+	string att;
+	int val;
+	StatPair temp;
+
+	for(auto it = copyMe.relations.begin(); it != copyMe.relations.end(); ++it) {
+		rel = it->first;
+		temp = it->second;
+		relations[rel].numTuples = temp.numTuples; // Copy the relation
+		for(auto a_it = temp.atts.begin(); a_it != temp.atts.end(); ++a_it) {
+			att = a_it->first;
+			relations[rel].atts[a_it->first] =  a_it->second; // Copy the attribute
+		}
+	}
 }
 
 Statistics::~Statistics() {
