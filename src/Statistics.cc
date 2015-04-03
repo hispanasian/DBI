@@ -216,7 +216,23 @@ bool Statistics::VerifyJoinAttributes(struct AndList *parseTree, char **relNames
 }
 
 bool Statistics::VerifyJoinSets(char **relNames, int numToJoin) {
-	return true;
+	// Create a set that will hold every relation from every set that contains any relation in
+	// relNames
+	set<string> superset;
+	set<string> temp;
+	for(int i = 0; i < numToJoin; ++i) {
+		temp = GetSet(relNames[i]);
+		for(auto it = temp.begin(); it != temp.end(); ++it) {
+			superset.insert(*it);
+		}
+	}
+
+	// Now, remove every in relNames from superset. If there are any remaining elements, the join
+	// is invalid
+	for(int i = 0; i < numToJoin; ++i) {
+		superset.erase(relNames[i]);
+	}
+	return superset.empty();
 }
 
 string Statistics::RelLookup(string att) {

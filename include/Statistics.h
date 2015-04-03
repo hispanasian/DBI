@@ -136,7 +136,6 @@ public:
 
 	/**
 	 * Checks to see if the attributes listed in parseTree belong to the relations in relNames.
-	 * Throws a runtime_error if this is not valid.
 	 * @return True if the above is true.
 	 */
 	bool VerifyJoinAttributes(struct AndList *parseTree, char **relNames, int numToJoin);
@@ -144,7 +143,7 @@ public:
 	/**
 	 * Checks to see if the relations in relNames all completely belong to the same set(s). Ie,
 	 * there is no relation in relNames that belongs to a set the contains another relation that is
-	 * not in relNames. Throws a runtime_error if invalid. Throws a runtime_error if invalid.
+	 * not in relNames.
 	 * @param relNames	The relations that will be joined
 	 * @param numToJoin	The number of relations in relNames
 	 * @return True if the join is valid.
