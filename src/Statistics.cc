@@ -10,14 +10,16 @@ using namespace std;
 #include "Statistics.h"
 #include <iostream>
 
-Statistics::Statistics(): relations(myRelations) {
+Statistics::Statistics(): relations(myRelations), lookup(myLookup) {
 
 }
 
-Statistics::Statistics(unordered_map<string, StatPair> &_relations): relations(_relations) {
+Statistics::Statistics(std::unordered_map<std::string, StatPair> &_relations,
+		std::unordered_map<std::string, std::string> &_lookup):
+				relations(_relations), lookup(_lookup) {
 }
 
-Statistics::Statistics(const Statistics &copyMe): relations(myRelations) {
+Statistics::Statistics(const Statistics &copyMe): relations(myRelations), lookup(myLookup) {
 	string rel;
 	string att;
 	int val;
@@ -127,6 +129,14 @@ void Statistics::CopyRel(char *oldName, char *newName) {
 
 void Statistics::AddAtt(char *relName, char *attName, int numDistincts) {
 	relations.at(relName).atts[attName] = numDistincts;
+
+	try {
+		lookup.at(attName);
+	}
+	catch(out_of_range &e) {
+		// only update lookup if att does not exist
+		lookup[attName] = relName;
+	}
 }
 
 int Statistics::NumTuples(char *relName) {
@@ -150,8 +160,20 @@ int Statistics::NumDistincts(char *relName, char *attName) {
 
 void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJoin)
 {
+
 }
+
 double Statistics::Estimate(struct AndList *parseTree, char **relNames, int numToJoin)
 {
+
+}
+
+string Statistics::RelLookup(string att) {
+	try {
+		return lookup.at(att);
+	}
+	catch(out_of_range &e) {
+		return "";
+	}
 }
 

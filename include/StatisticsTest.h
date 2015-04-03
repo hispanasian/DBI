@@ -31,7 +31,8 @@ using ::testing::Ref;
 class StatisticsTest: public::testing::Test {
 public:
 	std::unordered_map<std::string, StatPair> map;
-	Statistics stat = Statistics(map);
+	std::unordered_map<std::string, std::string> lookup;
+	Statistics stat = Statistics(map, lookup);
 
 	void Read(char *name, RawFile &file) { stat.Read(name, file); }
 

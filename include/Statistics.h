@@ -11,10 +11,12 @@
 #include <unordered_map>
 #include <string>
 #include "RawFile.h"
+#include <set>
 
 struct StatPair {
 	int numTuples;
 	std::unordered_map<std::string, int> atts;
+	std::set<std::string> set;
 };
 
 class Statistics {
@@ -23,8 +25,10 @@ friend class StatisticsTest;
 protected:
 	std::unordered_map<std::string, StatPair> &relations;
 	std::unordered_map<std::string, StatPair> myRelations;
+	std::unordered_map<std::string, std::string> &lookup; // att -> rel mapping
+	std::unordered_map<std::string, std::string> myLookup;
 
-	Statistics(std::unordered_map<std::string, StatPair> &_relations);
+	Statistics(std::unordered_map<std::string, StatPair> &_relations, std::unordered_map<std::string, std::string> &_lookup);
 	virtual void Read(char *fromWhere, RawFile &file);
 	virtual void Write(char *fromWhere, RawFile &file);
 public:
@@ -97,6 +101,13 @@ public:
 	virtual int NumDistincts(char *relName, char *attName);
    	void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
 	double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
+
+	/**
+	 * Returns the relation associated with att
+	 * @param att	The attribute being looked up
+	 * @return		The relation associated with att. Empty if no relation exists.
+	 */
+	std::string RelLookup(std::string att);
 };
 
 #endif /* INCLUDE_STATISTICS_H_ */
