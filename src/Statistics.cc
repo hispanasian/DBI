@@ -190,6 +190,25 @@ double Statistics::Estimate(struct AndList *parseTree, char **relNames, int numT
 
 }
 
+void Statistics::MergeSets(std::string rel1, std::string rel2) {
+	set<string> temp1 = GetSet(rel1);
+	set<string> temp2 = GetSet(rel2);
+
+	// First, update all the sets containing rel1
+	for(auto it1 = temp1.begin(); it1 != temp1.end(); ++it1) {
+		for(auto it2 = temp2.begin(); it2 != temp2.end(); ++it2) {
+			relations[*it1].set.insert(*it2);
+		}
+	}
+
+	// Now, update all the sets containing rel2
+	for(auto it1 = temp2.begin(); it1 != temp2.end(); ++it1) {
+		for(auto it2 = temp1.begin(); it2 != temp1.end(); ++it2) {
+			relations[*it1].set.insert(*it2);
+		}
+	}
+}
+
 string Statistics::RelLookup(string att) {
 	try {
 		return lookup.at(att);

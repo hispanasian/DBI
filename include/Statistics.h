@@ -114,6 +114,14 @@ public:
 	double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 
 	/**
+	 * Merges the sets containing rel1 and rel2. This will do nothing if both rel1 and rel2 are
+	 * from the same set
+	 * @param rel1	a relation in the first set
+	 * @param rel2	a relation in the second set
+	 */
+	void MergeSets(std::string rel1, std::string rel2);
+
+	/**
 	 * Returns the relation associated with att
 	 * @param att	The attribute being looked up
 	 * @return		The relation associated with att. Empty if no relation exists.
