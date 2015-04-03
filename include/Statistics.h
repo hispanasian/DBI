@@ -11,7 +11,9 @@
 #include <unordered_map>
 #include <set>
 #include <string>
+#include <vector>
 #include "RawFile.h"
+#include "ParseTree.h"
 
 struct StatData {
 	int numTuples;
@@ -99,19 +101,20 @@ public:
 	/**
 	 * Returns the number of tuples in the provided relName.
 	 * @param relName	The name of the relation whose statistics are being requested
-	 * @return			The number of tuples in relName or NULL if no such relation exists
+	 * @return			The number of tuples in relName or -1 if no such relation exists
 	 */
-	virtual int NumTuples(char *relName);
+	virtual int NumTuples(const char *relName);
 
 	/**
 	 * Returns the number of distinct tuples in the given attribute. This will return null if
 	 * either the relation or attribute do not exist.
 	 * @param relName	The name of the relation which holds the attribute
-	 * @param attName	The name of the attribute being queried.
+	 * @param attName	The name of the attribute being queried or -1 if neither the relation nor
+	 * 					attribute exist
 	 */
-	virtual int NumDistincts(char *relName, char *attName);
-   	void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
-	double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
+	virtual int NumDistincts(const char *relName, const char *attName);
+   	virtual void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
+	virtual double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 
 	/**
 	 * Merges the sets containing rel1 and rel2. This will do nothing if both rel1 and rel2 are
@@ -119,7 +122,7 @@ public:
 	 * @param rel1	a relation in the first set
 	 * @param rel2	a relation in the second set
 	 */
-	void MergeSets(std::string rel1, std::string rel2);
+	virtual void MergeSets(std::string rel1, std::string rel2);
 
 	/**
 	 * Checks to see if the relations in relNames can be joined. The relations can be joined if:
@@ -132,13 +135,13 @@ public:
 	 * @param numToJoin	The number of relations in relNames
 	 * @return True if the join is valid.
 	 */
-	bool VerifyJoin(struct AndList *parseTree, char **relNames, int numToJoin);
+	virtual bool VerifyJoin(struct AndList *parseTree, char **relNames, int numToJoin);
 
 	/**
 	 * Checks to see if the attributes listed in parseTree belong to the relations in relNames.
 	 * @return True if the above is true.
 	 */
-	bool VerifyJoinAttributes(struct AndList *parseTree, char **relNames, int numToJoin);
+	virtual bool VerifyJoinAttributes(struct AndList *parseTree, char **relNames, int numToJoin);
 
 	/**
 	 * Checks to see if the relations in relNames all completely belong to the same set(s). Ie,
@@ -148,21 +151,38 @@ public:
 	 * @param numToJoin	The number of relations in relNames
 	 * @return True if the join is valid.
 	 */
-	bool VerifyJoinSets(char **relNames, int numToJoin);
+	virtual bool VerifyJoinSets(char **relNames, int numToJoin);
+
+	/**
+	 * Parses the operand and puts the relation and attribute in out. The format of the operand
+	 * should be one of the following:
+	 * 1. attribute
+	 * 2. relation.attribute
+	 *
+	 * The ouput will be as follows:
+	 * out[0] = relation
+	 * out[1] = attribute
+	 *
+	 * This method will return false if the attribute in the operand does not exist.
+	 * @param operand	The operand being parsed
+	 * @param out		The vector that will hold the resulting relation and attribute
+	 * @return			True if the operand can be parsed and the attribute can be found
+	 */
+	virtual bool ParseOperand(std::string operand, std::vector<std::string> &out);
 
 	/**
 	 * Returns the relation associated with att
 	 * @param att	The attribute being looked up
 	 * @return		The relation associated with att. Empty if no relation exists.
 	 */
-	std::string RelLookup(std::string att);
+	virtual std::string RelLookup(std::string att);
 
 	/**
 	 *  Returns the set with the associated relation
 	 *  @param rel	The relation associated with the set returned
 	 *  @return		The set associated with rel
 	 */
-	std::set<std::string> GetSet(std::string rel);
+	virtual std::set<std::string> GetSet(std::string rel);
 };
 
 #endif /* INCLUDE_STATISTICS_H_ */

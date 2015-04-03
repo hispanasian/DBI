@@ -12,6 +12,11 @@
 #include <gmock/gmock.h>
 #include "Statistics.h"
 #include "MockClasses.h"
+#include "ParseTree.h"
+
+extern "C" struct YY_BUFFER_STATE *yy_scan_string(const char*);
+extern "C" int yyparse(void);
+extern struct AndList *final;
 
 using ::testing::_;
 using ::testing::Return;

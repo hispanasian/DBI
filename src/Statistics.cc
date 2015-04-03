@@ -159,22 +159,22 @@ void Statistics::AddAtt(char *relName, char *attName, int numDistincts) {
 	}
 }
 
-int Statistics::NumTuples(char *relName) {
+int Statistics::NumTuples(const char *relName) {
 	try {
 		return relations.at(relName).numTuples;
 	}
 	catch(out_of_range &e) {
 		// Relation does not exist, return NULL.
-		return NULL;
+		return -1;
 	}
 }
 
-int Statistics::NumDistincts(char *relName, char *attName) {
+int Statistics::NumDistincts(const char *relName, const char *attName) {
 	try {
 		return relations.at(relName).atts.at(attName);
 	}
 	catch(out_of_range &e) {
-		return NULL;
+		return -1;
 	}
 }
 
@@ -212,6 +212,37 @@ bool Statistics::VerifyJoin(struct AndList *parseTree, char **relNames, int numT
 }
 
 bool Statistics::VerifyJoinAttributes(struct AndList *parseTree, char **relNames, int numToJoin) {
+	struct AndList *andList = parseTree;
+	struct OrList *orList = NULL;
+	struct Operand *leftOp;
+	struct Operand *rightOp;
+	vector<string> left;
+	vector<string> right;
+	set<string> rels;
+
+	// Populate rels with the relations in relNames
+	for(int i = 0; i < numToJoin; ++i) {
+		rels.insert(relNames[i]);
+	}
+
+	while(andList != NULL) {
+		orList = andList->left;
+		while(orList != NULL) {
+			// First, verify that the relation/attribute is valid
+			leftOp = orList->left->left;
+			rightOp = orList->left->right;
+			if( (leftOp->code == NAME && ParseOperand(leftOp->value, left)) == false || // left operand
+					(rightOp->code == NAME && ParseOperand(rightOp->value, right) == false)) // right operand
+				return false;
+
+			// Next, check to see if the relations exist in the rels.
+			if(rels.count(left[0]) == 0) return false;
+			if(rels.count(right[0]) == 0) return false;
+
+			orList = orList->rightOr;
+		}
+		andList = andList->rightAnd;
+	}
 	return true;
 }
 
@@ -233,6 +264,32 @@ bool Statistics::VerifyJoinSets(char **relNames, int numToJoin) {
 		superset.erase(relNames[i]);
 	}
 	return superset.empty();
+}
+
+bool Statistics::ParseOperand(string operand, vector<string> &out) {
+	string relation;
+	string attribute;
+	out.clear();
+
+	if(operand.find(".") == string::npos) {
+		// No relation provided
+		attribute = operand;
+		relation = RelLookup(attribute);
+	}
+	else {
+		// relation provided
+		attribute = operand.substr(operand.find(".") + 1, operand.length() - operand.find("."));
+		relation = operand.substr(0, operand.find("."));
+	}
+
+	// Now to verify that the attributes and relations actually exist.
+	if(NumDistincts(relation.c_str(), attribute.c_str()) == -1) {
+		return false;
+	}
+	out.push_back(relation);
+	out.push_back(attribute);
+
+	return true;
 }
 
 string Statistics::RelLookup(string att) {
