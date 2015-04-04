@@ -119,13 +119,13 @@ TEST_F(StatisticsTest, ParseWhere4) {
 
 	stat.ParseWhere(final, selects, joins);
 
-	EXPECT_EQ(2, selects.size());
+	EXPECT_EQ(0, selects.size());
 	EXPECT_EQ(2, joins.size());
 	EXPECT_EQ(1, joins.at("A").size());
-	EXPECT_EQ(2, joins.at("B").size());
+	EXPECT_EQ(1, joins.at("B").size());
 
-	ASSERT_TRUE(selects.at("A") != NULL);
-	ASSERT_TRUE(selects.at("B") != NULL);
+	ASSERT_THROW(selects.at("A"), out_of_range);
+	ASSERT_THROW(selects.at("B"), out_of_range);
 	ASSERT_TRUE(joins.at("A").at("B") != NULL);
 	ASSERT_TRUE(joins.at("B").at("A") != NULL);
 }
@@ -145,7 +145,7 @@ TEST_F(StatisticsTest, ParseWhere5) {
 	stat.AddAtt(relName[1], "b2",11);
 	stat.AddAtt(relName[1], "b3",7);
 	stat.AddRel(relName[2],6001215);
-	stat.AddAtt(relName[1], "c1",3);
+	stat.AddAtt(relName[2], "c1",3);
 
 	char *cnf = "(b1 = 5) AND (a1=b3) AND (a1 > 5 OR a2 = 9 OR a3 < 10) AND (c1=b1)";
 
@@ -183,7 +183,7 @@ TEST_F(StatisticsTest, ParseWhere6) {
 	stat.AddAtt(relName[1], "b2",11);
 	stat.AddAtt(relName[1], "b3",7);
 	stat.AddRel(relName[2],6001215);
-	stat.AddAtt(relName[1], "c1",3);
+	stat.AddAtt(relName[2], "c1",3);
 
 	char *cnf = "(b1 = 5) AND (a1=b3) AND (a1 > 5 OR a2 = 9 OR a3 < 10)";
 
@@ -212,7 +212,7 @@ TEST_F(StatisticsTest, ParseWhere7) {
 	stat.AddAtt(relName[1], "b2",11);
 	stat.AddAtt(relName[1], "b3",7);
 	stat.AddRel(relName[2],6001215);
-	stat.AddAtt(relName[1], "c1",3);
+	stat.AddAtt(relName[2], "c1",3);
 
 	char *cnf = "(b1 = 5) AND (a1=b3) AND (a1 > 5 OR a2 = 9 OR a3 < 10) AND (c1=a1) AND (a2=b2)";
 
@@ -251,5 +251,6 @@ TEST_F(StatisticsTest, ParseWhere8) {
 
 	ASSERT_TRUE(selects.at("A") != NULL);
 	ASSERT_TRUE(selects["A"]->left != NULL);
-	ASSERT_TRUE(selects["A"]->left->left == NULL);
+	ASSERT_TRUE(selects["A"]->rightAnd->left != NULL);
+	ASSERT_TRUE(selects["A"]->rightAnd->rightAnd == NULL);
 }
