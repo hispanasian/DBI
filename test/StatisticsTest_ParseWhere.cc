@@ -123,6 +123,10 @@ TEST_F(StatisticsTest, ParseWhere2) {
 	EXPECT_EQ(0, joins.size());
 
 	ASSERT_TRUE(selects.at("A") != NULL);
+
+	// Verify the AndLists
+	EXPECT_TRUE(SameOrList(final->left, selects["A"]->left));
+	EXPECT_TRUE(selects["A"]->rightAnd == NULL);
 }
 
 /**
@@ -186,6 +190,12 @@ TEST_F(StatisticsTest, ParseWhere4) {
 	ASSERT_THROW(selects.at("B"), out_of_range);
 	ASSERT_TRUE(joins.at("A").at("B") != NULL);
 	ASSERT_TRUE(joins.at("B").at("A") != NULL);
+
+	// Verify the AndLists
+	EXPECT_TRUE(SameOrList(final->left, joins["A"]["B"]->left));
+	EXPECT_TRUE(joins["B"]["A"]->rightAnd == NULL);
+	EXPECT_TRUE(SameOrList(final->left, joins["B"]["A"]->left));
+	EXPECT_TRUE(joins["B"]["A"]->rightAnd == NULL);
 }
 
 /**
@@ -204,8 +214,9 @@ TEST_F(StatisticsTest, ParseWhere5) {
 	stat.AddAtt(relName[1], "b3",7);
 	stat.AddRel(relName[2],6001215);
 	stat.AddAtt(relName[2], "c1",3);
+	stat.AddAtt(relName[2], "c2",3);
 
-	char *cnf = "(b1 = 5) AND (a1=b3) AND (a1 > 5 OR a2 = 9 OR a3 < 10) AND (c1=b1)";
+	char *cnf = "(b1 = 5) AND (a1=b3) AND (a1 > 5 OR a2 = 9 OR a3 < 10) AND (c1=b1) AND (b3 > 0)";
 
 	yy_scan_string(cnf);
 	yyparse();
@@ -220,10 +231,21 @@ TEST_F(StatisticsTest, ParseWhere5) {
 
 	ASSERT_TRUE(selects.at("A") != NULL);
 	ASSERT_TRUE(selects.at("B") != NULL);
+	ASSERT_THROW(selects.at("C"), out_of_range);
 	ASSERT_TRUE(joins.at("A").at("B") != NULL);
 	ASSERT_TRUE(joins.at("B").at("A") != NULL);
 	ASSERT_TRUE(joins.at("B").at("C") != NULL);
 	ASSERT_TRUE(joins.at("C").at("B") != NULL);
+
+	// Verify the AndLists
+	EXPECT_TRUE(SameOrList(final->rightAnd->rightAnd->left, selects["A"]->left));
+	EXPECT_TRUE(selects["A"]->rightAnd == NULL);
+	EXPECT_TRUE(SameOrList(final->left, selects["B"]->left));
+	EXPECT_TRUE(SameOrList(final->rightAnd->rightAnd->rightAnd->rightAnd->left, selects["B"]->rightAnd->left));
+	EXPECT_TRUE(selects["B"]->rightAnd->rightAnd == NULL);
+	EXPECT_TRUE(SameOrList(final->rightAnd->left, joins["A"]["B"]->left));
+	EXPECT_TRUE(SameOrList(final->rightAnd->rightAnd->rightAnd->left, joins["B"]["C"]->left));
+	EXPECT_TRUE(SameOrList(final->rightAnd->rightAnd->rightAnd->left, joins["C"]["B"]->left));
 }
 
 /**
@@ -243,7 +265,7 @@ TEST_F(StatisticsTest, ParseWhere6) {
 	stat.AddRel(relName[2],6001215);
 	stat.AddAtt(relName[2], "c1",3);
 
-	char *cnf = "(b1 = 5) AND (a1=b3) AND (a1 > 5 OR a2 = 9 OR a3 < 10)";
+	char *cnf = "(b1 = 5) AND (a1=b3) AND (a1 > 5 OR a2 = 9 OR a3 < 10) AND (c1 = 3)";
 
 	yy_scan_string(cnf);
 	yyparse();
