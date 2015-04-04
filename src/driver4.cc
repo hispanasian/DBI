@@ -183,11 +183,9 @@ void q3 (){
 
 	Statistics s;
 	char *relName[] = {"supplier","customer","nation"};
-
-	s.Read(fileName);
 	
 	s.AddRel(relName[0],10000);
-	s.AddAtt(relName[0], "s_nationey",25);
+	s.AddAtt(relName[0], "s_nationkey",25);
 
 	s.AddRel(relName[1],150000);
 	s.AddAtt(relName[1], "c_custkey",150000);
@@ -260,30 +258,32 @@ void q4 (){
 	s.CopyRel("nation","n");
 	s.CopyRel("region","r");
 
+	char *shortRelName[] = { "p", "ps", "s", "n", "r"};
+
 	char *cnf = "(p.p_partkey=ps.ps_partkey) AND (p.p_size = 2)";
 	yy_scan_string(cnf);
 	yyparse();
-	s.Apply(final, relName, 2);
+	s.Apply(final, shortRelName, 2);
 
 	cnf ="(s.s_suppkey = ps.ps_suppkey)";
 	yy_scan_string(cnf);
 	yyparse();
-	s.Apply(final, relName, 3);
+	s.Apply(final, shortRelName, 3);
 
 	cnf =" (s.s_nationkey = n.n_nationkey)";
 	yy_scan_string(cnf);
 	yyparse();
-	s.Apply(final, relName, 4);
+	s.Apply(final, shortRelName, 4);
 
 	cnf ="(n.n_regionkey = r.r_regionkey) AND (r.r_name = 'AMERICA') ";
 	yy_scan_string(cnf);
 	yyparse();
 
-	double result = s.Estimate(final, relName, 5);
+	double result = s.Estimate(final, shortRelName, 5);
 	if(fabs(result-3200)>0.1)
 		cout<<"error in estimating Q4\n";
 
-	s.Apply(final, relName, 5);	
+	s.Apply(final, shortRelName, 5);
 	
 	s.Write(fileName);
 	
@@ -338,7 +338,7 @@ void q6 (){
 	Statistics s;
         char *relName[] = { "partsupp", "supplier", "nation"};
 
-	s.Read(fileName);
+//	s.Read(fileName);
 	
 	s.AddRel(relName[0],800000);
 	s.AddAtt(relName[0], "ps_suppkey",10000);
@@ -378,7 +378,7 @@ void q7(){
 	Statistics s;
         char *relName[] = { "orders", "lineitem"};
 
-	s.Read(fileName);
+//	s.Read(fileName);
 	
 
 	s.AddRel(relName[0],1500000);
@@ -411,7 +411,7 @@ void q8 (){
 	Statistics s;
         char *relName[] = { "part",  "partsupp"};
 
-	s.Read(fileName);
+//	s.Read(fileName);
 	
 	s.AddRel(relName[0],200000);
 	s.AddAtt(relName[0], "p_partkey",200000);
@@ -480,7 +480,7 @@ void q10 (){
 	Statistics s;
         char *relName[] = { "customer", "orders", "lineitem","nation"};
 
-	s.Read(fileName);
+//	s.Read(fileName);
 	
 	s.AddRel(relName[0],150000);
 	s.AddAtt(relName[0], "c_custkey",150000);
@@ -526,7 +526,7 @@ void q11 (){
 	Statistics s;
         char *relName[] = { "part",  "lineitem"};
 
-	s.Read(fileName);
+//	s.Read(fileName);
 	
 	s.AddRel(relName[0],200000);
 	s.AddAtt(relName[0], "p_partkey",200000);
