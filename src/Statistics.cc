@@ -445,3 +445,114 @@ double Statistics::ComputeNumTuples(std::vector<Expression*>& expressions) {
 
 	return sum;
 }
+
+void Statistics::ParseWhere(AndList *where,
+		unordered_map<string, AndList*> &selects,
+		unordered_map<string, unordered_map<string, AndList*> > &joins) {
+	struct AndList *andList = where;
+	struct OrList *orList = NULL;
+	struct OrList *copy = NULL;
+	struct Operand *leftOp;
+	struct Operand *rightOp;
+	vector<string> left;
+	vector<string> right;
+	set<string> affectedRels; // vector of the relations that will be affected by the OrList
+	int totalJoins = 0;
+
+	bool isJoin = false;
+
+	while(andList != NULL) {
+		int joinCount = 0;
+		orList = andList->left;
+		copy = new OrList();
+
+		while(orList != NULL) {
+			// First, make a copy of this Or
+			copy->left = new ComparisonOp();
+			copy->left->code = orList->left->code;
+			copy->left->left = orList->left->left;
+			copy->left->right = orList->left->right;
+
+			// Verify that the relation/attribute is valid
+			leftOp = orList->left->left;
+			rightOp = orList->left->right;
+			if( (leftOp->code == NAME && ParseOperand(leftOp->value, left)) == false || // left operand
+					(rightOp->code == NAME && ParseOperand(rightOp->value, right) == false)) // right operand
+				throw runtime_error("Relation or attribute does not exist");
+
+			// First, let's check to see if we have a join
+			if(leftOp->code == NAME && rightOp->code == NAME) {
+				// update the affected relations
+				affectedRels.insert(left[0]);
+				affectedRels.insert(right[0]);
+
+				// Variable upkeep
+				isJoin = true;
+				++joinCount;
+				++totalJoins;
+			}
+			// We are parsing a Select
+			else {
+				if(leftOp->code == NAME) affectedRels.insert(left[0]);
+				else affectedRels.insert(right[0]);
+			}
+
+			// Prepare for the next Or
+			orList = orList->rightOr;
+			if(orList != NULL) {
+				copy->rightOr = new OrList();
+				copy = copy->rightOr;
+			}
+			else copy->rightOr = NULL;
+		}
+
+		// Prepare the AndList
+		AndList *op = new AndList();
+		op->rightAnd = NULL;
+		op->left = copy;
+
+
+		// Create the join if there are no errors
+		if(isJoin) {
+			// Can't join on more than one relation/attribute pair
+			if(joinCount > 1) throw runtime_error("We can only join on a single pair of attributes in an OrList");
+			if(affectedRels.size() != 2) throw runtime_error("We can't join on the same relation");
+
+			// Attempt to add the Join. However, if There is already a join on this pair of
+			// relations, throw an error
+			try {
+				joins[left[0]].at(right[0]);
+				joins[right[0]].at(left[0]);
+
+				throw runtime_error("Cannot Join on a pair of relations more than once");
+			} catch(out_of_range &e) {
+				joins[left[0]].insert(OrPair(right[0], op));
+				joins[right[0]].insert(OrPair(left[0], op));
+			}
+
+		}
+		// Create/Append to the select if there are no errors
+		else {
+			if(affectedRels.size() != 1) throw runtime_error("The OrList cannot affect more than one relation");
+			string rel = *(affectedRels.begin()); // Get the name of the affected Relation
+			try {
+				// The current AndList associated with the select
+				AndList *temp = selects.at(rel);
+				temp->rightAnd = op;
+
+			} catch(out_of_range &e) {
+				// The relation does not have an AndList yet
+				selects.insert(OrPair(rel, op));
+			}
+		}
+
+		// Variable upkeep
+		joinCount = 0;
+		isJoin = false;
+		affectedRels.clear();
+		andList = andList->rightAnd;
+	}
+
+	// Check to see that all the relations have been joined and that there are no excess joins
+	if((affectedRels.size() - totalJoins) != 1) throw runtime_error("The AndList contains an unexpected number of joins");
+}
