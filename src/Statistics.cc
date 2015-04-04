@@ -456,7 +456,7 @@ void Statistics::ParseWhere(AndList *where,
 	struct Operand *rightOp;
 	vector<string> left;
 	vector<string> right;
-	set<string> affectedRels; // vector of the relations that will be affected by the OrList
+	set<string> affectedRels; // set of the relations that will be affected by the OrList
 	int totalJoins = 0;
 
 	bool isJoin = false;
@@ -552,7 +552,6 @@ void Statistics::ParseWhere(AndList *where,
 		affectedRels.clear();
 		andList = andList->rightAnd;
 	}
-
 	// Check to see that all the relations have been joined and that there are no excess joins
-	if((affectedRels.size() - totalJoins) != 1) throw runtime_error("The AndList contains an unexpected number of joins");
+	if((relations.size() - totalJoins) != 1) throw runtime_error("The AndList contains an unexpected number of joins");
 }
