@@ -63,7 +63,7 @@ TEST(BinaryExpressionTest, Combine3) {
 	stat.AddAtt("rel2", "att2", 0);
 
 	BinaryExpression exp1 = BinaryExpression(stat, "rel1", "att1", "rel2", "att2", LESS_THAN);
-	BinaryExpression exp2 = BinaryExpression(stat, "rel1", "att1", "rel2", "att2", EQUALS);
+	BinaryExpression exp2 = BinaryExpression(stat, "rel1", "att1", "rel2", "att2", GREATER_THAN);
 
 	EXPECT_EQ(false, exp1.Combine(exp2));
 }
@@ -81,6 +81,23 @@ TEST(BinaryExpressionTest, Combine4) {
 
 	BinaryExpression exp1 = BinaryExpression(stat, "rel1", "att1", "rel2", "att2", EQUALS);
 	BinaryExpression exp2 = BinaryExpression(stat, "rel2", "att2", "rel1", "att1", EQUALS);
+
+	EXPECT_EQ(true, exp1.Combine(exp2));
+}
+
+/**
+ * Binary Expression should return true when combining two BinaryExpressions that are semantically
+ * identical
+ */
+TEST(BinaryExpressionTest, Combine5) {
+	Statistics stat;
+	stat.AddRel("rel1", 0);
+	stat.AddRel("rel2", 0);
+	stat.AddAtt("rel1", "att1", 0);
+	stat.AddAtt("rel2", "att2", 0);
+
+	BinaryExpression exp1 = BinaryExpression(stat, "rel1", "att1", "rel2", "att2", LESS_THAN);
+	BinaryExpression exp2 = BinaryExpression(stat, "rel2", "att2", "rel1", "att1", GREATER_THAN);
 
 	EXPECT_EQ(true, exp1.Combine(exp2));
 }

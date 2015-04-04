@@ -30,12 +30,22 @@ bool BinaryExpression::Combine(Expression &e) {
 		{
 			BinaryExpression *temp = dynamic_cast<BinaryExpression*>(&e);
 			BinaryExpression &be = *temp;
-			if(op == be.op &&
-					( (rel1.compare(be.rel1) == 0 && att1.compare(be.att1) == 0 &&
-							rel2.compare(be.rel2) == 0 && att2.compare(be.att2) == 0) ||
-					(rel1.compare(be.rel2) == 0 && att1.compare(be.att2) == 0 &&
-											rel2.compare(be.rel1) == 0 && att2.compare(be.att1) == 0 ) ) )
-				return true;
+
+			// Same relations/attributes in the same position
+			if(rel1.compare(be.rel1) == 0 && att1.compare(be.att1) == 0 &&
+					rel2.compare(be.rel2) == 0 && att2.compare(be.att2) == 0)
+			{
+				if(op == be.op) return true;
+				else return false;
+			}
+			// Same relations/attributes in different positions
+			else if(rel1.compare(be.rel2) == 0 && att1.compare(be.att2) == 0 &&
+					rel2.compare(be.rel1) == 0 && att2.compare(be.att1) == 0 ) {
+				if( (op == EQUALS && be.op == EQUALS) ||
+						(op == LESS_THAN && be.op == GREATER_THAN) ||
+						(op == GREATER_THAN && be.op == LESS_THAN) ) return true;
+				else return false;
+			}
 			else return false;
 			break;
 		}
