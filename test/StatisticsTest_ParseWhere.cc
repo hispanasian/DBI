@@ -1,4 +1,56 @@
 #include "StatisticsTest.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+/**
+ * Compares left and right for sameness
+ */
+bool SameComparisonOp(ComparisonOp *left, ComparisonOp *right) {
+	if(left->code == right->code &&
+			left->left->code == right->left->code &&
+			strcmp(left->left->value, right->left->value) == 0 &&
+			left->right->code == right->right->code &&
+			strcmp(left->right->value, right->right->value) == 0) return true;
+	return false;
+}
+
+bool SameOrList(OrList *left, OrList *right) {
+	while(left != NULL || right != NULL) {
+		if(!SameComparisonOp(left->left, right->left)) return false;
+		left = left->rightOr;
+		right = right->rightOr;
+	}
+	if(left != NULL || right != NULL) return false;
+	return true;
+}
+
+bool SameAndList(AndList *left, AndList *right) {
+	while(left != NULL || right != NULL) {
+		if(!SameOrList(left->left, right->left)) return false;
+		left = left->rightAnd;
+		right = right->rightAnd;
+	}
+	if(left != NULL || right != NULL) return false;
+	return true;
+}
+
+string OrListToString(OrList *list) {
+	string temp = "";
+	while (list != NULL) {
+		temp.append(list->left->left->value);
+		temp.append(" ");
+		if(list->left->code == LESS_THAN) temp.append(" < ");
+		if(list->left->code == GREATER_THAN) temp.append(" > ");
+		if(list->left->code == EQUALS) temp.append(" = ");
+		temp.append(" ");
+		temp.append(list->left->right->value);
+		temp.append(" ");
+		if(list->rightOr != NULL) temp.append("OR ");
+		list = list->rightOr;
+	}
+	return temp;
+}
 
 /**
  * ParseWhere should create two AndLists for select and two AndLists for Join where both AndLists
@@ -37,6 +89,12 @@ TEST_F(StatisticsTest, ParseWhere1) {
 	ASSERT_TRUE(selects.at("B") != NULL);
 	ASSERT_TRUE(joins.at("A").at("B") != NULL);
 	ASSERT_TRUE(joins.at("B").at("A") != NULL);
+
+	// Verify the AndLists
+	EXPECT_TRUE(SameOrList(final->rightAnd->rightAnd->left, selects["A"]->left));
+	EXPECT_TRUE(SameOrList(final->left, selects["B"]->left));
+	EXPECT_TRUE(SameOrList(final->rightAnd->left, joins["A"]["B"]->left));
+	EXPECT_TRUE(SameOrList(final->rightAnd->left, joins["B"]["A"]->left));
 }
 
 /**

@@ -451,7 +451,9 @@ void Statistics::ParseWhere(AndList *where,
 		unordered_map<string, unordered_map<string, AndList*> > &joins) {
 	struct AndList *andList = where;
 	struct OrList *orList = NULL;
+	struct OrList *copyStart = NULL;
 	struct OrList *copy = NULL;
+	struct OrList *prev = NULL;
 	struct Operand *leftOp;
 	struct Operand *rightOp;
 	vector<string> left;
@@ -465,13 +467,14 @@ void Statistics::ParseWhere(AndList *where,
 		int joinCount = 0;
 		orList = andList->left;
 		copy = new OrList();
+		copyStart = copy;
 
 		while(orList != NULL) {
-			// First, make a copy of this Or
-			copy->left = new ComparisonOp();
-			copy->left->code = orList->left->code;
-			copy->left->left = orList->left->left;
-			copy->left->right = orList->left->right;
+			// First, make a copy of current CoparisonOp in the OrList
+			copy->left = orList->left;
+			copy->rightOr = new OrList();
+			prev = copy;
+			copy = copy->rightOr;
 
 			// Verify that the relation/attribute is valid
 			leftOp = orList->left->left;
@@ -499,17 +502,16 @@ void Statistics::ParseWhere(AndList *where,
 
 			// Prepare for the next Or
 			orList = orList->rightOr;
-			if(orList != NULL) {
-				copy->rightOr = new OrList();
-				copy = copy->rightOr;
-			}
-			else copy->rightOr = NULL;
 		}
+		// Remove extraneous Or
+		copy = prev;
+		delete copy->rightOr;
+		copy->rightOr = NULL;
 
 		// Prepare the AndList
 		AndList *op = new AndList();
 		op->rightAnd = NULL;
-		op->left = copy;
+		op->left = copyStart;
 
 
 		// Create the join if there are no errors
@@ -538,6 +540,11 @@ void Statistics::ParseWhere(AndList *where,
 			try {
 				// The current AndList associated with the select
 				AndList *temp = selects.at(rel);
+
+				// Append to existing AndList
+				while(temp->rightAnd != NULL) {
+					temp = temp->rightAnd;
+				}
 				temp->rightAnd = op;
 
 			} catch(out_of_range &e) {
