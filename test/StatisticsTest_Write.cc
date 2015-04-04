@@ -12,11 +12,11 @@ TEST_F(StatisticsTest, Write1) {
 	EXPECT_CALL(file, Open("file.txt"));
 	EXPECT_CALL(file, Append("Relations\n")).
 			WillOnce(Return(true));
-	EXPECT_CALL(file, Append("rel1=65\n")).
+	EXPECT_CALL(file, Append("rel1=65.000000\n")).
 			WillOnce(Return(true));
-	EXPECT_CALL(file, Append("rel2=12\n")).
+	EXPECT_CALL(file, Append("rel2=12.300000\n")).
 			WillOnce(Return(true));
-	EXPECT_CALL(file, Append("rel3=97\n")).
+	EXPECT_CALL(file, Append("rel3=97.000000\n")).
 			WillOnce(Return(true));
 	EXPECT_CALL(file, Append("Attributes\n")).
 			WillOnce(Return(true));
@@ -32,7 +32,7 @@ TEST_F(StatisticsTest, Write1) {
 			WillOnce(Return(true));
 
 	map["rel1"].numTuples = 65;
-	map["rel2"].numTuples = 12;
+	map["rel2"].numTuples = 12.3;
 	map["rel3"].numTuples = 97;
 
 	map["rel1"].atts["att1"] = 1;
@@ -42,7 +42,7 @@ TEST_F(StatisticsTest, Write1) {
 
 	Write("file.txt", file);
 	EXPECT_EQ(65, map["rel1"].numTuples);
-	EXPECT_EQ(12, map["rel2"].numTuples);
+	EXPECT_EQ(12.3, map["rel2"].numTuples);
 	EXPECT_EQ(97, map["rel3"].numTuples);
 
 	EXPECT_EQ(1, map["rel1"].atts["att1"]);

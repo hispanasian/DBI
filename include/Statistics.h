@@ -14,7 +14,7 @@
 
 struct StatPair {
 	double numTuples;
-	std::unordered_map<std::string, double> atts;
+	std::unordered_map<std::string, int> atts;
 };
 
 class Statistics {
