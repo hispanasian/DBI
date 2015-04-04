@@ -12,6 +12,8 @@
 #include "ParseTree.h"
 #include <set>
 
+#define GT_LT_DENOMINATOR 3;
+
 enum ExpressionType { BINARY, UNARY };
 
 /**
@@ -20,12 +22,13 @@ enum ExpressionType { BINARY, UNARY };
  * as any other meta data related to the relation.
  */
 class Expression {
-private:
-	ExpressionType type;
+protected:
 	Statistics &stat;
-	int op; // the operator
 
 public:
+	ExpressionType type;
+	int op; // the operator
+
 	Expression();
 	Expression(ExpressionType _type, Statistics &_stat, int _op);
 	virtual ~Expression();
@@ -60,10 +63,11 @@ public:
  * This is an Expression that contains two attributes.
  */
 class BinaryExpression: public Expression {
-private:
+protected:
 	std::string rel1, rel2;
 	std::string att1, att2;
 public:
+	BinaryExpression();
 	BinaryExpression(Statistics &_stat, std::string _rel1, std::string _att1, std::string _rel2, std::string _att2, int _op);
 	virtual ~BinaryExpression();
 
@@ -97,18 +101,19 @@ public:
  * This is an Expression that contains a single attribute as well as a literal
  */
 class UnaryExpression: public Expression {
-private:
+protected:
 	std::string rel;
 	std::string att;
 	std::set<std::string> literals;
 
 public:
+	UnaryExpression();
 	UnaryExpression(Statistics &_stat, std::string _rel, std::string _att, std::string lit, int _op);
 	virtual ~UnaryExpression();
 
 	/**
 	 * A Unary Expression can only combine with another UnaryExpression. The UnaryExpression must
-	 * contain the same relation and attribute and use an = operator.
+	 * contain the same relation and attribute and use an = operator or it must be identical.
 	 */
 	virtual bool Combine(Expression &e);
 
@@ -129,6 +134,12 @@ public:
 	 * @param the number of unique attributes contained in this expression
 	 */
 	virtual double Denominator();
+
+	/**
+	 * Returns the number of literals contained in this method
+	 * @return the number of literals contained in this method
+	 */
+	virtual int Count();
 };
 
 #endif /* INCLUDE_EXPRESSION_H_ */
