@@ -51,7 +51,7 @@ bool BinaryExpression::Combine(Expression &e) {
 }
 
 double BinaryExpression::Tuples() {
-	double numerator = stat.NumTuples(rel1.c_str()) + stat.NumTuples(rel2.c_str());
+	double numerator = stat.NumTuples(rel1.c_str()) * stat.NumTuples(rel2.c_str());
 	return numerator/Denominator();
 }
 
