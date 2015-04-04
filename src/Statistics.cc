@@ -141,10 +141,11 @@ int Statistics::NumTuples(char *relName) {
 
 int Statistics::NumDistincts(char *relName, char *attName) {
 	try {
-		return relations.at(relName).atts.at(attName);
+		if(relations.at(relName).atts.at(attName) == -1) return relations.at(relName).numTuples;
+		else return relations.at(relName).atts.at(attName);
 	}
 	catch(out_of_range &e) {
-		return NULL;
+		return -1;
 	}
 }
 
