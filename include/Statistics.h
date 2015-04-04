@@ -13,8 +13,8 @@
 #include "RawFile.h"
 
 struct StatPair {
-	int numTuples;
-	std::unordered_map<std::string, int> atts;
+	double numTuples;
+	std::unordered_map<std::string, double> atts;
 };
 
 class Statistics {
@@ -37,7 +37,7 @@ public:
 	 * @param relName	The name of the base relation
 	 * @param numTuples	The number of tuples in the relation
 	 */
-	virtual void AddRel(char *relName, int numTuples);
+	virtual void AddRel(char *relName, double numTuples);
 
 	/**
 	 * De-serializes the contents from the file located at fromWhere and puts it into this object.
@@ -79,14 +79,14 @@ public:
 	 * @param attName	The attribute's name
 	 * @numDistincts	The number of distinct attributes
 	 */
-	virtual void AddAtt(char *relName, char *attName, int numDistincts);
+	virtual void AddAtt(char *relName, char *attName, double numDistincts);
 
 	/**
 	 * Returns the number of tuples in the provided relName.
 	 * @param relName	The name of the relation whose statistics are being requested
 	 * @return			The number of tuples in relName or NULL if no such relation exists
 	 */
-	virtual int NumTuples(char *relName);
+	virtual double NumTuples(const char *relName);
 
 	/**
 	 * Returns the number of distinct tuples in the given attribute. This will return null if
@@ -94,7 +94,7 @@ public:
 	 * @param relName	The name of the relation which holds the attribute
 	 * @param attName	The name of the attribute being queried.
 	 */
-	virtual int NumDistincts(char *relName, char *attName);
+	virtual double NumDistincts(const char *relName, const char *attName);
    	void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
 	double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 };

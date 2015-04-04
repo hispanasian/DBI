@@ -38,7 +38,7 @@ Statistics::~Statistics() {
 	// TODO Auto-generated destructor stub
 }
 
-void Statistics::AddRel(char *relName, int numTuples) {
+void Statistics::AddRel(char *relName, double numTuples) {
 	relations[relName].numTuples = numTuples;
 }
 
@@ -125,11 +125,11 @@ void Statistics::CopyRel(char *oldName, char *newName) {
 	}
 }
 
-void Statistics::AddAtt(char *relName, char *attName, int numDistincts) {
+void Statistics::AddAtt(char *relName, char *attName, double numDistincts) {
 	relations.at(relName).atts[attName] = numDistincts;
 }
 
-int Statistics::NumTuples(char *relName) {
+double Statistics::NumTuples(const char *relName) {
 	try {
 		return relations.at(relName).numTuples;
 	}
@@ -139,7 +139,7 @@ int Statistics::NumTuples(char *relName) {
 	}
 }
 
-int Statistics::NumDistincts(char *relName, char *attName) {
+double Statistics::NumDistincts(const char *relName, const char *attName) {
 	try {
 		return relations.at(relName).atts.at(attName);
 	}
