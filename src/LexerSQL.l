@@ -16,8 +16,11 @@
 int linenum = 1;
 void yysqlerror(char*s);
 
-%}
+static YY_BUFFER_STATE yysql_buf_state;
+void init_lexical_parser_sql (char *src) { yysql_buf_state = yysql_scan_string (src); }
+void close_lexical_parser_sql () { yysql_delete_buffer (yysql_buf_state); }
 
+%}
 
 /******************************************************************************
  * SECTION 2

@@ -549,6 +549,10 @@ char *yysqltext;
 int linenum = 1;
 void yysqlerror(char*s);
 
+static YY_BUFFER_STATE yysql_buf_state;
+void init_lexical_parser_sql (char *src) { yysql_buf_state = yysql_scan_string (src); }
+void close_lexical_parser_sql () { yysql_delete_buffer (yysql_buf_state); }
+
 /******************************************************************************
  * SECTION 2
  ******************************************************************************/
@@ -561,7 +565,7 @@ void yysqlerror(char*s);
 /* This is the RULES section which defines how to "scan" and what action
  * to take for each token
  */
-#line 565 "lex.yysql.c"
+#line 569 "lex.yysql.c"
 
 #define INITIAL 0
 
@@ -748,10 +752,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 36 "LexerSQL.l"
+#line 39 "LexerSQL.l"
 
 
-#line 755 "lex.yysql.c"
+#line 759 "lex.yysql.c"
 
 	if ( !(yy_init) )
 		{
@@ -842,135 +846,135 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 38 "LexerSQL.l"
+#line 41 "LexerSQL.l"
 return(SELECT);
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 40 "LexerSQL.l"
+#line 43 "LexerSQL.l"
 return(FROM);
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 42 "LexerSQL.l"
+#line 45 "LexerSQL.l"
 return(WHERE);
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 44 "LexerSQL.l"
+#line 47 "LexerSQL.l"
 return(SUM);
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 46 "LexerSQL.l"
+#line 49 "LexerSQL.l"
 return(AND);
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 48 "LexerSQL.l"
+#line 51 "LexerSQL.l"
 return(GROUP);
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 50 "LexerSQL.l"
+#line 53 "LexerSQL.l"
 return(DISTINCT);
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 52 "LexerSQL.l"
+#line 55 "LexerSQL.l"
 return(BY);
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 54 "LexerSQL.l"
+#line 57 "LexerSQL.l"
 return(OR);
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 56 "LexerSQL.l"
+#line 59 "LexerSQL.l"
 return(AS);
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 58 "LexerSQL.l"
+#line 61 "LexerSQL.l"
 return('(');
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 60 "LexerSQL.l"
+#line 63 "LexerSQL.l"
 return('<');
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 62 "LexerSQL.l"
+#line 65 "LexerSQL.l"
 return('>');
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 64 "LexerSQL.l"
+#line 67 "LexerSQL.l"
 return('=');
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 66 "LexerSQL.l"
+#line 69 "LexerSQL.l"
 return(')');
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 68 "LexerSQL.l"
+#line 71 "LexerSQL.l"
 return('+');
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 70 "LexerSQL.l"
+#line 73 "LexerSQL.l"
 return('-');
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 72 "LexerSQL.l"
+#line 75 "LexerSQL.l"
 return('/');
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 74 "LexerSQL.l"
+#line 77 "LexerSQL.l"
 return('*');
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 76 "LexerSQL.l"
+#line 79 "LexerSQL.l"
 return(',');
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 78 "LexerSQL.l"
+#line 81 "LexerSQL.l"
 {yysqllval.actualChars = strdup(yysqltext);
   			return(Int); 
 		        }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 82 "LexerSQL.l"
+#line 85 "LexerSQL.l"
 {yysqllval.actualChars = strdup(yysqltext); 
   			return(Float);
 			}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 86 "LexerSQL.l"
+#line 89 "LexerSQL.l"
 {yysqllval.actualChars = strdup(yysqltext);
   			return(Name);
 			}     
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 90 "LexerSQL.l"
+#line 93 "LexerSQL.l"
 {yysqllval.actualChars = strdup(yysqltext);
   			return(Name);
 			}     
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 94 "LexerSQL.l"
+#line 97 "LexerSQL.l"
 {/* take care of ' in a string */
                         if (yysqltext[yysqlleng - 2] == '\\') {
                                 yymore();
@@ -984,25 +988,25 @@ YY_RULE_SETUP
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
-#line 104 "LexerSQL.l"
+#line 107 "LexerSQL.l"
 linenum++;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 106 "LexerSQL.l"
+#line 109 "LexerSQL.l"
 ;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 108 "LexerSQL.l"
+#line 111 "LexerSQL.l"
 yysqlerror("LEX_ERROR: invalid character");
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 110 "LexerSQL.l"
+#line 113 "LexerSQL.l"
 ECHO;
 	YY_BREAK
-#line 1006 "lex.yysql.c"
+#line 1010 "lex.yysql.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2000,7 +2004,7 @@ void yysqlfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 110 "LexerSQL.l"
+#line 113 "LexerSQL.l"
 
 
 
