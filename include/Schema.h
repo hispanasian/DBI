@@ -58,7 +58,7 @@ public:
 	Schema (char *fName, int num_atts, Attribute *atts);
 
 	// Copy Constructor
-	Schema (Schema *copyMe);
+	Schema (const Schema &copyMe);
 
 	// This effectively makes a copy of left and right and "joins" them
 	// into this schema. left will be the first set of attributes in this

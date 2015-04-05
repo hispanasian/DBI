@@ -154,15 +154,15 @@ Schema :: Schema (char *fpath, int num_atts, Attribute *atts) {
 	}
 }
 
-Schema :: Schema (Schema *copyMe) {
+Schema :: Schema (const Schema &copyMe) {
 	fileName = NULL;
-	numAtts = copyMe->numAtts;
+	numAtts = copyMe.numAtts;
 	myAtts = new Attribute[numAtts];
 
-	for(int i = 0; i < copyMe->numAtts; i++) {
-		myAtts[i].name = new char[strlen(copyMe->myAtts[i].name) + 1];
-		strcpy(myAtts[i].name, copyMe->myAtts[i].name);
-		myAtts[i].myType = copyMe->myAtts[i].myType;
+	for(int i = 0; i < copyMe.numAtts; i++) {
+		myAtts[i].name = new char[strlen(copyMe.myAtts[i].name) + 1];
+		strcpy(myAtts[i].name, copyMe.myAtts[i].name);
+		myAtts[i].myType = copyMe.myAtts[i].myType;
 	}
 }
 
