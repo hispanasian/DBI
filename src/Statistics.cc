@@ -9,6 +9,7 @@ using namespace std;
 
 #include "Statistics.h"
 #include <iostream>
+#include <stack>
 
 Statistics::Statistics(): relations(myRelations), lookup(myLookup) {}
 
@@ -563,6 +564,18 @@ void Statistics::ParseWhere(AndList *where,
 	if((relations.size() - totalJoins) != 1) throw runtime_error("The AndList contains an unexpected number of joins");
 }
 
-void Statistics::ParseNameList(NameList *list, vector<RelAttPair> &pair) {
+void Statistics::ParseNameList(NameList *names, vector<RelAttPair> &pair) {
+	stack<RelAttPair> temp;
+	vector<string> name;
+	while(names != NULL) {
+		if(ParseOperand(names->name, name)) temp.push(make_pair(name[0], name[1]));
+		else throw runtime_error("Error: Relation or attribute does not exist. (Statistics::ParseNameList)");
+		names = names->next;
+	}
 
+	// Now, return the correctly ordered pairs
+	while(temp.size() > 0) {
+		pair.push_back(temp.top());
+		temp.pop();
+	}
 }

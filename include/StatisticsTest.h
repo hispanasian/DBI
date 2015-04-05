@@ -15,8 +15,11 @@
 #include "ParseTree.h"
 
 extern "C" struct YY_BUFFER_STATE *yy_scan_string(const char*);
+extern "C" struct YY_BUFFER_STATE *yysql_scan_string(const char*);
 extern "C" int yyparse(void);
+extern "C" int yysqlparse(void);
 extern struct AndList *final;
+extern struct NameList *attsToSelect;
 
 using ::testing::_;
 using ::testing::Return;

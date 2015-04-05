@@ -35,7 +35,6 @@ TEST_F(StatisticsTest, ParseNameList1) {
 
 	yysql_scan_string(sql.c_str());
 	yysqlparse();
-	cout << NameListToString(attsToSelect) << endl;
 
 	vector<RelAttPair> pair;
 	stat.ParseNameList(attsToSelect, pair);
@@ -70,7 +69,6 @@ TEST_F(StatisticsTest, ParseNameList2) {
 
 	yysql_scan_string(sql.c_str());
 	yysqlparse();
-	cout << NameListToString(attsToSelect) << endl;
 
 	vector<RelAttPair> pair;
 	stat.ParseNameList(attsToSelect, pair);
@@ -101,11 +99,8 @@ TEST_F(StatisticsTest, ParseNameList3) {
 
 	yysql_scan_string(sql.c_str());
 	yysqlparse();
-	cout << NameListToString(attsToSelect) << endl;
 
 	vector<RelAttPair> pair;
-	stat.ParseNameList(attsToSelect, pair);
-
 	ASSERT_THROW(stat.ParseNameList(attsToSelect, pair), runtime_error);
 }
 
@@ -130,11 +125,8 @@ TEST_F(StatisticsTest, ParseNameList4) {
 
 	yysql_scan_string(sql.c_str());
 	yysqlparse();
-	cout << NameListToString(attsToSelect) << endl;
 
 	vector<RelAttPair> pair;
-	stat.ParseNameList(attsToSelect, pair);
-
 	ASSERT_THROW(stat.ParseNameList(attsToSelect, pair), runtime_error);
 }
 
