@@ -17,6 +17,7 @@
 #include "Expression.h"
 
 typedef std::pair<std::string, AndList*> OrPair;
+typedef std::pair<std::string, std::string> RelAttPair;
 
 struct StatData {
 	double numTuples;
@@ -259,6 +260,16 @@ public:
 	virtual void ParseWhere(struct AndList *where,
 			std::unordered_map<std::string, AndList*> &selects,
 			std::unordered_map<std::string, std::unordered_map<std::string, AndList*> > &joins);
+
+	/**
+	 * Similar to ParseWhere, this method will go through the NameList and return a vector with the
+	 * Relation/Attribute pair of the attributes. This will throw a runtime_error if an unknown
+	 * relation or attribute is encountered. This method assumes that this object has been
+	 * populated with all relevant data.
+	 * @param list	The NameList that will be parsed
+	 * @param pair	The vector of pairs that will be returned
+	 */
+	virtual void ParseNameList(struct NameList *list, std::vector<RelAttPair> &pair);
 };
 
 #endif /* INCLUDE_STATISTICS_H_ */

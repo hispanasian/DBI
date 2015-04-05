@@ -562,3 +562,7 @@ void Statistics::ParseWhere(AndList *where,
 	// Check to see that all the relations have been joined and that there are no excess joins
 	if((relations.size() - totalJoins) != 1) throw runtime_error("The AndList contains an unexpected number of joins");
 }
+
+void Statistics::ParseNameList(NameList *list, vector<RelAttPair> &pair) {
+
+}
