@@ -32,6 +32,10 @@ class StatisticsTest: public::testing::Test {
 public:
 	std::unordered_map<std::string, StatPair> map;
 	Statistics stat = Statistics(map);
+
+	void Read(char *name, RawFile &file) { stat.Read(name, file); }
+
+	void Write(char *name, RawFile &file) { stat.Write(name, file); }
 };
 
 #endif /* INCLUDE_STATISTICSTEST_H_ */

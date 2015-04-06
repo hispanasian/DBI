@@ -25,6 +25,8 @@ protected:
 	std::unordered_map<std::string, StatPair> myRelations;
 
 	Statistics(std::unordered_map<std::string, StatPair> &_relations);
+	virtual void Read(char *fromWhere, RawFile &file);
+	virtual void Write(char *fromWhere, RawFile &file);
 public:
 	Statistics();
 	virtual ~Statistics();
@@ -37,6 +39,29 @@ public:
 	virtual void AddRel(char *relName, int numTuples);
 
 	/**
+	 * De-serializes the contents from the file located at fromWhere and puts it into this object.
+	 * The format of the file should be as follows:
+	 *
+	 * Relations
+	 * rel1=numTuples
+	 * reln=numTuples
+	 * Attributes
+	 * rel1.att1=numDistinct
+	 * reln.attj=numDistinct
+	 *
+	 * This method will throw a out_of_range exception if there is a relation.attribute pair for
+	 * which the relation does not exist (it was not declared in the Relations section)
+	 * @param fromWhere	The file containing a serialized contents of a Statistics object
+	 */
+	virtual void Read(char *fromWhere);
+
+	/**
+	 * Serializes the contents of Statistics to the file located at fromWhere
+	 * @param fromWhere	The file that will hold the serialized contents of this object
+	 */
+	virtual void Write(char *fromWhere);
+
+    /**
 	 * Copies the relation (including all of its attributes and statistics) from oldName to a
 	 * relation with the name newName. If old_name does not exist, a out_of_range exception.
 	 * @param oldName	The name of the relation to be copied
@@ -44,7 +69,7 @@ public:
 	 */
 	virtual void CopyRel(char *oldName, char *newName);
 
-    /*
+    /**
 	 * Adds (or replaces if it exists) an attribute to this structure. A numDistincts of -1 will
 	 * signify that the number of distincts is assumed to be equal to the number of tuples in the
 	 * associated relation. Furthermore, this will throw a out_of_range exception if a relation
