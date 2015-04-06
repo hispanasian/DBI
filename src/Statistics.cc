@@ -101,6 +101,14 @@ void Statistics::Write(char *fromWhere, RawFile &file) {
 	file.Close();
 }
 
+void Statistics::CopyRel(char *oldName, char *newName) {
+	relations[newName].numTuples = relations.at(oldName).numTuples;
+
+	for(auto it = relations.at(oldName).atts.begin(); it != relations.at(oldName).atts.end(); ++it) {
+		relations[newName].atts[it->first] = it->second;
+	}
+}
+
 void Statistics::AddAtt(char *relName, char *attName, int numDistincts) {
 	relations.at(relName).atts[attName] = numDistincts;
 }
