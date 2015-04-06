@@ -29,6 +29,7 @@ protected:
 	virtual void Write(char *fromWhere, RawFile &file);
 public:
 	Statistics();
+	Statistics(const Statistics &copyMe);
 	virtual ~Statistics();
 
 	/**
