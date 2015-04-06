@@ -101,12 +101,25 @@ void Statistics::Write(char *fromWhere, RawFile &file) {
 	file.Close();
 }
 
+void Statistics::AddAtt(char *relName, char *attName, int numDistincts) {
+	relations.at(relName).atts[attName] = numDistincts;
+}
+
 int Statistics::NumTuples(char *relName) {
 	try {
 		return relations.at(relName).numTuples;
 	}
 	catch(out_of_range &e) {
 		// Relation does not exist, return NULL.
+		return NULL;
+	}
+}
+
+int Statistics::NumDistincts(char *relName, char *attName) {
+	try {
+		return relations.at(relName).atts.at(attName);
+	}
+	catch(out_of_range &e) {
 		return NULL;
 	}
 }
