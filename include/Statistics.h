@@ -95,6 +95,8 @@ public:
 	 * @param attName	The name of the attribute being queried.
 	 */
 	virtual int NumDistincts(char *relName, char *attName);
+   	void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
+	double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 };
 
 #endif /* INCLUDE_STATISTICS_H_ */
