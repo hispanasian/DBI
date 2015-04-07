@@ -147,3 +147,11 @@ int Statistics::NumDistincts(char *relName, char *attName) {
 		return NULL;
 	}
 }
+
+void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJoin)
+{
+}
+double Statistics::Estimate(struct AndList *parseTree, char **relNames, int numToJoin)
+{
+}
+
