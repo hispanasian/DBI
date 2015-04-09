@@ -14,6 +14,8 @@
 
 #define GT_LT_DENOMINATOR 3;
 
+class Statistics;
+
 enum ExpressionType { BINARY, UNARY };
 
 /**
@@ -63,6 +65,8 @@ public:
  * This is an Expression that contains two attributes.
  */
 class BinaryExpression: public Expression {
+friend class StatisticsTest;
+
 protected:
 	std::string rel1, rel2;
 	std::string att1, att2;
@@ -101,6 +105,8 @@ public:
  * This is an Expression that contains a single attribute as well as a literal
  */
 class UnaryExpression: public Expression {
+friend class StatisticsTest;
+
 protected:
 	std::string rel;
 	std::string att;

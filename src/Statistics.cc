@@ -307,3 +307,8 @@ string Statistics::RelLookup(string att) {
 set<string> Statistics::GetSet(string rel) {
 	return relations.at(rel).set;
 }
+
+void Statistics::MakeExpression(ComparisonOp op, std::vector<Expression*>& expressions,
+	 	std::set<std::string>& relations) {
+
+}

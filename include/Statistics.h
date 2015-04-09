@@ -14,12 +14,15 @@
 #include <vector>
 #include "RawFile.h"
 #include "ParseTree.h"
+#include "Expression.h"
 
 struct StatData {
 	double numTuples;
 	std::unordered_map<std::string, int> atts;
 	std::set<std::string> set;
 };
+
+class Expression;
 
 class Statistics {
 friend class StatisticsTest;
@@ -186,6 +189,15 @@ public:
    	//void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
 	//double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 	virtual std::set<std::string> GetSet(std::string rel);
+
+	/**
+	 *	Parses the given comparison op, creates an appropriate Expression and appends it 
+	 *	to the expression list. Adds all relations referenced in the created Expression
+	 *	to the set of relations.
+	 *	If the expression is a comparison between 2 literals, this method throws and exception.
+	*/
+	 virtual void MakeExpression(ComparisonOp op, std::vector<Expression*>& expressions,
+	 	std::set<std::string>& relations);
 };
 
 #endif /* INCLUDE_STATISTICS_H_ */
