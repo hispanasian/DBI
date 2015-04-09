@@ -14,11 +14,11 @@ TEST_F(StatisticsTest, AddRel1) {
 	stat.AddRel("test4", 13);
 	stat.AddRel("test5", 69);
 
-	EXPECT_EQ(map["test1"].numTuples, 5);
-	EXPECT_EQ(map["test2"].numTuples, 15);
-	EXPECT_EQ(map["test3"].numTuples, 25);
-	EXPECT_EQ(map["test4"].numTuples, 13);
-	EXPECT_EQ(map["test5"].numTuples, 69);
+	EXPECT_EQ(5, map["test1"].numTuples);
+	EXPECT_EQ(15, map["test2"].numTuples);
+	EXPECT_EQ(25, map["test3"].numTuples);
+	EXPECT_EQ(13, map["test4"].numTuples);
+	EXPECT_EQ(69, map["test5"].numTuples);
 }
 
 /**
@@ -33,9 +33,35 @@ TEST_F(StatisticsTest, AddRel2) {
 	stat.AddRel("test5", 97);
 	stat.AddRel("test5", 69);
 
-	EXPECT_EQ(map["test1"].numTuples, 5);
-	EXPECT_EQ(map["test2"].numTuples, 15);
-	EXPECT_EQ(map["test3"].numTuples, 25);
-	EXPECT_EQ(map["test4"].numTuples, 13);
-	EXPECT_EQ(map["test5"].numTuples, 69);
+	EXPECT_EQ(5, map["test1"].numTuples);
+	EXPECT_EQ(15, map["test2"].numTuples);
+	EXPECT_EQ(25, map["test3"].numTuples);
+	EXPECT_EQ(13, map["test4"].numTuples);
+	EXPECT_EQ(69, map["test5"].numTuples);
+}
+
+/**
+ * AddRel should update the numTuples of every relation in its set
+ */
+TEST_F(StatisticsTest, AddRel3) {
+	stat.AddRel("test1", 5);
+	stat.AddRel("test2", 15);
+
+	map["test1"].set.insert("test2");
+	map["test2"].set.insert("test1");
+
+	stat.AddRel("test1", 20);
+
+
+	EXPECT_EQ(20, map["test1"].numTuples);
+	EXPECT_EQ(20, map["test2"].numTuples);
+}
+
+/**
+ * AddRel should, if it did not exist, add itself to its own set.
+ */
+TEST_F(StatisticsTest, AddRel4) {
+	stat.AddRel("test1", 5);
+
+	EXPECT_EQ(1, map["test1"].set.count("test1"));
 }
