@@ -30,3 +30,12 @@ TEST_F(StatisticsTest, NumDistincts3) {
 	EXPECT_EQ(-1, stat.NumDistincts("bob", "dylan"));
 	ASSERT_THROW(map.at("test").atts.at("dylan"), std::out_of_range);
 }
+
+/**
+ * NumDistincts should return the number of tuples in the relation if the numdistincts is set to -1
+ */
+TEST_F(StatisticsTest, NumDistincts4) {
+	map["test1"].atts["hey"] = -1;
+	map["test1"].numTuples = 500;
+	EXPECT_EQ(500, stat.NumDistincts("test1", "hey"));
+}

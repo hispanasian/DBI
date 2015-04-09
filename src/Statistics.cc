@@ -173,7 +173,8 @@ double Statistics::NumTuples(const char *relName) {
 
 double Statistics::NumDistincts(const char *relName, const char *attName) {
 	try {
-		return relations.at(relName).atts.at(attName);
+		if(relations.at(relName).atts.at(attName) == -1) return relations.at(relName).numTuples;
+		else return relations.at(relName).atts.at(attName);
 	}
 	catch(out_of_range &e) {
 		return -1;
