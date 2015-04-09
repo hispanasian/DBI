@@ -16,7 +16,7 @@
 #include "ParseTree.h"
 
 struct StatData {
-	int numTuples;
+	double numTuples;
 	std::unordered_map<std::string, int> atts;
 	std::set<std::string> set;
 };
@@ -52,7 +52,7 @@ public:
 	 * @param relName	The name of the base relation
 	 * @param numTuples	The number of tuples in the relation
 	 */
-	virtual void AddRel(char *relName, int numTuples);
+	virtual void AddRel(char *relName, double numTuples);
 
 	/**
 	 * De-serializes the contents from the file located at fromWhere and puts it into this object.
@@ -96,14 +96,14 @@ public:
 	 * @param attName	The attribute's name
 	 * @numDistincts	The number of distinct attributes
 	 */
-	virtual void AddAtt(char *relName, char *attName, int numDistincts);
+	virtual void AddAtt(char *relName, char *attName, double numDistincts);
 
 	/**
 	 * Returns the number of tuples in the provided relName.
 	 * @param relName	The name of the relation whose statistics are being requested
 	 * @return			The number of tuples in relName or -1 if no such relation exists
 	 */
-	virtual int NumTuples(const char *relName);
+	virtual double NumTuples(const char *relName);
 
 	/**
 	 * Returns the number of distinct tuples in the given attribute. This will return null if
@@ -112,7 +112,8 @@ public:
 	 * @param attName	The name of the attribute being queried or -1 if neither the relation nor
 	 * 					attribute exist
 	 */
-	virtual int NumDistincts(const char *relName, const char *attName);
+	virtual double NumDistincts(const char *relName, const char *attName);
+	//virtual int NumDistincts(const char *relName, const char *attName);
    	virtual void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
 	virtual double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 
@@ -182,6 +183,8 @@ public:
 	 *  @param rel	The relation associated with the set returned
 	 *  @return		The set associated with rel
 	 */
+   	//void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
+	//double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 	virtual std::set<std::string> GetSet(std::string rel);
 };
 
