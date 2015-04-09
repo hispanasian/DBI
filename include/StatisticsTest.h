@@ -12,6 +12,11 @@
 #include <gmock/gmock.h>
 #include "Statistics.h"
 #include "MockClasses.h"
+#include "ParseTree.h"
+
+extern "C" struct YY_BUFFER_STATE *yy_scan_string(const char*);
+extern "C" int yyparse(void);
+extern struct AndList *final;
 
 using ::testing::_;
 using ::testing::Return;
@@ -30,12 +35,15 @@ using ::testing::Ref;
 
 class StatisticsTest: public::testing::Test {
 public:
-	std::unordered_map<std::string, StatPair> map;
-	Statistics stat = Statistics(map);
+	std::unordered_map<std::string, StatData> map;
+	std::unordered_map<std::string, std::string> lookup;
+	Statistics stat = Statistics(map, lookup);
 
 	void Read(char *name, RawFile &file) { stat.Read(name, file); }
 
 	void Write(char *name, RawFile &file) { stat.Write(name, file); }
+
+	void UpdateRel(char *relName, int numTuples) { stat.UpdateRel(relName, numTuples); }
 };
 
 #endif /* INCLUDE_STATISTICSTEST_H_ */

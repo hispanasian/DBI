@@ -13,20 +13,20 @@ TEST_F(StatisticsTest, NumDistincts1) {
 }
 
 /**
- * NumDistincts should return NULL if the relation does not exist and it should not create the
+ * NumDistincts should return -1 if the relation does not exist and it should not create the
  * relation.
  */
 TEST_F(StatisticsTest, NumDistincts2) {
-	EXPECT_EQ(NULL, stat.NumDistincts("keanu", "reaves"));
+	EXPECT_EQ(-1, stat.NumDistincts("keanu", "reaves"));
 	ASSERT_THROW(map.at("test"), std::out_of_range);
 }
 
 /**
- * NumDistincts should return NULL if the attribute does not exist and it should not create the
+ * NumDistincts should return -1 if the attribute does not exist and it should not create the
  * relation
  */
 TEST_F(StatisticsTest, NumDistincts3) {
 	map["bob"];
-	EXPECT_EQ(NULL, stat.NumDistincts("bob", "dylan"));
+	EXPECT_EQ(-1, stat.NumDistincts("bob", "dylan"));
 	ASSERT_THROW(map.at("test").atts.at("dylan"), std::out_of_range);
 }
