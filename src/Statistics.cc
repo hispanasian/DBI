@@ -310,5 +310,54 @@ set<string> Statistics::GetSet(string rel) {
 
 void Statistics::MakeExpression(ComparisonOp op, std::vector<Expression*>& expressions,
 	 	std::set<std::string>& relations) {
-
+	// first determine what kind of expression this is
+	int litCount = IsLiteral(op.left->code) ? 1 : 0;
+	litCount += IsLiteral(op.right->code) ? 1 : 0;
+	if(litCount == 2) {
+		// this condition is useless for joining
+		throw std::runtime_error("Statistics::MakeExpression: comparison with 2 literals");
+	}
+	int nameCount = IsName(op.left->code) ? 1 : 0;
+	nameCount += IsName(op.right->code) ? 1 : 0;
+	if(nameCount == 2) {
+		// this is a binary expression
+		vector<string> leftOp;
+		if(!ParseOperand(op.left->value, leftOp)) {
+			// could not parse the left name
+			string str(op.left->value);
+			throw std::runtime_error("Statistics::MakeExpression: could not parse name " + str);
+		}
+		vector<string> rightOp;
+		if(!ParseOperand(op.right->value, rightOp)) {
+			// could not parse the right name
+			string str(op.right->value);
+			throw std::runtime_error("Statistics::MakeExpression: could not parse name " + str);
+		}
+		// at this point we have a valid binary expression
+		BinaryExpression* be = new BinaryExpression(*this, leftOp[0], leftOp[1], rightOp[0], rightOp[1], op.code);
+		expressions.push_back(be);
+		relations.insert(leftOp[0]);
+		relations.insert(rightOp[0]);
+	} else { 
+		// this is a unary expression
+		Operand* nameOp = IsName(op.left->code) ? op.left : op.right;
+		Operand* litOp = IsLiteral(op.left->code) ? op.left : op.right;
+		string litVal = *new string(litOp->value);
+		vector<string> name;
+		if(!ParseOperand(nameOp->value, name)) {
+			// could not parse the name
+			string str(op.right->value);
+			throw std::runtime_error("Statistics::MakeExpression: could not parse name " + str);
+		}
+		// at this point we have a valid unary expression
+		UnaryExpression* ue = new UnaryExpression(*this, name[0], name[1], litVal, op.code);
+		expressions.push_back(ue);
+		relations.insert(name[0]);
+	}
 }
+
+bool Statistics::IsLiteral(int code) {
+	return code == STRING || code == INT || code == STRING;
+}
+
+bool Statistics::IsName(int code) { return code == NAME; }

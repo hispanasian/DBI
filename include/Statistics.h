@@ -44,6 +44,9 @@ protected:
 	 * @param numTuples	The number of tuples in the relation
 	 */
 	virtual void UpdateRel(const char *relName, int numTuples);
+
+	virtual bool IsLiteral(int code);
+	virtual bool IsName(int code);
 public:
 	Statistics();
 	Statistics(const Statistics &copyMe);
