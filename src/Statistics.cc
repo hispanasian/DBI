@@ -363,7 +363,15 @@ bool Statistics::IsLiteral(int code) {
 bool Statistics::IsName(int code) { return code == NAME; }
 
 double Statistics::Join(OrList* orList, std::set<std::string> relations) {
-	return 0;
+	OrList* curr = orList;
+	vector<Expression*> expressions;
+	while(curr != NULL) {
+		MakeExpression(*curr->left, expressions, relations);
+		curr = curr->rightOr;
+	}
+	CombineExpressions(expressions);
+	// TODO: delete the expressions here?
+	return ComputeNumTuples(expressions);
 }
 
 void Statistics::CombineExpressions(std::vector<Expression*>& expressions) {
