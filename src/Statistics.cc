@@ -378,3 +378,21 @@ void Statistics::CombineExpressions(std::vector<Expression*>& expressions) {
 		}
 	}
 }
+
+double Statistics::ComputeNumTuples(std::vector<Expression*>& expressions) {
+	// there's only one expression, we don't need to calculate an intersection
+	if(expressions.size() == 1) {
+		return expressions[0]->Tuples();
+	}
+	double sum = 0;
+	double denominator = 1;
+
+	for(int i = 0; i < expressions.size(); ++i) {
+		sum += expressions[i]->Tuples();
+		denominator *= expressions[i]->Denominator();
+	}
+	// subtract out the "intersection" (approximately...)
+	sum -= expressions[0]->Numerator() / denominator;
+
+	return sum;
+}

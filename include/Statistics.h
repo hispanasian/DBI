@@ -119,7 +119,6 @@ public:
 	 * 					attribute exist
 	 */
 	virtual double NumDistincts(const char *relName, const char *attName);
-	//virtual int NumDistincts(const char *relName, const char *attName);
    	virtual void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
 	virtual double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 
@@ -212,6 +211,20 @@ public:
  	 *	expressions if they get combined.
  	 */
  	virtual void CombineExpressions(std::vector<Expression*>& expressions);
+
+ 	/**
+ 	 * Computes the number of tuples resulting the relation after applying
+ 	 * this set of expressions
+ 	 * If there is just one expression, then the value of the Tuples()
+ 	 * method is returned.
+ 	 * If there is more than one expression, this formula is used:
+ 	 * sum = sum of the Tuples() from each expression
+ 	 * divisor = the product of the Denominator() from each expression
+ 	 * Result = sum - expressions[0].Numerator() / divisor
+ 	 * Not that expressions[0] is chosen arbitrarily when getting the Numerator()
+ 	 * because all of the expressions will have the same Numerator().
+ 	 */
+ 	virtual double ComputeNumTuples(std::vector<Expression*>& expressions);
 };
 
 #endif /* INCLUDE_STATISTICS_H_ */
