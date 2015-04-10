@@ -44,6 +44,14 @@ public:
 	void Write(char *name, RawFile &file) { stat.Write(name, file); }
 
 	void UpdateRel(char *relName, int numTuples) { stat.UpdateRel(relName, numTuples); }
+
+	string GetRel(UnaryExpression& ue) { return ue.rel; }
+	string GetAtt(UnaryExpression& ue) { return ue.att; }
+	set<string> GetLits(UnaryExpression& ue) { return ue.literals; }
+	string GetRel1(BinaryExpression &be) { return be.rel1; }
+	string GetRel2(BinaryExpression &be) { return be.rel2; }
+	string GetAtt1(BinaryExpression &be) { return be.att1; }
+	string GetAtt2(BinaryExpression &be) { return be.att2; }
 };
 
 #endif /* INCLUDE_STATISTICSTEST_H_ */
