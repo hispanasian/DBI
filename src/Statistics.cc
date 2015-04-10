@@ -41,7 +41,7 @@ Statistics::~Statistics() {
 	// TODO Auto-generated destructor stub
 }
 
-void Statistics::AddRel(char *relName, double numTuples) {
+void Statistics::AddRel(const char *relName, double numTuples) {
 	try {
 		set<string> &temp = relations.at(relName).set;
 
@@ -179,6 +179,38 @@ double Statistics::NumDistincts(const char *relName, const char *attName) {
 	catch(out_of_range &e) {
 		return -1;
 	}
+}
+
+double Statistics::ApplyAndCompute(struct AndList *parseTree, char *relNames[], int numToJoin) {
+	// first verfiy that this join can take place
+	if(!VerifyJoin(parseTree, relNames, numToJoin)) {
+		throw std::runtime_error("Statistics::ApplyAndCompute: cannot perform join");
+	}
+
+	// now do the join
+	set<string> relations;
+	AndList* curr = parseTree;
+	double numTuples = 0;
+	while(curr != NULL) {
+		relations.clear();
+		// calculate which tuples are merged from this OrList
+		// compute how many tuples this relation will have
+		numTuples = Join(curr->left, relations);
+		// merge these relations
+		auto it = relations.begin();
+		auto first = *it;
+		++it;
+		for(; it != relations.end(); ++it) {
+			MergeSets(first, *it);
+		}
+		// update the number of tuples to the new value
+		AddRel(first.c_str(), numTuples);
+		curr = curr->rightAnd;
+	}
+
+	// the final number of tuples is the number of tuples for the entire
+	// newly merged sets of relations
+	return numTuples;
 }
 
 void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJoin)

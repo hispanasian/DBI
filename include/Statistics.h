@@ -58,7 +58,7 @@ public:
 	 * @param relName	The name of the base relation
 	 * @param numTuples	The number of tuples in the relation
 	 */
-	virtual void AddRel(char *relName, double numTuples);
+	virtual void AddRel(const char *relName, double numTuples);
 
 	/**
 	 * De-serializes the contents from the file located at fromWhere and puts it into this object.
@@ -119,8 +119,6 @@ public:
 	 * 					attribute exist
 	 */
 	virtual double NumDistincts(const char *relName, const char *attName);
-   	virtual void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
-	virtual double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 
 	/**
 	 * Merges the sets containing rel1 and rel2. This will do nothing if both rel1 and rel2 are
@@ -225,6 +223,24 @@ public:
  	 * because all of the expressions will have the same Numerator().
  	 */
  	virtual double ComputeNumTuples(std::vector<Expression*>& expressions);
+
+ 	/*
+ 	 * Verifies that the specified join can happen. Modifies the internal representation
+ 	 * of the sets of relations and returns the number of tuples in the resulting join relation.
+ 	 */
+ 	virtual double ApplyAndCompute(struct AndList *parseTree, char *relNames[], int numToJoin);
+
+ 	/*
+	 * Simulates a join across the specified relations using the given AndList
+	 * and modifies the sets of relations to reflect the joined relations
+ 	*/
+ 	virtual void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
+
+	/*
+	 * Simulates a join across the specified relations using the given AndList
+	 * does not modify the sets, but returns the number of tuples in the resulting relations.
+ 	*/
+	virtual double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 };
 
 #endif /* INCLUDE_STATISTICS_H_ */
