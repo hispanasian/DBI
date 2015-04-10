@@ -361,3 +361,20 @@ bool Statistics::IsLiteral(int code) {
 }
 
 bool Statistics::IsName(int code) { return code == NAME; }
+
+double Statistics::Join(OrList* orList, std::set<std::string> relations) {
+	return 0;
+}
+
+void Statistics::CombineExpressions(std::vector<Expression*>& expressions) {
+	for(int i = 0; i < expressions.size(); ++i) {
+		int j = 0;
+		while(j < expressions.size()) {
+			if(i < j && expressions[i]->Combine(*expressions[j])) {
+				expressions.erase(expressions.begin()+j-1);
+			} else {
+				++j;
+			}
+		}
+	}
+}

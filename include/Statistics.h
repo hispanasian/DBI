@@ -189,8 +189,6 @@ public:
 	 *  @param rel	The relation associated with the set returned
 	 *  @return		The set associated with rel
 	 */
-   	//void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
-	//double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 	virtual std::set<std::string> GetSet(std::string rel);
 
 	/**
@@ -199,8 +197,21 @@ public:
 	 *	to the set of relations.
 	 *	If the expression is a comparison between 2 literals, this method throws and exception.
 	*/
-	 virtual void MakeExpression(ComparisonOp op, std::vector<Expression*>& expressions,
+	virtual void MakeExpression(ComparisonOp op, std::vector<Expression*>& expressions,
 	 	std::set<std::string>& relations);
+
+ 	/**
+	 *	Joins the relations whose attributes are referenced in the given OrList.
+	 *	Updates the set of relations to include all relations which were joined.
+ 	 *	Returns the number of tuples in the resulting joined relations.
+ 	*/
+ 	virtual double Join(OrList* orList, std::set<std::string> relations);
+
+ 	/**
+ 	 *	Calls combine on every pair of expressions in the list, removing
+ 	 *	expressions if they get combined.
+ 	 */
+ 	virtual void CombineExpressions(std::vector<Expression*>& expressions);
 };
 
 #endif /* INCLUDE_STATISTICS_H_ */
