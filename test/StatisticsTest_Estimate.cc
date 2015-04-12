@@ -41,7 +41,7 @@ TEST_F(StatisticsTest, Estimate2) {
 	yyparse();
 
 	double result = stat.Estimate(final, relName, 1);
-	EXPECT_NEAR(857320.0, result, .1);
+	EXPECT_NEAR(857320.0, result, 10);
 }
 
 TEST_F(StatisticsTest, Estimate3) {
