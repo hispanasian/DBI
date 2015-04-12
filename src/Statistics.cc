@@ -41,7 +41,7 @@ Statistics::~Statistics() {
 	// TODO Auto-generated destructor stub
 }
 
-void Statistics::AddRel(char *relName, double numTuples) {
+void Statistics::AddRel(const char *relName, double numTuples) {
 	try {
 		set<string> &temp = relations.at(relName).set;
 
@@ -181,6 +181,38 @@ double Statistics::NumDistincts(const char *relName, const char *attName) {
 	}
 }
 
+double Statistics::ApplyAndCompute(struct AndList *parseTree, char *relNames[], int numToJoin) {
+	// first verfiy that this join can take place
+	if(!VerifyJoin(parseTree, relNames, numToJoin)) {
+		throw std::runtime_error("Statistics::ApplyAndCompute: cannot perform join");
+	}
+
+	// now do the join
+	set<string> relations;
+	AndList* curr = parseTree;
+	double numTuples = 0;
+	while(curr != NULL) {
+		relations.clear();
+		// calculate which tuples are merged from this OrList
+		// compute how many tuples this relation will have
+		numTuples = Join(curr->left, relations);
+		// merge these relations
+		auto it = relations.begin();
+		auto first = *it;
+		++it;
+		for(; it != relations.end(); ++it) {
+			MergeSets(first, *it);
+		}
+		// update the number of tuples to the new value
+		AddRel(first.c_str(), numTuples);
+		curr = curr->rightAnd;
+	}
+
+	// the final number of tuples is the number of tuples for the entire
+	// newly merged sets of relations
+	return numTuples;
+}
+
 void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJoin)
 {
 
@@ -306,4 +338,101 @@ string Statistics::RelLookup(string att) {
 
 set<string> Statistics::GetSet(string rel) {
 	return relations.at(rel).set;
+}
+
+void Statistics::MakeExpression(ComparisonOp op, std::vector<Expression*>& expressions,
+	 	std::set<std::string>& relations) {
+	// first determine what kind of expression this is
+	int litCount = IsLiteral(op.left->code) ? 1 : 0;
+	litCount += IsLiteral(op.right->code) ? 1 : 0;
+	if(litCount == 2) {
+		// this condition is useless for joining
+		throw std::runtime_error("Statistics::MakeExpression: comparison with 2 literals");
+	}
+	int nameCount = IsName(op.left->code) ? 1 : 0;
+	nameCount += IsName(op.right->code) ? 1 : 0;
+	if(nameCount == 2) {
+		// this is a binary expression
+		vector<string> leftOp;
+		if(!ParseOperand(op.left->value, leftOp)) {
+			// could not parse the left name
+			string str(op.left->value);
+			throw std::runtime_error("Statistics::MakeExpression: could not parse name " + str);
+		}
+		vector<string> rightOp;
+		if(!ParseOperand(op.right->value, rightOp)) {
+			// could not parse the right name
+			string str(op.right->value);
+			throw std::runtime_error("Statistics::MakeExpression: could not parse name " + str);
+		}
+		// at this point we have a valid binary expression
+		BinaryExpression* be = new BinaryExpression(*this, leftOp[0], leftOp[1], rightOp[0], rightOp[1], op.code);
+		expressions.push_back(be);
+		relations.insert(leftOp[0]);
+		relations.insert(rightOp[0]);
+	} else { 
+		// this is a unary expression
+		Operand* nameOp = IsName(op.left->code) ? op.left : op.right;
+		Operand* litOp = IsLiteral(op.left->code) ? op.left : op.right;
+		string litVal = *new string(litOp->value);
+		vector<string> name;
+		if(!ParseOperand(nameOp->value, name)) {
+			// could not parse the name
+			string str(op.right->value);
+			throw std::runtime_error("Statistics::MakeExpression: could not parse name " + str);
+		}
+		// at this point we have a valid unary expression
+		UnaryExpression* ue = new UnaryExpression(*this, name[0], name[1], litVal, op.code);
+		expressions.push_back(ue);
+		relations.insert(name[0]);
+	}
+}
+
+bool Statistics::IsLiteral(int code) {
+	return code == STRING || code == INT || code == STRING;
+}
+
+bool Statistics::IsName(int code) { return code == NAME; }
+
+double Statistics::Join(OrList* orList, std::set<std::string> relations) {
+	OrList* curr = orList;
+	vector<Expression*> expressions;
+	while(curr != NULL) {
+		MakeExpression(*curr->left, expressions, relations);
+		curr = curr->rightOr;
+	}
+	CombineExpressions(expressions);
+	// TODO: delete the expressions here?
+	return ComputeNumTuples(expressions);
+}
+
+void Statistics::CombineExpressions(std::vector<Expression*>& expressions) {
+	for(int i = 0; i < expressions.size(); ++i) {
+		int j = 0;
+		while(j < expressions.size()) {
+			if(i < j && expressions[i]->Combine(*expressions[j])) {
+				expressions.erase(expressions.begin()+j-1);
+			} else {
+				++j;
+			}
+		}
+	}
+}
+
+double Statistics::ComputeNumTuples(std::vector<Expression*>& expressions) {
+	// there's only one expression, we don't need to calculate an intersection
+	if(expressions.size() == 1) {
+		return expressions[0]->Tuples();
+	}
+	double sum = 0;
+	double denominator = 1;
+
+	for(int i = 0; i < expressions.size(); ++i) {
+		sum += expressions[i]->Tuples();
+		denominator *= expressions[i]->Denominator();
+	}
+	// subtract out the "intersection" (approximately...)
+	sum -= expressions[0]->Numerator() / denominator;
+
+	return sum;
 }

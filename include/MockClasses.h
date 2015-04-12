@@ -29,6 +29,7 @@
 #include "JoinRelation.h"
 #include "GroupBy.h"
 #include "Join.h"
+#include "Expression.h"
 
 class MockRecord: public Record {
 public:
@@ -552,4 +553,20 @@ public:
 //	virtual void Run (Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal);
 	MOCK_METHOD5(Run, void(Pipe &inPipeL, Pipe &inPipeR, Pipe &outPipe, CNF &selOp, Record &literal));
 };
+
+class MockExpression : public Expression {
+public:
+	// virtual bool Combine(Expression &e) = 0;
+	MOCK_METHOD1(Combine, bool(Expression& e));
+
+	// virtual double Tuples() = 0;
+	MOCK_METHOD0(Tuples, double());
+
+	// virtual double Numerator() = 0;
+	MOCK_METHOD0(Numerator, double());
+
+	// virtual double Denominator() = 0;
+	MOCK_METHOD0(Denominator, double());
+};
+
 #endif

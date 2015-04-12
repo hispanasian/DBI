@@ -14,12 +14,15 @@
 #include <vector>
 #include "RawFile.h"
 #include "ParseTree.h"
+#include "Expression.h"
 
 struct StatData {
 	double numTuples;
 	std::unordered_map<std::string, int> atts;
 	std::set<std::string> set;
 };
+
+class Expression;
 
 class Statistics {
 friend class StatisticsTest;
@@ -41,6 +44,9 @@ protected:
 	 * @param numTuples	The number of tuples in the relation
 	 */
 	virtual void UpdateRel(const char *relName, int numTuples);
+
+	virtual bool IsLiteral(int code);
+	virtual bool IsName(int code);
 public:
 	Statistics();
 	Statistics(const Statistics &copyMe);
@@ -52,7 +58,7 @@ public:
 	 * @param relName	The name of the base relation
 	 * @param numTuples	The number of tuples in the relation
 	 */
-	virtual void AddRel(char *relName, double numTuples);
+	virtual void AddRel(const char *relName, double numTuples);
 
 	/**
 	 * De-serializes the contents from the file located at fromWhere and puts it into this object.
@@ -113,9 +119,6 @@ public:
 	 * 					attribute exist
 	 */
 	virtual double NumDistincts(const char *relName, const char *attName);
-	//virtual int NumDistincts(const char *relName, const char *attName);
-   	virtual void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
-	virtual double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 
 	/**
 	 * Merges the sets containing rel1 and rel2. This will do nothing if both rel1 and rel2 are
@@ -183,9 +186,61 @@ public:
 	 *  @param rel	The relation associated with the set returned
 	 *  @return		The set associated with rel
 	 */
-   	//void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
-	//double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 	virtual std::set<std::string> GetSet(std::string rel);
+
+	/**
+	 *	Parses the given comparison op, creates an appropriate Expression and appends it 
+	 *	to the expression list. Adds all relations referenced in the created Expression
+	 *	to the set of relations.
+	 *	If the expression is a comparison between 2 literals, this method throws and exception.
+	*/
+	virtual void MakeExpression(ComparisonOp op, std::vector<Expression*>& expressions,
+	 	std::set<std::string>& relations);
+
+ 	/**
+	 *	Joins the relations whose attributes are referenced in the given OrList.
+	 *	Updates the set of relations to include all relations which were joined.
+ 	 *	Returns the number of tuples in the resulting joined relations.
+ 	*/
+ 	virtual double Join(OrList* orList, std::set<std::string> relations);
+
+ 	/**
+ 	 *	Calls combine on every pair of expressions in the list, removing
+ 	 *	expressions if they get combined.
+ 	 */
+ 	virtual void CombineExpressions(std::vector<Expression*>& expressions);
+
+ 	/**
+ 	 * Computes the number of tuples resulting the relation after applying
+ 	 * this set of expressions
+ 	 * If there is just one expression, then the value of the Tuples()
+ 	 * method is returned.
+ 	 * If there is more than one expression, this formula is used:
+ 	 * sum = sum of the Tuples() from each expression
+ 	 * divisor = the product of the Denominator() from each expression
+ 	 * Result = sum - expressions[0].Numerator() / divisor
+ 	 * Not that expressions[0] is chosen arbitrarily when getting the Numerator()
+ 	 * because all of the expressions will have the same Numerator().
+ 	 */
+ 	virtual double ComputeNumTuples(std::vector<Expression*>& expressions);
+
+ 	/*
+ 	 * Verifies that the specified join can happen. Modifies the internal representation
+ 	 * of the sets of relations and returns the number of tuples in the resulting join relation.
+ 	 */
+ 	virtual double ApplyAndCompute(struct AndList *parseTree, char *relNames[], int numToJoin);
+
+ 	/*
+	 * Simulates a join across the specified relations using the given AndList
+	 * and modifies the sets of relations to reflect the joined relations
+ 	*/
+ 	virtual void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
+
+	/*
+	 * Simulates a join across the specified relations using the given AndList
+	 * does not modify the sets, but returns the number of tuples in the resulting relations.
+ 	*/
+	virtual double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 };
 
 #endif /* INCLUDE_STATISTICS_H_ */
