@@ -33,7 +33,7 @@ CFLAGS := -g -Wall
 LIB := -L lib
 INC := -I include
 PARSING := $(BUILDDIR)/y.tab.o $(BUILDDIR)/lex.yy.o $(BUILDDIR)/yyfunc.tab.o $(BUILDDIR)/lex.yyfunc.o
-MAINS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o $(BUILDDIR)/driver1.o $(BUILDDIR)/driver2a.o $(BUILDDIR)/driver2b.o $(BUILDDIR)/driver3.o
+MAINS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o $(BUILDDIR)/driver1.o $(BUILDDIR)/driver2a.o $(BUILDDIR)/driver2b.o $(BUILDDIR)/driver3.o $(BUILDDIR)/driver4.o
 
 # Objects excluding main
 OBJECTS := $(filter-out $(MAINS),$(ALL_OBJECTS)) $(PARSING)
@@ -59,7 +59,7 @@ endif
 ###### Main Build ######
 # Build all
 .PHONY: all
-all: dirs main driver1 driver2a driver2b driver3 test
+all: dirs main driver1 driver2a driver2b driver3 driver4 test
 
 # Create directories
 .PHONY: dirs
@@ -92,6 +92,11 @@ driver2b: $(OBJECTS) $(BUILDDIR)/driver2b.o
 .PHONY: driver3
 driver3: $(OBJECTS) $(BUILDDIR)/driver3.o
 	$(CC) $(CCFLAGS) -o $(TARGETDIR)/driver3 $^ $(lfl)
+
+# Build driver4
+.PHONY: driver4
+driver4: $(OBJECTS) $(BUILDDIR)/driver4.o
+	$(CC) $(CCFLAGS) -o $(TARGETDIR)/driver4 $^ $(lfl)
 
 # Compile cc files
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)

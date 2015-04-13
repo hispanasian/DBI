@@ -126,4 +126,4 @@ src/yyfunc.tab.c
 *.bin
 
 *.tmp
-
+*.swp
