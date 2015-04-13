@@ -77,7 +77,7 @@ TEST_F(StatisticsTest, Estimate4) {
 	char *relName[] = {"supplier","customer","nation"};
 
 	stat.AddRel(relName[0],10000);
-	stat.AddAtt(relName[0], "s_nationey",25);
+	stat.AddAtt(relName[0], "s_nationkey",25);
 
 	stat.AddRel(relName[1],150000);
 	stat.AddAtt(relName[1], "c_custkey",150000);
@@ -141,26 +141,28 @@ TEST_F(StatisticsTest, Estimate5) {
 	stat.CopyRel("nation","n");
 	stat.CopyRel("region","r");
 
-	char *cnf = "(p.p_partkey=pstat.ps_partkey) AND (p.p_size = 2)";
+	char *shortRelName[] = { "p", "ps", "s", "n", "r"};
+
+	char *cnf = "(p.p_partkey=ps.ps_partkey) AND (p.p_size = 2)";
 	yy_scan_string(cnf);
 	yyparse();
-	stat.Apply(final, relName, 2);
+	stat.Apply(final, shortRelName, 2);
 
 	cnf ="(s.s_suppkey = ps.ps_suppkey)";
 	yy_scan_string(cnf);
 	yyparse();
-	stat.Apply(final, relName, 3);
+	stat.Apply(final, shortRelName, 3);
 
 	cnf =" (s.s_nationkey = n.n_nationkey)";
 	yy_scan_string(cnf);
 	yyparse();
-	stat.Apply(final, relName, 4);
+	stat.Apply(final, shortRelName, 4);
 
 	cnf ="(n.n_regionkey = r.r_regionkey) AND (r.r_name = 'AMERICA') ";
 	yy_scan_string(cnf);
 	yyparse();
 
-	double result = stat.Estimate(final, relName, 5);
+	double result = stat.Estimate(final, shortRelName, 5);
 	EXPECT_NEAR(3200.0, result, .1);
 }
 

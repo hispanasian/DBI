@@ -251,6 +251,7 @@ void Statistics::MergeSets(std::string rel1, std::string rel2) {
 bool Statistics::VerifyJoin(struct AndList *parseTree, char **relNames, int numToJoin) {
 	bool atts = VerifyJoinAttributes(parseTree, relNames, numToJoin);
 	bool sets = VerifyJoinSets(relNames, numToJoin);
+
 	return  atts && sets;
 }
 
@@ -419,7 +420,7 @@ void Statistics::CombineExpressions(std::vector<Expression*>& expressions) {
 		int j = 0;
 		while(j < expressions.size()) {
 			if(i < j && expressions[i]->Combine(*expressions[j])) {
-				expressions.erase(expressions.begin()+j-1);
+				expressions.erase(expressions.begin()+j);
 			} else {
 				++j;
 			}
