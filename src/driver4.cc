@@ -304,6 +304,7 @@ void q5 (){
 	s.AddRel(relName[1],1500000);
 	s.AddAtt(relName[1], "o_orderkey",1500000);
 	s.AddAtt(relName[1], "o_custkey",150000);
+	s.AddAtt(relName[1], "o_orderdate",150000);
 	
 	s.AddRel(relName[2],6001215);
 	s.AddAtt(relName[2], "l_orderkey",1500000);
@@ -386,6 +387,7 @@ void q7(){
 	
 	s.AddRel(relName[1],6001215);
 	s.AddAtt(relName[1], "l_orderkey",1500000);
+	s.AddAtt(relName[1], "l_receiptdate",-1);
 	
 
 	char *cnf = "(l_receiptdate >'1995-02-01' ) AND (l_orderkey = o_orderkey)";
@@ -487,6 +489,7 @@ void q10 (){
 	s.AddRel(relName[1],1500000);
 	s.AddAtt(relName[1], "o_orderkey",1500000);
 	s.AddAtt(relName[1], "o_custkey",150000);
+	s.AddAtt(relName[1], "o_orderdate",-1);
 	
 	s.AddRel(relName[2],6001215);
 	s.AddAtt(relName[2], "l_orderkey",1500000);

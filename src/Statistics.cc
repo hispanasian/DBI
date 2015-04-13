@@ -35,6 +35,10 @@ Statistics::Statistics(const Statistics &copyMe): relations(myRelations), lookup
 			relations[rel].set.insert(*s_it);
 		}
 	}
+
+	for(auto it = copyMe.lookup.begin(); it != copyMe.lookup.end(); ++it) {
+		lookup[it->first] = it->second;
+	}
 }
 
 Statistics::~Statistics() {
@@ -196,6 +200,7 @@ double Statistics::ApplyAndCompute(struct AndList *parseTree, char *relNames[], 
 		// calculate which tuples are merged from this OrList
 		// compute how many tuples this relation will have
 		numTuples = Join(curr->left, relations);
+		
 		// merge these relations
 		auto it = relations.begin();
 		auto first = *it;
@@ -215,12 +220,13 @@ double Statistics::ApplyAndCompute(struct AndList *parseTree, char *relNames[], 
 
 void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJoin)
 {
-
+	ApplyAndCompute(parseTree, relNames, numToJoin);
 }
 
 double Statistics::Estimate(struct AndList *parseTree, char **relNames, int numToJoin)
 {
-
+	Statistics copy(*this);
+	return copy.ApplyAndCompute(parseTree, relNames, numToJoin);
 }
 
 void Statistics::MergeSets(std::string rel1, std::string rel2) {
@@ -243,7 +249,10 @@ void Statistics::MergeSets(std::string rel1, std::string rel2) {
 }
 
 bool Statistics::VerifyJoin(struct AndList *parseTree, char **relNames, int numToJoin) {
-	return VerifyJoinAttributes(parseTree, relNames, numToJoin) && VerifyJoinSets(relNames, numToJoin);
+	bool atts = VerifyJoinAttributes(parseTree, relNames, numToJoin);
+	bool sets = VerifyJoinSets(relNames, numToJoin);
+
+	return  atts && sets;
 }
 
 bool Statistics::VerifyJoinAttributes(struct AndList *parseTree, char **relNames, int numToJoin) {
@@ -271,8 +280,8 @@ bool Statistics::VerifyJoinAttributes(struct AndList *parseTree, char **relNames
 				return false;
 
 			// Next, check to see if the relations exist in the rels.
-			if(rels.count(left[0]) == 0) return false;
-			if(rels.count(right[0]) == 0) return false;
+			if(leftOp->code == NAME && rels.count(left[0]) == 0) return false;
+			if(rightOp->code == NAME && rels.count(right[0]) == 0) return false;
 
 			orList = orList->rightOr;
 		}
@@ -394,7 +403,7 @@ bool Statistics::IsLiteral(int code) {
 
 bool Statistics::IsName(int code) { return code == NAME; }
 
-double Statistics::Join(OrList* orList, std::set<std::string> relations) {
+double Statistics::Join(OrList* orList, std::set<std::string>& relations) {
 	OrList* curr = orList;
 	vector<Expression*> expressions;
 	while(curr != NULL) {
@@ -411,7 +420,7 @@ void Statistics::CombineExpressions(std::vector<Expression*>& expressions) {
 		int j = 0;
 		while(j < expressions.size()) {
 			if(i < j && expressions[i]->Combine(*expressions[j])) {
-				expressions.erase(expressions.begin()+j-1);
+				expressions.erase(expressions.begin()+j);
 			} else {
 				++j;
 			}

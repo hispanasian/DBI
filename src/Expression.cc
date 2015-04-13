@@ -114,7 +114,7 @@ double UnaryExpression::Tuples() {
 		double numerator = stat.NumTuples(rel.c_str()) * literals.size();
 		return numerator/Denominator();
 	}
-	else return stat.NumTuples(rel.c_str())/3;
+	else return stat.NumTuples(rel.c_str())/ GT_LT_DENOMINATOR;
 }
 
 double UnaryExpression::Numerator() {

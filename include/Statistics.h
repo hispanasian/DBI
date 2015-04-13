@@ -202,7 +202,7 @@ public:
 	 *	Updates the set of relations to include all relations which were joined.
  	 *	Returns the number of tuples in the resulting joined relations.
  	*/
- 	virtual double Join(OrList* orList, std::set<std::string> relations);
+ 	virtual double Join(OrList* orList, std::set<std::string>& relations);
 
  	/**
  	 *	Calls combine on every pair of expressions in the list, removing
