@@ -154,6 +154,43 @@ Schema :: Schema (char *fpath, int num_atts, Attribute *atts) {
 	}
 }
 
+Schema :: Schema (const Schema &copyMe) {
+	fileName = NULL;
+	numAtts = copyMe.numAtts;
+	myAtts = new Attribute[numAtts];
+
+	for(int i = 0; i < copyMe.numAtts; i++) {
+		myAtts[i].name = new char[strlen(copyMe.myAtts[i].name) + 1];
+		strcpy(myAtts[i].name, copyMe.myAtts[i].name);
+		myAtts[i].myType = copyMe.myAtts[i].myType;
+	}
+}
+
+Schema :: Schema (Schema *left, Schema *right) {
+	myAtts = NULL;
+	Join(left, right);
+}
+
+void Schema :: Join  (Schema *left, Schema *right) {
+	fileName = NULL;
+	numAtts = left->numAtts + right->numAtts;
+	delete myAtts;
+	myAtts = new Attribute[numAtts];
+
+	for(int i = 0; i < left->numAtts; i++) {
+		myAtts[i].name = new char[strlen(left->myAtts[i].name) + 1];
+		strcpy(myAtts[i].name, left->myAtts[i].name);
+		myAtts[i].myType = left->myAtts[i].myType;
+	}
+
+	int loff = left->numAtts; // offset from left schema
+	for(int i = 0; i < right->numAtts; i++) {
+		myAtts[i + loff].name = new char[strlen(right->myAtts[i].name) + 1];
+		strcpy(myAtts[i + loff].name, right->myAtts[i].name);
+		myAtts[i + loff].myType = right->myAtts[i].myType;
+	}
+}
+
 Schema :: ~Schema () {
 	free(fileName);
 	delete [] myAtts;

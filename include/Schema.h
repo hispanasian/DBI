@@ -57,6 +57,17 @@ public:
 	// this composes a schema instance in-memory
 	Schema (char *fName, int num_atts, Attribute *atts);
 
+	// Copy Constructor
+	Schema (const Schema &copyMe);
+
+	// This effectively makes a copy of left and right and "joins" them
+	// into this schema. left will be the first set of attributes in this
+	// followed by right
+	Schema (Schema *left, Schema *right);
+
+	// Joins the two relations into this schema
+	void Join(Schema *left, Schema *right);
+
 	// this constructs a sort order structure that can be used to
 	// place a lexicographic ordering on the records using this type of schema
 	int GetSortOrder (OrderMaker &order);
