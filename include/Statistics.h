@@ -16,6 +16,8 @@
 #include "ParseTree.h"
 #include "Expression.h"
 
+typedef std::pair<std::string, AndList*> OrPair;
+
 struct StatData {
 	double numTuples;
 	std::unordered_map<std::string, int> atts;
@@ -241,6 +243,22 @@ public:
 	 * does not modify the sets, but returns the number of tuples in the resulting relations.
  	*/
 	virtual double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
+
+	/**
+	 * ParseWhere will take where and parse it to find OrList's into Joins or Selects based on
+	 * which relation each affects. This method will assume that no Select on an OrList will
+	 * affect more than one relation. The Select/Joins will be put into AndLists that will be a
+	 * subset of where.
+	 *
+	 * Furthermore, this method requires that all relevant relations/attributes have been added to
+	 * this object.
+	 * @param where		The where CNF that we will parse and separate
+	 * @param selects	A map that will map a relatio to it's Selection AndList
+	 * @param joins		A map that will map a pair of relations to their Join AndList.
+	 */
+	virtual void ParseWhere(struct AndList *where,
+			std::unordered_map<std::string, AndList*> &selects,
+			std::unordered_map<std::string, std::unordered_map<std::string, AndList*> > &joins);
 };
 
 #endif /* INCLUDE_STATISTICS_H_ */
