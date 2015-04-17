@@ -105,6 +105,39 @@ OrderMaker :: OrderMaker(Schema *schema) {
         }
 }
 
+OrderMaker :: OrderMaker(Schema *base, Schema *order) {
+	numAtts = 0;
+
+	int n = base->GetNumAtts();
+	Attribute *atts = base->GetAtts();
+
+	for (int i = 0; i < n; i++) {
+		if (atts[i].myType == Int) {
+			whichAtts[numAtts] = i;
+			whichTypes[numAtts] = Int;
+			numAtts++;
+		}
+	}
+
+	// now add in the doubles
+	for (int i = 0; i < n; i++) {
+                if (atts[i].myType == Double) {
+                        whichAtts[numAtts] = i;
+                        whichTypes[numAtts] = Double;
+                        numAtts++;
+                }
+        }
+
+	// and finally the strings
+        for (int i = 0; i < n; i++) {
+                if (atts[i].myType == String) {
+                        whichAtts[numAtts] = i;
+                        whichTypes[numAtts] = String;
+                        numAtts++;
+                }
+        }
+}
+
 OrderMaker :: OrderMaker(std::string str) {
 	numAtts = 0;
 	char buff[str.length()];
