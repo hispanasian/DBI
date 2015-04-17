@@ -32,8 +32,8 @@ ALL_OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 CFLAGS := -g -Wall
 LIB := -L lib
 INC := -I include
-PARSING := $(BUILDDIR)/y.tab.o $(BUILDDIR)/lex.yy.o $(BUILDDIR)/yyfunc.tab.o $(BUILDDIR)/lex.yyfunc.o
-MAINS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o $(BUILDDIR)/driver1.o $(BUILDDIR)/driver2a.o $(BUILDDIR)/driver2b.o $(BUILDDIR)/driver3.o $(BUILDDIR)/driver4.o
+PARSING := $(BUILDDIR)/y.tab.o $(BUILDDIR)/lex.yy.o $(BUILDDIR)/yyfunc.tab.o $(BUILDDIR)/lex.yyfunc.o $(BUILDDIR)/yysql.tab.o $(BUILDDIR)/lex.yysql.o
+MAINS := $(BUILDDIR)/main.o $(BUILDDIR)/test.o $(BUILDDIR)/driver1.o $(BUILDDIR)/driver2a.o $(BUILDDIR)/driver2b.o $(BUILDDIR)/driver3.o $(BUILDDIR)/driver4.o $(BUILDDIR)/driver4b.o
 
 # Objects excluding main
 OBJECTS := $(filter-out $(MAINS),$(ALL_OBJECTS)) $(PARSING)
@@ -97,6 +97,11 @@ driver3: $(OBJECTS) $(BUILDDIR)/driver3.o
 .PHONY: driver4
 driver4: $(OBJECTS) $(BUILDDIR)/driver4.o
 	$(CC) $(CCFLAGS) -o $(TARGETDIR)/driver4 $^ $(lfl)
+	
+# Build driver4b
+.PHONY: driver4b
+driver4b: $(OBJECTS) $(BUILDDIR)/driver4b.o
+	$(CC) $(CCFLAGS) -o $(TARGETDIR)/driver4b $^ $(lfl)
 
 # Compile cc files
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
@@ -115,7 +120,12 @@ $(BUILDDIR)/yyfunc.tab.o: $(SRCDIR)/ParserFunc.y
 	(mv $(SRCDIR)/yyfunc.tab.h $(INCLUDEDIR))
 	g++ $(CCFLAGS) $(INC) -c -o $@ $(SRCDIR)/yyfunc.tab.c
 	#yacc -p "yyfunc" -b "yyfunc" -d ParserFunc.y
-	#sed $(tag) yyfunc.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/" 
+	#sed $(tag) yyfunc.tab.c -e "s/  __attribute__ ((__unused__))$$/# ifndef __cplusplus\n  __attribute__ ((__unused__));\n# endif/"
+	
+$(BUILDDIR)/yysql.tab.o: $(SRCDIR)/ParserSQL.y
+	(cd $(SRCDIR);yacc -p "yysql" -b "yysql" -d ParserSQL.y)
+	(mv $(SRCDIR)/yysql.tab.h $(INCLUDEDIR))
+	g++ $(CCFLAGS) $(INC) -c -o $@ $(SRCDIR)/yysql.tab.c 
 
 $(BUILDDIR)/lex.yy.o: $(SRCDIR)/Lexer.l
 	(cd $(SRCDIR);lex  Lexer.l)
@@ -124,6 +134,10 @@ $(BUILDDIR)/lex.yy.o: $(SRCDIR)/Lexer.l
 $(BUILDDIR)/lex.yyfunc.o: $(SRCDIR)/LexerFunc.l
 	(cd $(SRCDIR);lex -Pyyfunc LexerFunc.l)
 	gcc $(CCFLAGS) $(INC) -c -o $@ $(SRCDIR)/lex.yyfunc.c
+	
+$(BUILDDIR)/lex.yysql.o: $(SRCDIR)/LexerSQL.l
+	(cd $(SRCDIR);lex -Pyysql LexerSQL.l)
+	gcc $(CCFLAGS) $(INC) -c -o $@ $(SRCDIR)/lex.yysql.c
 
 
 ########## Testing ##########
