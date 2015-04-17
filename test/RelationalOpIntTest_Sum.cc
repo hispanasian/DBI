@@ -41,7 +41,7 @@ TEST_F(RelationalOpIntTest, SumInt) {
 
 	fclose(tableFile);
 	char *attname = "i";
-	Attribute att = { attname, Int };
+	Attribute att = { attname, "", Int };
 	Attribute atts[] = { att };
 	char *path = "";
 	Schema intSchema = Schema(path, 1, atts);
@@ -49,8 +49,6 @@ TEST_F(RelationalOpIntTest, SumInt) {
 
 	EXPECT_EQ(0, expected.compare(temp.ToString(&intSchema)));
 	EXPECT_EQ(1, count);
-	atts[0].name = NULL; // avoid a seg fault
-	att.name = NULL; // avoid a seg fault
 }
 
 // Simple test, expect a Record with a double of 2420.51 (sum of t)
@@ -85,7 +83,7 @@ TEST_F(RelationalOpIntTest, SumDouble) {
 
 	fclose(tableFile);
 	char *attname = "d";
-	Attribute att = { attname, Double };
+	Attribute att = { attname, "", Double };
 	Attribute atts[] = { att };
 	char *path = "";
 	Schema intSchema = Schema(path, 1, atts);
@@ -93,6 +91,4 @@ TEST_F(RelationalOpIntTest, SumDouble) {
 
 	EXPECT_EQ(0, expected.compare(temp.ToString(&intSchema)));
 	EXPECT_EQ(1, count);
-	atts[0].name = NULL; // avoid a seg fault
-	att.name = NULL; // avoid a seg fault
 }
