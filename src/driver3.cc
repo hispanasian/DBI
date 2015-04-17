@@ -11,9 +11,9 @@
 #include <pthread.h>
 
 
-Attribute* IA = new Attribute{"int", Int};
-Attribute* SA = new Attribute{"string", String};
-Attribute* DA = new Attribute{"double", Double};
+Attribute* IA = new Attribute{"int", "", Int};
+Attribute* SA = new Attribute{"string", "", String};
+Attribute* DA = new Attribute{"double", "", Double};
 
 int clear_pipe (Pipe &in_pipe, Schema *schema, bool print) {
 	Record rec;
@@ -201,7 +201,7 @@ void q4 () {
 		get_cnf ("(s_suppkey = ps_suppkey)", s->schema(), ps->schema(), cnf_p_ps, lit_p_ps);
 
 	int outAtts = sAtts + psAtts;
-	Attribute *ps_supplycost = new Attribute {"ps_supplycost", Double};
+	Attribute *ps_supplycost = new Attribute {"ps_supplycost", "", Double};
 	Attribute *joinatt = new Attribute[12];
 	joinatt[0] = *IA;
 	joinatt[1] = *SA;
@@ -300,8 +300,8 @@ void q6 () {
 		get_cnf ("(s_suppkey = ps_suppkey)", s->schema(), ps->schema(), cnf_p_ps, lit_p_ps);
 
 	int outAtts = sAtts + psAtts;
-	Attribute *s_nationkey = new Attribute{"s_nationkey", Int};
-	Attribute *ps_supplycost = new Attribute{"ps_supplycost", Double};
+	Attribute *s_nationkey = new Attribute{"s_nationkey", "", Int};
+	Attribute *ps_supplycost = new Attribute{"ps_supplycost", "", Double};
 	Attribute *joinatt = new Attribute[12];
 	joinatt[0] = *IA;
 	joinatt[1] = *SA;

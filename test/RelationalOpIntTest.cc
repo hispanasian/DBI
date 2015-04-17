@@ -150,7 +150,7 @@ TEST_F(RelationalOpIntTest, Project) {
     // count the number of records in the output
     ComparisonEngine comp;
     Attribute* atts = new Attribute[1];
-    atts[0] = *new Attribute{"int", Int};
+    atts[0] = *new Attribute{"int", "", Int};
     char* schemaName = new (std::nothrow) char[3];
     Schema out_sch (schemaName, 1, atts);
     int count = 0;
@@ -171,9 +171,9 @@ TEST_F(RelationalOpIntTest, Project) {
 TEST_F(RelationalOpIntTest, DuplicateRemoval) {
 	Record rec;
 	Attribute* atts = new Attribute[3];
-    atts[0] = *new Attribute{"int", Int};
-    atts[1] = *new Attribute{"double", Double};
-    atts[2] = *new Attribute{"string", String};
+    atts[0] = *new Attribute{"int", "", Int};
+    atts[1] = *new Attribute{"double", "", Double};
+    atts[2] = *new Attribute{"string", "",  String};
     char* schemaName = new (std::nothrow) char[3];
     Schema schema(schemaName, 3, atts);
 
@@ -199,26 +199,26 @@ TEST_F(RelationalOpIntTest, DuplicateRemoval) {
 TEST_F(RelationalOpIntTest, Join1) {
 	Record rec;
 	Attribute* attsLeft = new Attribute[3];
-    attsLeft[0] = *new Attribute{"l_int", Int};
-    attsLeft[1] = *new Attribute{"l_double", Double};
-    attsLeft[2] = *new Attribute{"l_string", String};
+    attsLeft[0] = *new Attribute{"l_int", "", Int};
+    attsLeft[1] = *new Attribute{"l_double", "", Double};
+    attsLeft[2] = *new Attribute{"l_string", "", String};
     char* schemaNameLeft = new (std::nothrow) char[3];
     Schema schemaLeft(schemaNameLeft, 3, attsLeft);
 
     Attribute* attsRight = new Attribute[3];
-    attsRight[0] = *new Attribute{"r_int", Int};
-    attsRight[1] = *new Attribute{"r_double", Double};
-    attsRight[2] = *new Attribute{"r_string", String};
+    attsRight[0] = *new Attribute{"r_int", "", Int};
+    attsRight[1] = *new Attribute{"r_double", "", Double};
+    attsRight[2] = *new Attribute{"r_string", "", String};
     char* schemaNameRight = new (std::nothrow) char[3];
     Schema schemaRight(schemaNameRight, 3, attsRight);
 
     Attribute* attsMerged = new Attribute[6];
-    attsMerged[0] = *new Attribute{"l_int", Int};
-    attsMerged[1] = *new Attribute{"l_double", Double};
-    attsMerged[2] = *new Attribute{"l_string", String};
-    attsMerged[3] = *new Attribute{"r_int", Int};
-    attsMerged[4] = *new Attribute{"r_double", Double};
-    attsMerged[5] = *new Attribute{"r_string", String};
+    attsMerged[0] = *new Attribute{"l_int", "", Int};
+    attsMerged[1] = *new Attribute{"l_double", "", Double};
+    attsMerged[2] = *new Attribute{"l_string", "", String};
+    attsMerged[3] = *new Attribute{"r_int", "", Int};
+    attsMerged[4] = *new Attribute{"r_double", "", Double};
+    attsMerged[5] = *new Attribute{"r_string", "", String};
     char* schemaNameMerged = new (std::nothrow) char[3];
     Schema schemaMerged(schemaNameMerged, 6, attsMerged);
 
@@ -263,26 +263,26 @@ TEST_F(RelationalOpIntTest, Join1) {
 TEST_F(RelationalOpIntTest, Join2) {
 	Record rec;
 	Attribute* attsLeft = new Attribute[3];
-    attsLeft[0] = *new Attribute{"l_int", Int};
-    attsLeft[1] = *new Attribute{"l_double", Double};
-    attsLeft[2] = *new Attribute{"l_string", String};
+    attsLeft[0] = *new Attribute{"l_int", "", Int};
+    attsLeft[1] = *new Attribute{"l_double", "", Double};
+    attsLeft[2] = *new Attribute{"l_string", "", String};
     char* schemaNameLeft = new (std::nothrow) char[3];
     Schema schemaLeft(schemaNameLeft, 3, attsLeft);
 
     Attribute* attsRight = new Attribute[3];
-    attsRight[0] = *new Attribute{"r_int", Int};
-    attsRight[1] = *new Attribute{"r_double", Double};
-    attsRight[2] = *new Attribute{"r_string", String};
+    attsRight[0] = *new Attribute{"r_int", "", Int};
+    attsRight[1] = *new Attribute{"r_double", "", Double};
+    attsRight[2] = *new Attribute{"r_string", "", String};
     char* schemaNameRight = new (std::nothrow) char[3];
     Schema schemaRight(schemaNameRight, 3, attsRight);
 
     Attribute* attsMerged = new Attribute[6];
-    attsMerged[0] = *new Attribute{"l_int", Int};
-    attsMerged[1] = *new Attribute{"l_double", Double};
-    attsMerged[2] = *new Attribute{"l_string", String};
-    attsMerged[3] = *new Attribute{"r_int", Int};
-    attsMerged[4] = *new Attribute{"r_double", Double};
-    attsMerged[5] = *new Attribute{"r_string", String};
+    attsMerged[0] = *new Attribute{"l_int", "", Int};
+    attsMerged[1] = *new Attribute{"l_double", "", Double};
+    attsMerged[2] = *new Attribute{"l_string", "", String};
+    attsMerged[3] = *new Attribute{"r_int", "", Int};
+    attsMerged[4] = *new Attribute{"r_double", "", Double};
+    attsMerged[5] = *new Attribute{"r_string", "", String};
     char* schemaNameMerged = new (std::nothrow) char[3];
     Schema schemaMerged(schemaNameMerged, 6, attsMerged);
 

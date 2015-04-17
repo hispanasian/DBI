@@ -7,7 +7,8 @@
 int Schema :: Find (char *attName) {
 
 	for (int i = 0; i < numAtts; i++) {
-		if (!strcmp (attName, myAtts[i].name)) {
+		if (!myAtts[i].name.compare(attName) ||
+				!string(myAtts[i].relation).append(".").append(myAtts[i].name).compare(attName) ) {
 			return i;
 		}
 	}
@@ -19,7 +20,8 @@ int Schema :: Find (char *attName) {
 Type Schema :: FindType (char *attName) {
 
 	for (int i = 0; i < numAtts; i++) {
-		if (!strcmp (attName, myAtts[i].name)) {
+		if (!myAtts[i].name.compare(attName) ||
+				!string(myAtts[i].relation).append(".").append(myAtts[i].name).compare(attName) ) {
 			return myAtts[i].myType;
 		}
 	}
@@ -150,7 +152,7 @@ Schema :: Schema (char *fpath, int num_atts, Attribute *atts) {
 			delete [] myAtts;
 			exit (1);
 		}
-		myAtts[i].name = strdup (atts[i].name);
+		myAtts[i].name = atts[i].name;
 	}
 }
 
@@ -160,8 +162,8 @@ Schema :: Schema (const Schema &copyMe) {
 	myAtts = new Attribute[numAtts];
 
 	for(int i = 0; i < copyMe.numAtts; i++) {
-		myAtts[i].name = new char[strlen(copyMe.myAtts[i].name) + 1];
-		strcpy(myAtts[i].name, copyMe.myAtts[i].name);
+		myAtts[i].name = copyMe.myAtts[i].name;
+		myAtts[i].relation = copyMe.myAtts[i].relation;
 		myAtts[i].myType = copyMe.myAtts[i].myType;
 	}
 }
@@ -178,15 +180,15 @@ void Schema :: Join  (Schema *left, Schema *right) {
 	myAtts = new Attribute[numAtts];
 
 	for(int i = 0; i < left->numAtts; i++) {
-		myAtts[i].name = new char[strlen(left->myAtts[i].name) + 1];
-		strcpy(myAtts[i].name, left->myAtts[i].name);
+		myAtts[i].name = left->myAtts[i].name;
+		myAtts[i].relation = left->myAtts[i].relation;
 		myAtts[i].myType = left->myAtts[i].myType;
 	}
 
 	int loff = left->numAtts; // offset from left schema
 	for(int i = 0; i < right->numAtts; i++) {
-		myAtts[i + loff].name = new char[strlen(right->myAtts[i].name) + 1];
-		strcpy(myAtts[i + loff].name, right->myAtts[i].name);
+		myAtts[i].name = right->myAtts[i].name;
+		myAtts[i].relation = right->myAtts[i].relation;
 		myAtts[i + loff].myType = right->myAtts[i].myType;
 	}
 }
