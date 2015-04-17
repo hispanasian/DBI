@@ -96,46 +96,33 @@ OrderMaker :: OrderMaker(Schema *schema) {
         }
 
 	// and finally the strings
-        for (int i = 0; i < n; i++) {
-                if (atts[i].myType == String) {
-                        whichAtts[numAtts] = i;
-                        whichTypes[numAtts] = String;
-                        numAtts++;
-                }
-        }
+	for (int i = 0; i < n; i++) {
+			if (atts[i].myType == String) {
+					whichAtts[numAtts] = i;
+					whichTypes[numAtts] = String;
+					numAtts++;
+			}
+	}
 }
 
 OrderMaker :: OrderMaker(Schema *base, Schema *order) {
-	numAtts = 0;
+	numAtts = order->GetNumAtts();
 
-	int n = base->GetNumAtts();
-	Attribute *atts = base->GetAtts();
+	Attribute *atts = order->GetAtts();
+	int n = order->GetNumAtts();
+	int index = -1;
+	Type type;
 
-	for (int i = 0; i < n; i++) {
-		if (atts[i].myType == Int) {
-			whichAtts[numAtts] = i;
-			whichTypes[numAtts] = Int;
-			numAtts++;
-		}
+	// look through each attribute in order and find it in base
+	for(int i = 0; i < n; i++) {
+		index = base->Find(atts[i].relation.c_str(), atts[i].name.c_str());
+		type = base->FindType(atts[i].relation.c_str(), atts[i].name.c_str());
+
+		if(index == -1 || type != atts[i].myType)
+			throw invalid_argument("Non existent attribute found in order (OrderMaker(schema*, schema*))");
+		whichAtts[i] = index;
+		whichTypes[i] = type;
 	}
-
-	// now add in the doubles
-	for (int i = 0; i < n; i++) {
-                if (atts[i].myType == Double) {
-                        whichAtts[numAtts] = i;
-                        whichTypes[numAtts] = Double;
-                        numAtts++;
-                }
-        }
-
-	// and finally the strings
-        for (int i = 0; i < n; i++) {
-                if (atts[i].myType == String) {
-                        whichAtts[numAtts] = i;
-                        whichTypes[numAtts] = String;
-                        numAtts++;
-                }
-        }
 }
 
 OrderMaker :: OrderMaker(std::string str) {

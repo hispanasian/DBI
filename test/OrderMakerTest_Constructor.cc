@@ -81,19 +81,19 @@ TEST_F(OrderMakerTest, Constructor8) {
 	Attribute schemasAtts[5];
 	schemasAtts[0] = Attribute{ "a1", "A", Int };
 	schemasAtts[1] = Attribute{ "a2", "A", Int };
-	schemasAtts[2] = Attribute{ "b1", "B", Double };
-	schemasAtts[3] = Attribute{ "b2", "B", Double };
+	schemasAtts[2] = Attribute{ "a1", "B", Double };
+	schemasAtts[3] = Attribute{ "a2", "B", Double };
 	schemasAtts[4] = Attribute{ "c1", "C", String };
 
 	Attribute ordersAtts[3];
-	ordersAtts[0] = Attribute{ "b2", "B", Int };
-	ordersAtts[1] = Attribute{ "c1", "C", Int };
-	ordersAtts[2] = Attribute{ "a2", "A", Double };
+	ordersAtts[0] = Attribute{ "a2", "B", Double };
+	ordersAtts[1] = Attribute{ "c1", "C", String };
+	ordersAtts[2] = Attribute{ "a2", "A", Int };
 
-	Schema schema (NULL, 5, schemasAtts);
-	Schema order (NULL, 3, ordersAtts);
+	Schema schema ("", 5, schemasAtts);
+	Schema order ("", 3, ordersAtts);
 
-	OrderMaker test = OrderMaker(schema, order);
+	OrderMaker test = OrderMaker(&schema, &order);
 	EXPECT_EQ(0, test.ToString().compare("3 double 4 string 1 int"));
 }
 
@@ -111,10 +111,10 @@ TEST_F(OrderMakerTest, Constructor9) {
 
 	Attribute ordersAtts[0];
 
-	Schema schema (NULL, 5, schemasAtts);
-	Schema order (NULL, 0, ordersAtts);
+	Schema schema ("", 5, schemasAtts);
+	Schema order ("", 0, ordersAtts);
 
-	OrderMaker test = OrderMaker(schema, order);
+	OrderMaker test = OrderMaker(&schema, &order);
 	EXPECT_EQ(0, test.ToString().compare(""));
 }
 
@@ -131,12 +131,12 @@ TEST_F(OrderMakerTest, Constructor10) {
 	schemasAtts[4] = Attribute{ "c1", "C", String };
 
 	Attribute ordersAtts[3];
-	ordersAtts[0] = Attribute{ "b2", "B", Int };
-	ordersAtts[1] = Attribute{ "c1", "C", Int };
-	ordersAtts[2] = Attribute{ "a2", "D", Double };
+	ordersAtts[0] = Attribute{ "b2", "B", Double };
+	ordersAtts[1] = Attribute{ "c1", "C", String };
+	ordersAtts[2] = Attribute{ "a2", "D", Int };
 
-	Schema schema (NULL, 5, schemasAtts);
-	Schema order (NULL, 3, ordersAtts);
+	Schema schema ("", 5, schemasAtts);
+	Schema order ("", 3, ordersAtts);
 
-	EXPECT_THROW(OrderMaker(schema, order), std::invalid_argument);
+	EXPECT_THROW(OrderMaker(&schema, &order), std::invalid_argument);
 }

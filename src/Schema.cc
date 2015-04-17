@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-int Schema :: Find (char *attName) {
+int Schema :: Find (const char *attName) {
 
 	for (int i = 0; i < numAtts; i++) {
 		if (!myAtts[i].name.compare(attName) ||
@@ -17,7 +17,11 @@ int Schema :: Find (char *attName) {
 	return -1;
 }
 
-Type Schema :: FindType (char *attName) {
+int Schema :: Find (const char *relName, const char *attName) {
+	return Find(string(relName).append(".").append(attName).c_str());
+}
+
+Type Schema :: FindType (const char *attName) {
 
 	for (int i = 0; i < numAtts; i++) {
 		if (!myAtts[i].name.compare(attName) ||
@@ -28,6 +32,10 @@ Type Schema :: FindType (char *attName) {
 
 	// if we made it here, the attribute was not found
 	return Int;
+}
+
+Type Schema :: FindType (const char *relName, const char *attName) {
+	return FindType(string(relName).append(".").append(attName).c_str());
 }
 
 int Schema :: GetNumAtts () {
@@ -153,6 +161,7 @@ Schema :: Schema (char *fpath, int num_atts, Attribute *atts) {
 			exit (1);
 		}
 		myAtts[i].name = atts[i].name;
+		myAtts[i].relation = atts[i].relation;
 	}
 }
 
