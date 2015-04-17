@@ -39,6 +39,11 @@ void SQL::Parse() {
 	aggregateDistinct = distinctFunc;
 }
 
+void SQL::GetWhere(SelectMap &selects, JoinMap &joins) {
+	ParseWhere(where, selects, joins);
+}
+
+
 bool SQL::ParseOperand(string operand, vector<string> &out) {
 	return stat.ParseOperand(operand, out);
 }

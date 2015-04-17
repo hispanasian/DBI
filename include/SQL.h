@@ -111,6 +111,14 @@ public:
 	virtual void Parse();
 
 	/**
+	 * Returns a SelectMap and JoinMap that represents the Selects and Joins that are specified in
+	 * the WHERE clause of this SQL statement.
+	 * @param selects	A map of the selects (relation->AndList)
+	 * @param joins		A map of the joins (relation1->relation2->AndList)
+	 */
+	virtual void GetWhere(SelectMap &selects, JoinMap &joins);
+
+	/**
 	 * ParseWhere will take where and parse it to find OrList's into Joins or Selects based on
 	 * which relation each affects. This method will assume that no Select on an OrList will
 	 * affect more than one relation. The Select/Joins will be put into AndLists that will be a
