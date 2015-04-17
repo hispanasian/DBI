@@ -119,6 +119,12 @@ public:
 	virtual void GetWhere(SelectMap &selects, JoinMap &joins);
 
 	/**
+	 * Returns the attributes that are referenced in the aggregate
+	 * @param pair	The vector that will hold the referenced relation/attribute pairs
+	 */
+	virtual void GetFunctionAttributes(std::vector<RelAttPair> &pair);
+
+	/**
 	 * ParseWhere will take where and parse it to find OrList's into Joins or Selects based on
 	 * which relation each affects. This method will assume that no Select on an OrList will
 	 * affect more than one relation. The Select/Joins will be put into AndLists that will be a
@@ -142,6 +148,14 @@ public:
 	 * 				and pair.second will contain the attribute
 	 */
 	virtual void ParseNameList(struct NameList *list, std::vector<RelAttPair> &pair);
+
+	/**
+	 * Parses a FuncOperator and returns a vector of RelAttPair representing the attributes that
+	 * are contained by func.
+	 * @param func	The FuncOperator being parsed
+	 * @param
+	 */
+	virtual void ParseFuncOperator(FuncOperator *func, std::vector<RelAttPair> &pair);
 
 };
 

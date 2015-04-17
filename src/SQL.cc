@@ -43,6 +43,9 @@ void SQL::GetWhere(SelectMap &selects, JoinMap &joins) {
 	ParseWhere(where, selects, joins);
 }
 
+void SQL::GetFunctionAttributes(vector<RelAttPair> &pairs) {
+	if(function != NULL) ParseFuncOperator(function, pairs);
+}
 
 bool SQL::ParseOperand(string operand, vector<string> &out) {
 	return stat.ParseOperand(operand, out);
@@ -176,5 +179,23 @@ void SQL::ParseNameList(NameList *names, vector<RelAttPair> &pair) {
 	while(temp.size() > 0) {
 		pair.push_back(temp.top());
 		temp.pop();
+	}
+}
+
+void SQL::ParseFuncOperator(FuncOperator *func, vector<RelAttPair> &pair) {
+	if(func != NULL) {
+		// First, parse left child
+		ParseFuncOperator(func->leftOperator, pair);
+
+		// Next, check root.
+		struct FuncOperand *op = func->leftOperand;
+		if(op != NULL && op->code == NAME) {
+			vector<string> name;
+			if(ParseOperand(op->value, name)) pair.push_back(make_pair(name[0], name[1]));
+			else throw runtime_error("Error: Relation or attribute does not exist. (Statistics::ParseFuncOperator)");
+		}
+
+		// Finally, check right child
+		ParseFuncOperator(func->right, pair);
 	}
 }
