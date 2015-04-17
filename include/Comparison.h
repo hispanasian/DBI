@@ -65,6 +65,8 @@ public:
 	// OrderMaker = (whichAtt whichType)*
 	OrderMaker(std::string str);
 
+	virtual ~OrderMaker();
+
 	// gets the number of attributes
 	virtual int GetNumAtts();
 

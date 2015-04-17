@@ -70,6 +70,8 @@ OrderMaker :: OrderMaker() {
 	numAtts = 0;
 }
 
+OrderMaker :: ~OrderMaker() {}
+
 OrderMaker :: OrderMaker(Schema *schema) {
 	numAtts = 0;
 
