@@ -29,7 +29,7 @@ TEST_F(StatisticsTest, ParseNameList1) {
 	stat.AddAtt(relName[1], "b2",11);
 	stat.AddAtt(relName[1], "b3",7);
 
-	string sql = "SELECT A.a1, b1, b2 ";
+	string sql = "SELECT A.a1, B.b1, B.b2 ";
 	sql.append(" FROM rel AS A ");
 	sql.append(" WHERE (A.a1 = 5)");
 
@@ -93,7 +93,7 @@ TEST_F(StatisticsTest, ParseNameList3) {
 	stat.AddAtt(relName[1], "b2",11);
 	stat.AddAtt(relName[1], "b3",7);
 
-	string sql = "SELECT a5 ";
+	string sql = "SELECT A.a5 ";
 	sql.append(" FROM rel AS A ");
 	sql.append(" WHERE (A.a1 = 5)");
 
