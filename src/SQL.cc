@@ -21,11 +21,22 @@ SQL::~SQL() {
 }
 
 void SQL::Parse(const string &sql) {
-
+	this->sql = sql;
+	yysql_scan_string(this->sql.c_str());
+	Parse();
 }
 
 void SQL::Parse() {
+	yysqlparse();
 
+	// Copy the structures
+	function = finalFunction;
+	relations = tables;
+	where = boolean;
+	groupAtts = groupingAtts;
+	selectAtts = attsToSelect;
+	selectDistinct = distinctAtts;
+	aggregateDistinct = distinctFunc;
 }
 
 bool SQL::ParseOperand(string operand, vector<string> &out) {

@@ -11,7 +11,7 @@
 #include "Statistics.h"
 
 typedef std::pair<std::string, AndList*> OrPair;
-typedef std::pair<std::string, std::string> RelAttPair;
+typedef std::pair<std::string, std::string> StringPair;
 typedef std::unordered_map<std::string, AndList*> SelectMap;
 typedef std::unordered_map<std::string, std::unordered_map<std::string, AndList*> > JoinMap;
 
@@ -33,6 +33,30 @@ extern struct NameList *groupingAtts; // grouping atts (NULL if no grouping)
 extern struct NameList *attsToSelect; // the set of attributes in the SELECT (NULL if no such atts)
 extern int distinctAtts; // 1 if there is a DISTINCT in a non-aggregate query
 extern int distinctFunc;  // 1 if there is a DISTINCT in an aggregate query
+
+class RelAttPair{
+protected:
+	std::string relation;
+	std::string attribute;
+public:
+	RelAttPair(std::string &_relation, std::string &_attribute) {
+		relation = _relation;
+		attribute = _attribute;
+	}
+
+	RelAttPair(const RelAttPair &copyMe) {
+		relation = copyMe.relation;
+		attribute = copyMe.attribute;
+	}
+
+	RelAttPair(const StringPair &copyMe) {
+		relation = copyMe.first;
+		attribute = copyMe.second;
+	}
+
+	std::string Relation() { return relation; }
+	std::string Attribute() { return attribute; }
+};
 
 class SQL {
 protected:
@@ -93,7 +117,7 @@ public:
 	 * subset of where.
 	 *
 	 * Furthermore, this method requires that all relevant relations/attributes have been added to
-	 * this object.
+	 * this objects Statistics object.
 	 * @param where		The where CNF that we will parse and separate
 	 * @param selects	A map that will map a relatio to it's Selection AndList
 	 * @param joins		A map that will map a pair of relations to their Join AndList.
@@ -103,8 +127,8 @@ public:
 	/**
 	 * Similar to ParseWhere, this method will go through the NameList and return a vector with the
 	 * Relation/Attribute pair of the attributes. This will throw a runtime_error if an unknown
-	 * relation or attribute is encountered. This method assumes that this object has been
-	 * populated with all relevant data.
+	 * relation or attribute is encountered. This method assumes that this objects Statistics
+	 *  object has been populated with all relevant data.
 	 * @param list	The NameList that will be parsed
 	 * @param pair	The vector of pairs that will be returned. pair.first will contain the relation
 	 * 				and pair.second will contain the attribute

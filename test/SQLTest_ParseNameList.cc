@@ -41,12 +41,12 @@ TEST_F(SQLTest, ParseNameList1) {
 	test.ParseNameList(attsToSelect, pair);
 
 	ASSERT_EQ(3, pair.size());
-	EXPECT_TRUE(pair[0].first.compare("A") == 0);
-	EXPECT_TRUE(pair[0].second.compare("a1") == 0);
-	EXPECT_TRUE(pair[1].first.compare("B") == 0);
-	EXPECT_TRUE(pair[1].second.compare("b1") == 0);
-	EXPECT_TRUE(pair[2].first.compare("B") == 0);
-	EXPECT_TRUE(pair[2].second.compare("b2") == 0);
+	EXPECT_TRUE(pair[0].Relation().compare("A") == 0);
+	EXPECT_TRUE(pair[0].Attribute().compare("a1") == 0);
+	EXPECT_TRUE(pair[1].Relation().compare("B") == 0);
+	EXPECT_TRUE(pair[1].Attribute().compare("b1") == 0);
+	EXPECT_TRUE(pair[2].Relation().compare("B") == 0);
+	EXPECT_TRUE(pair[2].Attribute().compare("b2") == 0);
 }
 
 /**
@@ -76,8 +76,8 @@ TEST_F(SQLTest, ParseNameList2) {
 	test.ParseNameList(attsToSelect, pair);
 
 	ASSERT_EQ(1, pair.size());
-	EXPECT_TRUE(pair[0].first.compare("A") == 0);
-	EXPECT_TRUE(pair[0].second.compare("a1") == 0);
+	EXPECT_TRUE(pair[0].Relation().compare("A") == 0);
+	EXPECT_TRUE(pair[0].Attribute().compare("a1") == 0);
 }
 
 /**
