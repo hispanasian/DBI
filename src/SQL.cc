@@ -66,6 +66,10 @@ void SQL::GetFunctionAttributes(vector<RelAttPair> &pairs) {
 	if(function != NULL) ParseFuncOperator(function, pairs);
 }
 
+bool SQL::DistinctAggregate() { return aggregateDistinct; }
+
+bool SQL::DistinctSelect() { return selectDistinct; }
+
 bool SQL::ParseOperand(string operand, vector<string> &out) {
 	return stat.ParseOperand(operand, out);
 }

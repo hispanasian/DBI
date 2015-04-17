@@ -168,6 +168,18 @@ public:
 	virtual void GetFunctionAttributes(std::vector<RelAttPair> &pair);
 
 	/**
+	 * Returns true if there is a distinct in the aggregate function
+	 * @param true if there is a distinct in the aggregate function
+	 */
+	virtual bool DistinctAggregate();
+
+	/**
+	 * Returns true if there is a distinct in the selection
+	 * @param true if there is a distinct in the selction
+	 */
+	virtual bool DistinctSelect();
+
+	/**
 	 * ParseWhere will take where and parse it to find OrList's into Joins or Selects based on
 	 * which relation each affects. This method will assume that no Select on an OrList will
 	 * affect more than one relation. The Select/Joins will be put into AndLists that will be a
