@@ -193,6 +193,12 @@ void Schema :: Join  (Schema *left, Schema *right) {
 	}
 }
 
+void Schema :: SetRelation(const char *relation) {
+	for(int i = 0; i < numAtts; i++) {
+		myAtts[i].relation = string(relation);
+	}
+}
+
 Schema :: ~Schema () {
 	free(fileName);
 	delete [] myAtts;
