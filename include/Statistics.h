@@ -94,7 +94,7 @@ public:
 	 * @param oldName	The name of the relation to be copied
 	 * @param newName	The name of the relation that will contain the copy of oldName
 	 */
-	virtual void CopyRel(char *oldName, char *newName);
+	virtual void CopyRel(const char *oldName, const char *newName);
 
     /**
 	 * Adds (or replaces if it exists) an attribute to this structure. A numDistincts of -1 will
@@ -105,7 +105,7 @@ public:
 	 * @param attName	The attribute's name
 	 * @numDistincts	The number of distinct attributes
 	 */
-	virtual void AddAtt(char *relName, char *attName, double numDistincts);
+	virtual void AddAtt(const char *relName, const char *attName, double numDistincts);
 
 	/**
 	 * Returns the number of tuples in the provided relName.

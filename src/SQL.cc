@@ -37,10 +37,29 @@ void SQL::Parse() {
 	selectAtts = attsToSelect;
 	selectDistinct = distinctAtts;
 	aggregateDistinct = distinctFunc;
+
+	// Make copy of aliases
+	vector<RelAliasPair> aliases;
+	GetTables(aliases);
+	for(int i = 0; i < aliases.size(); i++) {
+		stat.CopyRel(aliases[i].Relation().c_str(), aliases[i].Alias().c_str());
+	}
 }
 
 void SQL::GetWhere(SelectMap &selects, JoinMap &joins) {
 	ParseWhere(where, selects, joins);
+}
+
+void SQL::GetGroup(std::vector<RelAttPair> &pairs) {
+	ParseNameList(groupAtts, pairs);
+}
+
+void SQL::GetSelect(vector<RelAttPair> &pairs) {
+	ParseNameList(selectAtts, pairs);
+}
+
+void SQL::GetTables(std::vector<RelAliasPair> &pairs) {
+	ParseTableList(relations, pairs);
 }
 
 void SQL::GetFunctionAttributes(vector<RelAttPair> &pairs) {
@@ -197,5 +216,21 @@ void SQL::ParseFuncOperator(FuncOperator *func, vector<RelAttPair> &pair) {
 
 		// Finally, check right child
 		ParseFuncOperator(func->right, pair);
+	}
+}
+
+void SQL::ParseTableList(TableList *list, vector<RelAliasPair> &pairs) {
+	stack<RelAliasPair> temp;
+	while(list != NULL) {
+		if(stat.NumTuples(list->tableName) != -1)
+			temp.push(make_pair(string(list->tableName), string(list->aliasAs)));
+		else throw runtime_error("Error: Relation does not exist. (Statistics::ParseTableList)");
+		list = list->next;
+	}
+
+	// Now, return the correctly ordered pairs
+	while(temp.size() > 0) {
+		pairs.push_back(temp.top());
+		temp.pop();
 	}
 }

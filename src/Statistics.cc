@@ -142,7 +142,7 @@ void Statistics::Write(char *fromWhere, RawFile &file) {
 	file.Close();
 }
 
-void Statistics::CopyRel(char *oldName, char *newName) {
+void Statistics::CopyRel(const char *oldName, const char *newName) {
 	relations[newName].numTuples = relations.at(oldName).numTuples;
 
 	for(auto it = relations.at(oldName).atts.begin(); it != relations.at(oldName).atts.end(); ++it) {
@@ -153,7 +153,7 @@ void Statistics::CopyRel(char *oldName, char *newName) {
 	relations[newName].set.insert(newName);
 }
 
-void Statistics::AddAtt(char *relName, char *attName, double numDistincts) {
+void Statistics::AddAtt(const char *relName, const char *attName, double numDistincts) {
 	relations.at(relName).atts[attName] = numDistincts;
 
 	try {

@@ -58,6 +58,30 @@ public:
 	std::string Attribute() { return attribute; }
 };
 
+class RelAliasPair{
+protected:
+	std::string relation;
+	std::string alias;
+public:
+	RelAliasPair(std::string &_relation, std::string &_alias) {
+		relation = _relation;
+		alias = _alias;
+	}
+
+	RelAliasPair(const RelAliasPair &copyMe) {
+		relation = copyMe.relation;
+		alias = copyMe.alias;
+	}
+
+	RelAliasPair(const StringPair &copyMe) {
+		relation = copyMe.first;
+		alias = copyMe.second;
+	}
+
+	std::string Relation() { return relation; }
+	std::string Alias() { return alias; }
+};
+
 class SQL {
 protected:
 	Statistics stat;
@@ -100,13 +124,14 @@ public:
 	virtual ~SQL();
 
 	/**
-	 * Parses the sql string and puts the related meta-data into this object
-	 * @param sql	The sql string that should be parsed
+	 * Parses the sql string and puts the related meta-data into this object. This method will
+	 * correctly update the Statistics object to reflect aliased relations
 	 */
 	virtual void Parse(const std::string &sql);
 
 	/**
-	 * Will request sql to be provided from stdin and will parse the provided sql.
+	 * Will request sql to be provided from stdin and will parse the provided sql. This method will
+	 * correctly update the Statistics object to reflect aliased relations
 	 */
 	virtual void Parse();
 
@@ -117,6 +142,24 @@ public:
 	 * @param joins		A map of the joins (relation1->relation2->AndList)
 	 */
 	virtual void GetWhere(SelectMap &selects, JoinMap &joins);
+
+	/**
+	 * Returns a vector of the Attributes in the GroupBy clause
+	 * @param pairs	The vector that will hold the Relation/Attribute pairs
+	 */
+	virtual void GetGroup(std::vector<RelAttPair> &pairs);
+
+	/**
+	 * Returns a vector of the Attributes in the Select clause (excluding the aggregated attributes)
+	 * @param pairs	The vector that will hold the Relation/Attribute pairs
+	 */
+	virtual void GetSelect(std::vector<RelAttPair> &pairs);
+
+	/**
+	 * Returns a vector of the Relations (and their aliases) referenced in the FROM clause
+	 * @param pairs	The vector that will hold the Relation/Alias pairs
+	 */
+	virtual void GetTables(std::vector<RelAliasPair> &pairs);
 
 	/**
 	 * Returns the attributes that are referenced in the aggregate
@@ -133,7 +176,7 @@ public:
 	 * Furthermore, this method requires that all relevant relations/attributes have been added to
 	 * this objects Statistics object.
 	 * @param where		The where CNF that we will parse and separate
-	 * @param selects	A map that will map a relatio to it's Selection AndList
+	 * @param selects	A map that will map a relation to it's Selection AndList
 	 * @param joins		A map that will map a pair of relations to their Join AndList.
 	 */
 	virtual void ParseWhere(struct AndList *where, SelectMap &selects, JoinMap &joins);
@@ -144,8 +187,7 @@ public:
 	 * relation or attribute is encountered. This method assumes that this objects Statistics
 	 *  object has been populated with all relevant data.
 	 * @param list	The NameList that will be parsed
-	 * @param pair	The vector of pairs that will be returned. pair.first will contain the relation
-	 * 				and pair.second will contain the attribute
+	 * @param pair	The vector of pairs that will be returned.
 	 */
 	virtual void ParseNameList(struct NameList *list, std::vector<RelAttPair> &pair);
 
@@ -153,9 +195,17 @@ public:
 	 * Parses a FuncOperator and returns a vector of RelAttPair representing the attributes that
 	 * are contained by func.
 	 * @param func	The FuncOperator being parsed
-	 * @param
+	 * @param pair	The vector of pairs that will be returned.
 	 */
 	virtual void ParseFuncOperator(FuncOperator *func, std::vector<RelAttPair> &pair);
+
+	/*
+	 * Parses a TableList and returns a vector of RelAlias pair representing the aliases that
+	 * correspond to each relation
+	 * @param list	The TableList that contains the map of each alias
+	 * @param pair	The vector of pairs that will be returned.
+	 */
+	virtual void ParseTableList(TableList *list, std::vector<RelAliasPair> &pairs);
 
 };
 
