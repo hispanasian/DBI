@@ -77,6 +77,9 @@ public:
 	// place a lexicographic ordering on the records using this type of schema
 	int GetSortOrder (OrderMaker &order);
 
+	// sets the relation of every relation in this Schema to the provided relation
+	void SetRelation(const char* relation);
+
 	virtual ~Schema ();
 
 	// Strictly for testing
