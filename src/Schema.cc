@@ -1,10 +1,13 @@
 #include "../include/Schema.h"
 #include <string.h>
+#include <string>
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 
-int Schema :: Find (const char *attName) {
+using namespace std;
+
+int Schema :: Find (const char *attName) const {
 
 	for (int i = 0; i < numAtts; i++) {
 		if (!myAtts[i].name.compare(attName) ||
@@ -17,11 +20,11 @@ int Schema :: Find (const char *attName) {
 	return -1;
 }
 
-int Schema :: Find (const char *relName, const char *attName) {
+int Schema :: Find (const char *relName, const char *attName) const {
 	return Find(string(relName).append(".").append(attName).c_str());
 }
 
-Type Schema :: FindType (const char *attName) {
+Type Schema :: FindType (const char *attName) const {
 
 	for (int i = 0; i < numAtts; i++) {
 		if (!myAtts[i].name.compare(attName) ||
@@ -34,7 +37,7 @@ Type Schema :: FindType (const char *attName) {
 	return Int;
 }
 
-Type Schema :: FindType (const char *relName, const char *attName) {
+Type Schema :: FindType (const char *relName, const char *attName) const {
 	return FindType(string(relName).append(".").append(attName).c_str());
 }
 
@@ -174,6 +177,25 @@ Schema :: Schema (const Schema &copyMe) {
 		myAtts[i].name = copyMe.myAtts[i].name;
 		myAtts[i].relation = copyMe.myAtts[i].relation;
 		myAtts[i].myType = copyMe.myAtts[i].myType;
+	}
+}
+
+Schema :: Schema (const Schema &copyMe, const vector<RelAttPair> &pairs) {
+	fileName = NULL;
+	numAtts = pairs.size();
+	myAtts = new Attribute[numAtts];
+
+	int index = -1;
+	Type type;
+	for(int i = 0; i < numAtts; i++) {
+		string temp = pairs[i].Relation();
+		index = copyMe.Find(pairs[i].Relation().c_str(), pairs[i].Attribute().c_str());
+		type = copyMe.FindType(pairs[i].Relation().c_str(), pairs[i].Attribute().c_str());
+
+		if(index == -1) throw invalid_argument("Unknown Relation/Attribute pair found (Schema(Schema, vector<RelAttPair>))");
+		myAtts[i].name = pairs[i].Attribute();
+		myAtts[i].relation = pairs[i].Relation();
+		myAtts[i].myType = type;
 	}
 }
 
