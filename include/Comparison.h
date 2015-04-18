@@ -61,9 +61,17 @@ public:
 	OrderMaker(Schema *schema);
 
 	// create an OrderMaker that can be used to sort records
+	// based on the attributes in order (relative to base).
+	// ie: OrderMaker will sort on the attributes provided by
+	// order but will use the context of base
+	OrderMaker(Schema *base, Schema *order);
+
+	// create an OrderMaker that can be used to sort records
 	// based upon str which is expected to have the following format:
 	// OrderMaker = (whichAtt whichType)*
 	OrderMaker(std::string str);
+
+	virtual ~OrderMaker();
 
 	// gets the number of attributes
 	virtual int GetNumAtts();

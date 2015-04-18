@@ -44,10 +44,17 @@ public:
 
 	// this finds the position of the specified attribute in the schema
 	// returns a -1 if the attribute is not present in the schema
-	int Find (char *attName);
+	int Find (const char *attName);
+
+	// this finds the position of the specified relation/attribute in the schema
+	// returns a -1 if the attribute is not present in the schema
+	int Find (const char *relName, const char *attName);
 
 	// this finds the type of the given attribute
-	Type FindType (char *attName);
+	Type FindType (const char *attName);
+
+	// this finds the type of the given relation/attribute
+	Type FindType (const char *relName, const char *attName);
 
 	// this reads the specification for the schema in from a file
 	Schema (char *fName, char *relName);
