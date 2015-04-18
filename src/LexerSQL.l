@@ -91,7 +91,7 @@ void close_lexical_parser_sql () { yysql_delete_buffer (yysql_buf_state); }
 			}     
 
 [A-Za-z][A-Za-z0-9_-]*\.[A-Za-z][A-Za-z0-9_-]* {yysqllval.actualChars = strdup(yysqltext);
-  			return(Name);
+  			return(QualifiedName);
 			}     
 
 \'[^'\n]*\'            {/* take care of ' in a string */
@@ -113,7 +113,7 @@ void close_lexical_parser_sql () { yysql_delete_buffer (yysql_buf_state); }
 %%
 
 void yysqlerror(char *s) {
-  printf("%d: %s at %s\n", linenum, s, yysqltext);
+  printf("syntax error at %d: %s at %s\n", linenum, s, yysqltext);
 }
 
 int yysqlwrap(void){

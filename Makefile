@@ -215,11 +215,18 @@ clean:
 	rm -f $(SRCDIR)/y.tab.c
 	rm -f $(SRCDIR)/lex.yy.c
 	rm -f $(SRCDIR)/y.tab.h
-	rm -f $(SRCDIR)/y.tab.h
 	rm -f $(BUILDDIR)/lex.yy.o
 	rm -f $(BUILDDIR)/y.tab.o
-	rm -f $(BUILDDIR)/yyfunc.tab.o
+	rm -f $(SRCDIR)/yyfunc.tab.c
+	rm -f $(SRCDIR)/lex.yyfunc.c
+	rm -f $(SRCDIR)/yyfunc.tab.h
 	rm -f $(BUILDDIR)/lex.yyfunc.o
+	rm -f $(BUILDDIR)/yyfunc.tab.o
+	rm -f $(SRCDIR)/yysql.tab.c
+	rm -f $(SRCDIR)/lex.yysql.c
+	rm -f $(SRCDIR)/yysql.tab.h
+	rm -f $(BUILDDIR)/lex.yysql.o
+	rm -f $(BUILDDIR)/yysql.tab.o	
 
 .PHONY: deep-clean
 deep-clean: clean

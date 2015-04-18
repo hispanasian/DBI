@@ -37,6 +37,7 @@
 }
 
 %token <actualChars> Name
+%token <actualChars> QualifiedName
 %token <actualChars> Float
 %token <actualChars> Int
 %token <actualChars> String
@@ -126,18 +127,28 @@ Function: SUM '(' CompoundExp ')'
 	finalFunction = $4;
 };
 
-Atts: Name
+Atts: QualifiedName
 {
 	$$ = (struct NameList *) malloc (sizeof (struct NameList));
 	$$->name = $1;
 	$$->next = NULL;
 } 
 
-| Atts ',' Name
+| Atts ',' QualifiedName
 {
 	$$ = (struct NameList *) malloc (sizeof (struct NameList));
 	$$->name = $3;
 	$$->next = $1;
+}
+
+| Name
+{
+	yysqlerror($1);
+}
+
+| Atts ',' Name
+{
+	yysqlerror($3);
 }
 
 Tables: Name AS Name 
@@ -323,12 +334,17 @@ Literal : String
         $$->value = $1;
 }
 
-| Name
+| QualifiedName
 {
         // construct and send up the operand containing the name
         $$ = (struct Operand *) malloc (sizeof (struct Operand));
         $$->code = NAME;
         $$->value = $1;
+}
+
+| Name
+{
+		yysqlerror($1);
 }
 ;
 
@@ -351,12 +367,17 @@ Float
         $$->value = $1;
 } 
 
-| Name
+| QualifiedName
 {
         // construct and send up the operand containing the name
         $$ = (struct FuncOperand *) malloc (sizeof (struct FuncOperand));
         $$->code = NAME;
         $$->value = $1;
+}
+
+| Name
+{
+		yysqlerror($1);
 }
 ;
 
