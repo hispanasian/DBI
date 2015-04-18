@@ -44,6 +44,11 @@ public:
 		attribute = _attribute;
 	}
 
+	RelAttPair(const char *_relation, const char* _attribute) {
+		relation = std::string(_relation);
+		attribute = std::string(_attribute);
+	}
+
 	RelAttPair(const RelAttPair &copyMe) {
 		relation = copyMe.relation;
 		attribute = copyMe.attribute;
@@ -54,8 +59,8 @@ public:
 		attribute = copyMe.second;
 	}
 
-	std::string Relation() { return relation; }
-	std::string Attribute() { return attribute; }
+	std::string Relation() const { return relation; }
+	std::string Attribute() const { return attribute; }
 };
 
 class RelAliasPair{
@@ -68,6 +73,11 @@ public:
 		alias = _alias;
 	}
 
+	RelAliasPair(const char* _relation, const char* _alias) {
+		relation = std::string(_relation);
+		alias = std::string(_alias);
+	}
+
 	RelAliasPair(const RelAliasPair &copyMe) {
 		relation = copyMe.relation;
 		alias = copyMe.alias;
@@ -78,8 +88,8 @@ public:
 		alias = copyMe.second;
 	}
 
-	std::string Relation() { return relation; }
-	std::string Alias() { return alias; }
+	std::string Relation() const { return relation; }
+	std::string Alias() const { return alias; }
 };
 
 class SQL {
