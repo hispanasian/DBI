@@ -16,8 +16,8 @@
 #include "ParseTree.h"
 #include "Expression.h"
 
-typedef std::pair<std::string, AndList*> OrPair;
-typedef std::pair<std::string, std::string> RelAttPair;
+//typedef std::pair<std::string, AndList*> OrPair;
+//typedef std::pair<std::string, std::string> RelAttPair;
 
 struct StatData {
 	double numTuples;
@@ -94,7 +94,7 @@ public:
 	 * @param oldName	The name of the relation to be copied
 	 * @param newName	The name of the relation that will contain the copy of oldName
 	 */
-	virtual void CopyRel(char *oldName, char *newName);
+	virtual void CopyRel(const char *oldName, const char *newName);
 
     /**
 	 * Adds (or replaces if it exists) an attribute to this structure. A numDistincts of -1 will
@@ -105,7 +105,7 @@ public:
 	 * @param attName	The attribute's name
 	 * @numDistincts	The number of distinct attributes
 	 */
-	virtual void AddAtt(char *relName, char *attName, double numDistincts);
+	virtual void AddAtt(const char *relName, const char *attName, double numDistincts);
 
 	/**
 	 * Returns the number of tuples in the provided relName.
@@ -245,31 +245,11 @@ public:
  	*/
 	virtual double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
 
-	/**
-	 * ParseWhere will take where and parse it to find OrList's into Joins or Selects based on
-	 * which relation each affects. This method will assume that no Select on an OrList will
-	 * affect more than one relation. The Select/Joins will be put into AndLists that will be a
-	 * subset of where.
-	 *
-	 * Furthermore, this method requires that all relevant relations/attributes have been added to
-	 * this object.
-	 * @param where		The where CNF that we will parse and separate
-	 * @param selects	A map that will map a relatio to it's Selection AndList
-	 * @param joins		A map that will map a pair of relations to their Join AndList.
-	 */
-	virtual void ParseWhere(struct AndList *where,
-			std::unordered_map<std::string, AndList*> &selects,
-			std::unordered_map<std::string, std::unordered_map<std::string, AndList*> > &joins);
-
-	/**
-	 * Similar to ParseWhere, this method will go through the NameList and return a vector with the
-	 * Relation/Attribute pair of the attributes. This will throw a runtime_error if an unknown
-	 * relation or attribute is encountered. This method assumes that this object has been
-	 * populated with all relevant data.
-	 * @param list	The NameList that will be parsed
-	 * @param pair	The vector of pairs that will be returned
-	 */
-	virtual void ParseNameList(struct NameList *list, std::vector<RelAttPair> &pair);
+	/*
+	 * Returns the number of relations in this Statistics object
+	 * @return	the number of relations in this Statistics object
+	*/
+	virtual int RelationSize();
 };
 
 #endif /* INCLUDE_STATISTICS_H_ */

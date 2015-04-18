@@ -1,4 +1,4 @@
-#include "StatisticsTest.h"
+#include "SQLTest.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -17,7 +17,7 @@ string NameListToString(NameList *list) {
  * ParseNameList should return the NameList in reverse order (because it is put in reverse order
  * when parsing)
  */
-TEST_F(StatisticsTest, ParseNameList1) {
+TEST_F(SQLTest, ParseNameList1) {
 	char *relName[] = {"A", "B"};
 
 	stat.AddRel(relName[0],6001215);
@@ -37,21 +37,22 @@ TEST_F(StatisticsTest, ParseNameList1) {
 	yysqlparse();
 
 	vector<RelAttPair> pair;
-	stat.ParseNameList(attsToSelect, pair);
+	SQL test = SQL(stat);
+	test.ParseNameList(attsToSelect, pair);
 
 	ASSERT_EQ(3, pair.size());
-	EXPECT_TRUE(pair[0].first.compare("A") == 0);
-	EXPECT_TRUE(pair[0].second.compare("a1") == 0);
-	EXPECT_TRUE(pair[1].first.compare("B") == 0);
-	EXPECT_TRUE(pair[1].second.compare("b1") == 0);
-	EXPECT_TRUE(pair[2].first.compare("B") == 0);
-	EXPECT_TRUE(pair[2].second.compare("b2") == 0);
+	EXPECT_TRUE(pair[0].Relation().compare("A") == 0);
+	EXPECT_TRUE(pair[0].Attribute().compare("a1") == 0);
+	EXPECT_TRUE(pair[1].Relation().compare("B") == 0);
+	EXPECT_TRUE(pair[1].Attribute().compare("b1") == 0);
+	EXPECT_TRUE(pair[2].Relation().compare("B") == 0);
+	EXPECT_TRUE(pair[2].Attribute().compare("b2") == 0);
 }
 
 /**
  * ParseNameList should not fail when there is only one element
  */
-TEST_F(StatisticsTest, ParseNameList2) {
+TEST_F(SQLTest, ParseNameList2) {
 	char *relName[] = {"A", "B"};
 
 	stat.AddRel(relName[0],6001215);
@@ -71,17 +72,18 @@ TEST_F(StatisticsTest, ParseNameList2) {
 	yysqlparse();
 
 	vector<RelAttPair> pair;
-	stat.ParseNameList(attsToSelect, pair);
+	SQL test = SQL(stat);
+	test.ParseNameList(attsToSelect, pair);
 
 	ASSERT_EQ(1, pair.size());
-	EXPECT_TRUE(pair[0].first.compare("A") == 0);
-	EXPECT_TRUE(pair[0].second.compare("a1") == 0);
+	EXPECT_TRUE(pair[0].Relation().compare("A") == 0);
+	EXPECT_TRUE(pair[0].Attribute().compare("a1") == 0);
 }
 
 /**
  * ParseNameList should throw a runtime_error if the attribute does not exist
  */
-TEST_F(StatisticsTest, ParseNameList3) {
+TEST_F(SQLTest, ParseNameList3) {
 	char *relName[] = {"A", "B"};
 
 	stat.AddRel(relName[0],6001215);
@@ -101,13 +103,14 @@ TEST_F(StatisticsTest, ParseNameList3) {
 	yysqlparse();
 
 	vector<RelAttPair> pair;
-	ASSERT_THROW(stat.ParseNameList(attsToSelect, pair), runtime_error);
+	SQL test = SQL(stat);
+	ASSERT_THROW(test.ParseNameList(attsToSelect, pair), runtime_error);
 }
 
 /**
  * ParseNameList should throw a runtime_error if the relation does not exist
  */
-TEST_F(StatisticsTest, ParseNameList4) {
+TEST_F(SQLTest, ParseNameList4) {
 	char *relName[] = {"A", "B"};
 
 	stat.AddRel(relName[0],6001215);
@@ -127,6 +130,7 @@ TEST_F(StatisticsTest, ParseNameList4) {
 	yysqlparse();
 
 	vector<RelAttPair> pair;
-	ASSERT_THROW(stat.ParseNameList(attsToSelect, pair), runtime_error);
+	SQL test = SQL(stat);
+	ASSERT_THROW(test.ParseNameList(attsToSelect, pair), runtime_error);
 }
 
