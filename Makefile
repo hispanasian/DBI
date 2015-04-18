@@ -59,7 +59,7 @@ endif
 ###### Main Build ######
 # Build all
 .PHONY: all
-all: dirs main driver1 driver2a driver2b driver3 driver4 test
+all: dirs main driver1 driver2a driver2b driver3 driver4 driver4b test
 
 # Create directories
 .PHONY: dirs

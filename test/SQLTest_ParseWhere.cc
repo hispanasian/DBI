@@ -1,4 +1,5 @@
-#include "StatisticsTest.h"
+#include "SQLTest.h"
+#include "SQLTest.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -58,7 +59,7 @@ string OrListToString(OrList *list) {
  * the CNF should not matter, it should only be expected that any OrList that is not a binary
  * expression only relate to one relation
  */
-TEST_F(StatisticsTest, ParseWhere1) {
+TEST_F(SQLTest, ParseWhere1) {
 	char *relName[] = {"A", "B"};
 
 	stat.AddRel(relName[0],6001215);
@@ -75,10 +76,11 @@ TEST_F(StatisticsTest, ParseWhere1) {
 	yy_scan_string(cnf);
 	yyparse();
 
-	unordered_map<string, AndList*> selects;
-	unordered_map<string, unordered_map<string, AndList*> > joins;
+	SelectMap selects;
+	JoinMap joins;
+	SQL test = SQL(stat);
 
-	stat.ParseWhere(final, selects, joins);
+	test.ParseWhere(final, selects, joins);
 
 	EXPECT_EQ(2, selects.size());
 	EXPECT_EQ(2, joins.size());
@@ -101,7 +103,7 @@ TEST_F(StatisticsTest, ParseWhere1) {
  * ParseWhere should be able to handle the case where no Joins exist (this implies that there is
  * only on Select on one relation)
  */
-TEST_F(StatisticsTest, ParseWhere2) {
+TEST_F(SQLTest, ParseWhere2) {
 	char *relName[] = {"A"};
 
 	stat.AddRel(relName[0],6001215);
@@ -114,10 +116,11 @@ TEST_F(StatisticsTest, ParseWhere2) {
 	yy_scan_string(cnf);
 	yyparse();
 
-	unordered_map<string, AndList*> selects;
-	unordered_map<string, unordered_map<string, AndList*> > joins;
+	SelectMap selects;
+	JoinMap joins;
+	SQL test = SQL(stat);
 
-	stat.ParseWhere(final, selects, joins);
+	test.ParseWhere(final, selects, joins);
 
 	EXPECT_EQ(1, selects.size());
 	EXPECT_EQ(0, joins.size());
@@ -133,7 +136,7 @@ TEST_F(StatisticsTest, ParseWhere2) {
  * ParseWhere should be throw a runtime_error if not all the relations are joined (when there is
  * more than one relation)
  */
-TEST_F(StatisticsTest, ParseWhere3) {
+TEST_F(SQLTest, ParseWhere3) {
 	char *relName[] = {"A", "B"};
 
 	stat.AddRel(relName[0],6001215);
@@ -150,16 +153,17 @@ TEST_F(StatisticsTest, ParseWhere3) {
 	yy_scan_string(cnf);
 	yyparse();
 
-	unordered_map<string, AndList*> selects;
-	unordered_map<string, unordered_map<string, AndList*> > joins;
+	SelectMap selects;
+	JoinMap joins;
+	SQL test = SQL(stat);
 
-	ASSERT_THROW(stat.ParseWhere(final, selects, joins), runtime_error);
+	ASSERT_THROW(test.ParseWhere(final, selects, joins), runtime_error);
 }
 
 /**
  * ParseWhere should handle the case where no Select statements exist
  */
-TEST_F(StatisticsTest, ParseWhere4) {
+TEST_F(SQLTest, ParseWhere4) {
 	char *relName[] = {"A", "B"};
 
 	stat.AddRel(relName[0],6001215);
@@ -176,10 +180,11 @@ TEST_F(StatisticsTest, ParseWhere4) {
 	yy_scan_string(cnf);
 	yyparse();
 
-	unordered_map<string, AndList*> selects;
-	unordered_map<string, unordered_map<string, AndList*> > joins;
+	SelectMap selects;
+	JoinMap joins;
+	SQL test = SQL(stat);
 
-	stat.ParseWhere(final, selects, joins);
+	test.ParseWhere(final, selects, joins);
 
 	EXPECT_EQ(0, selects.size());
 	EXPECT_EQ(2, joins.size());
@@ -201,7 +206,7 @@ TEST_F(StatisticsTest, ParseWhere4) {
 /**
  * ParseWhere should handle more complicated cnfs
  */
-TEST_F(StatisticsTest, ParseWhere5) {
+TEST_F(SQLTest, ParseWhere5) {
 	char *relName[] = {"A", "B", "C"};
 
 	stat.AddRel(relName[0],6001215);
@@ -221,10 +226,11 @@ TEST_F(StatisticsTest, ParseWhere5) {
 	yy_scan_string(cnf);
 	yyparse();
 
-	unordered_map<string, AndList*> selects;
-	unordered_map<string, unordered_map<string, AndList*> > joins;
+	SelectMap selects;
+	JoinMap joins;
+	SQL test = SQL(stat);
 
-	stat.ParseWhere(final, selects, joins);
+	test.ParseWhere(final, selects, joins);
 
 	EXPECT_EQ(2, selects.size());
 	EXPECT_EQ(3, joins.size());
@@ -251,7 +257,7 @@ TEST_F(StatisticsTest, ParseWhere5) {
 /**
  * ParseWhere should check for an invalid (insufficient) number of joins
  */
-TEST_F(StatisticsTest, ParseWhere6) {
+TEST_F(SQLTest, ParseWhere6) {
 	char *relName[] = {"A", "B", "C"};
 
 	stat.AddRel(relName[0],6001215);
@@ -270,17 +276,18 @@ TEST_F(StatisticsTest, ParseWhere6) {
 	yy_scan_string(cnf);
 	yyparse();
 
-	unordered_map<string, AndList*> selects;
-	unordered_map<string, unordered_map<string, AndList*> > joins;
+	SelectMap selects;
+	JoinMap joins;
+	SQL test = SQL(stat);
 
-	ASSERT_THROW(stat.ParseWhere(final, selects, joins), runtime_error);
+	ASSERT_THROW(test.ParseWhere(final, selects, joins), runtime_error);
 }
 
 /**
  * ParseWhere should check for an invalid (excessive) number of joins (implying multiple joins on
  * the same relation)
  */
-TEST_F(StatisticsTest, ParseWhere7) {
+TEST_F(SQLTest, ParseWhere7) {
 	char *relName[] = {"A", "B", "C"};
 
 	stat.AddRel(relName[0],6001215);
@@ -299,16 +306,17 @@ TEST_F(StatisticsTest, ParseWhere7) {
 	yy_scan_string(cnf);
 	yyparse();
 
-	unordered_map<string, AndList*> selects;
-	unordered_map<string, unordered_map<string, AndList*> > joins;
+	SelectMap selects;
+	JoinMap joins;
+	SQL test = SQL(stat);
 
-	ASSERT_THROW(stat.ParseWhere(final, selects, joins), runtime_error);
+	ASSERT_THROW(test.ParseWhere(final, selects, joins), runtime_error);
 }
 
 /**
  * ParseWhere should be able to handle multiple OrLists (selects) that affect the same relation
  */
-TEST_F(StatisticsTest, ParseWhere8) {
+TEST_F(SQLTest, ParseWhere8) {
 	char *relName[] = {"A", "B", "C"};
 
 	stat.AddRel(relName[0],6001215);
@@ -321,10 +329,11 @@ TEST_F(StatisticsTest, ParseWhere8) {
 	yy_scan_string(cnf);
 	yyparse();
 
-	unordered_map<string, AndList*> selects;
-	unordered_map<string, unordered_map<string, AndList*> > joins;
+	SelectMap selects;
+	JoinMap joins;
+	SQL test = SQL(stat);
 
-	stat.ParseWhere(final, selects, joins);
+	test.ParseWhere(final, selects, joins);
 
 	EXPECT_EQ(1, selects.size());
 	EXPECT_EQ(0, joins.size());
