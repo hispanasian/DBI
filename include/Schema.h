@@ -11,18 +11,16 @@
 #include <iostream>;
 
 struct Attribute {
-
-	char *name;
+	std::string name;
+	std::string relation;
 	Type myType;
-	~Attribute(){
-        free(name);
-    }
 };
 
 class OrderMaker;
 class Schema {
 
 	friend class RecordTest;
+	friend class SchemaTest;
 
 	// gives the attributes in the schema
 	int numAtts;
