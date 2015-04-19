@@ -164,6 +164,7 @@ const Schema& SumNode::GetSchema() {
 	else atts[0].myType = Double;
 	schema = Schema("", 1, atts);
 
+	schemaReady = true;
 	return schema;
 }
 
