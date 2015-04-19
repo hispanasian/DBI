@@ -235,12 +235,18 @@ void Schema :: Filter (const Schema &copyMe, const vector<RelAttPair> &pairs) {
 
 	int index = -1;
 	Type type;
+	cout << "Copy: " << endl;
+	cout << copyMe.ToString();
 	for(int i = 0; i < numAtts; i++) {
 		string temp = pairs[i].Relation();
 		index = copyMe.Find(pairs[i].Relation().c_str(), pairs[i].Attribute().c_str());
 		type = copyMe.FindType(pairs[i].Relation().c_str(), pairs[i].Attribute().c_str());
 
-		if(index == -1) throw invalid_argument("Unknown Relation/Attribute pair found (Schema(Schema, vector<RelAttPair>))");
+		if(index == -1) {
+			cerr << "Failed to find " << pairs[i].Relation() << "." << pairs[i].Attribute()
+					<< " during filter." << endl;
+			throw invalid_argument("Unknown Relation/Attribute pair found (Schema(Schema, vector<RelAttPair>))");
+		}
 		myAtts[i].name = pairs[i].Attribute();
 		myAtts[i].relation = pairs[i].Relation();
 		myAtts[i].myType = type;
@@ -253,11 +259,11 @@ void Schema :: SetRelation(const char *relation) {
 	}
 }
 
-string Schema :: ToString() {
+string Schema :: ToString() const {
 	return ToString("");
 }
 
-string Schema :: ToString(string prefix) {
+string Schema :: ToString(string prefix) const {
 	string temp;
 	for(int i = 0; i < numAtts; i++) {
 		temp.append(prefix);

@@ -100,10 +100,10 @@ public:
 	void SetRelation(const char* relation);
 
 	// produces a string representation of the schema with the given prefix.
-	std::string ToString(std::string prefix);
+	std::string ToString(std::string prefix) const;
 
 	// Produces a string represetnation of the schema
-	std::string ToString();
+	std::string ToString() const;
 
 	virtual ~Schema ();
 
