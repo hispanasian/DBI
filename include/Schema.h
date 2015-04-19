@@ -42,7 +42,7 @@ public:
 	Attribute *GetAtts ();
 
 	// returns the number of attributes
-	int GetNumAtts ();
+	int GetNumAtts () const;
 
 	// this finds the position of the specified attribute in the schema
 	// returns a -1 if the attribute is not present in the schema

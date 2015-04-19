@@ -41,7 +41,7 @@ Type Schema :: FindType (const char *relName, const char *attName) const {
 	return FindType(string(relName).append(".").append(attName).c_str());
 }
 
-int Schema :: GetNumAtts () {
+int Schema :: GetNumAtts () const {
 	return numAtts;
 }
 
@@ -77,7 +77,7 @@ Schema :: Schema (char *fName, char *relName) {
 
 				// suck up another token
 				if (fscanf (foo, "%s", space) == EOF) {
-					cerr << "Could not find the schema for the specified relation.\n";
+					throw invalid_argument("Could not find the schema for the specified relation.\n");
 					exit (1);
 				}
 
@@ -137,6 +137,7 @@ Schema :: Schema (char *fName, char *relName) {
 			myAtts[i].myType = String;
 		} else {
 			cout << "Bad attribute type for " << myAtts[i].name << "\n";
+			throw invalid_argument("Received a bad attribute type");
 			exit (1);
 		}
 	}
@@ -145,7 +146,8 @@ Schema :: Schema (char *fName, char *relName) {
 }
 
 Schema :: Schema (char *fpath, int num_atts, Attribute *atts) {
-	fileName = strdup (fpath);
+	if(fpath != NULL) fileName = strdup (fpath);
+	else fileName = NULL;
 	numAtts = num_atts;
 	myAtts = new Attribute[numAtts];
 	for (int i = 0; i < numAtts; i++ ) {
@@ -159,7 +161,9 @@ Schema :: Schema (char *fpath, int num_atts, Attribute *atts) {
 			myAtts[i].myType = String;
 		} 
 		else {
-			cout << "Bad attribute type for " << atts[i].myType << "\n";
+			cout << "Bad attribute type for " << atts[i].relation << "." << atts[i].name
+					<< " with " << atts[i].myType << "\n";
+			throw invalid_argument("Received a bad attribute type");
 			delete [] myAtts;
 			exit (1);
 		}
@@ -191,7 +195,7 @@ Schema :: Schema (const Schema &left, const Schema &right) {
 }
 
 void Schema :: Copy (const Schema &copyMe) {
-	fileName = copyMe.fileName;
+	fileName = strdup(copyMe.fileName);
 	numAtts = copyMe.numAtts;
 	delete myAtts;
 	myAtts = new Attribute[numAtts];
