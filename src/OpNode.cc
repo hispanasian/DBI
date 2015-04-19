@@ -56,7 +56,8 @@ void SelectPipeNode::WaitUntilDone() {
 
 
 // SelectFileNode
-SelectFileNode::SelectFileNode(int id, const Schema &_schema, const struct AndList *_select): OpNode(id, _schema) {
+SelectFileNode::SelectFileNode(int id, const Schema &_schema, const struct AndList *_select,
+		const string &_fname): OpNode(id, _schema), fname(_fname) {
 	select = _select;
 	cnf.GrowFromParseTree(select, &schema, literal);
 }

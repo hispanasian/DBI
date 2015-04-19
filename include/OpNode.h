@@ -95,11 +95,13 @@ public:
 	CNF cnf;
 	Record literal;
 	const struct AndList *select;
+	std::string fname;
 
 	/**
 	 * _select should be the AndList that this OpNode will filter on
+	 * fname is the file that corresponds to a dbfile that will provide tuples to this node.
 	 */
-	SelectFileNode(int id, const Schema &schema, const struct AndList *_select);
+	SelectFileNode(int id, const Schema &schema, const struct AndList *_select, const std::string &_fname);
 	virtual ~SelectFileNode();
 	void Visit(OpVisitor &visitor, void* arg);
 	const Schema* GetSchema();
