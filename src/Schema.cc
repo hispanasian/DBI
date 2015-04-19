@@ -221,8 +221,8 @@ void Schema :: Join  (const Schema *left, const Schema *right) {
 
 	int loff = left->numAtts; // offset from left schema
 	for(int i = 0; i < right->numAtts; i++) {
-		myAtts[i].name = right->myAtts[i].name;
-		myAtts[i].relation = right->myAtts[i].relation;
+		myAtts[i + loff].name = right->myAtts[i].name;
+		myAtts[i + loff].relation = right->myAtts[i].relation;
 		myAtts[i + loff].myType = right->myAtts[i].myType;
 	}
 }
