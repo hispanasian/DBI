@@ -529,6 +529,7 @@ void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *le
 			if (typeLeft != typeRight) {
 				cerr << "ERROR! Type mismatch in CNF.  " << myOr->left->left->value << " and "
 					<< myOr->left->right->value << " were found to not match.\n";
+				throw invalid_argument("Type mismatch in CNF");
 				exit (1);
 			}
 
@@ -721,6 +722,7 @@ void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *my
 			if (typeLeft != typeRight) {
 				cerr << "ERROR! Type mismatch in CNF.  " << myOr->left->left->value << " and "
 					<< myOr->left->right->value << " were found to not match.\n";
+				throw invalid_argument("Type mismatch in CNF");
 				exit (1);
 			}
 
