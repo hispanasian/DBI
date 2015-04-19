@@ -28,6 +28,10 @@ const struct FuncOperator* SQL::Function() const {
 	return function;
 }
 
+const Statistics& SQL::GetStatistics() const {
+	return stat;
+}
+
 void SQL::Parse(const string &sql) {
 	this->sql = sql;
 	yysql_scan_string(this->sql.c_str());
