@@ -652,3 +652,64 @@ TEST_F(OpNodeTest, GroupByNode_GetSchema3) {
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.b"));
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.c"));
 }
+
+
+// WriteOutNode
+/**
+ * WriteOutNode::GetSchema should return it's child's schema
+ */
+TEST_F(OpNodeTest, WriteOutNode_GetSchema1) {
+	EXPECT_CALL(child, GetSchema()).
+			WillRepeatedly(Return(&childSchema));
+	WriteOutNode op (0, &child, NULL);
+
+	ASSERT_EQ(9, op.GetSchema()->GetNumAtts());
+	EXPECT_EQ(0, op.GetSchema()->Find("A.a"));
+	EXPECT_EQ(1, op.GetSchema()->Find("A.b"));
+	EXPECT_EQ(2, op.GetSchema()->Find("A.c"));
+	EXPECT_EQ(3, op.GetSchema()->Find("B.a"));
+	EXPECT_EQ(4, op.GetSchema()->Find("B.b"));
+	EXPECT_EQ(5, op.GetSchema()->Find("C.c"));
+	EXPECT_EQ(6, op.GetSchema()->Find("D.d"));
+	EXPECT_EQ(7, op.GetSchema()->Find("E.e"));
+	EXPECT_EQ(8, op.GetSchema()->Find("E.b"));
+
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.a"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.b"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.c"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("B.a"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("B.b"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("C.c"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("D.d"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("E.e"));
+	EXPECT_EQ(String, op.GetSchema()->FindType("E.b"));
+}
+
+/**
+ * WriteOutNode:: typical usage
+ */
+TEST_F(OpNodeTest, WriteOutNode_GetSchema2) {
+	EXPECT_CALL(child, GetSchema()).
+			WillRepeatedly(Return(&A));
+	WriteOutNode op (0, &child, NULL);
+
+	ASSERT_EQ(3, op.GetSchema()->GetNumAtts());
+	EXPECT_EQ(0, op.GetSchema()->Find("A.a"));
+	EXPECT_EQ(1, op.GetSchema()->Find("A.b"));
+	EXPECT_EQ(2, op.GetSchema()->Find("A.c"));
+
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.a"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.b"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.c"));
+}
+
+/*
+ * WriteOutNode should not fail to get the schema even if it was empty
+ */
+TEST_F(OpNodeTest, WriteOutNode_GetSchema3) {
+	EXPECT_CALL(child, GetSchema()).
+			WillRepeatedly(Return(&emptySchema));
+	WriteOutNode op (0, &child, NULL);
+
+	ASSERT_EQ(0, op.GetSchema()->GetNumAtts());
+}
