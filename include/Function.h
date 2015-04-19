@@ -38,10 +38,10 @@ public:
 	// it into an accumulator-based computation over the attributes in
 	// a record with the given schema; the record "literal" is produced
 	// by the GrowFromParseTree method
-	virtual void GrowFromParseTree (struct FuncOperator *parseTree, const Schema &mySchema);
+	virtual void GrowFromParseTree (const struct FuncOperator *parseTree, const Schema &mySchema);
 
 	// helper function
-	virtual Type RecursivelyBuild (struct FuncOperator *parseTree, const Schema &mySchema);
+	virtual Type RecursivelyBuild (const struct FuncOperator *parseTree, const Schema &mySchema);
 
 	// prints out the function to the screen
 	virtual void Print ();

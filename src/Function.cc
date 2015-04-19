@@ -11,7 +11,7 @@ Function :: ~Function() {
 
 }
 
-Type Function :: RecursivelyBuild (struct FuncOperator *parseTree, const Schema &mySchema) {
+Type Function :: RecursivelyBuild (const struct FuncOperator *parseTree, const Schema &mySchema) {
 
 	// different cases; in the first case, simple, unary operation
 	if (parseTree->right == 0 && parseTree->leftOperand == 0 && parseTree->code == '-') {
@@ -188,7 +188,7 @@ Type Function :: RecursivelyBuild (struct FuncOperator *parseTree, const Schema 
 	}
 }
 
-void Function :: GrowFromParseTree (struct FuncOperator *parseTree, const Schema &mySchema) {
+void Function :: GrowFromParseTree (const struct FuncOperator *parseTree, const Schema &mySchema) {
 
 	// zero out the list of operrations
 	numOps = 0;
