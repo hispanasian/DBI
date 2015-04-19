@@ -59,6 +59,11 @@ public:
 		attribute = copyMe.second;
 	}
 
+	void Copy(const RelAttPair &copyMe) {
+		relation = copyMe.relation;
+		attribute = copyMe.attribute;
+	}
+
 	std::string Relation() const { return relation; }
 	std::string Attribute() const { return attribute; }
 };
@@ -86,6 +91,11 @@ public:
 	RelAliasPair(const StringPair &copyMe) {
 		relation = copyMe.first;
 		alias = copyMe.second;
+	}
+
+	void Copy(const RelAliasPair &copyMe) {
+		relation = copyMe.relation;
+		alias = copyMe.alias;
 	}
 
 	std::string Relation() const { return relation; }
