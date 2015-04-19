@@ -171,7 +171,8 @@ void JoinNode::WaitUntilDone() {
 
 
 // DuplicateRemovalNode
-DuplicateRemovalNode::DuplicateRemovalNode(int id, OpNode *_child): OpNode(id) {
+DuplicateRemovalNode::DuplicateRemovalNode(int id, OpNode *_child, const vector<RelAttPair> &_duplicates):
+		OpNode(id), duplicates(_duplicates) {
 	child = _child;
 }
 

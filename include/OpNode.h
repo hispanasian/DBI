@@ -153,8 +153,13 @@ class DuplicateRemovalNode: public OpNode {
 public:
 	DuplicateRemoval op;
 	OpNode *child;
+	const vector<RelAttPair> duplicates;
 
-	DuplicateRemovalNode(int id, OpNode *_child);
+	/**
+	 * duplicates is a vector that contains the duplicates relation/attribute pairs we want to
+	 * eliminate
+	 */
+	DuplicateRemovalNode(int id, OpNode *_child, const std::vector<RelAttPair> &duplicates);
 	virtual ~DuplicateRemovalNode();
 	void Visit(OpVisitor &visitor, void* arg);
 	const Schema* GetSchema();
