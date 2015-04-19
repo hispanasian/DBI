@@ -130,7 +130,7 @@ public:
         // matrix storing the same CNF expression.  This function is applicable
         // specifically to the case where there are two relations involved
         virtual void GrowFromParseTree (const struct AndList *parseTree, const Schema *leftSchema,
-		Schema *rightSchema, Record &literal);
+		const Schema *rightSchema, Record &literal);
 
         // version of the same function, except that it is used in the case of
         // a relational selection over a single relation so only one schema is used

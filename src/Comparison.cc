@@ -367,7 +367,7 @@ void AddLitToFile (int &numFieldsInLiteral, FILE *outRecFile, FILE *outSchemaFil
 
 
 void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *leftSchema,
-	Schema *rightSchema, Record &literal) {
+	const Schema *rightSchema, Record &literal) {
 
 	CNF &cnf = *this;
 
