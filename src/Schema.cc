@@ -199,12 +199,17 @@ Schema :: Schema (const Schema &copyMe, const vector<RelAttPair> &pairs) {
 	}
 }
 
-Schema :: Schema (Schema *left, Schema *right) {
+Schema :: Schema (const Schema *left, const Schema *right) {
 	myAtts = NULL;
 	Join(left, right);
 }
 
-void Schema :: Join  (Schema *left, Schema *right) {
+Schema :: Schema (const Schema &left, const Schema &right) {
+	myAtts = NULL;
+	Join(&left, &right);
+}
+
+void Schema :: Join  (const Schema *left, const Schema *right) {
 	fileName = NULL;
 	numAtts = left->numAtts + right->numAtts;
 	delete myAtts;
