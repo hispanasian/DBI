@@ -99,6 +99,12 @@ public:
 	// sets the relation of every relation in this Schema to the provided relation
 	void SetRelation(const char* relation);
 
+	// produces a string representation of the schema with the given prefix.
+	std::string ToString(std::string prefix);
+
+	// Produces a string represetnation of the schema
+	std::string ToString();
+
 	virtual ~Schema ();
 
 	// Strictly for testing

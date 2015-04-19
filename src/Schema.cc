@@ -253,6 +253,27 @@ void Schema :: SetRelation(const char *relation) {
 	}
 }
 
+string Schema :: ToString() {
+	return ToString("");
+}
+
+string Schema :: ToString(string prefix) {
+	string temp;
+	for(int i = 0; i < numAtts; i++) {
+		temp.append(prefix);
+		// Don't ignore the relation
+		if(myAtts[i].relation.compare("") != 0) temp.append(myAtts[i].relation).append(".");
+		temp.append(myAtts[i].name).append(": ");
+
+		if(myAtts[i].myType == Int) temp.append("int");
+		else if(myAtts[i].myType == Double) temp.append("double");
+		else if(myAtts[i].myType == String) temp.append("string");
+		else throw runtime_error("Unknown type found (Schema::ToString)");
+		temp.append("\n");
+	}
+	return temp;
+}
+
 Schema :: ~Schema () {
 	free(fileName);
 	delete [] myAtts;
