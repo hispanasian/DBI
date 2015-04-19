@@ -30,6 +30,7 @@
 #include "GroupBy.h"
 #include "Join.h"
 #include "Expression.h"
+#include "OpNode.h"
 
 class MockRecord: public Record {
 public:
@@ -567,6 +568,12 @@ public:
 
 	// virtual double Denominator() = 0;
 	MOCK_METHOD0(Denominator, double());
+};
+
+class MockOpNode : public OpNode {
+public:
+	MOCK_METHOD0(GetID, int());
+	MOCK_METHOD0(GetSchema, const Schema*());
 };
 
 #endif

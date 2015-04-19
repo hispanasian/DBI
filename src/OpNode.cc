@@ -16,13 +16,16 @@ int OpNode::GetID() {
 	return id;
 }
 
+void OpNode::WaitUntilDone() {}
+
+void OpNode::Visit(OpVisitor &visitor, void* arg) {}
+
 const Schema* OpNode::GetSchema() {
 	return NULL;
 }
 
-
 // SelectPipeNode
-SelectPipeNode::SelectPipeNode(int id, OpNode *_child, struct AndList *_select): OpNode(id) {
+SelectPipeNode::SelectPipeNode(int id, OpNode *_child, const struct AndList *_select): OpNode(id) {
 	child = _child;
 	select = _select;
 	GetSchema(); // Make schema
@@ -53,7 +56,7 @@ void SelectPipeNode::WaitUntilDone() {
 
 
 // SelectFileNode
-SelectFileNode::SelectFileNode(int id, const Schema &_schema, struct AndList *_select): OpNode(id, _schema) {
+SelectFileNode::SelectFileNode(int id, const Schema &_schema, const struct AndList *_select): OpNode(id, _schema) {
 	select = _select;
 	cnf.GrowFromParseTree(select, &schema, literal);
 }
@@ -189,9 +192,9 @@ void DuplicateRemovalNode::WaitUntilDone() {
 }
 
 // SumNode
-SumNode::SumNode(int id, OpNode *_child, struct FuncOperator *_funcOp): OpNode(id) {
+SumNode::SumNode(int id, OpNode *_child, const struct FuncOperator *_funcOp): OpNode(id),
+		funcOp(_funcOp) {
 	child = _child;
-	funcOp = _funcOp;
 	GetSchema(); // Create function
 }
 
@@ -226,9 +229,9 @@ void SumNode::WaitUntilDone() {
 
 
 // GroupByNode
-GroupByNode::GroupByNode(int id, OpNode *_child, struct FuncOperator *_funcOp): OpNode(id) {
+GroupByNode::GroupByNode(int id, OpNode *_child, const struct FuncOperator *_funcOp): OpNode(id),
+		funcOp(_funcOp){
 	child = _child;
-	funcOp = _funcOp;
 	GetSchema(); // Create function
 }
 

@@ -40,8 +40,9 @@ protected:
 	bool schemaReady;	// Flag telling if the schema has been calculated or not
 
 public:
-	OpNode(int _id): id(id) { schemaReady = false; }
-	OpNode(int _id, const Schema &_schema): id(id), schema(_schema) { schemaReady = true; }
+	OpNode(): id(0), schemaReady(false) {}
+	OpNode(int _id): id(_id), schemaReady(false) {}
+	OpNode(int _id, const Schema &_schema): id(_id), schema(_schema), schemaReady(false) {}
 	virtual ~OpNode();
 
 	/**
@@ -53,7 +54,7 @@ public:
 	/**
 	 * Blocks until this node finishes executing.
 	 */
-	virtual void WaitUntilDone() = 0;
+	virtual void WaitUntilDone();
 
 	/**
 	 * The method that supports the Visitor pattern. This method will take in a visitor and an
@@ -61,7 +62,7 @@ public:
 	 * @param visitor	The visitor that will visit this node
 	 * @param arg		Some argument
 	 */
-	virtual void Visit(OpVisitor &visitor, void* arg) = 0;
+	virtual void Visit(OpVisitor &visitor, void* arg);
 
 	/**
 	 * Returns a reference to this objects Schema.
@@ -76,12 +77,12 @@ public:
 	OpNode *child;
 	CNF cnf;
 	Record literal;
-	struct AndList *select;
+	const struct AndList *select;
 
 	/**
 	 * _select should be the AndList that this OpNode will filter on
 	 */
-	SelectPipeNode(int id, OpNode *_child, struct AndList *_select);
+	SelectPipeNode(int id, OpNode *_child, const struct AndList *_select);
 	virtual ~SelectPipeNode();
 	void Visit(OpVisitor &visitor, void* arg);
 	const Schema* GetSchema();
@@ -93,12 +94,12 @@ public:
 	SelectFile op;
 	CNF cnf;
 	Record literal;
-	struct AndList *select;
+	const struct AndList *select;
 
 	/**
 	 * _select should be the AndList that this OpNode will filter on
 	 */
-	SelectFileNode(int id, const Schema &schema, struct AndList *_select);
+	SelectFileNode(int id, const Schema &schema, const struct AndList *_select);
 	virtual ~SelectFileNode();
 	void Visit(OpVisitor &visitor, void* arg);
 	const Schema* GetSchema();
@@ -122,7 +123,7 @@ public:
 	void Visit(OpVisitor &visitor, void* arg);
 	const Schema* GetSchema(); // Also modifies attsToKeep
 	void WaitUntilDone();
-	bool ContainsAggregate();
+	virtual bool ContainsAggregate();
 };
 
 class JoinNode: public OpNode {
@@ -162,12 +163,12 @@ public:
 	OpNode *child;
 	Function function;
 	Record literal;
-	struct FuncOperator *funcOp;
+	const struct FuncOperator *funcOp;
 
 	/**
 	 * _func should be the FuncOperator that will produce the Function for this Sum
 	 */
-	SumNode(int id, OpNode *_child, struct FuncOperator *_funcOp);
+	SumNode(int id, OpNode *_child, const struct FuncOperator *_funcOp);
 	virtual ~SumNode();
 	void Visit(OpVisitor &visitor, void* arg);
 	const Schema* GetSchema();
@@ -179,12 +180,12 @@ public:
 	Join op;
 	OpNode *child;
 	Function function;
-	struct FuncOperator *funcOp;
+	const struct FuncOperator *funcOp;
 
 	/**
 	 * _func should be the FuncOperator that will produce the Function for this GroupBy
 	 */
-	GroupByNode(int id, OpNode *_child, struct FuncOperator *_funcOp);
+	GroupByNode(int id, OpNode *_child, const struct FuncOperator *_funcOp);
 	virtual ~GroupByNode();
 	void Visit(OpVisitor &visitor, void* arg);
 	const Schema* GetSchema();
