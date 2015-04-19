@@ -76,10 +76,12 @@ public:
 	// This effectively makes a copy of left and right and "joins" them
 	// into this schema. left will be the first set of attributes in this
 	// followed by right
-	Schema (Schema *left, Schema *right);
+	Schema (const Schema *left, const Schema *right);
+
+	Schema (const Schema &left, const Schema &right);
 
 	// Joins the two relations into this schema
-	void Join(Schema *left, Schema *right);
+	void Join(const Schema *left, const Schema *right);
 
 	// this constructs a sort order structure that can be used to
 	// place a lexicographic ordering on the records using this type of schema
