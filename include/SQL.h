@@ -146,6 +146,12 @@ public:
 	virtual ~SQL();
 
 	/**
+	 * Returns the FuncOperator produced by this SQL
+	 * @param	Returns the FuncOperator produced by this SQL or NULL if there is none
+	 */
+	virtual const struct FuncOperator* Function() const;
+
+	/**
 	 * Parses the sql string and puts the related meta-data into this object. This method will
 	 * correctly update the Statistics object to reflect aliased relations
 	 */

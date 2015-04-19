@@ -24,6 +24,10 @@ SQL::~SQL() {
 	// TODO Auto-generated destructor stub
 }
 
+const struct FuncOperator* SQL::Function() const {
+	return function;
+}
+
 void SQL::Parse(const string &sql) {
 	this->sql = sql;
 	yysql_scan_string(this->sql.c_str());
