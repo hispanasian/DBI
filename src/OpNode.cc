@@ -234,8 +234,13 @@ void SumNode::WaitUntilDone() {
 
 
 // GroupByNode
-GroupByNode::GroupByNode(int id, OpNode *_child, const struct FuncOperator *_funcOp): OpNode(id),
-		funcOp(_funcOp){
+GroupByNode::GroupByNode(int id, OpNode *_child, const std::vector<RelAttPair> &_group):
+		OpNode(id),funcOp(NULL){
+	child = _child;
+}
+
+GroupByNode::GroupByNode(int id, OpNode *_child, const std::vector<RelAttPair> &_group,
+		const struct FuncOperator *_funcOp): OpNode(id),funcOp(_funcOp){
 	child = _child;
 	GetSchema(); // Create function
 }
@@ -251,15 +256,20 @@ const Schema* GroupByNode::GetSchema() {
 
 	// We need to find out if the schema will result in a int aggregate or double aggregate
 	const Schema *childsSchema = child->GetSchema();
-	function.GrowFromParseTree(funcOp, *childsSchema);
-	Attribute atts[1];
-	atts[0].name = "Aggregate";
-	atts[0].relation = "";
 
-	if(function.ReturnsInt()) atts[0].myType = Int;
-	else atts[0].myType = Double;
-	Schema agg("", 1, atts);
-	schema.Join(&agg, childsSchema);
+	if(IsAggregate()) {
+		function.GrowFromParseTree(funcOp, *childsSchema);
+		Attribute atts[1];
+		atts[0].name = "Aggregate";
+		atts[0].relation = "";
+
+		if(function.ReturnsInt()) atts[0].myType = Int;
+		else atts[0].myType = Double;
+		Schema agg("", 1, atts);
+		schema.Join(&agg, childsSchema);
+	}
+	else schema.Copy(*childsSchema);
+
 
 	schemaReady = true;
 	return &schema;
@@ -267,6 +277,10 @@ const Schema* GroupByNode::GetSchema() {
 
 void GroupByNode::WaitUntilDone() {
 	op.WaitUntilDone();
+}
+
+bool GroupByNode::IsAggregate() const {
+	return funcOp != NULL;
 }
 
 // WriteOutNode

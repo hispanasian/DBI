@@ -551,3 +551,104 @@ TEST_F(OpNodeTest, SumNode_GetSchema2) {
 
 	EXPECT_EQ(Int, op.GetSchema()->FindType("Aggregate"));
 }
+
+
+// GroupBy
+/**
+ * GroupBy::GetSchema should return its child's schema if it is not an aggregate
+ */
+TEST_F(OpNodeTest, GroupByNode_GetSchema1) {
+	EXPECT_CALL(child, GetSchema()).
+			WillRepeatedly(Return(&A));
+	vector<RelAttPair> group;
+	SQL sql (stats);
+	string str = " SELECT A.c, A.a  ";
+	str.append(" FROM RelA AS A ");
+	str.append(" WHERE A.a > 0 ");
+	str.append(" GROUP BY A.c, A.a ");
+
+	sql.Parse(str);
+	sql.GetGroup(group);
+
+	GroupByNode op (0, &child, group, sql.Function());
+
+	ASSERT_EQ(3, op.GetSchema()->GetNumAtts());
+	EXPECT_EQ(0, op.GetSchema()->Find("A.a"));
+	EXPECT_EQ(1, op.GetSchema()->Find("A.b"));
+	EXPECT_EQ(2, op.GetSchema()->Find("A.c"));
+
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.a"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.b"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.c"));
+}
+
+/**
+ * GroupBy::GetSchema should produce a function with the aggregate appended to the beginning of its
+ * child's schema (if it an aggregate). The name of the attribute should be Aggregate. In this
+ * case, it should be of type double
+ */
+TEST_F(OpNodeTest, GroupByNode_GetSchema2) {
+	EXPECT_CALL(child, GetSchema()).
+			WillRepeatedly(Return(&childSchema));
+	vector<RelAttPair> group;
+	SQL sql (stats);
+	sql.Parse(query);
+	sql.GetGroup(group);
+
+	GroupByNode op (0, &child, group, sql.Function());
+
+	ASSERT_EQ(10, op.GetSchema()->GetNumAtts());
+	EXPECT_EQ(0, op.GetSchema()->Find("Aggregate"));
+	EXPECT_EQ(1, op.GetSchema()->Find("A.a"));
+	EXPECT_EQ(2, op.GetSchema()->Find("A.b"));
+	EXPECT_EQ(3, op.GetSchema()->Find("A.c"));
+	EXPECT_EQ(4, op.GetSchema()->Find("B.a"));
+	EXPECT_EQ(5, op.GetSchema()->Find("B.b"));
+	EXPECT_EQ(6, op.GetSchema()->Find("C.c"));
+	EXPECT_EQ(7, op.GetSchema()->Find("D.d"));
+	EXPECT_EQ(8, op.GetSchema()->Find("E.e"));
+	EXPECT_EQ(9, op.GetSchema()->Find("E.b"));
+
+	EXPECT_EQ(Double, op.GetSchema()->FindType("Aggregate"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.a"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.b"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.c"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("B.a"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("B.b"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("C.c"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("D.d"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("E.e"));
+	EXPECT_EQ(String, op.GetSchema()->FindType("E.b"));
+}
+
+/**
+ * GroupBy::GetSchema should produce a function with the aggregate appended to the beginning of its
+ * child's schema (if it an aggregate). The name of the attribute should be Aggregate. In this
+ * case, it should be of type int
+ */
+TEST_F(OpNodeTest, GroupByNode_GetSchema3) {
+	EXPECT_CALL(child, GetSchema()).
+			WillRepeatedly(Return(&A));
+	vector<RelAttPair> group;
+	SQL sql (stats);
+	string str = " SELECT SUM(A.b),  A.c, A.a";
+	str.append(" FROM RelA AS A ");
+	str.append(" WHERE A.a > 0 ");
+	str.append(" GROUP BY A.c, A.a ");
+
+	sql.Parse(str);
+	sql.GetGroup(group);
+
+	GroupByNode op (0, &child, group, sql.Function());
+
+	ASSERT_EQ(4, op.GetSchema()->GetNumAtts());
+	EXPECT_EQ(0, op.GetSchema()->Find("Aggregate"));
+	EXPECT_EQ(1, op.GetSchema()->Find("A.a"));
+	EXPECT_EQ(2, op.GetSchema()->Find("A.b"));
+	EXPECT_EQ(3, op.GetSchema()->Find("A.c"));
+
+	EXPECT_EQ(Int, op.GetSchema()->FindType("Aggregate"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.a"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.b"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("A.c"));
+}

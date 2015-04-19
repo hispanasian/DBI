@@ -189,16 +189,20 @@ public:
 	Join op;
 	OpNode *child;
 	Function function;
+	vector<RelAttPair> group;
 	const struct FuncOperator *funcOp;
 
 	/**
 	 * _func should be the FuncOperator that will produce the Function for this GroupBy
 	 */
-	GroupByNode(int id, OpNode *_child, const struct FuncOperator *_funcOp);
+	GroupByNode(int id, OpNode *_child, const std::vector<RelAttPair> &_group);
+	GroupByNode(int id, OpNode *_child, const std::vector<RelAttPair> &_group,
+			const struct FuncOperator *_funcOp);
 	virtual ~GroupByNode();
 	void Visit(OpVisitor &visitor, void* arg);
 	const Schema* GetSchema();
 	void WaitUntilDone();
+	bool IsAggregate() const;
 };
 
 class WriteOutNode: public OpNode {
