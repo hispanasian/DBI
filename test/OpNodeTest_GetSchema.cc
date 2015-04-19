@@ -161,14 +161,17 @@ TEST_F(OpNodeTest, SelectFileNode_GetSchema3) {
  * ProjectNode::GetSchema should correctly project away undesired attributes
  */
 TEST_F(OpNodeTest, ProjectNode_GetSchema1) {
-	EXPECT_CALL(child, GetSchema()).
-			WillRepeatedly(Return(&childSchema));
 	vector<RelAttPair> attsToKeep;
 	SQL sql (stats);
 	sql.Parse(query);
 	sql.GetSelect(attsToKeep);
 
-	ProjectNode op (0, &child, attsToKeep);
+	PartialProjectNode op (0, &child, attsToKeep);
+
+	EXPECT_CALL(child, GetSchema()).
+			WillRepeatedly(Return(&childSchema));
+	EXPECT_CALL(op, ContainsAggregate()).
+			WillRepeatedly(Return(false));
 
 	ASSERT_EQ(4, op.GetSchema()->GetNumAtts());
 	EXPECT_EQ(0, op.GetSchema()->Find("E.e"));
@@ -186,8 +189,6 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema1) {
  * ProjectNode::GetSchema should return all the attributes if no attributes are to be projected away
  */
 TEST_F(OpNodeTest, ProjectNode_GetSchema2) {
-	EXPECT_CALL(child, GetSchema()).
-			WillRepeatedly(Return(&childSchema));
 	vector<RelAttPair> attsToKeep;
 	attsToKeep.push_back(RelAttPair("A","a"));
 	attsToKeep.push_back(RelAttPair("A","b"));
@@ -199,7 +200,12 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema2) {
 	attsToKeep.push_back(RelAttPair("E","e"));
 	attsToKeep.push_back(RelAttPair("E","b"));
 
-	ProjectNode op (0, &child, attsToKeep);
+	PartialProjectNode op (0, &child, attsToKeep);
+
+	EXPECT_CALL(child, GetSchema()).
+			WillRepeatedly(Return(&childSchema));
+	EXPECT_CALL(op, ContainsAggregate()).
+			WillRepeatedly(Return(false));
 
 	ASSERT_EQ(9, op.GetSchema()->GetNumAtts());
 	EXPECT_EQ(0, op.GetSchema()->Find("A.a"));
@@ -227,11 +233,14 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema2) {
  * ProjectNode::GetSchema should handle the case where every attribute is asked to be projected away
  */
 TEST_F(OpNodeTest, ProjectNode_GetSchema3) {
-	EXPECT_CALL(child, GetSchema()).
-			WillRepeatedly(Return(&childSchema));
 	vector<RelAttPair> attsToKeep;
 
-	ProjectNode op (0, &child, attsToKeep);
+	PartialProjectNode op (0, &child, attsToKeep);
+
+	EXPECT_CALL(child, GetSchema()).
+			WillRepeatedly(Return(&childSchema));
+	EXPECT_CALL(op, ContainsAggregate()).
+			WillRepeatedly(Return(false));
 
 	ASSERT_EQ(0, op.GetSchema()->GetNumAtts());
 }
@@ -251,12 +260,15 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema4) {
 	Schema agg ("", 1, sum);
 	Schema aggSchema(agg, childSchema);
 
+	PartialProjectNode op (0, &child, attsToKeep);
+
 	EXPECT_CALL(child, GetSchema()).
-			WillRepeatedly(Return(&(aggSchema)));
+			WillRepeatedly(Return(&aggSchema));
+	EXPECT_CALL(op, ContainsAggregate()).
+			WillRepeatedly(Return(true));
+	cout << "Test: ContainsAggreate? " << op.ContainsAggregate() << endl;
 
-	ProjectNode op (0, &child, attsToKeep);
-
-	ASSERT_EQ(4, op.GetSchema()->GetNumAtts());
+	ASSERT_EQ(5, op.GetSchema()->GetNumAtts());
 	EXPECT_EQ(0, op.GetSchema()->Find("Aggregate"));
 	EXPECT_EQ(1, op.GetSchema()->Find("E.e"));
 	EXPECT_EQ(2, op.GetSchema()->Find("A.a"));
@@ -280,9 +292,6 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema5) {
 	Schema agg ("", 1, sum);
 	Schema aggSchema(agg, childSchema);
 
-	EXPECT_CALL(child, GetSchema()).
-			WillRepeatedly(Return(&(aggSchema)));;
-
 	vector<RelAttPair> attsToKeep;
 	attsToKeep.push_back(RelAttPair("A","a"));
 	attsToKeep.push_back(RelAttPair("A","b"));
@@ -294,7 +303,12 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema5) {
 	attsToKeep.push_back(RelAttPair("E","e"));
 	attsToKeep.push_back(RelAttPair("E","b"));
 
-	ProjectNode op (0, &child, attsToKeep);
+	PartialProjectNode op (0, &child, attsToKeep);
+
+	EXPECT_CALL(child, GetSchema()).
+			WillRepeatedly(Return(&aggSchema));
+	EXPECT_CALL(op, ContainsAggregate()).
+			WillRepeatedly(Return(true));
 
 	ASSERT_EQ(10, op.GetSchema()->GetNumAtts());
 	EXPECT_EQ(0, op.GetSchema()->Find("Aggregate"));
@@ -330,12 +344,14 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema6) {
 	Schema agg ("", 1, sum);
 	Schema aggSchema(agg, childSchema);
 
-	EXPECT_CALL(child, GetSchema()).
-			WillRepeatedly(Return(&(aggSchema)));;
-
 	vector<RelAttPair> attsToKeep;
 
-	ProjectNode op (0, &child, attsToKeep);
+	PartialProjectNode op (0, &child, attsToKeep);
+
+	EXPECT_CALL(child, GetSchema()).
+			WillRepeatedly(Return(&aggSchema));
+	EXPECT_CALL(op, ContainsAggregate()).
+			WillRepeatedly(Return(true));
 
 	ASSERT_EQ(1, op.GetSchema()->GetNumAtts());
 	EXPECT_EQ(0, op.GetSchema()->Find("Aggregate"));

@@ -105,12 +105,12 @@ const Schema* ProjectNode::GetSchema() {
 	if(ContainsAggregate()) {
 		// the schema needs to contain the aggregate. modify the attsToKeep to retain it.
 		RelAttPair temp ("", "Aggregate");
-		RelAttPair prev ("", "");
+		RelAttPair prev (temp);
 
 		for(int i = 0; i < attsToKeep.size(); i++) {
-			prev = attsToKeep[i];
-			attsToKeep[i] = temp;
-			temp = prev;
+			prev.Copy(attsToKeep[i]);
+			attsToKeep[i].Copy(temp);
+			temp.Copy(prev);
 		}
 		attsToKeep.push_back(prev);
 	}
