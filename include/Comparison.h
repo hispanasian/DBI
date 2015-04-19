@@ -129,12 +129,12 @@ public:
         // this takes a parse tree for a CNF and converts it into a 2-D
         // matrix storing the same CNF expression.  This function is applicable
         // specifically to the case where there are two relations involved
-        virtual void GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema,
+        virtual void GrowFromParseTree (const struct AndList *parseTree, const Schema *leftSchema,
 		Schema *rightSchema, Record &literal);
 
         // version of the same function, except that it is used in the case of
         // a relational selection over a single relation so only one schema is used
-        virtual void GrowFromParseTree (struct AndList *parseTree, Schema *mySchema,
+        virtual void GrowFromParseTree (const struct AndList *parseTree, const Schema *mySchema,
 		Record &literal);
 
 };

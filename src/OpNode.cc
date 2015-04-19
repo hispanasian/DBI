@@ -12,10 +12,22 @@
 // OpNode
 OpNode::~OpNode() {}
 
+int OpNode::GetID() {
+	return id;
+}
+
+const Schema* OpNode::GetSchema() {
+	return NULL;
+}
+
 
 // SelectPipeNode
-SelectPipeNode::SelectPipeNode(int id, OpNode *_child): OpNode(id) {
+SelectPipeNode::SelectPipeNode(int id, OpNode *_child, struct AndList *_select): OpNode(id) {
 	child = _child;
+	select = _select;
+	GetSchema(); // Make schema
+	cnf.GrowFromParseTree(select, &schema, literal);
+
 }
 
 SelectPipeNode::~SelectPipeNode() {}
@@ -24,21 +36,26 @@ void SelectPipeNode::Visit(OpVisitor &visitor, void* arg) {
 	visitor.VisitSelectPipeNode(this, arg);
 }
 
-const Schema& SelectPipeNode::GetSchema() {
-	if(schemaReady) return schema;
+const Schema* SelectPipeNode::GetSchema() {
+	if(schemaReady) return &schema;
 
 	// Schema has not been obtained. Thankfully, Select does not change the Schema so simply
 	// get the schema from the child
-	schema = child->GetSchema();
+	schema.Copy(*(child->GetSchema()));
 
 	schemaReady = true;
-	return schema;
+	return &schema;
+}
+
+void SelectPipeNode::WaitUntilDone() {
+	op.WaitUntilDone();
 }
 
 
 // SelectFileNode
-SelectFileNode::SelectFileNode(int id, const Schema &schema): OpNode(id, schema) {
-
+SelectFileNode::SelectFileNode(int id, const Schema &_schema, struct AndList *_select): OpNode(id, _schema) {
+	select = _select;
+	cnf.GrowFromParseTree(select, &schema, literal);
 }
 
 SelectFileNode::~SelectFileNode() {}
@@ -47,9 +64,13 @@ void SelectFileNode::Visit(OpVisitor &visitor, void* arg) {
 	visitor.VisitSelectFileNode(this, arg);
 }
 
-const Schema& SelectFileNode::GetSchema() {
+const Schema* SelectFileNode::GetSchema() {
 	// SelectFile always knows its schema
-	return schema;
+	return &schema;
+}
+
+void SelectFileNode::WaitUntilDone() {
+	op.WaitUntilDone();
 }
 
 
@@ -57,24 +78,28 @@ const Schema& SelectFileNode::GetSchema() {
 ProjectNode::ProjectNode(int id, OpNode *_child, const vector<RelAttPair> &_attsToKeep): OpNode(id),
 		attsToKeep(_attsToKeep) {
 	child = _child;
+	keepMe = NULL;
 }
 
-ProjectNode::~ProjectNode() {}
+ProjectNode::~ProjectNode() {
+	delete keepMe;
+}
 
 void ProjectNode::Visit(OpVisitor &visitor, void* arg) {
 	visitor.VisitProjectNode(this, arg);
+	keepMe = NULL;
 }
 
-const Schema& ProjectNode::GetSchema() {
-	if(schemaReady) return schema;
+const Schema* ProjectNode::GetSchema() {
+	if(schemaReady) return &schema;
 
 	// Project is a little tricky. It heavily depends on if the child was an aggregate function.
 	// If the child was an aggregate function, we cannot simply project away all the attributes
 	// except for those that we want. We will make the assumption that if the first attribute in
 	// the childs' schema is Aggregate, then it must be an aggregate and we will not project it away
 	// This method
-	const Schema &childsSchema = child->GetSchema();
-	if(childsSchema.Find("Aggregate") != -1) {
+	const Schema *childsSchema = child->GetSchema();
+	if(ContainsAggregate()) {
 		// the schema needs to contain the aggregate. modify the attsToKeep to retain it.
 		RelAttPair temp ("", "Aggregate");
 		RelAttPair prev ("", "");
@@ -86,17 +111,35 @@ const Schema& ProjectNode::GetSchema() {
 		}
 		attsToKeep.push_back(prev);
 	}
-	schema = Schema(childsSchema, attsToKeep);
+	schema.Filter(*childsSchema, attsToKeep);
 
 	schemaReady = true;
-	return schema;
+	return &schema;
+}
+
+void ProjectNode::WaitUntilDone() {
+	op.WaitUntilDone();
+}
+
+bool ProjectNode::ContainsAggregate() {
+	GroupByNode *group = dynamic_cast<GroupByNode*>(child);
+	SumNode *sum = dynamic_cast<SumNode*>(child);
+	return (group != NULL || sum != NULL);
 }
 
 
 // JoinNode
-JoinNode::JoinNode(int id, OpNode *_leftChild, OpNode *_rightChild): OpNode(id) {
-	leftChild = _leftChild;
-	rightChild = _rightChild;
+JoinNode::JoinNode(int id, OpNode *_leftChild, int _leftTuples, OpNode *_rightChild,
+		int _rightTuples): OpNode(id), leftTuples(_leftTuples), rightTuples(_rightTuples) {
+	// Put the operation that will produce the least amount of tuples as the right child
+	if(leftTuples > rightTuples) {
+		leftChild = _leftChild;
+		rightChild = _rightChild;
+	}
+	else {
+		leftChild = _rightChild;
+		rightChild = _leftChild;
+	}
 }
 
 JoinNode::~JoinNode() {}
@@ -105,14 +148,18 @@ void JoinNode::Visit(OpVisitor &visitor, void* arg) {
 	visitor.VisitJoinNode(this, arg);
 }
 
-const Schema& JoinNode::GetSchema() {
-	if(schemaReady) return schema;
+const Schema* JoinNode::GetSchema() {
+	if(schemaReady) return &schema;
 
 	// Merge the schemas from joins children to get the new schema. merge left first, then right
-	schema = Schema(leftChild->GetSchema(), rightChild->GetSchema());
+	schema.Join(leftChild->GetSchema(), rightChild->GetSchema());
 
 	schemaReady = true;
-	return schema;
+	return &schema;
+}
+
+void JoinNode::WaitUntilDone() {
+	op.WaitUntilDone();
 }
 
 
@@ -127,20 +174,25 @@ void DuplicateRemovalNode::Visit(OpVisitor &visitor, void* arg) {
 	visitor.VisitDuplicateRemovalNode(this, arg);
 }
 
-const Schema& DuplicateRemovalNode::GetSchema() {
-	if(schemaReady) return schema;
+const Schema* DuplicateRemovalNode::GetSchema() {
+	if(schemaReady) return &schema;
 
 	// DuplicateRemoval does not modify the schema (thankfully)
-	schema = child->GetSchema();
+	schema.Copy(*(child->GetSchema()));
 
 	schemaReady = true;
-	return schema;
+	return &schema;
+}
+
+void DuplicateRemovalNode::WaitUntilDone() {
+	op.WaitUntilDone();
 }
 
 // SumNode
-SumNode::SumNode(int id, OpNode *_child, struct FuncOperator *_func): OpNode(id) {
+SumNode::SumNode(int id, OpNode *_child, struct FuncOperator *_funcOp): OpNode(id) {
 	child = _child;
-	func = _func;
+	funcOp = _funcOp;
+	GetSchema(); // Create function
 }
 
 SumNode::~SumNode() {}
@@ -149,30 +201,35 @@ void SumNode::Visit(OpVisitor &visitor, void* arg) {
 	visitor.VisitSumNode(this, arg);
 }
 
-const Schema& SumNode::GetSchema() {
-	if(schemaReady) return schema;
+const Schema* SumNode::GetSchema() {
+	if(schemaReady) return &schema;
 
 	// We need to find out if the schema will result in a int aggregate or double aggregate
-	Function temp;
-	const Schema &childsSchema = child->GetSchema();
-	temp.GrowFromParseTree(func, childsSchema);
+	const Schema *childsSchema = child->GetSchema();
+	function.GrowFromParseTree(funcOp, *childsSchema);
 	Attribute atts[1];
 	atts[0].name = "Aggregate";
 	atts[0].relation = "";
 
-	if(temp.ReturnsInt()) atts[0].myType = Int;
+	if(function.ReturnsInt()) atts[0].myType = Int;
 	else atts[0].myType = Double;
-	schema = Schema("", 1, atts);
+	Schema copy ("", 1, atts);
+	schema.Copy (copy);
 
 	schemaReady = true;
-	return schema;
+	return &schema;
+}
+
+void SumNode::WaitUntilDone() {
+	op.WaitUntilDone();
 }
 
 
 // GroupByNode
-GroupByNode::GroupByNode(int id, OpNode *_child, struct FuncOperator *_func): OpNode(id) {
+GroupByNode::GroupByNode(int id, OpNode *_child, struct FuncOperator *_funcOp): OpNode(id) {
 	child = _child;
-	func = _func;
+	funcOp = _funcOp;
+	GetSchema(); // Create function
 }
 
 GroupByNode::~GroupByNode() {}
@@ -181,29 +238,33 @@ void GroupByNode::Visit(OpVisitor &visitor, void* arg) {
 	visitor.VisitGroupByNode(this, arg);
 }
 
-const Schema& GroupByNode::GetSchema() {
-	if(schemaReady) return schema;
+const Schema* GroupByNode::GetSchema() {
+	if(schemaReady) return &schema;
 
 	// We need to find out if the schema will result in a int aggregate or double aggregate
-	Function temp;
-	const Schema &childsSchema = child->GetSchema();
-	temp.GrowFromParseTree(func, childsSchema);
+	const Schema *childsSchema = child->GetSchema();
+	function.GrowFromParseTree(funcOp, *childsSchema);
 	Attribute atts[1];
 	atts[0].name = "Aggregate";
 	atts[0].relation = "";
 
-	if(temp.ReturnsInt()) atts[0].myType = Int;
+	if(function.ReturnsInt()) atts[0].myType = Int;
 	else atts[0].myType = Double;
 	Schema agg("", 1, atts);
-	schema = Schema(agg, childsSchema);
+	schema.Join(&agg, childsSchema);
 
 	schemaReady = true;
-	return schema;
+	return &schema;
+}
+
+void GroupByNode::WaitUntilDone() {
+	op.WaitUntilDone();
 }
 
 // WriteOutNode
-WriteOutNode::WriteOutNode(int id, OpNode *_child): OpNode(id) {
+WriteOutNode::WriteOutNode(int id, OpNode *_child, FILE *_outFile): OpNode(id) {
 	child = _child;
+	outFile = _outFile;
 }
 
 WriteOutNode::~WriteOutNode() {}
@@ -212,12 +273,16 @@ void WriteOutNode::Visit(OpVisitor &visitor, void* arg) {
 	visitor.VisitWriteOutNode(this, arg);
 }
 
-const Schema& WriteOutNode::GetSchema() {
-	if(schemaReady) return schema;
+const Schema* WriteOutNode::GetSchema() {
+	if(schemaReady) return &schema;
 
 	// Simply return the childs schema
-	schema = Schema(child->GetSchema());
+	schema.Copy(*(child->GetSchema()));
 
 	schemaReady = true;
-	return schema;
+	return &schema;
+}
+
+void WriteOutNode::WaitUntilDone() {
+	op.WaitUntilDone();
 }

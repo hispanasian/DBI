@@ -170,33 +170,14 @@ Schema :: Schema (char *fpath, int num_atts, Attribute *atts) {
 
 Schema :: Schema (const Schema &copyMe) {
 	fileName = NULL;
-	numAtts = copyMe.numAtts;
-	myAtts = new Attribute[numAtts];
-
-	for(int i = 0; i < copyMe.numAtts; i++) {
-		myAtts[i].name = copyMe.myAtts[i].name;
-		myAtts[i].relation = copyMe.myAtts[i].relation;
-		myAtts[i].myType = copyMe.myAtts[i].myType;
-	}
+	myAtts = NULL;
+	Copy(copyMe);
 }
 
 Schema :: Schema (const Schema &copyMe, const vector<RelAttPair> &pairs) {
 	fileName = NULL;
-	numAtts = pairs.size();
-	myAtts = new Attribute[numAtts];
-
-	int index = -1;
-	Type type;
-	for(int i = 0; i < numAtts; i++) {
-		string temp = pairs[i].Relation();
-		index = copyMe.Find(pairs[i].Relation().c_str(), pairs[i].Attribute().c_str());
-		type = copyMe.FindType(pairs[i].Relation().c_str(), pairs[i].Attribute().c_str());
-
-		if(index == -1) throw invalid_argument("Unknown Relation/Attribute pair found (Schema(Schema, vector<RelAttPair>))");
-		myAtts[i].name = pairs[i].Attribute();
-		myAtts[i].relation = pairs[i].Relation();
-		myAtts[i].myType = type;
-	}
+	myAtts = NULL;
+	Filter(copyMe, pairs);
 }
 
 Schema :: Schema (const Schema *left, const Schema *right) {
@@ -207,6 +188,19 @@ Schema :: Schema (const Schema *left, const Schema *right) {
 Schema :: Schema (const Schema &left, const Schema &right) {
 	myAtts = NULL;
 	Join(&left, &right);
+}
+
+void Schema :: Copy (const Schema &copyMe) {
+	fileName = copyMe.fileName;
+	numAtts = copyMe.numAtts;
+	delete myAtts;
+	myAtts = new Attribute[numAtts];
+
+	for(int i = 0; i < copyMe.numAtts; i++) {
+		myAtts[i].name = copyMe.myAtts[i].name;
+		myAtts[i].relation = copyMe.myAtts[i].relation;
+		myAtts[i].myType = copyMe.myAtts[i].myType;
+	}
 }
 
 void Schema :: Join  (const Schema *left, const Schema *right) {
@@ -226,6 +220,26 @@ void Schema :: Join  (const Schema *left, const Schema *right) {
 		myAtts[i].name = right->myAtts[i].name;
 		myAtts[i].relation = right->myAtts[i].relation;
 		myAtts[i + loff].myType = right->myAtts[i].myType;
+	}
+}
+
+void Schema :: Filter (const Schema &copyMe, const vector<RelAttPair> &pairs) {
+	fileName = NULL;
+	numAtts = pairs.size();
+	delete myAtts;
+	myAtts = new Attribute[numAtts];
+
+	int index = -1;
+	Type type;
+	for(int i = 0; i < numAtts; i++) {
+		string temp = pairs[i].Relation();
+		index = copyMe.Find(pairs[i].Relation().c_str(), pairs[i].Attribute().c_str());
+		type = copyMe.FindType(pairs[i].Relation().c_str(), pairs[i].Attribute().c_str());
+
+		if(index == -1) throw invalid_argument("Unknown Relation/Attribute pair found (Schema(Schema, vector<RelAttPair>))");
+		myAtts[i].name = pairs[i].Attribute();
+		myAtts[i].relation = pairs[i].Relation();
+		myAtts[i].myType = type;
 	}
 }
 

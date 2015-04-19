@@ -366,7 +366,7 @@ void AddLitToFile (int &numFieldsInLiteral, FILE *outRecFile, FILE *outSchemaFil
 
 
 
-void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema, 
+void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *leftSchema,
 	Schema *rightSchema, Record &literal) {
 
 	CNF &cnf = *this;
@@ -572,7 +572,7 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema,
 
 
 // this is the version that only deals with unary relational selection predicates
-void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *mySchema, 
+void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *mySchema,
 	Record &literal) {
 
 	CNF &cnf = *this;
