@@ -142,13 +142,13 @@ public:
 	 * @param numToJoin	The number of relations in relNames
 	 * @return True if the join is valid.
 	 */
-	virtual bool VerifyJoin(struct AndList *parseTree, char **relNames, int numToJoin);
+	virtual bool VerifyJoin(struct AndList *parseTree, const char **relNames, int numToJoin);
 
 	/**
 	 * Checks to see if the attributes listed in parseTree belong to the relations in relNames.
 	 * @return True if the above is true.
 	 */
-	virtual bool VerifyJoinAttributes(struct AndList *parseTree, char **relNames, int numToJoin);
+	virtual bool VerifyJoinAttributes(struct AndList *parseTree, const char **relNames, int numToJoin);
 
 	/**
 	 * Checks to see if the relations in relNames all completely belong to the same set(s). Ie,
@@ -158,7 +158,7 @@ public:
 	 * @param numToJoin	The number of relations in relNames
 	 * @return True if the join is valid.
 	 */
-	virtual bool VerifyJoinSets(char **relNames, int numToJoin);
+	virtual bool VerifyJoinSets(const char **relNames, int numToJoin);
 
 	/**
 	 * Parses the operand and puts the relation and attribute in out. The format of the operand
@@ -192,7 +192,7 @@ public:
 	virtual std::set<std::string> GetSet(std::string rel);
 
 	/**
-	 *	Parses the given comparison op, creates an appropriate Expression and appends it 
+	 *	Parses the given comparison op, creates an appropriate Expression and appends it
 	 *	to the expression list. Adds all relations referenced in the created Expression
 	 *	to the set of relations.
 	 *	If the expression is a comparison between 2 literals, this method throws and exception.
@@ -231,19 +231,19 @@ public:
  	 * Verifies that the specified join can happen. Modifies the internal representation
  	 * of the sets of relations and returns the number of tuples in the resulting join relation.
  	 */
- 	virtual double ApplyAndCompute(struct AndList *parseTree, char *relNames[], int numToJoin);
+ 	virtual double ApplyAndCompute(struct AndList *parseTree, const char *relNames[], int numToJoin);
 
  	/*
 	 * Simulates a join across the specified relations using the given AndList
 	 * and modifies the sets of relations to reflect the joined relations
  	*/
- 	virtual void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
+ 	virtual void  Apply(struct AndList *parseTree, const char *relNames[], int numToJoin);
 
 	/*
 	 * Simulates a join across the specified relations using the given AndList
 	 * does not modify the sets, but returns the number of tuples in the resulting relations.
  	*/
-	virtual double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
+	virtual double Estimate(struct AndList *parseTree, const char **relNames, int numToJoin);
 
 	/*
 	 * Returns the number of relations in this Statistics object

@@ -185,7 +185,7 @@ double Statistics::NumDistincts(const char *relName, const char *attName) {
 	}
 }
 
-double Statistics::ApplyAndCompute(struct AndList *parseTree, char *relNames[], int numToJoin) {
+double Statistics::ApplyAndCompute(struct AndList *parseTree, const char *relNames[], int numToJoin) {
 	// first verfiy that this join can take place
 	if(!VerifyJoin(parseTree, relNames, numToJoin)) {
 		throw std::runtime_error("Statistics::ApplyAndCompute: cannot perform join");
@@ -200,7 +200,7 @@ double Statistics::ApplyAndCompute(struct AndList *parseTree, char *relNames[], 
 		// calculate which tuples are merged from this OrList
 		// compute how many tuples this relation will have
 		numTuples = Join(curr->left, relations);
-		
+
 		// merge these relations
 		auto it = relations.begin();
 		auto first = *it;
@@ -218,12 +218,12 @@ double Statistics::ApplyAndCompute(struct AndList *parseTree, char *relNames[], 
 	return numTuples;
 }
 
-void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJoin)
+void  Statistics::Apply(struct AndList *parseTree, const char *relNames[], int numToJoin)
 {
 	ApplyAndCompute(parseTree, relNames, numToJoin);
 }
 
-double Statistics::Estimate(struct AndList *parseTree, char **relNames, int numToJoin)
+double Statistics::Estimate(struct AndList *parseTree, const char **relNames, int numToJoin)
 {
 	Statistics copy(*this);
 	return copy.ApplyAndCompute(parseTree, relNames, numToJoin);
@@ -248,14 +248,14 @@ void Statistics::MergeSets(std::string rel1, std::string rel2) {
 	}
 }
 
-bool Statistics::VerifyJoin(struct AndList *parseTree, char **relNames, int numToJoin) {
+bool Statistics::VerifyJoin(struct AndList *parseTree, const char **relNames, int numToJoin) {
 	bool atts = VerifyJoinAttributes(parseTree, relNames, numToJoin);
 	bool sets = VerifyJoinSets(relNames, numToJoin);
 
 	return  atts && sets;
 }
 
-bool Statistics::VerifyJoinAttributes(struct AndList *parseTree, char **relNames, int numToJoin) {
+bool Statistics::VerifyJoinAttributes(struct AndList *parseTree, const char **relNames, int numToJoin) {
 	struct AndList *andList = parseTree;
 	struct OrList *orList = NULL;
 	struct Operand *leftOp;
@@ -290,7 +290,7 @@ bool Statistics::VerifyJoinAttributes(struct AndList *parseTree, char **relNames
 	return true;
 }
 
-bool Statistics::VerifyJoinSets(char **relNames, int numToJoin) {
+bool Statistics::VerifyJoinSets(const char **relNames, int numToJoin) {
 	// Create a set that will hold every relation from every set that contains any relation in
 	// relNames
 	set<string> superset;
@@ -379,7 +379,7 @@ void Statistics::MakeExpression(ComparisonOp op, std::vector<Expression*>& expre
 		expressions.push_back(be);
 		relations.insert(leftOp[0]);
 		relations.insert(rightOp[0]);
-	} else { 
+	} else {
 		// this is a unary expression
 		Operand* nameOp = IsName(op.left->code) ? op.left : op.right;
 		Operand* litOp = IsLiteral(op.left->code) ? op.left : op.right;
