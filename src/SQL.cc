@@ -27,7 +27,7 @@ SQL::~SQL() {
 const struct FuncOperator* SQL::Function() const {
 	return function;
 }
-const Statistics& GetStatistics() const {
+const Statistics& SQL::GetStatistics() const {
 	return stat;
 }
 

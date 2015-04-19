@@ -42,7 +42,8 @@ public:
 
 	/**
 	 * Creates a plan from the provided SQL (assumed to be a SELECT query) and the provided
-	 * relation->file map that will be provided to the corresponding nodes.
+	 * relation->file map that will be provided to the corresponding nodes. This method also assumes
+	 * that SQL has correctly parsed some input
 	 * @param sql		The SQL object that will be used to build this tree
 	 * @param fileMap	The map of files that will be provided to the root nodes
 	 */
