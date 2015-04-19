@@ -235,8 +235,7 @@ void Schema :: Filter (const Schema &copyMe, const vector<RelAttPair> &pairs) {
 
 	int index = -1;
 	Type type;
-	cout << "Copy: " << endl;
-	cout << copyMe.ToString();
+
 	for(int i = 0; i < numAtts; i++) {
 		string temp = pairs[i].Relation();
 		index = copyMe.Find(pairs[i].Relation().c_str(), pairs[i].Attribute().c_str());
