@@ -30,6 +30,8 @@ const Schema& SelectPipeNode::GetSchema() {
 	// Schema has not been obtained. Thankfully, Select does not change the Schema so simply
 	// get the schema from the child
 	schema = child->GetSchema();
+
+	schemaReady = true;
 	return schema;
 }
 
@@ -86,6 +88,7 @@ const Schema& ProjectNode::GetSchema() {
 	}
 	schema = Schema(childsSchema, attsToKeep);
 
+	schemaReady = true;
 	return schema;
 }
 
@@ -107,6 +110,8 @@ const Schema& JoinNode::GetSchema() {
 
 	// Merge the schemas from joins children to get the new schema. merge left first, then right
 	schema = Schema(leftChild->GetSchema(), rightChild->GetSchema());
+
+	schemaReady = true;
 	return schema;
 }
 
@@ -127,6 +132,8 @@ const Schema& DuplicateRemovalNode::GetSchema() {
 
 	// DuplicateRemoval does not modify the schema (thankfully)
 	schema = child->GetSchema();
+
+	schemaReady = true;
 	return schema;
 }
 
@@ -189,6 +196,7 @@ const Schema& GroupByNode::GetSchema() {
 	Schema agg("", 1, atts);
 	schema = Schema(agg, childsSchema);
 
+	schemaReady = true;
 	return schema;
 }
 
@@ -209,5 +217,6 @@ const Schema& WriteOutNode::GetSchema() {
 	// Simply return the childs schema
 	schema = Schema(child->GetSchema());
 
+	schemaReady = true;
 	return schema;
 }
