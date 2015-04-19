@@ -32,12 +32,12 @@ TEST_F(OpNodeTest, SelectPipeNode_GetSchema1) {
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.a"));
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.b"));
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.c"));
-	EXPECT_EQ(Double, op.GetSchema()->FindType("B.a"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("B.a"));
 	EXPECT_EQ(Double, op.GetSchema()->FindType("B.b"));
-	EXPECT_EQ(String, op.GetSchema()->FindType("C.c"));
-	EXPECT_EQ(String, op.GetSchema()->FindType("D.d"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("C.c"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("D.d"));
 	EXPECT_EQ(Double, op.GetSchema()->FindType("E.e"));
-	EXPECT_EQ(Double, op.GetSchema()->FindType("E.b"));
+	EXPECT_EQ(String, op.GetSchema()->FindType("E.b"));
 }
 
 /**
@@ -108,12 +108,12 @@ TEST_F(OpNodeTest, SelectFileNode_GetSchema1) {
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.a"));
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.b"));
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.c"));
-	EXPECT_EQ(Double, op.GetSchema()->FindType("B.a"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("B.a"));
 	EXPECT_EQ(Double, op.GetSchema()->FindType("B.b"));
-	EXPECT_EQ(String, op.GetSchema()->FindType("C.c"));
-	EXPECT_EQ(String, op.GetSchema()->FindType("D.d"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("C.c"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("D.d"));
 	EXPECT_EQ(Double, op.GetSchema()->FindType("E.e"));
-	EXPECT_EQ(Double, op.GetSchema()->FindType("E.b"));
+	EXPECT_EQ(String, op.GetSchema()->FindType("E.b"));
 }
 
 /**
@@ -180,8 +180,8 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema1) {
 	EXPECT_EQ(3, op.GetSchema()->Find("C.c"));
 
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.a"));
-	EXPECT_EQ(Double, op.GetSchema()->FindType("B.a"));
-	EXPECT_EQ(String, op.GetSchema()->FindType("C.c"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("B.a"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("C.c"));
 	EXPECT_EQ(Double, op.GetSchema()->FindType("E.e"));
 }
 
@@ -221,12 +221,12 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema2) {
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.a"));
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.b"));
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.c"));
-	EXPECT_EQ(Double, op.GetSchema()->FindType("B.a"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("B.a"));
 	EXPECT_EQ(Double, op.GetSchema()->FindType("B.b"));
-	EXPECT_EQ(String, op.GetSchema()->FindType("C.c"));
-	EXPECT_EQ(String, op.GetSchema()->FindType("D.d"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("C.c"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("D.d"));
 	EXPECT_EQ(Double, op.GetSchema()->FindType("E.e"));
-	EXPECT_EQ(Double, op.GetSchema()->FindType("E.b"));
+	EXPECT_EQ(String, op.GetSchema()->FindType("E.b"));
 }
 
 /**
@@ -266,7 +266,6 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema4) {
 			WillRepeatedly(Return(&aggSchema));
 	EXPECT_CALL(op, ContainsAggregate()).
 			WillRepeatedly(Return(true));
-	cout << "Test: ContainsAggreate? " << op.ContainsAggregate() << endl;
 
 	ASSERT_EQ(5, op.GetSchema()->GetNumAtts());
 	EXPECT_EQ(0, op.GetSchema()->Find("Aggregate"));
@@ -277,8 +276,8 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema4) {
 
 	EXPECT_EQ(Double, op.GetSchema()->FindType("Aggregate"));
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.a"));
-	EXPECT_EQ(Double, op.GetSchema()->FindType("B.a"));
-	EXPECT_EQ(String, op.GetSchema()->FindType("C.c"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("B.a"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("C.c"));
 	EXPECT_EQ(Double, op.GetSchema()->FindType("E.e"));
 }
 
@@ -326,12 +325,12 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema5) {
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.a"));
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.b"));
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.c"));
-	EXPECT_EQ(Double, op.GetSchema()->FindType("B.a"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("B.a"));
 	EXPECT_EQ(Double, op.GetSchema()->FindType("B.b"));
-	EXPECT_EQ(String, op.GetSchema()->FindType("C.c"));
-	EXPECT_EQ(String, op.GetSchema()->FindType("D.d"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("C.c"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("D.d"));
 	EXPECT_EQ(Double, op.GetSchema()->FindType("E.e"));
-	EXPECT_EQ(Double, op.GetSchema()->FindType("E.b"));
+	EXPECT_EQ(String, op.GetSchema()->FindType("E.b"));
 }
 
 /**
@@ -359,7 +358,12 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema6) {
 	EXPECT_EQ(Double, op.GetSchema()->FindType("Aggregate"));
 }
 
+
 // JoinNode
+/**
+ * JoinNode::GetSchema should correctly merge two schemas. This will assume that there is never a
+ * case where one (or both) sides have an empty schema
+ */
 TEST_F(OpNodeTest, JoinNode_GetSchema1) {
 	SelectMap selects;
 	JoinMap joins;
@@ -367,29 +371,58 @@ TEST_F(OpNodeTest, JoinNode_GetSchema1) {
 	sql.Parse(query);
 	sql.GetWhere(selects, joins);
 
-	EXPECT_CALL(child, GetSchema()).
-			WillRepeatedly(Return(&childSchema));
+	MockOpNode left;
+	MockOpNode right;
 
-	SelectPipeNode op (0, &child, selects["A"]);
+	EXPECT_CALL(left, GetSchema()).
+			WillRepeatedly(Return(&A));
+	EXPECT_CALL(right, GetSchema()).
+				WillRepeatedly(Return(&B));
 
-	ASSERT_EQ(9, op.GetSchema()->GetNumAtts());
+	JoinNode op (0, &left, 50, &right, 10, joins["A"]["B"]);
+
+	ASSERT_EQ(5, op.GetSchema()->GetNumAtts());
 	EXPECT_EQ(0, op.GetSchema()->Find("A.a"));
 	EXPECT_EQ(1, op.GetSchema()->Find("A.b"));
 	EXPECT_EQ(2, op.GetSchema()->Find("A.c"));
 	EXPECT_EQ(3, op.GetSchema()->Find("B.a"));
 	EXPECT_EQ(4, op.GetSchema()->Find("B.b"));
-	EXPECT_EQ(5, op.GetSchema()->Find("C.c"));
-	EXPECT_EQ(6, op.GetSchema()->Find("D.d"));
-	EXPECT_EQ(7, op.GetSchema()->Find("E.e"));
-	EXPECT_EQ(8, op.GetSchema()->Find("E.b"));
 
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.a"));
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.b"));
 	EXPECT_EQ(Int, op.GetSchema()->FindType("A.c"));
-	EXPECT_EQ(Double, op.GetSchema()->FindType("B.a"));
+	EXPECT_EQ(Int, op.GetSchema()->FindType("B.a"));
 	EXPECT_EQ(Double, op.GetSchema()->FindType("B.b"));
-	EXPECT_EQ(String, op.GetSchema()->FindType("C.c"));
-	EXPECT_EQ(String, op.GetSchema()->FindType("D.d"));
+}
+
+/**
+ * Join should correctly organize the children. If the number of tuples expected out of left is less
+ * than right, then left should be the rightchild and vice versa.
+ */
+TEST_F(OpNodeTest, JoinNode_GetSchema2) {
+	SelectMap selects;
+	JoinMap joins;
+	SQL sql (stats);
+	sql.Parse(query);
+	sql.GetWhere(selects, joins);
+
+	MockOpNode left;
+	MockOpNode right;
+
+	EXPECT_CALL(left, GetSchema()).
+			WillRepeatedly(Return(&D));
+	EXPECT_CALL(right, GetSchema()).
+				WillRepeatedly(Return(&E));
+
+	JoinNode op (0, &left, 10, &right, 50, joins["D"]["E"]);
+
+	ASSERT_EQ(3, op.GetSchema()->GetNumAtts());
+	EXPECT_EQ(0, op.GetSchema()->Find("E.e"));
+	EXPECT_EQ(1, op.GetSchema()->Find("E.b"));
+	EXPECT_EQ(2, op.GetSchema()->Find("D.d"));
+
+
 	EXPECT_EQ(Double, op.GetSchema()->FindType("E.e"));
-	EXPECT_EQ(Double, op.GetSchema()->FindType("E.b"));
+	EXPECT_EQ(String, op.GetSchema()->FindType("E.b"));
+	EXPECT_EQ(Double, op.GetSchema()->FindType("D.d"));
 }

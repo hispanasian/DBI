@@ -133,12 +133,16 @@ public:
 	OpNode *rightChild;
 	int leftTuples;
 	int rightTuples;
+	CNF cnf;
+	Record literal;
+	const struct AndList *join;
 
 	/**
 	 * leftTuples and rightTuples are the estimated number of tuples that will be produced from the
 	 * corresponding children.
 	 */
-	JoinNode(int id, OpNode *_leftChild, int _leftTuples, OpNode *_rightChild, int _rightTuples);
+	JoinNode(int id, OpNode *_leftChild, int _leftTuples, OpNode *_rightChild, int _rightTuples,
+			const struct AndList *_join);
 	virtual ~JoinNode();
 	void Visit(OpVisitor &visitor, void* arg);
 	const Schema* GetSchema();

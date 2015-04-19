@@ -62,12 +62,12 @@ public:
 		temp = &atts[0]; temp->relation="A"; temp->name="a"; temp->myType=Int;
 		temp = &atts[1]; temp->relation="A"; temp->name="b"; temp->myType=Int;
 		temp = &atts[2]; temp->relation="A"; temp->name="c"; temp->myType=Int;
-		temp = &atts[3]; temp->relation="B"; temp->name="a"; temp->myType=Double;
+		temp = &atts[3]; temp->relation="B"; temp->name="a"; temp->myType=Int;
 		temp = &atts[4]; temp->relation="B"; temp->name="b"; temp->myType=Double;
-		temp = &atts[5]; temp->relation="C"; temp->name="c"; temp->myType=String;
-		temp = &atts[6]; temp->relation="D"; temp->name="d"; temp->myType=String;
+		temp = &atts[5]; temp->relation="C"; temp->name="c"; temp->myType=Double;
+		temp = &atts[6]; temp->relation="D"; temp->name="d"; temp->myType=Double;
 		temp = &atts[7]; temp->relation="E"; temp->name="e"; temp->myType=Double;
-		temp = &atts[8]; temp->relation="E"; temp->name="b"; temp->myType=Double;
+		temp = &atts[8]; temp->relation="E"; temp->name="b"; temp->myType=String;
 
 		childSchema.Copy(Schema("", 9, atts));
 
@@ -76,18 +76,18 @@ public:
 		temp = &attsA[2]; temp->relation="A"; temp->name="c"; temp->myType=Int;
 		A.Copy(Schema("", 3, attsA));
 
-		temp = &attsB[0]; temp->relation="B"; temp->name="a"; temp->myType=Double;
+		temp = &attsB[0]; temp->relation="B"; temp->name="a"; temp->myType=Int;
 		temp = &attsB[1]; temp->relation="B"; temp->name="b"; temp->myType=Double;
 		B.Copy(Schema("", 2, attsB));
 
-		temp = &attsC[0]; temp->relation="C"; temp->name="c"; temp->myType=String;
+		temp = &attsC[0]; temp->relation="C"; temp->name="c"; temp->myType=Double;
 		C.Copy(Schema("", 1, attsC));
 
-		temp = &attsD[0]; temp->relation="D"; temp->name="d"; temp->myType=String;
+		temp = &attsD[0]; temp->relation="D"; temp->name="d"; temp->myType=Double;
 		D.Copy(Schema("", 1, attsD));
 
 		temp = &attsE[0]; temp->relation="E"; temp->name="e"; temp->myType=Double;
-		temp = &attsE[1]; temp->relation="E"; temp->name="b"; temp->myType=Double;
+		temp = &attsE[1]; temp->relation="E"; temp->name="b"; temp->myType=String;
 		E.Copy(Schema("", 2, attsE));
 
 
@@ -113,7 +113,7 @@ public:
 		// Make SQL
 		query = "SELECT SUM DISTINCT(A.b + 3 + B.b), E.e, A.a, B.a, C.c ";
 		query.append(" FROM RelA AS A, RelB AS B, RelC AS C, RelD AS D, RelE AS E ");
-		query.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.b) AND (B.a = C.c) AND (C.c = D.d) AND (D.d = E.e) ");
+		query.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a) AND (B.b = C.c) AND (C.c = D.d) AND (D.d = E.e) ");
 		query.append(" GROUP BY A.a, B.a ");
 	}
 };

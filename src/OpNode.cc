@@ -133,7 +133,8 @@ bool ProjectNode::ContainsAggregate() {
 
 // JoinNode
 JoinNode::JoinNode(int id, OpNode *_leftChild, int _leftTuples, OpNode *_rightChild,
-		int _rightTuples): OpNode(id), leftTuples(_leftTuples), rightTuples(_rightTuples) {
+		int _rightTuples, const struct AndList *_join): OpNode(id), leftTuples(_leftTuples),
+				rightTuples(_rightTuples), join(_join) {
 	// Put the operation that will produce the least amount of tuples as the right child
 	if(leftTuples > rightTuples) {
 		leftChild = _leftChild;
@@ -143,6 +144,9 @@ JoinNode::JoinNode(int id, OpNode *_leftChild, int _leftTuples, OpNode *_rightCh
 		leftChild = _rightChild;
 		rightChild = _leftChild;
 	}
+
+	// Now create cnf
+	cnf.GrowFromParseTree(join, leftChild->GetSchema(), rightChild->GetSchema(), literal);
 }
 
 JoinNode::~JoinNode() {}
