@@ -11,10 +11,14 @@
 using namespace std;
 
 SQL::SQL(): function(NULL), relations(NULL), where(NULL), groupAtts(NULL), selectAtts(NULL),
-		selectDistinct(0), aggregateDistinct(0) {}
+		selectDistinct(0), aggregateDistinct(0), relationSize(0) {}
 
-SQL::SQL(const Statistics &stat): stat(stat), function(NULL), relations(NULL), where(NULL),
-		groupAtts(NULL), selectAtts(NULL), selectDistinct(0), aggregateDistinct(0) {}
+SQL::SQL(const Statistics &_stat): stat(_stat), function(NULL), relations(NULL), where(NULL),
+		groupAtts(NULL), selectAtts(NULL), selectDistinct(0), aggregateDistinct(0), relationSize(0) {}
+
+SQL::SQL(const Statistics &_stat, int _relationSize): stat(_stat), function(NULL), relations(NULL),
+		where(NULL), groupAtts(NULL), selectAtts(NULL), selectDistinct(0), aggregateDistinct(0),
+		relationSize(_relationSize) {}
 
 SQL::~SQL() {
 	// TODO Auto-generated destructor stub
@@ -44,6 +48,7 @@ void SQL::Parse() {
 	for(int i = 0; i < aliases.size(); i++) {
 		stat.CopyRel(aliases[i].Relation().c_str(), aliases[i].Alias().c_str());
 	}
+	relationSize = aliases.size();
 }
 
 void SQL::GetWhere(SelectMap &selects, JoinMap &joins) {
@@ -186,7 +191,7 @@ void SQL::ParseWhere(struct AndList *where, SelectMap &selects, JoinMap &joins) 
 		andList = andList->rightAnd;
 	}
 	// Check to see that all the relations have been joined and that there are no excess joins
-	if((stat.RelationSize() - totalJoins) != 1) throw runtime_error("The AndList contains an unexpected number of joins");
+	if((relationSize - totalJoins) != 1) throw runtime_error("The AndList contains an unexpected number of joins");
 }
 
 void SQL::ParseNameList(NameList *names, vector<RelAttPair> &pair) {

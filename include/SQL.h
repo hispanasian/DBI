@@ -96,6 +96,7 @@ class SQL {
 protected:
 	Statistics stat;
 	std::string sql;
+	int relationSize;
 
 	// these data structures hold the result of the parsing
 	struct FuncOperator *function; // the aggregate function (NULL if no agg)
@@ -130,7 +131,8 @@ public:
 	/**
 	 * Creates SQL with a copy of stat
 	 */
-	SQL(const Statistics &stat);
+	SQL(const Statistics &_stat);
+	SQL(const Statistics &_stat, int _relationSize); // strictly for testing
 	virtual ~SQL();
 
 	/**
