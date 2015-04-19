@@ -152,6 +152,11 @@ public:
 	virtual const struct FuncOperator* Function() const;
 
 	/**
+	 * Returns the Statistics object used by this SQL object.
+	 */
+	virtual const Statistics& GetStatistics() const;
+
+	/**
 	 * Parses the sql string and puts the related meta-data into this object. This method will
 	 * correctly update the Statistics object to reflect aliased relations
 	 */

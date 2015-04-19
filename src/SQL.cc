@@ -27,6 +27,10 @@ SQL::~SQL() {
 const struct FuncOperator* SQL::Function() const {
 	return function;
 }
+const Statistics& GetStatistics() const {
+	return stat;
+}
+
 
 void SQL::Parse(const string &sql) {
 	this->sql = sql;
