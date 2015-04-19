@@ -150,7 +150,7 @@ TEST_F(OpNodeTest, SelectFileNode_GetSchema3) {
 	sql.Parse(query);
 	sql.GetWhere(selects, joins);
 
-	SelectFileNode op (0, B, selects["B"]);
+	SelectFileNode op (0, emptySchema, selects["B"]);
 
 	ASSERT_EQ(0, op.GetSchema()->GetNumAtts());
 }
