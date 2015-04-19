@@ -432,6 +432,7 @@ void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *le
                                 } else {
 					cout << "ERROR: Could not find attribute " <<
 						myOr->left->left->value << "\n";
+					throw invalid_argument("Could not find an attribute");
 					exit (1);	
 				}
 
@@ -487,6 +488,7 @@ void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *le
 				// it is not there!  So there is an error in the query
                                 } else {
 					cout << "ERROR: Could not find attribute " << myOr->left->right->value << "\n";
+					throw invalid_argument("Could not find an attribute");
 					exit (1);	
 				}
 
@@ -630,6 +632,7 @@ void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *my
                                 } else {
 					cout << "ERROR: Could not find attribute " <<
 						myOr->left->left->value << "\n";
+					throw invalid_argument("Could not find an attribute");
 					exit (1);	
 				}
 
@@ -678,6 +681,7 @@ void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *my
 				// it is not there!  So there is an error in the query
                                 } else {
 					cout << "ERROR: Could not find attribute " << myOr->left->right->value << "\n";
+					throw invalid_argument("Could not find an attribute");
 					exit (1);	
 				}
 
