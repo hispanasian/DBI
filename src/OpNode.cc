@@ -9,6 +9,11 @@
 #include "Defs.h"
 #include <string>
 
+// OpVisitor
+OpVisitor::OpVisitor() {}
+
+OpVisitor::~OpVisitor() {}
+
 // OpNode
 OpNode::~OpNode() {}
 

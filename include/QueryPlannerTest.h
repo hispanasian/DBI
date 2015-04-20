@@ -28,6 +28,7 @@ using ::testing::Eq;
 using ::testing::Ref;
 using ::testing::SetArgReferee;
 using ::testing::DoAll;
+using ::testing::Assign;
 
 /**
  * Puts the nodes of the tree in order into nodes.
@@ -39,14 +40,14 @@ public:
 	QueryPlannerTestVisitor(std::vector<OpNode*> &_nodes);
 	virtual ~QueryPlannerTestVisitor();
 
-	virtual void VisitSelectPipeNode(SelectPipeNode *node, void* arg) = 0;
-	virtual void VisitSelectFileNode(SelectFileNode *node, void* arg) = 0;
-	virtual void VisitProjectNode(ProjectNode *node, void* arg) = 0;
-	virtual void VisitJoinNode(JoinNode *node, void* arg) = 0;
-	virtual void VisitDuplicateRemovalNode(DuplicateRemovalNode *node, void* arg) = 0;
-	virtual void VisitSumNode(SumNode *node, void* arg) = 0;
-	virtual void VisitGroupByNode(GroupByNode *node, void* arg) = 0;
-	virtual void VisitWriteOutNode(WriteOutNode *node, void* arg) = 0;
+	virtual void VisitSelectPipeNode(SelectPipeNode *node, void* arg);
+	virtual void VisitSelectFileNode(SelectFileNode *node, void* arg);
+	virtual void VisitProjectNode(ProjectNode *node, void* arg);
+	virtual void VisitJoinNode(JoinNode *node, void* arg);
+	virtual void VisitDuplicateRemovalNode(DuplicateRemovalNode *node, void* arg);
+	virtual void VisitSumNode(SumNode *node, void* arg);
+	virtual void VisitGroupByNode(GroupByNode *node, void* arg);
+	virtual void VisitWriteOutNode(WriteOutNode *node, void* arg);
 };
 
 class QueryPlannerTest: public ::testing::Test {
@@ -67,6 +68,7 @@ public:
 	MockJoinOptimizer joinOptimizer;
 	RelationData relData;
 	Statistics stats;
+	QueryPlanner planner;
 	std::string select;
 	std::string selectDistinct;
 	std::string sum;
@@ -124,43 +126,42 @@ public:
 		stats.AddAtt("RelE", "b", 0);
 
 		// Make SQL
-		select = "SELECT A.a, B.a, C.c, D.d, E.b";
+		select = "SELECT A.a, B.a, C.c, D.d, E.b ";
 		select.append(" FROM RelA AS A, RelB AS B, RelC AS C, RelD AS D, RelE AS E ");
 		select.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a) AND (B.b = C.c) AND (C.c = D.d) AND (D.d = E.e) ");
 
-		selectDistinct = "SELECT DISTINCT A.a, B.a, C.c, D.d, E.b";
+		selectDistinct = "SELECT DISTINCT A.a, B.a, C.c, D.d, E.b ";
 		selectDistinct.append(" FROM RelA AS A, RelB AS B, RelC AS C, RelD AS D, RelE AS E ");
 		selectDistinct.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a) AND (B.b = C.c) AND (C.c = D.d) AND (D.d = E.e) ");
 
-		sum = "SELECT SUM (A.b + 3 + B.b + C.c + E.e + E.e)";
-		sum.append(" FROM RelA AS A, RelB AS B, RelC AS C, RelD AS D, RelE AS E ");
-		sum.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a) AND (B.b = C.c) AND (C.c = D.d) AND (D.d = E.e) ");
+		sum = "SELECT SUM (A.b + 3) ";
+		sum.append(" FROM RelA AS A ");
+		sum.append(" WHERE (A.b > 0)  ");
 
-		sumDistinct = "SELECT SUM DISTINCT (A.b + 3 + B.b + C.c + E.e + E.e)";
-		sumDistinct.append(" FROM RelA AS A, RelB AS B, RelC AS C, RelD AS D, RelE AS E ");
-		sumDistinct.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a) AND (B.b = C.c) AND (C.c = D.d) AND (D.d = E.e) ");
-		sumDistinct.append(" GROUP BY A.a, B.a ");
+		sumDistinct = "SELECT SUM DISTINCT (A.b + 3 ) ";
+		sumDistinct.append(" FROM RelA AS A ");
+		sum.append(" WHERE (A.b > 0)  ");
 
 
-		groupBy = "SELECT E.e, A.a, B.a, C.c, D.d ";
-		groupBy.append(" FROM RelA AS A, RelB AS B, RelC AS C, RelD AS D, RelE AS E ");
-		groupBy.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a) AND (B.b = C.c) AND (C.c = D.d) AND (D.d = E.e) ");
+		groupBy = "SELECT A.a, B.a ";
+		groupBy.append(" FROM RelA AS A, RelB AS B ");
+		groupBy.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a)  ");
 		groupBy.append(" GROUP BY A.a, B.a ");
 
-		groupBySum= "SELECT SUM (A.b + 3 + B.b), E.e, A.a, B.a, C.c ";
-		groupBySum.append(" FROM RelA AS A, RelB AS B, RelC AS C, RelD AS D, RelE AS E ");
-		groupBySum.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a) AND (B.b = C.c) AND (C.c = D.d) AND (D.d = E.e) ");
-		groupBySum.append(" GROUP BY A.a, B.a ");
+		groupBySum= "SELECT SUM (A.b + 3 ), A.a, A.c ";
+		groupBySum.append(" FROM RelA AS A ");
+		groupBySum.append(" WHERE (A.a = 5 OR A.c = 6)  ");
+		groupBySum.append(" GROUP BY A.a, A.c ");
 
-		groupByDistinct = "SELECT DISTINCT E.e, A.a, B.a, C.c, D.d ";
-		groupByDistinct.append(" FROM RelA AS A, RelB AS B, RelC AS C, RelD AS D, RelE AS E ");
-		groupByDistinct.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a) AND (B.b = C.c) AND (C.c = D.d) AND (D.d = E.e) ");
-		groupByDistinct.append(" GROUP BY A.a, B.a ");
+		groupBy = "SELECT DISTINCT A.a, B.a, A.c ";
+		groupBy.append(" FROM RelA AS A, RelB AS B ");
+		groupBy.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a)  ");
+		groupBy.append(" GROUP BY A.a, B.a ");
 
-		groupBySumDistinct = "SELECT SUM DISTINCT(A.b + 3 + B.b), E.e, A.a, B.a, C.c ";
-		groupBySumDistinct.append(" FROM RelA AS A, RelB AS B, RelC AS C, RelD AS D, RelE AS E ");
-		groupBySumDistinct.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a) AND (B.b = C.c) AND (C.c = D.d) AND (D.d = E.e) ");
-		groupBySumDistinct.append(" GROUP BY A.a, B.a ");
+		groupBy = "SELECT DISTINCT SUM( A.a, B.a ), A.c ";
+		groupBy.append(" FROM RelA AS A, RelB AS B ");
+		groupBy.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a)  ");
+		groupBy.append(" GROUP BY A.a, B.a ");
 	}
 };
 

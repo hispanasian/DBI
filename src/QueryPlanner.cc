@@ -17,11 +17,11 @@ ExecutionPlan* QueryPlanner::GetPlan() const {
 	return plan;
 }
 
-void QueryPlanner::Plan(const SQL &sql, const RelationData &relData) {
+void QueryPlanner::Plan(const SQL &sql, const RelationData &relData, FILE* outFile) {
 	JoinOptimizer opt;
-	Plan(sql, relData, opt);
+	Plan(sql, relData, outFile, opt);
 }
 
-void QueryPlanner::Plan(const SQL &sql, const RelationData &relData, JoinOptimizer &opt) {
+void QueryPlanner::Plan(const SQL &sql, const RelationData &relData, FILE* outFile, JoinOptimizer &opt) {
 
 }

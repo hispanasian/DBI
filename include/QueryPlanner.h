@@ -12,6 +12,7 @@
 #include "Statistics.h"
 #include "OpNode.h"
 #include "RelationData.h"
+#include "JoinOptimizer.h"
 #include <vector>
 #include <string>
 
@@ -29,8 +30,6 @@ friend class QueryPlannerTest;
 
 protected:
 	ExecutionPlan *plan;
-
-	virtual void Plan(const SQL &sql, const RelationData &relData, JoinOptimizer &opt);
 
 public:
 	QueryPlanner();
@@ -50,7 +49,8 @@ public:
 	 * @param sql		The SQL object that will be used to build this tree
 	 * @param fileMap	The map of files that will be provided to the root nodes
 	 */
-	virtual void Plan(const SQL &sql, const RelationData &relData);
+	virtual void Plan(const SQL &sql, const RelationData &relData, FILE* outFile);
+	virtual void Plan(const SQL &sql, const RelationData &relData, FILE* outFile, JoinOptimizer &opt);
 };
 
 #endif /* INCLUDE_QUERYPLANNER_H_ */

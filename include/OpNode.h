@@ -95,7 +95,7 @@ public:
 	CNF cnf;
 	Record literal;
 	const struct AndList *select;
-	std::string fname;
+	const std::string fname;
 
 	/**
 	 * _select should be the AndList that this OpNode will filter on
