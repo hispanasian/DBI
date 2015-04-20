@@ -581,7 +581,7 @@ public:
 };
 
 class MockSQL: public SQL {
-
+public:
 //	virtual const struct FuncOperator* Function() const;
 	MOCK_METHOD0(Function, const FuncOperator*());
 //	virtual const Statistics& GetStatistics() const;
@@ -615,7 +615,7 @@ class MockSQL: public SQL {
 };
 
 class MockJoinOptimizer: public JoinOptimizer {
-
+public:
 //   void Optimize(unordered_map<string, AndList*> &selects,
 //                       unordered_map<string, unordered_map<string, AndList*> > &joins,
 //                       Statistics& stats,

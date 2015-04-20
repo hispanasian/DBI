@@ -11,10 +11,9 @@
 #include "SQL.h"
 #include "Statistics.h"
 #include "OpNode.h"
+#include "RelationData.h"
 #include <vector>
 #include <string>
-
-typedef std::vector<std::string, std::string> RelFileMap;
 
 struct ExecutionPlan {
 	OpNode *tree;	// The execution tree
@@ -26,8 +25,12 @@ struct ExecutionPlan {
  * of the query provided by SQL.This QueryPlanner deals only with SELECT queries.
  */
 class QueryPlanner {
+friend class QueryPlannerTest;
+
 protected:
 	ExecutionPlan *plan;
+
+	virtual void Plan(const SQL &sql, const RelationData &relData, JoinOptimizer &opt);
 
 public:
 	QueryPlanner();
@@ -47,7 +50,7 @@ public:
 	 * @param sql		The SQL object that will be used to build this tree
 	 * @param fileMap	The map of files that will be provided to the root nodes
 	 */
-	virtual void Plan(const SQL &sql, const RelFileMap &fileMap);
+	virtual void Plan(const SQL &sql, const RelationData &relData);
 };
 
 #endif /* INCLUDE_QUERYPLANNER_H_ */
