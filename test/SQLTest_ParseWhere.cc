@@ -343,3 +343,40 @@ TEST_F(SQLTest, ParseWhere8) {
 	ASSERT_TRUE(selects["A"]->rightAnd->left != NULL);
 	ASSERT_TRUE(selects["A"]->rightAnd->rightAnd == NULL);
 }
+
+/**
+ * GetWhere should handle still create AndLists for Relations that are not mentioned in the
+ * where clause (ie, they were in the FROM clause).
+ */
+TEST_F(SQLTest, ParseWhere9) {
+	stat.AddRel("RelA", 0);
+	stat.AddRel("RelB", 0);
+
+	stat.AddAtt("RelA", "a", 0);
+	stat.AddAtt("RelA", "b", 0);
+	stat.AddAtt("RelA", "c", 0);
+	stat.AddAtt("RelB", "a", 0);
+	stat.AddAtt("RelB", "b", 0);
+
+	string cnf = "SELECT DISTINCT A.a, B.a, A.c ";
+	cnf.append(" FROM RelA AS A, RelB AS B ");
+	cnf.append(" WHERE (A.a = B.a)  ");
+	cnf.append(" GROUP BY A.a, B.a ");
+
+	SelectMap selects;
+	JoinMap joins;
+	SQL test (stat);
+
+	test.Parse(cnf);
+	test.GetWhere(selects, joins);
+
+	EXPECT_EQ(2, selects.size());
+	EXPECT_EQ(2, joins.size());
+
+	ASSERT_TRUE(selects.at("A") != NULL);
+	ASSERT_TRUE(selects["A"]->left == NULL);
+	ASSERT_TRUE(selects["A"]->rightAnd == NULL);
+	ASSERT_TRUE(selects.at("B") != NULL);
+	ASSERT_TRUE(selects["B"]->left == NULL);
+	ASSERT_TRUE(selects["B"]->rightAnd == NULL);
+}
