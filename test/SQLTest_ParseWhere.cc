@@ -343,3 +343,42 @@ TEST_F(SQLTest, ParseWhere8) {
 	ASSERT_TRUE(selects["A"]->rightAnd->left != NULL);
 	ASSERT_TRUE(selects["A"]->rightAnd->rightAnd == NULL);
 }
+
+/**
+ * ParseWhere should handle still create AndLists for Relations that are not mentioned in the
+ * where clause (ie, they were in the FROM clause).
+ */
+TEST_F(SQLTest, ParseWhere8) {
+	stat.AddRel("RelA", 0);
+	stat.AddRel("RelB", 0);
+
+	stat.AddAtt("RelA", "a", 0);
+	stat.AddAtt("RelA", "b", 0);
+	stat.AddAtt("RelA", "c", 0);
+	stat.AddAtt("RelB", "a", 0);
+	stat.AddAtt("RelB", "b", 0);
+
+	string groupBy = "SELECT DISTINCT A.a, B.a, A.c ";
+	groupBy.append(" FROM RelA AS A, RelB AS B ");
+	groupBy.append(" (A.a = B.a)  ");
+	groupBy.append(" GROUP BY A.a, B.a ");
+
+	yy_scan_string(cnf);
+	yyparse();
+
+	SelectMap selects;
+	JoinMap joins;
+	SQL sql (stat);
+
+	test.ParseWhere(final, selects, joins);
+
+	EXPECT_EQ(2, selects.size());
+	EXPECT_EQ(1, joins.size());
+
+	ASSERT_TRUE(selects.at("A") != NULL);
+	ASSERT_TRUE(selects["A"]->left == NULL);
+	ASSERT_TRUE(selects["A"]->rightAnd == NULL);
+	ASSERT_TRUE(selects.at("B") != NULL);
+	ASSERT_TRUE(selects["B"]->left == NULL);
+	ASSERT_TRUE(selects["B"]->rightAnd == NULL);
+}
