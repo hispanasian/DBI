@@ -45,7 +45,9 @@ public:
 	void Insert(const std::string &rel, const std::string &dbLocation,
 			const std::string &schemaLocation, const Schema &schema);
 
-	const RelationMetaData& operator [](std::string rel) { return data.at(rel); }
+	void Insert(const std::string &rel, const RelationMetaData &copy);
+
+	const RelationMetaData& operator [](std::string rel) const { return data.at(rel); }
 };
 
 #endif /* INCLUDE_RELATIONDATA_H_ */
