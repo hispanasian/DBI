@@ -7,6 +7,8 @@
 
 #include "SQL.h"
 #include <stack>
+#include <stdio.h>
+#include <iostream>
 
 using namespace std;
 
@@ -194,8 +196,24 @@ void SQL::ParseWhere(struct AndList *where, SelectMap &selects, JoinMap &joins) 
 		affectedRels.clear();
 		andList = andList->rightAnd;
 	}
+
 	// Check to see that all the relations have been joined and that there are no excess joins
 	if((relationSize - totalJoins) != 1) throw runtime_error("The AndList contains an unexpected number of joins");
+
+	// Check that every relation has some kind of AndList. If not, set an empty AndList
+	vector<RelAliasPair> rels;
+	GetTables(rels);
+
+	for(auto it = rels.begin(); it != rels.end(); it++) {
+		string alias = (*it).Alias();
+		try {
+			// check to see if the relation got an andlist
+			selects.at(alias);
+		}
+		catch (out_of_range &e){
+			selects.insert( {alias, new AndList{NULL, NULL}} );
+		}
+	}
 }
 
 void SQL::ParseNameList(NameList *names, vector<RelAttPair> &pair) {
