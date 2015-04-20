@@ -41,7 +41,7 @@ Type Schema :: FindType (const char *relName, const char *attName) const {
 	return FindType(string(relName).append(".").append(attName).c_str());
 }
 
-int Schema :: GetNumAtts () {
+int Schema :: GetNumAtts () const {
 	return numAtts;
 }
 
@@ -77,7 +77,7 @@ Schema :: Schema (char *fName, char *relName) {
 
 				// suck up another token
 				if (fscanf (foo, "%s", space) == EOF) {
-					cerr << "Could not find the schema for the specified relation.\n";
+					throw invalid_argument("Could not find the schema for the specified relation.\n");
 					exit (1);
 				}
 
@@ -137,6 +137,7 @@ Schema :: Schema (char *fName, char *relName) {
 			myAtts[i].myType = String;
 		} else {
 			cout << "Bad attribute type for " << myAtts[i].name << "\n";
+			throw invalid_argument("Received a bad attribute type");
 			exit (1);
 		}
 	}
@@ -145,7 +146,8 @@ Schema :: Schema (char *fName, char *relName) {
 }
 
 Schema :: Schema (char *fpath, int num_atts, Attribute *atts) {
-	fileName = strdup (fpath);
+	if(fpath != NULL) fileName = strdup (fpath);
+	else fileName = NULL;
 	numAtts = num_atts;
 	myAtts = new Attribute[numAtts];
 	for (int i = 0; i < numAtts; i++ ) {
@@ -159,7 +161,9 @@ Schema :: Schema (char *fpath, int num_atts, Attribute *atts) {
 			myAtts[i].myType = String;
 		} 
 		else {
-			cout << "Bad attribute type for " << atts[i].myType << "\n";
+			cout << "Bad attribute type for " << atts[i].relation << "." << atts[i].name
+					<< " with " << atts[i].myType << "\n";
+			throw invalid_argument("Received a bad attribute type");
 			delete [] myAtts;
 			exit (1);
 		}
@@ -170,33 +174,14 @@ Schema :: Schema (char *fpath, int num_atts, Attribute *atts) {
 
 Schema :: Schema (const Schema &copyMe) {
 	fileName = NULL;
-	numAtts = copyMe.numAtts;
-	myAtts = new Attribute[numAtts];
-
-	for(int i = 0; i < copyMe.numAtts; i++) {
-		myAtts[i].name = copyMe.myAtts[i].name;
-		myAtts[i].relation = copyMe.myAtts[i].relation;
-		myAtts[i].myType = copyMe.myAtts[i].myType;
-	}
+	myAtts = NULL;
+	Copy(copyMe);
 }
 
 Schema :: Schema (const Schema &copyMe, const vector<RelAttPair> &pairs) {
 	fileName = NULL;
-	numAtts = pairs.size();
-	myAtts = new Attribute[numAtts];
-
-	int index = -1;
-	Type type;
-	for(int i = 0; i < numAtts; i++) {
-		string temp = pairs[i].Relation();
-		index = copyMe.Find(pairs[i].Relation().c_str(), pairs[i].Attribute().c_str());
-		type = copyMe.FindType(pairs[i].Relation().c_str(), pairs[i].Attribute().c_str());
-
-		if(index == -1) throw invalid_argument("Unknown Relation/Attribute pair found (Schema(Schema, vector<RelAttPair>))");
-		myAtts[i].name = pairs[i].Attribute();
-		myAtts[i].relation = pairs[i].Relation();
-		myAtts[i].myType = type;
-	}
+	myAtts = NULL;
+	Filter(copyMe, pairs);
 }
 
 Schema :: Schema (const Schema *left, const Schema *right) {
@@ -207,6 +192,19 @@ Schema :: Schema (const Schema *left, const Schema *right) {
 Schema :: Schema (const Schema &left, const Schema &right) {
 	myAtts = NULL;
 	Join(&left, &right);
+}
+
+void Schema :: Copy (const Schema &copyMe) {
+	fileName = strdup(copyMe.fileName);
+	numAtts = copyMe.numAtts;
+	delete myAtts;
+	myAtts = new Attribute[numAtts];
+
+	for(int i = 0; i < copyMe.numAtts; i++) {
+		myAtts[i].name = copyMe.myAtts[i].name;
+		myAtts[i].relation = copyMe.myAtts[i].relation;
+		myAtts[i].myType = copyMe.myAtts[i].myType;
+	}
 }
 
 void Schema :: Join  (const Schema *left, const Schema *right) {
@@ -223,9 +221,34 @@ void Schema :: Join  (const Schema *left, const Schema *right) {
 
 	int loff = left->numAtts; // offset from left schema
 	for(int i = 0; i < right->numAtts; i++) {
-		myAtts[i].name = right->myAtts[i].name;
-		myAtts[i].relation = right->myAtts[i].relation;
+		myAtts[i + loff].name = right->myAtts[i].name;
+		myAtts[i + loff].relation = right->myAtts[i].relation;
 		myAtts[i + loff].myType = right->myAtts[i].myType;
+	}
+}
+
+void Schema :: Filter (const Schema &copyMe, const vector<RelAttPair> &pairs) {
+	fileName = NULL;
+	numAtts = pairs.size();
+	delete myAtts;
+	myAtts = new Attribute[numAtts];
+
+	int index = -1;
+	Type type;
+
+	for(int i = 0; i < numAtts; i++) {
+		string temp = pairs[i].Relation();
+		index = copyMe.Find(pairs[i].Relation().c_str(), pairs[i].Attribute().c_str());
+		type = copyMe.FindType(pairs[i].Relation().c_str(), pairs[i].Attribute().c_str());
+
+		if(index == -1) {
+			cerr << "Failed to find " << pairs[i].Relation() << "." << pairs[i].Attribute()
+					<< " during filter." << endl;
+			throw invalid_argument("Unknown Relation/Attribute pair found (Schema(Schema, vector<RelAttPair>))");
+		}
+		myAtts[i].name = pairs[i].Attribute();
+		myAtts[i].relation = pairs[i].Relation();
+		myAtts[i].myType = type;
 	}
 }
 
@@ -233,6 +256,27 @@ void Schema :: SetRelation(const char *relation) {
 	for(int i = 0; i < numAtts; i++) {
 		myAtts[i].relation = string(relation);
 	}
+}
+
+string Schema :: ToString() const {
+	return ToString("");
+}
+
+string Schema :: ToString(string prefix) const {
+	string temp;
+	for(int i = 0; i < numAtts; i++) {
+		temp.append(prefix);
+		// Don't ignore the relation
+		if(myAtts[i].relation.compare("") != 0) temp.append(myAtts[i].relation).append(".");
+		temp.append(myAtts[i].name).append(": ");
+
+		if(myAtts[i].myType == Int) temp.append("int");
+		else if(myAtts[i].myType == Double) temp.append("double");
+		else if(myAtts[i].myType == String) temp.append("string");
+		else throw runtime_error("Unknown type found (Schema::ToString)");
+		temp.append("\n");
+	}
+	return temp;
 }
 
 Schema :: ~Schema () {

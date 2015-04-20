@@ -59,6 +59,11 @@ public:
 		attribute = copyMe.second;
 	}
 
+	void Copy(const RelAttPair &copyMe) {
+		relation = copyMe.relation;
+		attribute = copyMe.attribute;
+	}
+
 	std::string Relation() const { return relation; }
 	std::string Attribute() const { return attribute; }
 };
@@ -88,6 +93,11 @@ public:
 		alias = copyMe.second;
 	}
 
+	void Copy(const RelAliasPair &copyMe) {
+		relation = copyMe.relation;
+		alias = copyMe.alias;
+	}
+
 	std::string Relation() const { return relation; }
 	std::string Alias() const { return alias; }
 };
@@ -96,6 +106,7 @@ class SQL {
 protected:
 	Statistics stat;
 	std::string sql;
+	int relationSize;
 
 	// these data structures hold the result of the parsing
 	struct FuncOperator *function; // the aggregate function (NULL if no agg)
@@ -130,8 +141,15 @@ public:
 	/**
 	 * Creates SQL with a copy of stat
 	 */
-	SQL(const Statistics &stat);
+	SQL(const Statistics &_stat);
+	SQL(const Statistics &_stat, int _relationSize); // strictly for testing
 	virtual ~SQL();
+
+	/**
+	 * Returns the FuncOperator produced by this SQL
+	 * @param	Returns the FuncOperator produced by this SQL or NULL if there is none
+	 */
+	virtual const struct FuncOperator* Function() const;
 
 	/**
 	 * Parses the sql string and puts the related meta-data into this object. This method will

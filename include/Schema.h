@@ -42,7 +42,7 @@ public:
 	Attribute *GetAtts ();
 
 	// returns the number of attributes
-	int GetNumAtts ();
+	int GetNumAtts () const;
 
 	// this finds the position of the specified attribute in the schema
 	// returns a -1 if the attribute is not present in the schema
@@ -80,8 +80,17 @@ public:
 
 	Schema (const Schema &left, const Schema &right);
 
+	// Copies copyMe into this object (deletes the old data)
+	void Copy(const Schema &copyMe);
+
 	// Joins the two relations into this schema
 	void Join(const Schema *left, const Schema *right);
+
+	// Recreates the Schema out of copyMe and the vector of Relation/Attributes pairs. The
+	// Relation/Attributes pairs are expected to be a subset of copyMe. The new schema will
+	// simply be a transformation of the vector into a Schema with copyMe provided to give the
+	// type information of each Relation/Attribute pair
+	void Filter(const Schema &copyMe, const std::vector<RelAttPair> &pairs);
 
 	// this constructs a sort order structure that can be used to
 	// place a lexicographic ordering on the records using this type of schema
@@ -89,6 +98,12 @@ public:
 
 	// sets the relation of every relation in this Schema to the provided relation
 	void SetRelation(const char* relation);
+
+	// produces a string representation of the schema with the given prefix.
+	std::string ToString(std::string prefix) const;
+
+	// Produces a string represetnation of the schema
+	std::string ToString() const;
 
 	virtual ~Schema ();
 
