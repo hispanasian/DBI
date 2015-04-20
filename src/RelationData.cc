@@ -33,3 +33,7 @@ void RelationData::Insert(const string &rel, const string &dbLocation, const str
 		const Schema &schema) {
 	data.insert({rel, RelationMetaData(dbLocation, schemaLocation, schema)});
 }
+
+void RelationData::Insert(const std::string &rel, const RelationMetaData &copy) {
+	data.insert({rel, copy});
+}

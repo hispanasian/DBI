@@ -131,9 +131,10 @@ void ProjectNode::WaitUntilDone() {
 }
 
 bool ProjectNode::ContainsAggregate() {
-	GroupByNode *group = dynamic_cast<GroupByNode*>(child);
-	SumNode *sum = dynamic_cast<SumNode*>(child);
-	return (group != NULL || sum != NULL);
+//	GroupByNode *group = dynamic_cast<GroupByNode*>(child);
+//	SumNode *sum = dynamic_cast<SumNode*>(child);
+//	return (group != NULL || sum != NULL);
+	return(child->GetSchema()->Find("Aggregate") != -1);
 }
 
 
