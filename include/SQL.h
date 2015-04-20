@@ -158,6 +158,12 @@ public:
 	virtual const Statistics& GetStatistics() const;
 
 	/**
+	 * Returns the SQL statement
+	 * @return	The SQL statement
+	 */
+	virtual std::string GetSQLStatement() const;
+
+	/**
 	 * Parses the sql string and puts the related meta-data into this object. This method will
 	 * correctly update the Statistics object to reflect aliased relations
 	 */

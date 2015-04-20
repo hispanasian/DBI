@@ -38,6 +38,9 @@ const Statistics& SQL::GetStatistics() const {
 	return stat;
 }
 
+string SQL::GetSQLStatement() const {
+	return sql;
+}
 
 void SQL::Parse(const string &sql) {
 	this->sql = sql;

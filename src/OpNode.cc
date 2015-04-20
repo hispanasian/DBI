@@ -131,10 +131,9 @@ void ProjectNode::WaitUntilDone() {
 }
 
 bool ProjectNode::ContainsAggregate() {
-//	GroupByNode *group = dynamic_cast<GroupByNode*>(child);
-//	SumNode *sum = dynamic_cast<SumNode*>(child);
-//	return (group != NULL || sum != NULL);
-	return(child->GetSchema()->Find("Aggregate") != -1);
+	GroupByNode *group = dynamic_cast<GroupByNode*>(child);
+	SumNode *sum = dynamic_cast<SumNode*>(child);
+	return (group != NULL || sum != NULL);
 }
 
 
@@ -143,7 +142,7 @@ JoinNode::JoinNode(int id, OpNode *_leftChild, int _leftTuples, OpNode *_rightCh
 		int _rightTuples, const struct AndList *_join): OpNode(id), leftTuples(_leftTuples),
 				rightTuples(_rightTuples), join(_join) {
 	// Put the operation that will produce the least amount of tuples as the right child
-	if(leftTuples > rightTuples) {
+	if(leftTuples >= rightTuples) {
 		leftChild = _leftChild;
 		rightChild = _rightChild;
 	}
@@ -241,13 +240,8 @@ void SumNode::WaitUntilDone() {
 
 
 // GroupByNode
-GroupByNode::GroupByNode(int id, OpNode *_child, const std::vector<RelAttPair> &_group):
-		OpNode(id),funcOp(NULL){
-	child = _child;
-}
-
 GroupByNode::GroupByNode(int id, OpNode *_child, const std::vector<RelAttPair> &_group,
-		const struct FuncOperator *_funcOp): OpNode(id),funcOp(_funcOp){
+		const struct FuncOperator *_funcOp): OpNode(id),funcOp(_funcOp), group(_group) {
 	child = _child;
 	GetSchema(); // Create function
 }

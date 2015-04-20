@@ -48,6 +48,8 @@ public:
 	void Insert(const std::string &rel, const RelationMetaData &copy);
 
 	const RelationMetaData& operator [](std::string rel) const { return data.at(rel); }
+
+	std::string ToString() const;
 };
 
 #endif /* INCLUDE_RELATIONDATA_H_ */

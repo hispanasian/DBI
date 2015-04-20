@@ -7,6 +7,8 @@
 
 #include "RelationData.h"
 #include <unordered_map>
+#include <stdio.h>
+#include <iostream>
 
 using namespace std;
 
@@ -36,4 +38,13 @@ void RelationData::Insert(const string &rel, const string &dbLocation, const str
 
 void RelationData::Insert(const std::string &rel, const RelationMetaData &copy) {
 	data.insert({rel, copy});
+}
+
+string RelationData::ToString() const {
+	string out = "";
+	for(auto it = data.begin(); it != data.end(); it++) {
+		string rel = it->first;
+		out.append(rel).append("\n");
+	}
+	return out;
 }
