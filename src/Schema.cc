@@ -207,7 +207,11 @@ Schema :: Schema (const Schema &left, const Schema &right) {
 }
 
 void Schema :: Copy (const Schema &copyMe) {
-	fileName = strdup(copyMe.fileName);
+	if(copyMe.fileName != NULL) fileName = strdup(copyMe.fileName);
+	else {
+		delete fileName;
+		fileName = NULL;
+	}
 	numAtts = copyMe.numAtts;
 	delete myAtts;
 	myAtts = new Attribute[numAtts];

@@ -98,11 +98,13 @@ WhatIWant: Function ',' Atts
 | Function
 {
 	attsToSelect = NULL;
+	distinctAtts = 0;
 }
 
 | Atts 
 {
 	distinctAtts = 0;
+	distinctFunc = 0;
 	finalFunction = NULL;
 	attsToSelect = $1;
 }
@@ -110,6 +112,7 @@ WhatIWant: Function ',' Atts
 | DISTINCT Atts
 {
 	distinctAtts = 1;
+	distinctFunc = 0;
 	finalFunction = NULL;
 	attsToSelect = $2;
 	finalFunction = NULL;

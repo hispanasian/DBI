@@ -47,10 +47,48 @@ public:
 	 * relation->file map that will be provided to the corresponding nodes. This method also assumes
 	 * that SQL has correctly parsed some input
 	 * @param sql		The SQL object that will be used to build this tree
-	 * @param fileMap	The map of files that will be provided to the root nodes
+	 * @param relData	The data that holds relation meta data
+	 * @param outFile	The FILE to which the final product is written to
 	 */
 	virtual void Plan(const SQL &sql, const RelationData &relData, FILE* outFile);
 	virtual void Plan(const SQL &sql, const RelationData &relData, FILE* outFile, JoinOptimizer &opt);
+
+	/**
+	 * This method handles the planning for the selection and execution
+	 * @param sql		The SQL object that will be used to help build the Selects and Joins
+	 * @parma relData	The relation data that will be used to populate some of the node data
+	 * @param opt		The JoinOptimizer that will be used to do the heavy lifting
+	 */
+	virtual ExecutionPlan* PlanSelectJoins(const SQL &sql, const RelationData &relData, JoinOptimizer &opt);
+
+	/**
+	 * Deals with the creation of nodes that remove duplicates
+	 * @param sql		The SQL object that will be used to help build the Selects and Joins
+	 * @param tree		The tree so far
+	 */
+	virtual ExecutionPlan* PlanDistinct(const SQL &sql, ExecutionPlan* tree) const;
+
+	/**
+	 * Deals with the creation of nodes that project attributes
+	 * @param sql		The SQL object that will be used to help build the Selects and Joins
+	 * @param tree		The tree so far
+	 */
+	virtual ExecutionPlan* PlanProject(const SQL &sql, ExecutionPlan* tree) const;
+
+	/**
+	 * Deals with the creation of nodes that deal with aggregation
+	 * @param sql		The SQL object that will be used to help build the Selects and Joins
+	 * @param tree		The tree so far
+	 */
+	virtual ExecutionPlan* PlanAggregation(const SQL &sql, ExecutionPlan* tree) const;
+
+	/**
+	 * Deals with the creation of nodes that deal with output
+	 * @param sql		The SQL object that will be used to help build the Selects and Joins
+	 * @param tree		The tree so far
+	 * @param outFile	The file to which the output will be written
+	 */
+	virtual ExecutionPlan* PlanOutput(const SQL &sql, ExecutionPlan* tree, FILE* outFile) const;
 };
 
 #endif /* INCLUDE_QUERYPLANNER_H_ */
