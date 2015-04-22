@@ -190,7 +190,11 @@ double Statistics::ApplyAndCompute(struct AndList *parseTree, const char *relNam
 	if(!VerifyJoin(parseTree, relNames, numToJoin)) {
 		throw std::runtime_error("Statistics::ApplyAndCompute: cannot perform join");
 	}
-
+	// handle the case where there is just one relation
+	// and no condition on its selection
+	if(parseTree->left == NULL && numToJoin == 1) {
+		return NumTuples(relNames[0]);
+	}
 	// now do the join
 	set<string> relations;
 	AndList* curr = parseTree;
@@ -406,10 +410,12 @@ bool Statistics::IsName(int code) { return code == NAME; }
 double Statistics::Join(OrList* orList, std::set<std::string>& relations) {
 	OrList* curr = orList;
 	vector<Expression*> expressions;
-	while(curr != NULL) {
+
+	while(curr != NULL && curr->left != NULL) {
 		MakeExpression(*curr->left, expressions, relations);
 		curr = curr->rightOr;
 	}
+
 	CombineExpressions(expressions);
 	// TODO: delete the expressions here?
 	return ComputeNumTuples(expressions);

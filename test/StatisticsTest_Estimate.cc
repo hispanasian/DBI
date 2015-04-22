@@ -353,3 +353,16 @@ TEST_F(StatisticsTest, Estimate12) {
 
 	EXPECT_NEAR(21432.9, result, .5);
 }
+
+TEST_F(StatisticsTest, Estimate13) {
+    Statistics stats;
+    stats.AddRel("A", 100);
+    stats.AddAtt("A", "y", 10);
+    // char* cnf1 = "";
+    // yy_scan_string(cnf1);
+    // yyparse();
+    AndList* and1 = new AndList{NULL, NULL};// = final;
+    const char* rels[] = {"A"};
+    // cout << (&and1 == NULL) << endl;
+    EXPECT_EQ(100, stats.Estimate(and1, rels, 1));
+}
