@@ -211,14 +211,14 @@ public:
 	 * correctly update the Statistics object to reflect aliased relations
 	 * @return	The type of command that was parsed
 	 */
-	SQL_Command Parse(const std::string &sql);
+	virtual SQL_Command Parse(const std::string &sql);
 
 	/**
 	 * Will request sql to be provided from stdin and will parse the provided sql. This method will
 	 * correctly update the Statistics object to reflect aliased relations
 	 * @return	The type of command that was parsed
 	 */
-	SQL_Command Parse();
+	virtual SQL_Command Parse();
 
 	/**
 	 * Returns a SelectMap and JoinMap that represents the Selects and Joins that are specified in
@@ -260,7 +260,7 @@ public:
 	 * @param tableName	The name of the relation that should be created (is inserted into this var)
 	 * @return	The type of table that should be created
 	 */
-	DB_Type GetCreateTable(std::vector<AttTypePair> &atts, std::vector<std::string> &order,
+	virtual DB_Type GetCreateTable(std::vector<AttTypePair> &atts, std::vector<std::string> &order,
 			std::string &tableName) const;
 
 	/**
@@ -268,13 +268,13 @@ public:
 	 * @param file	The file which contains the data
 	 * @param table	The table that will be populated
 	 */
-	void GetInsertInto(std::string &file, std::string &table) const;
+	virtual void GetInsertInto(std::string &file, std::string &table) const;
 
 	/**
 	 * Returns the name of the Table that should be dropped
 	 * @param the name of the Table that should be dropped
 	 */
-	std::string GetDropTable() const;
+	virtual std::string GetDropTable() const;
 
 	/**
 	 * Gets the parameters of the SET OUTPUT command. If File is returned, then the path will be
@@ -282,7 +282,7 @@ public:
 	 * @param file	The path to the file which will hold the output
 	 * @return		The type of output (stdout, a file, or none)
 	 */
-	Output_Type GetSetOutput(std::string &file) const;
+	virtual Output_Type GetSetOutput(std::string &file) const;
 
 	/**
 	 * Returns true if there is a distinct in the aggregate function

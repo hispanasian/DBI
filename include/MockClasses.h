@@ -589,7 +589,7 @@ public:
 //	virtual void Parse(const std::string &sql);
 	MOCK_METHOD1(Parse, void(const std::string));
 //	virtual void Parse();
-	MOCK_METHOD0(Parse, void());
+	MOCK_METHOD0(Parse, SQL_Command());
 //	virtual void GetWhere(SelectMap &selects, JoinMap &joins);
 	MOCK_METHOD2(GetWhere, void(SelectMap &selects, JoinMap &joins));
 //	virtual void GetGroup(std::vector<RelAttPair> &pairs);
