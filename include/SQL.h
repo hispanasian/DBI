@@ -274,7 +274,7 @@ public:
 	 * Returns the name of the Table that should be dropped
 	 * @param the name of the Table that should be dropped
 	 */
-	std::string GetDropTable();
+	std::string GetDropTable() const;
 
 	/**
 	 * Gets the parameters of the SET OUTPUT command. If File is returned, then the path will be
@@ -282,7 +282,7 @@ public:
 	 * @param file	The path to the file which will hold the output
 	 * @return		The type of output (stdout, a file, or none)
 	 */
-	Output_Type GetSetOutput(std::string &file);
+	Output_Type GetSetOutput(std::string &file) const;
 
 	/**
 	 * Returns true if there is a distinct in the aggregate function

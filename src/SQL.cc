@@ -362,7 +362,7 @@ void SQL::GetInsertInto(string &file, string &table) const {
 	else throw invalid_argument("No table provided");
 }
 
-string SQL::GetDropTable() {
+string SQL::GetDropTable() const {
 	if(this->table != NULL){
 		if(stat.NumTuples(this->table) == -1) throw invalid_argument("Table does not exist");
 		return string(this->table);
@@ -370,6 +370,13 @@ string SQL::GetDropTable() {
 	else return string("");
 }
 
-Output_Type GetSetOutput(string &file) {
-
+Output_Type SQL::GetSetOutput(string &file) const {
+	switch(output) {
+	case SET_STDOUT: return Stdout;
+	case SET_NONE: return None;
+	case SET_FILE:
+		file = string(this->file);
+		return File_Path;
+	default: return None;
+	}
 }

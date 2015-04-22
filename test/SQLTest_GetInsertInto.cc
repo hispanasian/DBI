@@ -59,7 +59,7 @@ TEST_F(SQLTest, GetInsertInto3) {
 	stat.AddRel(relName[0],6001215);
 
 	string str;
-	str = "INSERT something INTO RelA; ";
+	str = "INSERT path/to/file INTO RelA; ";
 
 	string file;
 	string table;
@@ -68,7 +68,7 @@ TEST_F(SQLTest, GetInsertInto3) {
 	EXPECT_EQ(Insert_Into, test.Parse(str));
 	test.GetInsertInto(file, table);
 
-	EXPECT_EQ(0, file.compare("something"));
+	EXPECT_EQ(0, file.compare("path/to/file"));
 	EXPECT_EQ(0, table.compare("RelA"));
 }
 

@@ -123,7 +123,7 @@ void close_lexical_parser_sql () { yysql_delete_buffer (yysql_buf_state); }
   			return(QualifiedName);
 			}
 			
-[A-Za-z0-9_\.\-]+ {yysqllval.actualChars = strdup(yysqltext);
+[A-Za-z0-9_\.\-\\\/]+ {yysqllval.actualChars = strdup(yysqltext);
   			return(FileName);
 			}
 

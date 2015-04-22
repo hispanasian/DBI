@@ -274,6 +274,18 @@ Output: STDOUT
 	outType = SET_NONE;
 }
 
+| Name
+{
+	$$ = $1;
+	outType = SET_FILE;
+}
+
+| QualifiedName
+{
+	$$ = $1;
+	outType = SET_FILE;
+}
+
 | FileName
 {
 	$$ = $1;
