@@ -42,10 +42,6 @@ string SQL::GetSQLStatement() const {
 	return sql;
 }
 
-const Statistics& SQL::GetStatistics() const {
-	return stat;
-}
-
 void SQL::Parse(const string &sql) {
 	this->sql = sql;
 	yysql_scan_string(this->sql.c_str());
