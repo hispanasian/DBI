@@ -105,16 +105,15 @@
 
 SQL: CREATE_TABLE TableData
 {
+	command = CREATE;
+	createData = $2;
+	
 	finalFunction = NULL;
 	tables = NULL;
 	boolean = NULL;
 	groupingAtts = NULL;
 	attsToSelect = NULL;
 	refFile = NULL;
-	refTable = NULL;
-	
-	command = CREATE;
-	createData = $2;
 }
 
 | INSERT Name INTO Name ';'
@@ -124,8 +123,6 @@ SQL: CREATE_TABLE TableData
 	boolean = NULL;
 	groupingAtts = NULL;
 	attsToSelect = NULL;
-	refFile = NULL;
-	refTable = NULL;
 	createData = NULL;
 	
 	command = INSERT_INTO;
@@ -141,7 +138,6 @@ SQL: CREATE_TABLE TableData
 	groupingAtts = NULL;
 	attsToSelect = NULL;
 	refFile = NULL;
-	refTable= NULL;
 	createData = NULL;
 	
 	command = DROP;
@@ -179,16 +175,11 @@ SQL: CREATE_TABLE TableData
 
 | QUERY
 {
-	finalFunction = NULL;
-	tables = NULL;
-	boolean = NULL;
-	groupingAtts = NULL;
-	attsToSelect = NULL;
+	command = SELECT_TABLE;
+	
 	refFile = NULL;
 	refTable= NULL;
 	createData = NULL;
-	
-	command = SELECT_TABLE;
 };
 
 TableData: Name '(' AttList ')' AS HEAP ';'
@@ -312,7 +303,6 @@ WhatIWant: Function ',' Atts
 	distinctFunc = 0;
 	finalFunction = NULL;
 	attsToSelect = $2;
-	finalFunction = NULL;
 };
 
 Function: SUM '(' CompoundExp ')'

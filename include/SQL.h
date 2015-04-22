@@ -9,6 +9,9 @@
 #define INCLUDE_SQL_H_
 
 #include "Statistics.h"
+#include "Defs.h"
+#include "ParseTree.h"
+#include <iostream>
 
 typedef std::pair<std::string, AndList*> OrPair;
 typedef std::pair<std::string, std::string> StringPair;
@@ -31,8 +34,14 @@ extern struct TableList *tables; // the list of tables and aliases in the query
 extern struct AndList *boolean; // the predicate in the WHERE clause
 extern struct NameList *groupingAtts; // grouping atts (NULL if no grouping)
 extern struct NameList *attsToSelect; // the set of attributes in the SELECT (NULL if no such atts)
+extern struct NameList *attsToCreate; // the set of attributes in the SELECT (NULL if no such atts)
+extern struct CreateTable* createData; // data associated with creating a Table
 extern int distinctAtts; // 1 if there is a DISTINCT in a non-aggregate query
 extern int distinctFunc;  // 1 if there is a DISTINCT in an aggregate query
+extern int command; // Says whether it is a create table, insert, drop table, set output, or select
+extern int outType; // The type of the output
+extern char *refFile; // a referenced file
+extern char *refTable; // a referenced table
 
 class RelAttPair{
 protected:
@@ -102,6 +111,34 @@ public:
 	std::string Alias() const { return alias; }
 };
 
+class AttTypePair{
+protected:
+	std::string att;
+	Type type;
+public:
+	AttTypePair(const std::string &_att, Type &_type): att(_att), type(_type) {}
+
+	AttTypePair(const char* _att, int _type): att(std::string(_att)) {
+		if(_type == INT) type = Int;
+		else if(_type == DOUBLE) type = Double;
+		else if (_type == STRING) type = String;
+		else throw std::invalid_argument("Unknown type found");
+	}
+
+	AttTypePair(const AttTypePair &copyMe) {
+		att = copyMe.att;
+		type = copyMe.type;
+	}
+
+	std::string Attribute() const { return att; }
+	Type GetType() const { return type; }
+	std::string TypeString() const {
+		if(type == Int) return std::string("Int");
+		else if(type == Double) return std::string("Double");
+		else return std::string("String");
+	}
+};
+
 class SQL {
 protected:
 	Statistics stat;
@@ -114,8 +151,14 @@ protected:
 	struct AndList *where; // the predicate in the WHERE clause
 	struct NameList *groupAtts; // grouping atts (NULL if no grouping)
 	struct NameList *selectAtts; // the set of attributes in the SELECT (NULL if no such atts)
+	struct CreateTable *create; // The data associated with creating a table
 	int selectDistinct; // 1 if there is a DISTINCT in a non-aggregate query
 	int aggregateDistinct;  // 1 if there is a DISTINCT in an aggregate query
+	int output; // The type of output selected
+	int instruction; // The instruction being executed (Select, Insrt, etc.)
+	char *file; // The file referenced by the instruction
+	char *table; // The table referenced by the instruction
+
 
 	/**
 	 * Parses the operand and puts the relation and attribute in out. The format of the operand
@@ -166,14 +209,16 @@ public:
 	/**
 	 * Parses the sql string and puts the related meta-data into this object. This method will
 	 * correctly update the Statistics object to reflect aliased relations
+	 * @return	The type of command that was parsed
 	 */
-	virtual void Parse(const std::string &sql);
+	SQL_Command Parse(const std::string &sql);
 
 	/**
 	 * Will request sql to be provided from stdin and will parse the provided sql. This method will
 	 * correctly update the Statistics object to reflect aliased relations
+	 * @return	The type of command that was parsed
 	 */
-	virtual void Parse();
+	SQL_Command Parse();
 
 	/**
 	 * Returns a SelectMap and JoinMap that represents the Selects and Joins that are specified in
@@ -206,6 +251,17 @@ public:
 	 * @param pair	The vector that will hold the referenced relation/attribute pairs
 	 */
 	virtual void GetFunctionAttributes(std::vector<RelAttPair> &pair) const;
+
+	/**
+	 * Puts the parsed CREATE TABLE statement into atts and order. An invalid_input exception will
+	 * be thrown if the DB_Type is Sorted and there is no order.
+	 * @param atts		The attribute/types that should be created
+	 * @param order		The order (if there is any)
+	 * @param tableName	The name of the relation that should be created (is inserted into this var)
+	 * @return	The type of table that should be created
+	 */
+	DB_Type GetCreateTable(std::vector<AttTypePair> &atts, std::vector<std::string> &order,
+			std::string &tableName) const;
 
 	/**
 	 * Returns true if there is a distinct in the aggregate function
@@ -258,6 +314,18 @@ public:
 	 * @param pair	The vector of pairs that will be returned.
 	 */
 	virtual void ParseTableList(TableList *list, std::vector<RelAliasPair> &pairs) const;
+
+	/**
+	 * Parses table and puts the attributes into atts and the ordering into order. This will also
+	 * throw an error if there is an attribute in order that does not appear in atts. Furthermore,
+	 * this will expects the order in table to be put in reverse, so this will correctly order
+	 * the attributes.
+	 * @param table		The CreateTable being parsed
+	 * @param atts		The atts and their type in CreateTable
+	 * @param order		The order referenced in table
+	 */
+	virtual void ParseCreateTable(const CreateTable *table, std::vector<AttTypePair> &atts,
+			std::vector<std::string> &order) const;
 
 };
 
