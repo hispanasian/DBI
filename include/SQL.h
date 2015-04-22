@@ -152,8 +152,6 @@ public:
 	 */
 	virtual const struct FuncOperator* Function() const;
 
-	virtual const Statistics& GetStatistics() const;
-
 	/**
 	 * Returns the Statistics object used by this SQL object.
 	 */
