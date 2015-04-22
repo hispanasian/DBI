@@ -45,7 +45,7 @@ TEST_F(SQLTest, GetInsertInto2) {
 	SQL test = SQL(stat);
 
 	EXPECT_EQ(Insert_Into, test.Parse(str));
-	ASSERT_THROW(test.GetInsertInto(file, table);, invalid_argument);
+	ASSERT_THROW(test.GetInsertInto(file, table), invalid_argument);
 }
 
 

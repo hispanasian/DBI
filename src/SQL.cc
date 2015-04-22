@@ -363,7 +363,11 @@ void SQL::GetInsertInto(string &file, string &table) const {
 }
 
 string SQL::GetDropTable() {
-
+	if(this->table != NULL){
+		if(stat.NumTuples(this->table) == -1) throw invalid_argument("Table does not exist");
+		return string(this->table);
+	}
+	else return string("");
 }
 
 Output_Type GetSetOutput(string &file) {
