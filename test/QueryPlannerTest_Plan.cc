@@ -6,18 +6,6 @@
 #include <vector>
 
 /**
- * QueryPlanner::Plan should handle the case where only one Select node exists (no joins)
- */
-
-/**
- * QueryPlanner::Plan should handle the case where only two select nodes exist (one single join)
- */
-
-/**
- * QueryPlanner::Plan should produce a plan that puts the smallest relations on the right
- */
-
-/**
  * QueryPlanner::Plan should produce a plan for a basic select statement.
  */
 TEST_F(QueryPlannerTest, Plan1) {
