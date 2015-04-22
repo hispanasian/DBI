@@ -112,7 +112,7 @@ public:
 	 * @param relName	The name of the relation whose statistics are being requested
 	 * @return			The number of tuples in relName or -1 if no such relation exists
 	 */
-	virtual double NumTuples(const char *relName);
+	virtual double NumTuples(const char *relName) const;
 
 	/**
 	 * Returns the number of distinct tuples in the given attribute. This will return null if
@@ -121,7 +121,7 @@ public:
 	 * @param attName	The name of the attribute being queried or -1 if neither the relation nor
 	 * 					attribute exist
 	 */
-	virtual double NumDistincts(const char *relName, const char *attName);
+	virtual double NumDistincts(const char *relName, const char *attName) const;
 
 	/**
 	 * Merges the sets containing rel1 and rel2. This will do nothing if both rel1 and rel2 are
@@ -175,14 +175,14 @@ public:
 	 * @param out		The vector that will hold the resulting relation and attribute
 	 * @return			True if the operand can be parsed and the attribute can be found
 	 */
-	virtual bool ParseOperand(std::string operand, std::vector<std::string> &out);
+	virtual bool ParseOperand(std::string operand, std::vector<std::string> &out) const;
 
 	/**
 	 * Returns the relation associated with att
 	 * @param att	The attribute being looked up
 	 * @return		The relation associated with att. Empty if no relation exists.
 	 */
-	virtual std::string RelLookup(std::string att);
+	virtual std::string RelLookup(std::string att) const;
 
 	/**
 	 *  Returns the set with the associated relation

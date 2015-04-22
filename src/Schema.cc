@@ -20,6 +20,18 @@ int Schema :: Find (const char *attName) const {
 	return -1;
 }
 
+bool Schema :: operator == (const Schema &other) const {
+	if(numAtts != other.numAtts) {
+		for(int i = 0; i < numAtts; i++) {
+			if(myAtts[i].relation != other.myAtts[i].relation ||
+					myAtts[i].name != other.myAtts[i].name ||
+					myAtts[i].myType != other.myAtts[i].myType)
+				return false;
+		}
+	}
+	return true;
+}
+
 int Schema :: Find (const char *relName, const char *attName) const {
 	return Find(string(relName).append(".").append(attName).c_str());
 }
@@ -195,7 +207,11 @@ Schema :: Schema (const Schema &left, const Schema &right) {
 }
 
 void Schema :: Copy (const Schema &copyMe) {
-	fileName = strdup(copyMe.fileName);
+	if(copyMe.fileName != NULL) fileName = strdup(copyMe.fileName);
+	else {
+		delete fileName;
+		fileName = NULL;
+	}
 	numAtts = copyMe.numAtts;
 	delete myAtts;
 	myAtts = new Attribute[numAtts];

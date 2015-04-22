@@ -22,12 +22,24 @@ SQL::SQL(const Statistics &_stat, int _relationSize): stat(_stat), function(NULL
 		where(NULL), groupAtts(NULL), selectAtts(NULL), selectDistinct(0), aggregateDistinct(0),
 		relationSize(_relationSize) {}
 
+SQL::SQL(const SQL &copyMe): function(copyMe.function), relations(copyMe.relations),
+		where(copyMe.where), groupAtts(copyMe.groupAtts), selectAtts(copyMe.selectAtts),
+		selectDistinct(copyMe.selectDistinct), aggregateDistinct(copyMe.aggregateDistinct),
+		relationSize(copyMe.relationSize) {}
+
 SQL::~SQL() {
 	// TODO Auto-generated destructor stub
 }
 
 const struct FuncOperator* SQL::Function() const {
 	return function;
+}
+const Statistics& SQL::GetStatistics() const {
+	return stat;
+}
+
+string SQL::GetSQLStatement() const {
+	return sql;
 }
 
 void SQL::Parse(const string &sql) {
@@ -57,35 +69,35 @@ void SQL::Parse() {
 	relationSize = aliases.size();
 }
 
-void SQL::GetWhere(SelectMap &selects, JoinMap &joins) {
+void SQL::GetWhere(SelectMap &selects, JoinMap &joins) const {
 	ParseWhere(where, selects, joins);
 }
 
-void SQL::GetGroup(std::vector<RelAttPair> &pairs) {
+void SQL::GetGroup(std::vector<RelAttPair> &pairs) const {
 	ParseNameList(groupAtts, pairs);
 }
 
-void SQL::GetSelect(vector<RelAttPair> &pairs) {
+void SQL::GetSelect(vector<RelAttPair> &pairs) const {
 	ParseNameList(selectAtts, pairs);
 }
 
-void SQL::GetTables(std::vector<RelAliasPair> &pairs) {
+void SQL::GetTables(std::vector<RelAliasPair> &pairs) const {
 	ParseTableList(relations, pairs);
 }
 
-void SQL::GetFunctionAttributes(vector<RelAttPair> &pairs) {
+void SQL::GetFunctionAttributes(vector<RelAttPair> &pairs) const {
 	if(function != NULL) ParseFuncOperator(function, pairs);
 }
 
-bool SQL::DistinctAggregate() { return aggregateDistinct; }
+bool SQL::DistinctAggregate() const { return aggregateDistinct; }
 
-bool SQL::DistinctSelect() { return selectDistinct; }
+bool SQL::DistinctSelect() const { return selectDistinct; }
 
-bool SQL::ParseOperand(string operand, vector<string> &out) {
+bool SQL::ParseOperand(string operand, vector<string> &out) const {
 	return stat.ParseOperand(operand, out);
 }
 
-void SQL::ParseWhere(struct AndList *where, SelectMap &selects, JoinMap &joins) {
+void SQL::ParseWhere(struct AndList *where, SelectMap &selects, JoinMap &joins) const {
 	struct AndList *andList = where;
 	struct OrList *orList = NULL;
 	struct OrList *copyStart = NULL;
@@ -216,7 +228,7 @@ void SQL::ParseWhere(struct AndList *where, SelectMap &selects, JoinMap &joins) 
 	}
 }
 
-void SQL::ParseNameList(NameList *names, vector<RelAttPair> &pair) {
+void SQL::ParseNameList(NameList *names, vector<RelAttPair> &pair) const {
 	stack<RelAttPair> temp;
 	vector<string> name;
 	while(names != NULL) {
@@ -232,7 +244,7 @@ void SQL::ParseNameList(NameList *names, vector<RelAttPair> &pair) {
 	}
 }
 
-void SQL::ParseFuncOperator(FuncOperator *func, vector<RelAttPair> &pair) {
+void SQL::ParseFuncOperator(FuncOperator *func, vector<RelAttPair> &pair) const {
 	if(func != NULL) {
 		// First, parse left child
 		ParseFuncOperator(func->leftOperator, pair);
@@ -250,7 +262,7 @@ void SQL::ParseFuncOperator(FuncOperator *func, vector<RelAttPair> &pair) {
 	}
 }
 
-void SQL::ParseTableList(TableList *list, vector<RelAliasPair> &pairs) {
+void SQL::ParseTableList(TableList *list, vector<RelAliasPair> &pairs) const {
 	stack<RelAliasPair> temp;
 	while(list != NULL) {
 		if(stat.NumTuples(list->tableName) != -1)

@@ -44,6 +44,9 @@ public:
 	// returns the number of attributes
 	int GetNumAtts () const;
 
+	// Compares the contents of both schemas
+	bool operator == (const Schema &other) const;
+
 	// this finds the position of the specified attribute in the schema
 	// returns a -1 if the attribute is not present in the schema
 	int Find (const char *attName) const;
