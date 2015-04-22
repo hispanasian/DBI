@@ -82,6 +82,60 @@ TEST_F(JoinOptimizerTest, Optimize3) {
     EXPECT_EQ(2, counts.size());
 }
 
+int indexOf(const vector<string>& rels, const string& rel) {
+    for(int i = 0; i < rels.size(); ++i) {
+        if(rel == rels[i]) return i;
+    }
+    return -1;
+}
+
+/*
+ * Three relations 
+ */
+TEST_F(JoinOptimizerTest, Optimize4) {
+    unordered_map<string, AndList*> selects;
+    unordered_map<string, unordered_map<string, AndList*> > joins;
+    Statistics stats;
+    vector<string> rels;
+    vector<TupleCount> counts;
+
+    stats.AddRel("A", 100);
+    stats.AddRel("B", 10);
+    stats.AddRel("C", 5);
+
+    stats.AddAtt("A", "y", 10);
+    stats.AddAtt("B", "y", 10);
+    stats.AddAtt("B", "z", 5);
+    stats.AddAtt("C", "z", 5);
+
+    char* cnf1 = "(A.y = B.y)";
+    yy_scan_string(cnf1);
+    yyparse();
+    AndList* and1 = final;
+
+    char* cnf2 = "(B.z = C.z)";
+    yy_scan_string(cnf2);
+    yyparse();
+    AndList* and2 = final;
+
+    JoinOptimizer opt;
+    opt.Optimize(selects, joins, stats, rels, counts);
+    EXPECT_EQ(3, rels.size());
+    int bIndex = indexOf(rels, "B");
+    int cIndex = indexOf(rels, "C");
+    int aIndex = indexOf(rels, "A");
+    // B or C can be first, doesn't matter
+    EXPECT_EQ(true, bIndex == 0 || bIndex == 1);
+    EXPECT_EQ(true, cIndex == 0 || cIndex == 1);
+    // A must be 3rd in the list
+    EXPECT_EQ(2, aIndex);
+    EXPECT_EQ(3, counts.size());
+    // Ensure the counts of the selects are correct
+    EXPECT_EQ(100, counts[aIndex].select);
+    EXPECT_EQ(10, counts[bIndex].select);
+    EXPECT_EQ(5, counts[cIndex].select);
+}
+
 // Test with 3 relations
 TEST_F(JoinOptimizerTest, Verify1) {
     Statistics stats;
@@ -119,7 +173,6 @@ TEST_F(JoinOptimizerTest, Verify1) {
 
 TEST_F(JoinOptimizerTest, Verify2) {
     Statistics stats;
-    const char* rels[] = {"A", "B", "C"};
     stats.AddRel("A", 100);
     stats.AddRel("B", 30);
     stats.AddRel("C", 10);
@@ -190,3 +243,86 @@ TEST_F(JoinOptimizerTest, Verify2) {
     EXPECT_EQ(100, stats7.Estimate(and1, rels6, 4));
 }
 
+TEST_F(JoinOptimizerTest, Verify3) {
+    Statistics stats;
+    stats.AddRel("A", 20);
+    stats.AddRel("B", 30);
+    stats.AddRel("C", 100);
+    stats.AddRel("D", 10);
+
+    stats.AddAtt("A", "x", 20);
+    stats.AddAtt("B", "x", 20);
+    stats.AddAtt("B", "y", 30);
+    stats.AddAtt("C", "y", 30);
+    stats.AddAtt("C", "z", 10);
+    stats.AddAtt("D", "z", 10);
+
+    char* cnf1 = "(A.x = B.x)";
+    yy_scan_string(cnf1);
+    yyparse();
+    AndList* and1 = final;
+    const char* rels1[] = {"A","B"};
+    EXPECT_DOUBLE_EQ(30, stats.Estimate(and1, rels1, 2));
+
+    char* cnf2 = "(B.y = C.y)";
+    yy_scan_string(cnf2);
+    yyparse();
+    const char* rels2[] = {"B", "C"};
+    AndList* and2 = final;
+    EXPECT_EQ(100, stats.Estimate(and2, rels2, 2));
+
+    char* cnf3 = "(C.z = D.z)";
+    yy_scan_string(cnf3);
+    yyparse();
+    const char* rels3[] = {"C", "D"};
+    AndList* and3 = final;
+    EXPECT_EQ(100, stats.Estimate(and3, rels3, 2));
+
+    Statistics stats1 = stats; // AB
+    Statistics stats2 = stats; // BC
+    Statistics stats3 = stats; // CD
+    stats1.Apply(and1, rels1, 2);
+    stats2.Apply(and2, rels2, 2);
+    stats3.Apply(and3, rels3, 2);
+
+    const char* rels4[] = {"A", "B", "C"};
+    // (AB)C
+    EXPECT_EQ(100, stats1.Estimate(and2, rels4, 3));
+    // (BC)A
+    EXPECT_EQ(100, stats2.Estimate(and1, rels4, 3));
+    const char* rels5[] = {"B", "C", "D"};
+    // (BC)D
+    EXPECT_EQ(100, stats2.Estimate(and3, rels5, 3));
+    // (CD)B
+    EXPECT_EQ(100, stats3.Estimate(and2, rels5, 3));
+    Statistics stats4 = stats1; // ABC
+    stats4.Apply(and2, rels4, 3);
+    Statistics stats5 = stats2; // BCA
+    stats5.Apply(and1, rels4, 3);
+    Statistics stats6 = stats2; // BCD
+    stats6.Apply(and3, rels5, 3);
+    Statistics stats7 = stats3; // CDB
+    stats7.Apply(and2, rels5, 3);
+
+    const char* rels6[] = {"A", "B", "C", "D"};
+    // ABCD
+    EXPECT_EQ(100, stats4.Estimate(and3, rels6, 4));
+    // BCAD
+    EXPECT_EQ(100, stats5.Estimate(and3, rels6, 4));
+    // BCDA 
+    EXPECT_EQ(100, stats6.Estimate(and1, rels6, 4));
+    // CDBA 
+    EXPECT_EQ(100, stats7.Estimate(and1, rels6, 4));
+}
+
+TEST_F(JoinOptimizerTest, Optimize7) {
+    Statistics stats;
+    stats.AddRel("A", 100);
+    stats.AddAtt("A", "y", 10);
+    char* cnf1 = "";
+    yy_scan_string(cnf1);
+    yyparse();
+    AndList* and1 = final;
+    const char* rels[] = {"A"};
+    EXPECT_EQ(100, stats.Estimate(and1, rels, 1));
+}
