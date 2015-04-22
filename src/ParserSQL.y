@@ -17,8 +17,15 @@
 	struct AndList *boolean; // the predicate in the WHERE clause
 	struct NameList *groupingAtts; // grouping atts (NULL if no grouping)
 	struct NameList *attsToSelect; // the set of attributes in the SELECT (NULL if no such atts)
+	struct NameList *attsToCreate; // the set of attributes in the SELECT (NULL if no such atts)
+	struct CreateTable* createData; // data associated with creating a Table
 	int distinctAtts; // 1 if there is a DISTINCT in a non-aggregate query 
 	int distinctFunc;  // 1 if there is a DISTINCT in an aggregate query
+	int command; // Says whether it is a create table, insert, drop table, set output, or select
+	int outType; // The type of the output
+	char *file; // a referenced file
+	char *table; // a referenced table
+	
 
 %}
 
@@ -32,8 +39,11 @@
 	struct OrList *myOrList;
 	struct AndList *myAndList;
 	struct NameList *myNames;
+	struct CreateTable* createTable;
+	struct AttDesc* attDesc;
 	char *actualChars;
 	char whichOne;
+	int myInt;
 }
 
 %token <actualChars> Name
@@ -41,6 +51,19 @@
 %token <actualChars> Float
 %token <actualChars> Int
 %token <actualChars> String
+%token QUIT
+%token CREATE_TABLE
+%token HEAP
+%token SORTED
+%token INSERT
+%token INTO
+%token DROP_TABLE
+%token SET_OUTPUT
+%token STDOUT;
+%token NONE;
+%token INTEGER;
+%token DBL;
+%token STR;
 %token SELECT
 %token GROUP 
 %token DISTINCT
@@ -62,6 +85,11 @@
 %type <myTables> Tables
 %type <myBoolOperand> Literal
 %type <myNames> Atts
+%type <actualChars> Output
+%type <createTable> TableData
+%type <attDesc> AttList
+%type <myNames> NameList
+%type <myInt> AttType
 
 %start SQL
 
@@ -75,7 +103,176 @@
 
 %%
 
-SQL: SELECT WhatIWant FROM Tables WHERE AndList
+SQL: CREATE_TABLE TableData
+{
+	finalFunction = NULL;
+	tables = NULL;
+	boolean = NULL;
+	groupingAtts = NULL;
+	attsToSelect = NULL;
+	file = NULL;
+	table = NULL;
+	
+	command = CREATE;
+	createData = $2;
+}
+
+| INSERT Name INTO Name ';'
+{
+	finalFunction = NULL;
+	tables = NULL;
+	boolean = NULL;
+	groupingAtts = NULL;
+	attsToSelect = NULL;
+	file = NULL;
+	table = NULL;
+	createData = NULL;
+	
+	command = INSERT_TABLE;
+	file = $2;
+	table = $4;
+}
+
+| DROP_TABLE Name ';'
+{	
+	finalFunction = NULL;
+	tables = NULL;
+	boolean = NULL;
+	groupingAtts = NULL;
+	attsToSelect = NULL;
+	file = NULL;
+	table = NULL;
+	createData = NULL;
+	
+	command = DROP;
+	table = $2;
+}
+
+| SET_OUTPUT Output ';'
+{
+	finalFunction = NULL;
+	tables = NULL;
+	boolean = NULL;
+	groupingAtts = NULL;
+	attsToSelect = NULL;
+	file = NULL;
+	table = NULL;
+	createData = NULL;
+	
+	command = OUTPUT_SET;
+	file = $2;
+}
+
+| QUIT
+{
+	finalFunction = NULL;
+	tables = NULL;
+	boolean = NULL;
+	groupingAtts = NULL;
+	attsToSelect = NULL;
+	file = NULL;
+	table = NULL;
+	createData = NULL;
+
+	command = QUIT_SQL;
+}
+
+| QUERY
+{
+	finalFunction = NULL;
+	tables = NULL;
+	boolean = NULL;
+	groupingAtts = NULL;
+	attsToSelect = NULL;
+	file = NULL;
+	table = NULL;
+	createData = NULL;
+	
+	command = SELECT_TABLE;
+};
+
+TableData: Name '(' AttList ')' AS HEAP ';'
+{
+	$$ = (struct CreateTable*) malloc (sizeof (struct CreateTable));
+	table = $1;
+	$$->atts = $3;
+	$$->type = HEAP_DB;
+	$$->sort = NULL;
+}
+
+| Name '(' AttList ')' AS SORTED NameList ';'
+{
+	$$ = (struct CreateTable*) malloc (sizeof (struct CreateTable));
+	table = $1;
+	$$->atts = $3;
+	$$->type = SORTED_DB;
+	$$->sort = $7;
+};
+
+AttList: Name AttType
+{
+	$$ = (struct AttDesc*) malloc (sizeof (struct AttDesc));
+	$$->name = $1;
+	$$->type = $2;
+	$$->next = NULL;
+} 
+
+| AttList ',' Name AttType
+{
+	$$ = (struct AttDesc*) malloc (sizeof (struct AttDesc));
+	$$->name = $3;
+	$$->type = $4;
+	$$->next = $1;
+}
+
+AttType: INTEGER
+{
+	$$ = INT;
+}
+
+| DBL
+{
+	$$ = DOUBLE;
+}
+
+| STR
+{
+	$$ = STRING;
+};
+
+NameList: Name
+{
+	$$ = (struct NameList *) malloc (sizeof (struct NameList));
+	$$->name = $1;
+	$$->next = NULL;
+}
+
+| NameList ',' Name
+{
+	$$ = (struct NameList *) malloc (sizeof (struct NameList));
+	$$->name = $3;
+	$$->next = $1;
+};
+
+Output: STDOUT
+{
+	$$ = NULL;
+	outType = SET_STDOUT;
+}
+
+| NONE
+{
+	$$ = NULL;
+	outType = SET_NONE;
+}
+
+| Name
+{
+	$$ = $1;
+	outType = SET_FILE;
+};
+
+QUERY: SELECT WhatIWant FROM Tables WHERE AndList
 {
 	tables = $4;
 	boolean = $6;	
