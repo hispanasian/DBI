@@ -48,6 +48,7 @@
 
 %token <actualChars> Name
 %token <actualChars> QualifiedName
+%token <actualChars> FileName
 %token <actualChars> Float
 %token <actualChars> Int
 %token <actualChars> String
@@ -116,7 +117,7 @@ SQL: CREATE_TABLE TableData
 	refFile = NULL;
 }
 
-| INSERT Name INTO Name ';'
+| INSERT Insertion
 {
 	finalFunction = NULL;
 	tables = NULL;
@@ -126,8 +127,6 @@ SQL: CREATE_TABLE TableData
 	createData = NULL;
 	
 	command = INSERT_INTO;
-	refFile = $2;
-	refTable = $4;
 }
 
 | DROP_TABLE Name ';'
@@ -200,6 +199,24 @@ TableData: Name '(' AttList ')' AS HEAP ';'
 	$$->sort = $7;
 };
 
+Insertion: Name INTO Name ';'
+{
+	refFile = $1;
+	refTable = $3;
+}
+
+| QualifiedName INTO Name ';'
+{
+	refFile = $1;
+	refTable = $3;
+}
+
+| FileName INTO Name ';'
+{
+	refFile = $1;
+	refTable = $3;
+}
+
 AttList: Name AttType
 {
 	$$ = (struct AttDesc*) malloc (sizeof (struct AttDesc));
@@ -257,7 +274,7 @@ Output: STDOUT
 	outType = SET_NONE;
 }
 
-| Name
+| FileName
 {
 	$$ = $1;
 	outType = SET_FILE;

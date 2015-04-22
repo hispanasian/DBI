@@ -118,9 +118,14 @@ void close_lexical_parser_sql () { yysql_delete_buffer (yysql_buf_state); }
   			return(Name);
 			}     
 
+						
 [A-Za-z][A-Za-z0-9_-]*\.[A-Za-z][A-Za-z0-9_-]* {yysqllval.actualChars = strdup(yysqltext);
   			return(QualifiedName);
-			}     
+			}
+			
+[A-Za-z0-9_\.\-]+ {yysqllval.actualChars = strdup(yysqltext);
+  			return(FileName);
+			}
 
 \'[^'\n]*\'            {/* take care of ' in a string */
                         if (yysqltext[yysqlleng - 2] == '\\') {

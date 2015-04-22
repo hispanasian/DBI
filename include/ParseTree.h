@@ -12,21 +12,21 @@
 #define EQUALS 7
 
 // Commands
-#define CREATE 1
-#define INSERT_INTO 2
-#define DROP 3
-#define OUTPUT_SET 4
-#define SELECT_TABLE 5
-#define QUIT_SQL 6
+#define CREATE 8
+#define INSERT_INTO 9
+#define DROP 10
+#define OUTPUT_SET 11
+#define SELECT_TABLE 12
+#define QUIT_SQL 13
 
 // Table types
-#define HEAP_DB 1
-#define SORTED_DB 2
+#define HEAP_DB 14
+#define SORTED_DB 15
 
 // Output types
-#define SET_STDOUT 1
-#define SET_FILE 2
-#define SET_NONE 3
+#define SET_STDOUT 16
+#define SET_FILE 17
+#define SET_NONE 18
 
 // Used by CREATE TABLE
 struct CreateTable {
