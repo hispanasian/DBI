@@ -299,8 +299,6 @@ void SQL::ParseTableList(TableList *list, vector<RelAliasPair> &pairs) const {
 
 DB_Type SQL::GetCreateTable(vector<AttTypePair> &atts, vector<string> &order, string &tableName) const {
 	// First, let's verify the relation/table does not exist
-//	tableName.erase();
-//	tableName.append(string(table));
 	tableName = string(table);
 	if(stat.NumTuples(tableName.c_str()) != -1)
 		throw invalid_argument("A table with the provided name already exists");
@@ -351,4 +349,16 @@ void SQL::ParseCreateTable(const CreateTable *table, vector<AttTypePair> &atts,
 		order.push_back(tempOrder.top());
 		tempOrder.pop();
 	}
+}
+
+void SQL::GetInsertInto(string &file, string &table) const {
+
+}
+
+string SQL::GetDropTable() {
+
+}
+
+Output_Type GetSetOutput(string &file) {
+
 }

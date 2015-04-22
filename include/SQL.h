@@ -264,6 +264,27 @@ public:
 			std::string &tableName) const;
 
 	/**
+	 * Gets the file that will be used to bulkload data into table
+	 * @param file	The file which contains the data
+	 * @param table	The table that will be populated
+	 */
+	void GetInsertInto(std::string &file, std::string &table) const;
+
+	/**
+	 * Returns the name of the Table that should be dropped
+	 * @param the name of the Table that should be dropped
+	 */
+	std::string GetDropTable();
+
+	/**
+	 * Gets the parameters of the SET OUTPUT command. If File is returned, then the path will be
+	 * put into file, else file will be empty.
+	 * @param file	The path to the file which will hold the output
+	 * @return		The type of output (stdout, a file, or none)
+	 */
+	Output_Type GetSetOutput(std::string &file);
+
+	/**
 	 * Returns true if there is a distinct in the aggregate function
 	 * @param true if there is a distinct in the aggregate function
 	 */
