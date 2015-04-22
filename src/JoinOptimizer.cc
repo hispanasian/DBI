@@ -106,7 +106,9 @@ void JoinOptimizer::Solve(vector<bool>& set, vector<string>& relNames, Memoizer&
     // figure out which AndList goes with this join
     AndList* andList = GetAndList(minIndex, indices, relNames, joins); 
     // get an array with the names of the relations we are joining together
-    const char** names = GetRelNames(minIndex, set, relNames);
+    const char* names[indices.size()];
+    // const char** names = GetRelNames(minIndex, set, relNames);
+    GetRelNames(minIndex, indices, names, relNames);
     double newCost = newStats.Estimate(andList, names, indices.size());
     newStats.Apply(andList, names, indices.size());
     // store this data in the memoizer
@@ -128,10 +130,15 @@ AndList* JoinOptimizer::GetAndList(const int index, const vector<int>& indices,
     throw std::runtime_error("Could not find AndList for join "+relNames[index]);
 }
 
-const char** JoinOptimizer::GetRelNames(const int index, const vector<bool>& set,
+const void JoinOptimizer::GetRelNames(const int index, const vector<int>& indices, const char* names[],
                         const vector<string>& relNames) {
-    return NULL; 
-    //TODO
+    names[0] = relNames[index].c_str();
+    int arrIndex = 1;
+    for(int i = 0; i < indices.size(); ++i) {
+        if(indices[i] != index) {
+           names[arrIndex++] = relNames[indices[i]].c_str(); 
+        }
+    }
 }
 
 void JoinOptimizer::Indices(const vector<bool>& set, vector<int>& indices) {

@@ -38,7 +38,7 @@ private:
     AndList* GetAndList(const int index, const vector<int>& indices,
                         const vector<string>& relNames,
                         const unordered_map<string, unordered_map<string, AndList*> > &joins); 
-    const char** GetRelNames(const int index, const vector<bool>& set,
+    const void GetRelNames(const int index, const vector<int>& indices, const char* names[],
                         const vector<string>& relNames); 
   
 public:

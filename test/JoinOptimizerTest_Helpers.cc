@@ -101,3 +101,28 @@ TEST_F(JoinOptimizerTest, GetAndList1) {
 
     EXPECT_EQ(cAndD, GetAndList(index, indices, relNames, joins));
 }
+
+/*
+    GetRelNames functions as it should
+ */
+TEST_F(JoinOptimizerTest, GetRelNames1) {
+    int index = 2;
+
+    vector<int> indices;
+    indices.push_back(0);
+    indices.push_back(2);
+    indices.push_back(3);
+
+    vector<string> relNames;
+    relNames.push_back("A");
+    relNames.push_back("B");
+    relNames.push_back("C");
+    relNames.push_back("D");
+    
+    const char* names[3]; 
+    GetRelNames(index, indices, names, relNames);
+    EXPECT_STREQ("C", names[0]);
+    EXPECT_STREQ("A", names[1]);
+    EXPECT_STREQ("D", names[2]);
+}
+

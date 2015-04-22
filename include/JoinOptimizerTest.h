@@ -45,6 +45,11 @@ public:
                     const unordered_map<string, unordered_map<string, AndList*> > &joins) {
     	return opt.GetAndList(index, indices, relNames, joins);
     }
+    const void GetRelNames(const int index, const vector<int>& indices, const char* names[],
+                    const vector<string>& relNames) {
+    	return opt.GetRelNames(index, indices, names, relNames);
+    }
+  
 };
 
 #endif /* JOINOPTIMIZERTEST_H*/
