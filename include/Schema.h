@@ -84,7 +84,7 @@ public:
 	Schema (const Schema &left, const Schema &right);
 
 	// Creates a schema from the provided vector
-	Schema (const vector<AttTypePair> &atts);
+	Schema (const std::vector<AttTypePair> &atts);
 
 	// Copies copyMe into this object (deletes the old data)
 	void Copy(const Schema &copyMe);
