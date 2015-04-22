@@ -22,11 +22,14 @@
  * SQLEngine also contains the instructions for handling the different SQL commands
  */
 class SQLEngine {
+	friend class SQLEngineTest;
 protected:
 	Statistics stats;
 	RelationData relations;
 	std::string dbPath;
 
+	virtual void CreateTable(SQL *sql, std::vector<AttTypePair> *atts, std::vector<std::string> *order,
+				std::string *tableName, DB_Type type, DBFile &db);
 public:
 
 	/**

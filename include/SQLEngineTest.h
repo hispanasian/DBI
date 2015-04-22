@@ -37,7 +37,10 @@ public:
 	RelationData relations;
 
 	SQLEngineTest();
-	virtual ~SQLEngineTest();
+	~SQLEngineTest();
+
+	void CreateTable(SQLEngine eng, SQL *sql, std::vector<AttTypePair> *atts, std::vector<std::string> *order,
+				std::string *tableName, DB_Type type, DBFile &db);
 };
 
 #endif /* INCLUDE_SQLENGINETEST_H_ */
