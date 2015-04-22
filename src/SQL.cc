@@ -352,7 +352,14 @@ void SQL::ParseCreateTable(const CreateTable *table, vector<AttTypePair> &atts,
 }
 
 void SQL::GetInsertInto(string &file, string &table) const {
+	if(this->file != NULL) file = string(this->file);
+	else throw invalid_argument("No file provided");
 
+	if(this->table != NULL) {
+		if(stat.NumTuples(this->table) != -1) table = string(this->table);
+		else throw invalid_argument("That Table does not exist");
+	}
+	else throw invalid_argument("No table provided");
 }
 
 string SQL::GetDropTable() {
