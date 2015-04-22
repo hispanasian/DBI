@@ -13,7 +13,33 @@ struct TupleCount {
 };
 using namespace std;
 
+struct SolnData {
+    double cost;
+    Statistics& stats;
+    vector<bool>& prevSet;
+};
+
+class Memoizer {
+public:
+    unordered_map<vector<bool>, SolnData> solns;
+    void SetSoln(vector<bool>& set, double cost, Statistics& stats, vector<bool>& prevSet);
+    double GetCost(vector<bool>& set);
+    Statistics& GetStats(vector<bool>& set);
+    vector<bool>& GetPrev(vector<bool>& set);
+};
+
 class JoinOptimizer {
+private:
+    void Solve(vector<bool>& set, vector<string>& relNames, Memoizer& mem,
+                        unordered_map<string, unordered_map<string, AndList*> > &joins); 
+    void Indices(const vector<bool>& set, vector<int>& inidices);
+    bool SetsEqual(const vector<bool>& set1, const vector<bool>& set2); 
+    AndList* GetAndList(const int index, const vector<int>& indices,
+                        const vector<string>& relNames,
+                        const unordered_map<string, unordered_map<string, AndList*> > &joins); 
+    const char** GetRelNames(const int index, const vector<bool>& set,
+                        const vector<string>& relNames); 
+  
 public:
     /*
      * Optimize takes a map from the alias of a relation to the AndList used to
