@@ -26,12 +26,13 @@ public:
     double GetCost(vector<bool>& set);
     Statistics& GetStats(vector<bool>& set);
     vector<bool>& GetPrev(vector<bool>& set);
+    bool Solved(vector<bool>& set); 
 };
 
 class JoinOptimizer {
 friend class JoinOptimizerTest;
 private:
-    void Solve(vector<bool>& set, vector<string>& relNames, Memoizer& mem,
+    void Solve(vector<bool>& set, vector<string>& relNames, Memoizer& mem, Statistics& stats,
                         unordered_map<string, unordered_map<string, AndList*> > &joins); 
     void Indices(const vector<bool>& set, vector<int>& inidices);
     bool SetsEqual(const vector<bool>& set1, const vector<bool>& set2); 

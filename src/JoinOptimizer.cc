@@ -21,6 +21,11 @@ vector<bool>& Memoizer::GetPrev(vector<bool>& set) {
     return solns.at(set).prevSet;
 }
 
+bool Memoizer::Solved(vector<bool>& set) {
+    auto index = solns.find(set);
+    return index != solns.end();
+}
+
 void JoinOptimizer::Optimize(unordered_map<string, AndList*> &selects,
                         unordered_map<string, unordered_map<string, AndList*> > &joins,
                         Statistics& stats,
@@ -47,35 +52,53 @@ void JoinOptimizer::Optimize(unordered_map<string, AndList*> &selects,
     // we're need to actually recursively solve this input
     Memoizer mem = Memoizer();
     // TODO
-    // set up the solns to the individual relations
-    // set the stats objects using the select ands
     // create the set object
     vector<bool> set;
     vector<string> relNames;
-    int index = 0;
+    const char* names[1];
     for(auto it = selects.begin(); it != selects.end(); ++it) {
+        // set up the solns to the individual relations
         relNames.push_back(it->first);
         set.push_back(true);
-        ++index;
+        names[0] = it->first.c_str();
+        stats.Apply(it->second, names, 1);
     }
-    Solve(set, relNames, mem, joins);
+
+    // Start the recursion
+    Solve(set, relNames, mem, stats, joins);
     // now backtrack to figure out the solution
     // build the rels and count vectors
 
 }
 
-void JoinOptimizer::Solve(vector<bool>& set, vector<string>& relNames, Memoizer& mem,
+void JoinOptimizer::Solve(vector<bool>& set, vector<string>& relNames, Memoizer& mem, Statistics& stats,
                         unordered_map<string, unordered_map<string, AndList*> > &joins) {
+    // base case: we've already calculated this solution
+    if(mem.Solved(set)) {
+        return;
+    }
     // base case: only 2 relations
     // we just join them directly
     vector<int> indices;
     Indices(set, indices);
     if(indices.size() == 2) {
-        // TODO
+        set[indices[0]] = false;
         // get a stats object from one of the relations
         // copy it
+        Statistics newStats = Statistics(stats);
+        AndList* andList = GetAndList(indices[0], indices, relNames, joins); 
+        // get an array with the names of the relations we are joining together
+        const char* names[indices.size()];
+        // const char** names = GetRelNames(minIndex, set, relNames);
+        GetRelNames(indices[0], indices, names, relNames);
+        // figure out the cost
+        double newCost = newStats.Estimate(andList, names, indices.size());
         // Apply and join these 2 relations
+        newStats.Apply(andList, names, indices.size());
+        vector<bool> prevSet = set;
+        set[indices[0]] = true;
         // place it in the memoizer
+        mem.SetSoln(set, newCost, newStats, set);
         return;
     } 
 
@@ -88,7 +111,7 @@ void JoinOptimizer::Solve(vector<bool>& set, vector<string>& relNames, Memoizer&
         // is the last relation to be joined
         // take this rel out of the set
         set[index] = false;
-        Solve(set, relNames, mem, joins);
+        Solve(set, relNames, mem, stats, joins);
         // check if this solution is better than our current min
         if(minCost > mem.GetCost(set)) {
             minCost = mem.GetCost(set);
@@ -109,7 +132,10 @@ void JoinOptimizer::Solve(vector<bool>& set, vector<string>& relNames, Memoizer&
     const char* names[indices.size()];
     // const char** names = GetRelNames(minIndex, set, relNames);
     GetRelNames(minIndex, indices, names, relNames);
-    double newCost = newStats.Estimate(andList, names, indices.size());
+    double newCost = newStats.Estimate(andList, names, indices.size()) +
+                        mem.GetCost(set);
+        // Apply and join these 2 relations
+        newStats.Apply(andList, names, indices.size());
     newStats.Apply(andList, names, indices.size());
     // store this data in the memoizer
     vector<bool> prevSet = set;
