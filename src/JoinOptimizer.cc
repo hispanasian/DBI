@@ -131,6 +131,7 @@ AndList* JoinOptimizer::GetAndList(const int index, const vector<int>& indices,
 const char** JoinOptimizer::GetRelNames(const int index, const vector<bool>& set,
                         const vector<string>& relNames) {
     return NULL; 
+    //TODO
 }
 
 void JoinOptimizer::Indices(const vector<bool>& set, vector<int>& indices) {

@@ -31,6 +31,20 @@ using ::testing::Eq;
 using ::testing::Ref;
 
 class JoinOptimizerTest: public::testing::Test {
+	JoinOptimizer opt;
+public:
+    bool SetsEqual(const vector<bool>& set1, const vector<bool>& set2) {
+    	return opt.SetsEqual(set1, set2);
+    } 
+
+    void Indices(const vector<bool>& set, vector<int>& inidices) {
+    	return opt.Indices(set, inidices);
+    }
+    AndList* GetAndList(const int index, const vector<int>& indices,
+                    const vector<string>& relNames,
+                    const unordered_map<string, unordered_map<string, AndList*> > &joins) {
+    	return opt.GetAndList(index, indices, relNames, joins);
+    }
 };
 
 #endif /* JOINOPTIMIZERTEST_H*/

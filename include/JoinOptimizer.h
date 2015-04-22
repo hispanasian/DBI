@@ -29,6 +29,7 @@ public:
 };
 
 class JoinOptimizer {
+friend class JoinOptimizerTest;
 private:
     void Solve(vector<bool>& set, vector<string>& relNames, Memoizer& mem,
                         unordered_map<string, unordered_map<string, AndList*> > &joins); 
