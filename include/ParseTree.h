@@ -13,7 +13,7 @@
 
 // Commands
 #define CREATE 1
-#define INSERT_TABLE 2
+#define INSERT_INTO 2
 #define DROP 3
 #define OUTPUT_SET 4
 #define SELECT_TABLE 5

@@ -23,8 +23,8 @@
 	int distinctFunc;  // 1 if there is a DISTINCT in an aggregate query
 	int command; // Says whether it is a create table, insert, drop table, set output, or select
 	int outType; // The type of the output
-	char *file; // a referenced file
-	char *table; // a referenced table
+	char *refFile; // a referenced file
+	char *refTable; // a referenced table
 	
 
 %}
@@ -110,8 +110,8 @@ SQL: CREATE_TABLE TableData
 	boolean = NULL;
 	groupingAtts = NULL;
 	attsToSelect = NULL;
-	file = NULL;
-	table = NULL;
+	refFile = NULL;
+	refTable = NULL;
 	
 	command = CREATE;
 	createData = $2;
@@ -124,13 +124,13 @@ SQL: CREATE_TABLE TableData
 	boolean = NULL;
 	groupingAtts = NULL;
 	attsToSelect = NULL;
-	file = NULL;
-	table = NULL;
+	refFile = NULL;
+	refTable = NULL;
 	createData = NULL;
 	
-	command = INSERT_TABLE;
-	file = $2;
-	table = $4;
+	command = INSERT_INTO;
+	refFile = $2;
+	refTable = $4;
 }
 
 | DROP_TABLE Name ';'
@@ -140,12 +140,12 @@ SQL: CREATE_TABLE TableData
 	boolean = NULL;
 	groupingAtts = NULL;
 	attsToSelect = NULL;
-	file = NULL;
-	table = NULL;
+	refFile = NULL;
+	refTable= NULL;
 	createData = NULL;
 	
 	command = DROP;
-	table = $2;
+	refTable= $2;
 }
 
 | SET_OUTPUT Output ';'
@@ -155,12 +155,12 @@ SQL: CREATE_TABLE TableData
 	boolean = NULL;
 	groupingAtts = NULL;
 	attsToSelect = NULL;
-	file = NULL;
-	table = NULL;
+	refFile = NULL;
+	refTable= NULL;
 	createData = NULL;
 	
 	command = OUTPUT_SET;
-	file = $2;
+	refFile = $2;
 }
 
 | QUIT
@@ -170,8 +170,8 @@ SQL: CREATE_TABLE TableData
 	boolean = NULL;
 	groupingAtts = NULL;
 	attsToSelect = NULL;
-	file = NULL;
-	table = NULL;
+	refFile = NULL;
+	refTable= NULL;
 	createData = NULL;
 
 	command = QUIT_SQL;
@@ -184,8 +184,8 @@ SQL: CREATE_TABLE TableData
 	boolean = NULL;
 	groupingAtts = NULL;
 	attsToSelect = NULL;
-	file = NULL;
-	table = NULL;
+	refFile = NULL;
+	refTable= NULL;
 	createData = NULL;
 	
 	command = SELECT_TABLE;
@@ -194,7 +194,7 @@ SQL: CREATE_TABLE TableData
 TableData: Name '(' AttList ')' AS HEAP ';'
 {
 	$$ = (struct CreateTable*) malloc (sizeof (struct CreateTable));
-	table = $1;
+	refTable= $1;
 	$$->atts = $3;
 	$$->type = HEAP_DB;
 	$$->sort = NULL;
@@ -203,7 +203,7 @@ TableData: Name '(' AttList ')' AS HEAP ';'
 | Name '(' AttList ')' AS SORTED NameList ';'
 {
 	$$ = (struct CreateTable*) malloc (sizeof (struct CreateTable));
-	table = $1;
+	refTable= $1;
 	$$->atts = $3;
 	$$->type = SORTED_DB;
 	$$->sort = $7;
