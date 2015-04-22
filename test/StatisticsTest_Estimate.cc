@@ -354,11 +354,13 @@ TEST_F(StatisticsTest, Estimate12) {
 	EXPECT_NEAR(21432.9, result, .5);
 }
 
+// Test a selection on one relation with no 
+// condition returns all of the tuples in that relation
 TEST_F(StatisticsTest, Estimate13) {
     Statistics stats;
     stats.AddRel("A", 100);
     stats.AddAtt("A", "y", 10);
-    AndList* and1 = new AndList{NULL, NULL};// = final;
+    AndList* and1 = new AndList{NULL, NULL};
     const char* rels[] = {"A"};
     EXPECT_EQ(100, stats.Estimate(and1, rels, 1));
 }
