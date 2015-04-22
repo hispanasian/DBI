@@ -7,7 +7,7 @@
 using namespace std;
 
 void Memoizer::SetSoln(vector<bool>& set, double cost, Statistics& stats, int addedIndex, int outputSize) {
-    solns.emplace(set, new SolnData{cost, &stats, addedIndex, outputSize});
+    solns.insert(make_pair<vector<bool>&, SolnData*>(set, new SolnData{cost, &stats, addedIndex, outputSize}));
 }
 
 double Memoizer::GetCost(vector<bool>& set) {
@@ -15,7 +15,6 @@ double Memoizer::GetCost(vector<bool>& set) {
 }
 
 Statistics& Memoizer::GetStats(vector<bool>& set) {
-    cout << "Getting stats" << endl; 
     return *(solns.at(set)->stats);
 }
 
@@ -32,9 +31,11 @@ bool Memoizer::Solved(vector<bool>& set) {
     return index != solns.end();
 }
 
+JoinOptimizer::~JoinOptimizer() {}
+
 void JoinOptimizer::Optimize(unordered_map<string, AndList*> &selects,
                         unordered_map<string, unordered_map<string, AndList*> > &joins,
-                        Statistics& stats,
+                        const Statistics& statistics,
                         vector<string> &rels,
                         vector<TupleCount> &counts) {
     // first check if there are any rels to join
@@ -42,6 +43,8 @@ void JoinOptimizer::Optimize(unordered_map<string, AndList*> &selects,
         // we don't need to do anything
         return;
     }
+
+    Statistics stats = Statistics(statistics);
 
     // if there is just one relation, we just add it to the output
     if(selects.size() < 3) {
@@ -73,11 +76,9 @@ void JoinOptimizer::Optimize(unordered_map<string, AndList*> &selects,
     }
 
     // Start the recursion
-    cout << "Starting..." << endl;
     Solve(set, relNames, mem, stats, joins);
     // now backtrack to figure out the solution
     // build the rels and count vectors
-
     int index = mem.GetAddedIndex(set);
     while(index != -1) {
         set[index] = false;
@@ -86,6 +87,13 @@ void JoinOptimizer::Optimize(unordered_map<string, AndList*> &selects,
         counts.push_back(TupleCount{mem.GetOutputSize(set), tupleCount[index]});
         index = mem.GetAddedIndex(set);
     }
+    // now add the counts from the first join
+    vector<int> indices; 
+    Indices(set, indices);
+    rels.push_back(relNames[indices[0]]);
+    counts.push_back(TupleCount{0, tupleCount[indices[0]]});
+    rels.push_back(relNames[indices[1]]);
+    counts.push_back(TupleCount{0, tupleCount[indices[1]]});
 
     // reverse our lists
     reverse(rels.begin(), rels.end());
@@ -106,52 +114,40 @@ void JoinOptimizer::Solve(vector<bool>& set,
                             Memoizer& mem,
                             Statistics& stats,
                             unordered_map<string, unordered_map<string, AndList*> > &joins) {
-    cout << "Solving: ";
-    PrintSet(set, relNames);
     // base case: we've already calculated this solution
     if(mem.Solved(set)) {
-        cout << "Already solved this: ";
-        PrintSet(set, relNames);
         return;
     }
     // base case: only 2 relations
     // we just join them directly
-    cout << "here 1" << endl;
     vector<int> indices;
     Indices(set, indices);
     if(indices.size() == 2) {
-        cout << "here 2" << endl;
         set[indices[0]] = false;
         // get a stats object from one of the relations
         // copy it
-        cout << "here 3" << endl;
-        Statistics newStats = *new Statistics(stats);
+        Statistics* newStatsPtr = new Statistics(stats);
+        Statistics& newStats = *newStatsPtr;
         AndList* andList = GetAndList(indices[0], indices, relNames, joins); 
         if(andList == NULL) {
-            cout << "Invalid join " << relNames[indices[0]] << " and " << relNames[indices[1]] << endl;
             // this is an invalid join, set the cost to 
             // be very large so it's not considered a valid solution
             set[indices[0]] = true;
             mem.SetSoln(set, numeric_limits<double>::max(), stats, -1, numeric_limits<double>::max()); 
             return;
         }
-        cout << "here 4" << endl;
         // get an array with the names of the relations we are joining together
         const char* names[indices.size()];
         // const char** names = GetRelNames(minIndex, set, relNames);
         GetRelNames(indices[0], indices, names, relNames);
-        cout << "here 4" << endl;
         // figure out the cost
         double newCost = newStats.Estimate(andList, names, indices.size());
-        cout << "here 5" << endl;
         // Apply and join these 2 relations
         // TODO: this will throw an exception!
         newStats.Apply(andList, names, indices.size());
-        cout << "here 6" << endl;
         set[indices[0]] = true;
         // place it in the memoizer
         mem.SetSoln(set, newCost, newStats, -1, newCost);
-        cout << "here 7" << endl;
         return;
     } 
 
@@ -183,37 +179,32 @@ void JoinOptimizer::Solve(vector<bool>& set,
         // restore this relation into the set
         set[index] = true;
     }
-    cout << "Min index for set "; PrintSet(set, relNames); cout << minIndex << endl; 
+    if(minIndex == -1) {
+        // we didn't find a solution, this set is impossible
+        mem.SetSoln(set, numeric_limits<double>::max(), stats, -1, numeric_limits<double>::max()); 
+        return;
+    }
     // now we know which relation is optimal to join last
     // compute the soln to this set using the optimal sub-soln
     // store this soln in the mem
     set[minIndex] = false;
     Statistics* oldStatsPtr = &(mem.GetStats(set));
     Statistics& oldStats = *oldStatsPtr;
-    cout << "here 7.5" << endl;
-    Statistics newStats = Statistics(oldStats);
-    cout << "here 8" << endl; 
+    Statistics& newStats = *new Statistics(oldStats);
     // figure out which AndList goes with this join
     AndList* andList = GetAndList(minIndex, indices, relNames, joins); 
-    cout << "here 9" << endl; 
     // get an array with the names of the relations we are joining together
     const char* names[indices.size()];
-    cout << "here 10" << endl; 
     // const char** names = GetRelNames(minIndex, set, relNames);
     GetRelNames(minIndex, indices, names, relNames);
-    cout << "here 11" << endl; 
     // TODO: will throw an exception
     double joinSize = newStats.Estimate(andList, names, indices.size()); 
-    cout << "here 12" << endl; 
     double newCost = joinSize + mem.GetCost(set);
-    cout << "here 13" << endl; 
     // Apply and join these 2 relations
     newStats.Apply(andList, names, indices.size());
-    cout << "here 14" << endl; 
     // store this data in the memoizer
     set[minIndex] = true;
     mem.SetSoln(set, newCost, newStats, minIndex, joinSize);
-    cout << "here 15" << endl; 
 }
 
 AndList* JoinOptimizer::GetAndList(const int index, const vector<int>& indices,

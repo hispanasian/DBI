@@ -92,7 +92,7 @@ TEST_F(OpNodeTest, SelectFileNode_GetSchema1) {
 	sql.Parse(query);
 	sql.GetWhere(selects, joins);
 
-	SelectFileNode op (0, childSchema, selects["A"]);
+	SelectFileNode op (0, childSchema, selects["A"], "");
 
 	ASSERT_EQ(9, op.GetSchema()->GetNumAtts());
 	EXPECT_EQ(0, op.GetSchema()->Find("A.a"));
@@ -126,7 +126,7 @@ TEST_F(OpNodeTest, SelectFileNode_GetSchema2) {
 	sql.Parse(query);
 	sql.GetWhere(selects, joins);
 
-	SelectFileNode op (0, A, selects["A"]);
+	SelectFileNode op (0, A, selects["A"], "");
 
 	ASSERT_EQ(3, op.GetSchema()->GetNumAtts());
 	EXPECT_EQ(0, op.GetSchema()->Find("A.a"));
@@ -150,7 +150,7 @@ TEST_F(OpNodeTest, SelectFileNode_GetSchema3) {
 	sql.Parse(query);
 	sql.GetWhere(selects, joins);
 
-	SelectFileNode op (0, emptySchema, selects["B"]);
+	SelectFileNode op (0, emptySchema, selects["B"], "");
 
 	ASSERT_EQ(0, op.GetSchema()->GetNumAtts());
 }

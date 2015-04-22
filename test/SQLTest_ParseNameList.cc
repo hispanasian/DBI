@@ -134,3 +134,31 @@ TEST_F(SQLTest, ParseNameList4) {
 	ASSERT_THROW(test.ParseNameList(attsToSelect, pair), runtime_error);
 }
 
+/**
+ * ParseNameList should handle the case where an aggregate has no attributes after the agregate
+ */
+TEST_F(SQLTest, ParseNameList5) {
+	char *relName[] = {"A", "B"};
+
+	stat.AddRel(relName[0],6001215);
+	stat.AddAtt(relName[0], "a1",3);
+	stat.AddAtt(relName[0], "a2",11);
+	stat.AddAtt(relName[0], "a3",7);
+	stat.AddRel(relName[1],6001215);
+	stat.AddAtt(relName[1], "b1",3);
+	stat.AddAtt(relName[1], "b2",11);
+	stat.AddAtt(relName[1], "b3",7);
+
+	string sql = "SELECT SUM(A.a1) ";
+	sql.append(" FROM rel AS A ");
+	sql.append(" WHERE (A.a1 = 5)");
+
+	yysql_scan_string(sql.c_str());
+	yysqlparse();
+
+	vector<RelAttPair> pair;
+	SQL test = SQL(stat);
+	test.ParseNameList(attsToSelect, pair);
+
+	ASSERT_EQ(0, pair.size());
+}

@@ -95,11 +95,13 @@ public:
 	CNF cnf;
 	Record literal;
 	const struct AndList *select;
+	const std::string fname;
 
 	/**
 	 * _select should be the AndList that this OpNode will filter on
+	 * fname is the file that corresponds to a dbfile that will provide tuples to this node.
 	 */
-	SelectFileNode(int id, const Schema &schema, const struct AndList *_select);
+	SelectFileNode(int id, const Schema &schema, const struct AndList *_select, const std::string &_fname);
 	virtual ~SelectFileNode();
 	void Visit(OpVisitor &visitor, void* arg);
 	const Schema* GetSchema();
@@ -189,13 +191,12 @@ public:
 	Join op;
 	OpNode *child;
 	Function function;
-	vector<RelAttPair> group;
+	const vector<RelAttPair> group;
 	const struct FuncOperator *funcOp;
 
 	/**
 	 * _func should be the FuncOperator that will produce the Function for this GroupBy
 	 */
-	GroupByNode(int id, OpNode *_child, const std::vector<RelAttPair> &_group);
 	GroupByNode(int id, OpNode *_child, const std::vector<RelAttPair> &_group,
 			const struct FuncOperator *_funcOp);
 	virtual ~GroupByNode();

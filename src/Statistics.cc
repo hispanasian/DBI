@@ -24,8 +24,6 @@ Statistics::Statistics(const Statistics &copyMe): relations(myRelations), lookup
 	StatData temp;
 
 	for(auto it = copyMe.relations.begin(); it != copyMe.relations.end(); ++it) {
-		cout << "Copying ";
-		cout << it->first << endl;
 		rel = it->first;
 		temp = it->second;
 		relations[rel].numTuples = temp.numTuples; // Copy the relation
@@ -167,7 +165,7 @@ void Statistics::AddAtt(const char *relName, const char *attName, double numDist
 	}
 }
 
-double Statistics::NumTuples(const char *relName) {
+double Statistics::NumTuples(const char *relName) const {
 	try {
 		return relations.at(relName).numTuples;
 	}
@@ -177,7 +175,7 @@ double Statistics::NumTuples(const char *relName) {
 	}
 }
 
-double Statistics::NumDistincts(const char *relName, const char *attName) {
+double Statistics::NumDistincts(const char *relName, const char *attName) const {
 	try {
 		if(relations.at(relName).atts.at(attName) == -1) return relations.at(relName).numTuples;
 		else return relations.at(relName).atts.at(attName);
@@ -316,7 +314,7 @@ bool Statistics::VerifyJoinSets(const char **relNames, int numToJoin) {
 	return superset.empty();
 }
 
-bool Statistics::ParseOperand(string operand, vector<string> &out) {
+bool Statistics::ParseOperand(string operand, vector<string> &out) const {
 	string relation;
 	string attribute;
 	out.clear();
@@ -342,7 +340,7 @@ bool Statistics::ParseOperand(string operand, vector<string> &out) {
 	return true;
 }
 
-string Statistics::RelLookup(string att) {
+string Statistics::RelLookup(string att) const {
 	try {
 		return lookup.at(att);
 	}
