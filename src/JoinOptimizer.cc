@@ -35,7 +35,7 @@ JoinOptimizer::~JoinOptimizer() {}
 
 void JoinOptimizer::Optimize(unordered_map<string, AndList*> &selects,
                         unordered_map<string, unordered_map<string, AndList*> > &joins,
-                        const Statistics& stats,
+                        const Statistics& statistics,
                         vector<string> &rels,
                         vector<TupleCount> &counts) {
     // first check if there are any rels to join
@@ -43,6 +43,8 @@ void JoinOptimizer::Optimize(unordered_map<string, AndList*> &selects,
         // we don't need to do anything
         return;
     }
+
+    Statistics stats = Statistics(statistics);
 
     // if there is just one relation, we just add it to the output
     if(selects.size() < 3) {
