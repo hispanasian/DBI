@@ -1,7 +1,7 @@
 #include "StatisticsTest.h"
 
 TEST_F(StatisticsTest, Estimate1) {
-	char *relName[] = {"supplier","partsupp"};
+	const char *relName[] = {"supplier","partsupp"};
 
 
 	stat.AddRel(relName[0],10000);
@@ -27,7 +27,7 @@ TEST_F(StatisticsTest, Estimate1) {
 }
 
 TEST_F(StatisticsTest, Estimate2) {
-	char *relName[] = {"lineitem"};
+	const char *relName[] = {"lineitem"};
 
 	stat.AddRel(relName[0],6001215);
 	stat.AddAtt(relName[0], "l_returnflag",3);
@@ -45,7 +45,7 @@ TEST_F(StatisticsTest, Estimate2) {
 }
 
 TEST_F(StatisticsTest, Estimate3) {
-	char *relName[] = {"orders","customer","nation"};
+	const char *relName[] = {"orders","customer","nation"};
 
 
 	stat.AddRel(relName[0],1500000);
@@ -74,7 +74,7 @@ TEST_F(StatisticsTest, Estimate3) {
 }
 
 TEST_F(StatisticsTest, Estimate4) {
-	char *relName[] = {"supplier","customer","nation"};
+	const char *relName[] = {"supplier","customer","nation"};
 
 	stat.AddRel(relName[0],10000);
 	stat.AddAtt(relName[0], "s_nationkey",25);
@@ -91,19 +91,19 @@ TEST_F(StatisticsTest, Estimate4) {
 	stat.CopyRel("supplier","s");
 	stat.CopyRel("customer","c");
 
-	char *set1[] ={"s","n1"};
+	const char *set1[] ={"s","n1"};
 	char *cnf = "(s.s_nationkey = n1.n_nationkey)";
 	yy_scan_string(cnf);
 	yyparse();
 	stat.Apply(final, set1, 2);
 
-	char *set2[] ={"c","n2"};
+	const char *set2[] ={"c","n2"};
 	cnf = "(c.c_nationkey = n2.n_nationkey)";
 	yy_scan_string(cnf);
 	yyparse();
 	stat.Apply(final, set2, 2);
 
-	char *set3[] = {"c","s","n1","n2"};
+	const char *set3[] = {"c","s","n1","n2"};
 	cnf = " (n1.n_nationkey = n2.n_nationkey )";
 	yy_scan_string(cnf);
 	yyparse();
@@ -113,7 +113,7 @@ TEST_F(StatisticsTest, Estimate4) {
 }
 
 TEST_F(StatisticsTest, Estimate5) {
-	char *relName[] = { "part", "partsupp", "supplier", "nation", "region"};
+	const char *relName[] = { "part", "partsupp", "supplier", "nation", "region"};
 
 	stat.AddRel(relName[0],200000);
 	stat.AddAtt(relName[0], "p_partkey",200000);
@@ -141,7 +141,7 @@ TEST_F(StatisticsTest, Estimate5) {
 	stat.CopyRel("nation","n");
 	stat.CopyRel("region","r");
 
-	char *shortRelName[] = { "p", "ps", "s", "n", "r"};
+	const char *shortRelName[] = { "p", "ps", "s", "n", "r"};
 
 	char *cnf = "(p.p_partkey=ps.ps_partkey) AND (p.p_size = 2)";
 	yy_scan_string(cnf);
@@ -167,7 +167,7 @@ TEST_F(StatisticsTest, Estimate5) {
 }
 
 TEST_F(StatisticsTest, Estimate6) {
-	char *relName[] = { "customer", "orders", "lineitem"};
+	const char *relName[] = { "customer", "orders", "lineitem"};
 
 	stat.AddRel(relName[0],150000);
 	stat.AddAtt(relName[0], "c_custkey",150000);
@@ -198,7 +198,7 @@ TEST_F(StatisticsTest, Estimate6) {
 }
 
 TEST_F(StatisticsTest, Estimate7) {
-	char *relName[] = { "partsupp", "supplier", "nation"};
+	const char *relName[] = { "partsupp", "supplier", "nation"};
 
 	stat.AddRel(relName[0],800000);
 	stat.AddAtt(relName[0], "ps_suppkey",10000);
@@ -226,7 +226,7 @@ TEST_F(StatisticsTest, Estimate7) {
 }
 
 TEST_F(StatisticsTest, Estimate8) {
-	char *relName[] = { "orders", "lineitem"};
+	const char *relName[] = { "orders", "lineitem"};
 
 	stat.AddRel(relName[0],1500000);
 	stat.AddAtt(relName[0], "o_orderkey",1500000);
@@ -246,7 +246,7 @@ TEST_F(StatisticsTest, Estimate8) {
 }
 
 TEST_F(StatisticsTest, Estimate9) {
-	char *relName[] = { "part",  "partsupp"};
+	const char *relName[] = { "part",  "partsupp"};
 
 	stat.AddRel(relName[0],200000);
 	stat.AddAtt(relName[0], "p_partkey",200000);
@@ -267,7 +267,7 @@ TEST_F(StatisticsTest, Estimate9) {
 }
 
 TEST_F(StatisticsTest, Estimate10) {
-	char *relName[] = { "part",  "partsupp","supplier"};
+	const char *relName[] = { "part",  "partsupp","supplier"};
 
 
 	stat.AddRel(relName[0],200000);
@@ -295,7 +295,7 @@ TEST_F(StatisticsTest, Estimate10) {
 }
 
 TEST_F(StatisticsTest, Estimate11) {
-	char *relName[] = { "customer", "orders", "lineitem","nation"};
+	const char *relName[] = { "customer", "orders", "lineitem","nation"};
 
 	stat.AddRel(relName[0],150000);
 	stat.AddAtt(relName[0], "c_custkey",150000);
@@ -333,7 +333,7 @@ TEST_F(StatisticsTest, Estimate11) {
 
 TEST_F(StatisticsTest, Estimate12) {
 	Statistics s;
-	char *relName[] = { "part",  "lineitem"};
+	const char *relName[] = { "part",  "lineitem"};
 
 	stat.AddRel(relName[0],200000);
 	stat.AddAtt(relName[0], "p_partkey",200000);
@@ -352,4 +352,15 @@ TEST_F(StatisticsTest, Estimate12) {
 	double result = stat.Estimate(final, relName,2);
 
 	EXPECT_NEAR(21432.9, result, .5);
+}
+
+// Test a selection on one relation with no 
+// condition returns all of the tuples in that relation
+TEST_F(StatisticsTest, Estimate13) {
+    Statistics stats;
+    stats.AddRel("A", 100);
+    stats.AddAtt("A", "y", 10);
+    AndList* and1 = new AndList{NULL, NULL};
+    const char* rels[] = {"A"};
+    EXPECT_EQ(100, stats.Estimate(and1, rels, 1));
 }
