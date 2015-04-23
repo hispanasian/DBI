@@ -21,11 +21,11 @@ TreeDBFile::~TreeDBFile () {
 
 }
 
-void TreeDBFile::Load (Schema &f_schema, char *loadpath) {
+void TreeDBFile::Load (Schema &f_schema, const char *loadpath) {
 
 }
 
-void TreeDBFile::Load (Schema &f_schema, char *loadpath, Record &record) {
+void TreeDBFile::Load (Schema &f_schema, const char *loadpath, Record &record) {
 
 }
 

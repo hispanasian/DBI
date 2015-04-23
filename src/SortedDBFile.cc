@@ -45,12 +45,12 @@ SortedDBFile::~SortedDBFile () {
 	delete sortInfo;
 }
 
-void SortedDBFile::Load (Schema &f_schema, char *loadpath) {
+void SortedDBFile::Load (Schema &f_schema, const char *loadpath) {
 	Record r;
 	Load(f_schema, loadpath, r);
 }
 
-void SortedDBFile::Load (Schema &f_schema, char *loadpath, Record &record) {
+void SortedDBFile::Load (Schema &f_schema, const char *loadpath, Record &record) {
 	getNextState = NoCNF;
 	rwState = Writing;
 	if(!rfile.FileExists(loadpath)) throw std::runtime_error(loadpath + std::string(" could not be found."));
