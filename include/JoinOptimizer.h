@@ -15,14 +15,14 @@ using namespace std;
 
 struct SolnData {
     double cost;
-    Statistics& stats;
+    Statistics* stats;
     int addedIndex;
     int outputSize;
 };
 
 class Memoizer {
 public:
-    unordered_map<vector<bool>, SolnData> solns;
+    unordered_map<vector<bool>, SolnData*> solns;
     void SetSoln(vector<bool>& set, double cost, Statistics& stats, int addedIndex, int outputSize); 
     double GetCost(vector<bool>& set);
     Statistics& GetStats(vector<bool>& set);
@@ -38,9 +38,7 @@ private:
                 vector<string>& relNames,
                 Memoizer& mem,
                 Statistics& stats,
-                unordered_map<string,
-                unordered_map<string,
-                AndList*> > &joins); 
+                unordered_map<string, unordered_map<string, AndList*> > &joins);
     void Indices(const vector<bool>& set, vector<int>& inidices);
     bool SetsEqual(const vector<bool>& set1, const vector<bool>& set2); 
     AndList* GetAndList(const int index, const vector<int>& indices,
@@ -49,6 +47,7 @@ private:
     const void GetRelNames(const int index, const vector<int>& indices, const char* names[],
                         const vector<string>& relNames); 
   
+    void PrintSet(const vector<bool>& set, const vector<string>& relNames); 
 public:
     /*
      * Optimize takes a map from the alias of a relation to the AndList used to

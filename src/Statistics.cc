@@ -24,6 +24,8 @@ Statistics::Statistics(const Statistics &copyMe): relations(myRelations), lookup
 	StatData temp;
 
 	for(auto it = copyMe.relations.begin(); it != copyMe.relations.end(); ++it) {
+		cout << "Copying ";
+		cout << it->first << endl;
 		rel = it->first;
 		temp = it->second;
 		relations[rel].numTuples = temp.numTuples; // Copy the relation

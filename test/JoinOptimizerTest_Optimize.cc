@@ -108,15 +108,33 @@ TEST_F(JoinOptimizerTest, Optimize4) {
     stats.AddAtt("B", "z", 5);
     stats.AddAtt("C", "z", 5);
 
+    // populate selects
+    selects.emplace("A", new AndList{NULL, NULL});
+    selects.emplace("B", new AndList{NULL, NULL});
+    selects.emplace("C", new AndList{NULL, NULL});
+
+    unordered_map<string, AndList*> alist;
+    unordered_map<string, AndList*> blist;
+    unordered_map<string, AndList*> clist;
+
     char* cnf1 = "(A.y = B.y)";
     yy_scan_string(cnf1);
     yyparse();
     AndList* and1 = final;
+    alist.emplace("B", and1);
+    blist.emplace("A", and1);
 
     char* cnf2 = "(B.z = C.z)";
     yy_scan_string(cnf2);
     yyparse();
     AndList* and2 = final;
+    blist.emplace("C", and2);
+    clist.emplace("B", and2);
+
+    joins.emplace("A", alist);
+    joins.emplace("B", blist);
+    joins.emplace("C", clist);
+
 
     JoinOptimizer opt;
     opt.Optimize(selects, joins, stats, rels, counts);
