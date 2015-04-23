@@ -140,7 +140,7 @@ public:
 class MockDBFile: public DBFile {
 public:
 //	virtual int Create (char *fpath, fType file_type, void *startup);
-	MOCK_METHOD3(Create, int(char *fpath, fType file_type, void *startup));
+	MOCK_METHOD3(Create, int(const char *fpath, fType file_type, void *startup));
 //	virtual int Open (char *fpath);
 	MOCK_METHOD1(Open, int(char *fpath));
 //	virtual int Close ();
