@@ -31,9 +31,11 @@ bool Memoizer::Solved(vector<bool>& set) {
     return index != solns.end();
 }
 
+JoinOptimizer::~JoinOptimizer() {}
+
 void JoinOptimizer::Optimize(unordered_map<string, AndList*> &selects,
                         unordered_map<string, unordered_map<string, AndList*> > &joins,
-                        Statistics& stats,
+                        const Statistics& stats,
                         vector<string> &rels,
                         vector<TupleCount> &counts) {
     // first check if there are any rels to join

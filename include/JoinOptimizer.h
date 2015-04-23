@@ -49,6 +49,7 @@ private:
   
     void PrintSet(const vector<bool>& set, const vector<string>& relNames); 
 public:
+	virtual ~JoinOptimizer();
     /*
      * Optimize takes a map from the alias of a relation to the AndList used to
      * select on that relation, as well as a map from 2 relations to the AndList,
@@ -65,9 +66,9 @@ public:
      * the first two relations to be joined, the join count at these indicies will be
      * invalid.
      */
-    void Optimize(unordered_map<string, AndList*> &selects,
+    virtual void Optimize(unordered_map<string, AndList*> &selects,
                         unordered_map<string, unordered_map<string, AndList*> > &joins,
-                        Statistics& stats,
+                        const Statistics& stats,
                         vector<string> &rels,
                         vector<TupleCount> &counts);
 };

@@ -59,6 +59,11 @@ public:
 		attribute = copyMe.second;
 	}
 
+	void Copy(const RelAttPair &copyMe) {
+		relation = copyMe.relation;
+		attribute = copyMe.attribute;
+	}
+
 	std::string Relation() const { return relation; }
 	std::string Attribute() const { return attribute; }
 };
@@ -88,6 +93,11 @@ public:
 		alias = copyMe.second;
 	}
 
+	void Copy(const RelAliasPair &copyMe) {
+		relation = copyMe.relation;
+		alias = copyMe.alias;
+	}
+
 	std::string Relation() const { return relation; }
 	std::string Alias() const { return alias; }
 };
@@ -96,6 +106,7 @@ class SQL {
 protected:
 	Statistics stat;
 	std::string sql;
+	int relationSize;
 
 	// these data structures hold the result of the parsing
 	struct FuncOperator *function; // the aggregate function (NULL if no agg)
@@ -121,7 +132,7 @@ protected:
 	 * @param out		The vector that will hold the resulting relation and attribute
 	 * @return			True if the operand can be parsed and the attribute can be found
 	 */
-	virtual bool ParseOperand(std::string operand, std::vector<std::string> &out);
+	virtual bool ParseOperand(std::string operand, std::vector<std::string> &out) const;
 
 public:
 
@@ -130,8 +141,27 @@ public:
 	/**
 	 * Creates SQL with a copy of stat
 	 */
-	SQL(const Statistics &stat);
+	SQL(const Statistics &_stat);
+	SQL(const Statistics &_stat, int _relationSize); // strictly for testing
+	SQL(const SQL &copyMe);
 	virtual ~SQL();
+
+	/**
+	 * Returns the FuncOperator produced by this SQL
+	 * @param	Returns the FuncOperator produced by this SQL or NULL if there is none
+	 */
+	virtual const struct FuncOperator* Function() const;
+
+	/**
+	 * Returns the Statistics object used by this SQL object.
+	 */
+	virtual const Statistics& GetStatistics() const;
+
+	/**
+	 * Returns the SQL statement
+	 * @return	The SQL statement
+	 */
+	virtual std::string GetSQLStatement() const;
 
 	/**
 	 * Parses the sql string and puts the related meta-data into this object. This method will
@@ -151,43 +181,43 @@ public:
 	 * @param selects	A map of the selects (relation->AndList)
 	 * @param joins		A map of the joins (relation1->relation2->AndList)
 	 */
-	virtual void GetWhere(SelectMap &selects, JoinMap &joins);
+	virtual void GetWhere(SelectMap &selects, JoinMap &joins) const;
 
 	/**
 	 * Returns a vector of the Attributes in the GroupBy clause
 	 * @param pairs	The vector that will hold the Relation/Attribute pairs
 	 */
-	virtual void GetGroup(std::vector<RelAttPair> &pairs);
+	virtual void GetGroup(std::vector<RelAttPair> &pairs) const;
 
 	/**
 	 * Returns a vector of the Attributes in the Select clause (excluding the aggregated attributes)
 	 * @param pairs	The vector that will hold the Relation/Attribute pairs
 	 */
-	virtual void GetSelect(std::vector<RelAttPair> &pairs);
+	virtual void GetSelect(std::vector<RelAttPair> &pairs) const;
 
 	/**
 	 * Returns a vector of the Relations (and their aliases) referenced in the FROM clause
 	 * @param pairs	The vector that will hold the Relation/Alias pairs
 	 */
-	virtual void GetTables(std::vector<RelAliasPair> &pairs);
+	virtual void GetTables(std::vector<RelAliasPair> &pairs) const;
 
 	/**
 	 * Returns the attributes that are referenced in the aggregate
 	 * @param pair	The vector that will hold the referenced relation/attribute pairs
 	 */
-	virtual void GetFunctionAttributes(std::vector<RelAttPair> &pair);
+	virtual void GetFunctionAttributes(std::vector<RelAttPair> &pair) const;
 
 	/**
 	 * Returns true if there is a distinct in the aggregate function
 	 * @param true if there is a distinct in the aggregate function
 	 */
-	virtual bool DistinctAggregate();
+	virtual bool DistinctAggregate() const;
 
 	/**
 	 * Returns true if there is a distinct in the selection
 	 * @param true if there is a distinct in the selction
 	 */
-	virtual bool DistinctSelect();
+	virtual bool DistinctSelect() const;
 
 	/**
 	 * ParseWhere will take where and parse it to find OrList's into Joins or Selects based on
@@ -201,7 +231,7 @@ public:
 	 * @param selects	A map that will map a relation to it's Selection AndList
 	 * @param joins		A map that will map a pair of relations to their Join AndList.
 	 */
-	virtual void ParseWhere(struct AndList *where, SelectMap &selects, JoinMap &joins);
+	virtual void ParseWhere(struct AndList *where, SelectMap &selects, JoinMap &joins) const;
 
 	/**
 	 * Similar to ParseWhere, this method will go through the NameList and return a vector with the
@@ -211,7 +241,7 @@ public:
 	 * @param list	The NameList that will be parsed
 	 * @param pair	The vector of pairs that will be returned.
 	 */
-	virtual void ParseNameList(struct NameList *list, std::vector<RelAttPair> &pair);
+	virtual void ParseNameList(struct NameList *list, std::vector<RelAttPair> &pair) const;
 
 	/**
 	 * Parses a FuncOperator and returns a vector of RelAttPair representing the attributes that
@@ -219,7 +249,7 @@ public:
 	 * @param func	The FuncOperator being parsed
 	 * @param pair	The vector of pairs that will be returned.
 	 */
-	virtual void ParseFuncOperator(FuncOperator *func, std::vector<RelAttPair> &pair);
+	virtual void ParseFuncOperator(FuncOperator *func, std::vector<RelAttPair> &pair) const;
 
 	/*
 	 * Parses a TableList and returns a vector of RelAlias pair representing the aliases that
@@ -227,7 +257,7 @@ public:
 	 * @param list	The TableList that contains the map of each alias
 	 * @param pair	The vector of pairs that will be returned.
 	 */
-	virtual void ParseTableList(TableList *list, std::vector<RelAliasPair> &pairs);
+	virtual void ParseTableList(TableList *list, std::vector<RelAliasPair> &pairs) const;
 
 };
 

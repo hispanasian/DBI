@@ -78,7 +78,7 @@ TEST_F(SQLTest, ParseWhere1) {
 
 	SelectMap selects;
 	JoinMap joins;
-	SQL test = SQL(stat);
+	SQL test = SQL(stat, 2);
 
 	test.ParseWhere(final, selects, joins);
 
@@ -118,7 +118,7 @@ TEST_F(SQLTest, ParseWhere2) {
 
 	SelectMap selects;
 	JoinMap joins;
-	SQL test = SQL(stat);
+	SQL test = SQL(stat, 1);
 
 	test.ParseWhere(final, selects, joins);
 
@@ -155,7 +155,7 @@ TEST_F(SQLTest, ParseWhere3) {
 
 	SelectMap selects;
 	JoinMap joins;
-	SQL test = SQL(stat);
+	SQL test = SQL(stat, 2);
 
 	ASSERT_THROW(test.ParseWhere(final, selects, joins), runtime_error);
 }
@@ -182,7 +182,7 @@ TEST_F(SQLTest, ParseWhere4) {
 
 	SelectMap selects;
 	JoinMap joins;
-	SQL test = SQL(stat);
+	SQL test = SQL(stat, 2);
 
 	test.ParseWhere(final, selects, joins);
 
@@ -228,7 +228,7 @@ TEST_F(SQLTest, ParseWhere5) {
 
 	SelectMap selects;
 	JoinMap joins;
-	SQL test = SQL(stat);
+	SQL test = SQL(stat, 3);
 
 	test.ParseWhere(final, selects, joins);
 
@@ -278,7 +278,7 @@ TEST_F(SQLTest, ParseWhere6) {
 
 	SelectMap selects;
 	JoinMap joins;
-	SQL test = SQL(stat);
+	SQL test = SQL(stat, 3);
 
 	ASSERT_THROW(test.ParseWhere(final, selects, joins), runtime_error);
 }
@@ -308,7 +308,7 @@ TEST_F(SQLTest, ParseWhere7) {
 
 	SelectMap selects;
 	JoinMap joins;
-	SQL test = SQL(stat);
+	SQL test = SQL(stat, 3);
 
 	ASSERT_THROW(test.ParseWhere(final, selects, joins), runtime_error);
 }
@@ -317,21 +317,21 @@ TEST_F(SQLTest, ParseWhere7) {
  * ParseWhere should be able to handle multiple OrLists (selects) that affect the same relation
  */
 TEST_F(SQLTest, ParseWhere8) {
-	char *relName[] = {"A", "B", "C"};
+	char *relName[] = {"A"};
 
 	stat.AddRel(relName[0],6001215);
 	stat.AddAtt(relName[0], "a1",3);
 	stat.AddAtt(relName[0], "a2",11);
 	stat.AddAtt(relName[0], "a3",7);
 
-	char *cnf = "(a1=15 OR a2<5) AND (a3=6)";
+	char *cnf = "(A.a1=15 OR A.a2<5) AND (A.a3=6)";
 
 	yy_scan_string(cnf);
 	yyparse();
 
 	SelectMap selects;
 	JoinMap joins;
-	SQL test = SQL(stat);
+	SQL test = SQL(stat, 1);
 
 	test.ParseWhere(final, selects, joins);
 
@@ -342,4 +342,41 @@ TEST_F(SQLTest, ParseWhere8) {
 	ASSERT_TRUE(selects["A"]->left != NULL);
 	ASSERT_TRUE(selects["A"]->rightAnd->left != NULL);
 	ASSERT_TRUE(selects["A"]->rightAnd->rightAnd == NULL);
+}
+
+/**
+ * GetWhere should handle still create AndLists for Relations that are not mentioned in the
+ * where clause (ie, they were in the FROM clause).
+ */
+TEST_F(SQLTest, ParseWhere9) {
+	stat.AddRel("RelA", 0);
+	stat.AddRel("RelB", 0);
+
+	stat.AddAtt("RelA", "a", 0);
+	stat.AddAtt("RelA", "b", 0);
+	stat.AddAtt("RelA", "c", 0);
+	stat.AddAtt("RelB", "a", 0);
+	stat.AddAtt("RelB", "b", 0);
+
+	string cnf = "SELECT DISTINCT A.a, B.a, A.c ";
+	cnf.append(" FROM RelA AS A, RelB AS B ");
+	cnf.append(" WHERE (A.a = B.a)  ");
+	cnf.append(" GROUP BY A.a, B.a ");
+
+	SelectMap selects;
+	JoinMap joins;
+	SQL test (stat);
+
+	test.Parse(cnf);
+	test.GetWhere(selects, joins);
+
+	EXPECT_EQ(2, selects.size());
+	EXPECT_EQ(2, joins.size());
+
+	ASSERT_TRUE(selects.at("A") != NULL);
+	ASSERT_TRUE(selects["A"]->left == NULL);
+	ASSERT_TRUE(selects["A"]->rightAnd == NULL);
+	ASSERT_TRUE(selects.at("B") != NULL);
+	ASSERT_TRUE(selects["B"]->left == NULL);
+	ASSERT_TRUE(selects["B"]->rightAnd == NULL);
 }

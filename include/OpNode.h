@@ -40,20 +40,21 @@ protected:
 	bool schemaReady;	// Flag telling if the schema has been calculated or not
 
 public:
-	OpNode(int _id): id(id) { schemaReady = false; }
-	OpNode(int _id, const Schema &_schema): id(id), schema(_schema) { schemaReady = true; }
+	OpNode(): id(0), schemaReady(false) {}
+	OpNode(int _id): id(_id), schemaReady(false) {}
+	OpNode(int _id, const Schema &_schema): id(_id), schema(_schema), schemaReady(false) {}
 	virtual ~OpNode();
 
 	/**
 	 * Returns this OpNode's ID
 	 * @return this OpNode's ID
 	 */
-	virtual int GetID() = 0;
+	virtual int GetID();
 
 	/**
 	 * Blocks until this node finishes executing.
 	 */
-	virtual void WaitUntilDone() = 0;
+	virtual void WaitUntilDone();
 
 	/**
 	 * The method that supports the Visitor pattern. This method will take in a visitor and an
@@ -61,34 +62,50 @@ public:
 	 * @param visitor	The visitor that will visit this node
 	 * @param arg		Some argument
 	 */
-	virtual void Visit(OpVisitor &visitor, void* arg) = 0;
+	virtual void Visit(OpVisitor &visitor, void* arg);
 
 	/**
 	 * Returns a reference to this objects Schema.
 	 * @return	A reference to this objects Schema
 	 */
-	virtual const Schema& GetSchema() = 0;
+	virtual const Schema* GetSchema();
 };
 
 class SelectPipeNode: public OpNode {
 public:
 	SelectPipe op;
 	OpNode *child;
+	CNF cnf;
+	Record literal;
+	const struct AndList *select;
 
-	SelectPipeNode(int id, OpNode *_child);
+	/**
+	 * _select should be the AndList that this OpNode will filter on
+	 */
+	SelectPipeNode(int id, OpNode *_child, const struct AndList *_select);
 	virtual ~SelectPipeNode();
 	void Visit(OpVisitor &visitor, void* arg);
-	const Schema& GetSchema();
+	const Schema* GetSchema();
+	void WaitUntilDone();
 };
 
 class SelectFileNode: public OpNode {
 public:
 	SelectFile op;
+	CNF cnf;
+	Record literal;
+	const struct AndList *select;
+	const std::string fname;
 
-	SelectFileNode(int id, const Schema &schema);
+	/**
+	 * _select should be the AndList that this OpNode will filter on
+	 * fname is the file that corresponds to a dbfile that will provide tuples to this node.
+	 */
+	SelectFileNode(int id, const Schema &schema, const struct AndList *_select, const std::string &_fname);
 	virtual ~SelectFileNode();
 	void Visit(OpVisitor &visitor, void* arg);
-	const Schema& GetSchema();
+	const Schema* GetSchema();
+	void WaitUntilDone();
 };
 
 class ProjectNode: public OpNode {
@@ -96,6 +113,7 @@ public:
 	Project op;
 	OpNode *child;
 	vector<RelAttPair> attsToKeep;
+	int *keepMe;
 
 	/**
 	 * This method assumes that attsToKeep only provides the attributes that are listed
@@ -105,7 +123,9 @@ public:
 	ProjectNode(int id, OpNode *_child, const std::vector<RelAttPair> &_attsToKeep);
 	virtual ~ProjectNode();
 	void Visit(OpVisitor &visitor, void* arg);
-	const Schema& GetSchema();
+	const Schema* GetSchema(); // Also modifies attsToKeep
+	void WaitUntilDone();
+	virtual bool ContainsAggregate();
 };
 
 class JoinNode: public OpNode {
@@ -113,63 +133,90 @@ public:
 	Join op;
 	OpNode *leftChild;
 	OpNode *rightChild;
+	int leftTuples;
+	int rightTuples;
+	CNF cnf;
+	Record literal;
+	const struct AndList *join;
 
-	JoinNode(int id, OpNode *_leftChild, OpNode *_rightChild);
+	/**
+	 * leftTuples and rightTuples are the estimated number of tuples that will be produced from the
+	 * corresponding children.
+	 */
+	JoinNode(int id, OpNode *_leftChild, int _leftTuples, OpNode *_rightChild, int _rightTuples,
+			const struct AndList *_join);
 	virtual ~JoinNode();
 	void Visit(OpVisitor &visitor, void* arg);
-	const Schema& GetSchema();
+	const Schema* GetSchema();
+	void WaitUntilDone();
 };
 
 class DuplicateRemovalNode: public OpNode {
 public:
 	DuplicateRemoval op;
 	OpNode *child;
+	const vector<RelAttPair> duplicates;
 
-	DuplicateRemovalNode(int id, OpNode *_child);
+	/**
+	 * duplicates is a vector that contains the duplicates relation/attribute pairs we want to
+	 * eliminate
+	 */
+	DuplicateRemovalNode(int id, OpNode *_child, const std::vector<RelAttPair> &duplicates);
 	virtual ~DuplicateRemovalNode();
 	void Visit(OpVisitor &visitor, void* arg);
-	const Schema& GetSchema();
+	const Schema* GetSchema();
+	void WaitUntilDone();
 };
 
 class SumNode: public OpNode {
 public:
 	Join op;
 	OpNode *child;
-	struct FuncOperator *func;
+	Function function;
+	Record literal;
+	const struct FuncOperator *funcOp;
 
 	/**
 	 * _func should be the FuncOperator that will produce the Function for this Sum
 	 */
-	SumNode(int id, OpNode *_child, struct FuncOperator *_func);
+	SumNode(int id, OpNode *_child, const struct FuncOperator *_funcOp);
 	virtual ~SumNode();
 	void Visit(OpVisitor &visitor, void* arg);
-	const Schema& GetSchema();
+	const Schema* GetSchema();
+	void WaitUntilDone();
 };
 
 class GroupByNode: public OpNode {
 public:
 	Join op;
 	OpNode *child;
-	struct FuncOperator *func;
+	Function function;
+	const vector<RelAttPair> group;
+	const struct FuncOperator *funcOp;
 
 	/**
 	 * _func should be the FuncOperator that will produce the Function for this GroupBy
 	 */
-	GroupByNode(int id, OpNode *_child, struct FuncOperator *_func);
+	GroupByNode(int id, OpNode *_child, const std::vector<RelAttPair> &_group,
+			const struct FuncOperator *_funcOp);
 	virtual ~GroupByNode();
 	void Visit(OpVisitor &visitor, void* arg);
-	const Schema& GetSchema();
+	const Schema* GetSchema();
+	void WaitUntilDone();
+	bool IsAggregate() const;
 };
 
 class WriteOutNode: public OpNode {
 public:
 	Join op;
 	OpNode *child;
+	FILE *outFile;
 
-	WriteOutNode(int id, OpNode *_child);
+	WriteOutNode(int id, OpNode *_child, FILE *_outFile);
 	virtual ~WriteOutNode();
 	void Visit(OpVisitor &visitor, void* arg);
-	const Schema& GetSchema();
+	const Schema* GetSchema();
+	void WaitUntilDone();
 };
 
 class OpVisitor {

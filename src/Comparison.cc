@@ -366,8 +366,8 @@ void AddLitToFile (int &numFieldsInLiteral, FILE *outRecFile, FILE *outSchemaFil
 
 
 
-void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema, 
-	Schema *rightSchema, Record &literal) {
+void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *leftSchema,
+	const Schema *rightSchema, Record &literal) {
 
 	CNF &cnf = *this;
 
@@ -432,6 +432,7 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema,
                                 } else {
 					cout << "ERROR: Could not find attribute " <<
 						myOr->left->left->value << "\n";
+					throw invalid_argument("Could not find an attribute");
 					exit (1);	
 				}
 
@@ -487,6 +488,7 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema,
 				// it is not there!  So there is an error in the query
                                 } else {
 					cout << "ERROR: Could not find attribute " << myOr->left->right->value << "\n";
+					throw invalid_argument("Could not find an attribute");
 					exit (1);	
 				}
 
@@ -527,6 +529,7 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema,
 			if (typeLeft != typeRight) {
 				cerr << "ERROR! Type mismatch in CNF.  " << myOr->left->left->value << " and "
 					<< myOr->left->right->value << " were found to not match.\n";
+				throw invalid_argument("Type mismatch in CNF");
 				exit (1);
 			}
 
@@ -572,7 +575,7 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema,
 
 
 // this is the version that only deals with unary relational selection predicates
-void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *mySchema, 
+void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *mySchema,
 	Record &literal) {
 
 	CNF &cnf = *this;
@@ -630,6 +633,7 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *mySchema,
                                 } else {
 					cout << "ERROR: Could not find attribute " <<
 						myOr->left->left->value << "\n";
+					throw invalid_argument("Could not find an attribute");
 					exit (1);	
 				}
 
@@ -678,6 +682,7 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *mySchema,
 				// it is not there!  So there is an error in the query
                                 } else {
 					cout << "ERROR: Could not find attribute " << myOr->left->right->value << "\n";
+					throw invalid_argument("Could not find an attribute");
 					exit (1);	
 				}
 
@@ -717,6 +722,7 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *mySchema,
 			if (typeLeft != typeRight) {
 				cerr << "ERROR! Type mismatch in CNF.  " << myOr->left->left->value << " and "
 					<< myOr->left->right->value << " were found to not match.\n";
+				throw invalid_argument("Type mismatch in CNF");
 				exit (1);
 			}
 
