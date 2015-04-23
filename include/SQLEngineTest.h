@@ -15,6 +15,7 @@
 #include "Statistics.h"
 #include "MockClasses.h"
 #include "RelationData.h"
+#include "SQLEngine.h"
 
 using ::testing::_;
 using ::testing::Return;
@@ -39,8 +40,8 @@ public:
 	SQLEngineTest();
 	~SQLEngineTest();
 
-	void CreateTable(SQLEngine eng, SQL *sql, std::vector<AttTypePair> *atts, std::vector<std::string> *order,
-				std::string *tableName, DB_Type type, DBFile &db);
+	void CreateTable(SQLEngine &eng, SQL *sql, std::vector<AttTypePair> *atts, std::vector<std::string> *order,
+				std::string tableName, DB_Type type, DBFile &db);
 };
 
 #endif /* INCLUDE_SQLENGINETEST_H_ */

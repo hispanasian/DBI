@@ -24,7 +24,7 @@ SQLEngineTest::~SQLEngineTest() {
 
 }
 
-void SQLEngineTest::CreateTable(SQLEngine eng, SQL *sql, vector<AttTypePair> *atts, vector<string> *order,
-		string *tableName, DB_Type type, DBFile &db) {
+void SQLEngineTest::CreateTable(SQLEngine &eng, SQL *sql, vector<AttTypePair> *atts, vector<string> *order,
+		string tableName, DB_Type type, DBFile &db) {
 	eng.CreateTable(sql, atts, order, tableName, type);
 }

@@ -39,22 +39,22 @@ SQL* SQLEngine::CreateSQL() const {
 }
 
 void SQLEngine::CreateTable(SQL *sql, vector<AttTypePair> *atts, vector<string> *order,
-		string *tableName, DB_Type type) {
+		string tableName, DB_Type type) {
 	DBFile db;
 	CreateTable(sql, atts, order, tableName, type, db);
 }
 
 void SQLEngine::CreateTable(SQL *sql, vector<AttTypePair> *atts, vector<string> *order,
-			string *tableName, DB_Type type, DBFile &db) {
+			string tableName, DB_Type type, DBFile &db) {
 
 }
 
-void SQLEngine::Insert(SQL *sql, string *file, string *table) {
+void SQLEngine::Insert(SQL *sql, string file, string table) {
 
 }
 
 
-void SQLEngine::DropTable(SQL *sql, string *table) {
+void SQLEngine::DropTable(SQL *sql, string table) {
 
 }
 

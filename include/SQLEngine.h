@@ -11,6 +11,7 @@
 #include "SQL.h"
 #include "Statistics.h"
 #include "RelationData.h"
+#include "DBFile.h"
 
 /**
  * SQLEngine maintains and keeps track of all the data structures that are used to execute a SQL
@@ -29,7 +30,7 @@ protected:
 	std::string dbPath;
 
 	virtual void CreateTable(SQL *sql, std::vector<AttTypePair> *atts, std::vector<std::string> *order,
-				std::string *tableName, DB_Type type, DBFile &db);
+				std::string tableName, DB_Type type, DBFile &db);
 public:
 
 	/**
@@ -74,7 +75,7 @@ public:
 	 * @param type			The type of the new table
 	 */
 	virtual void CreateTable(SQL *sql, std::vector<AttTypePair> *atts, std::vector<std::string> *order,
-			std::string *tableName, DB_Type type);
+			std::string tableName, DB_Type type);
 
 	/**
 	 * Inserts the file located at file into the table. The objects will be cleaned up by this
@@ -83,7 +84,7 @@ public:
 	 * @param file			The path to the file from which the data will be loaded
 	 * @param table			The table in which the data at file will be loaded
 	 */
-	virtual void Insert(SQL *sql, std::string *file, std::string *table);
+	virtual void Insert(SQL *sql, std::string file, std::string table);
 
 	/**
 	 * Removes table from associated structures. The objects will be cleaned up by this method.
@@ -91,7 +92,7 @@ public:
 	 * @param sql			The SQL object that parsed the data for this call
 	 * @param table			The table that will be dropped
 	 */
-	virtual void DropTable(SQL *sql, std::string *table);
+	virtual void DropTable(SQL *sql, std::string table);
 
 	/**
 	 * Runs the provided SQL query
