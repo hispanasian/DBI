@@ -38,9 +38,7 @@ public:
 
 	void DropTable(SQL *sql);
 
-	void Select(SQL *sql);
-
-	void QueryPlan(SQL *sql);
+	void Query(SQL *sql);
 
 	void SetOutput(SQL *sql);
 };

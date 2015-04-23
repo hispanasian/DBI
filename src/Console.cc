@@ -37,9 +37,9 @@ void Console::Start() {
 				break;
 			case Set_Output: SetOutput(sql);
 				break;
-			case Select: Select(sql);
+			case Select: Query(sql);
 				break;
-			case Quit: exit = true;
+			case Quit: quit = true;
 				break;
 			default: cerr << "unknown command" << endl;
 				break;
@@ -76,14 +76,14 @@ void Console::DropTable(SQL *sql) {
 	engine.DropTable(sql, table);
 }
 
-void Console::Select(SQL *sql) {
+void Console::Query(SQL *sql) {
 	if(output == None) {
 		// Simply print the Query plan to the screen
 		cout << engine.QueryPlan(sql) << endl;
 	}
 	else {
 		// Run the query
-		cout << engine.Query(sql, file);
+		engine.Query(sql, file);
 	}
 }
 
@@ -91,7 +91,7 @@ void Console::SetOutput(SQL *sql) {
 	string fpath;
 	output = sql->GetSetOutput(fpath);
 
-	if(file != NULL) fclose(file);
+	if(file != NULL && file != stdout) fclose(file);
 	delete file;
 	file = NULL;
 	switch (output) {
