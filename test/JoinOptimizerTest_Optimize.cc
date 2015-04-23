@@ -152,6 +152,176 @@ TEST_F(JoinOptimizerTest, Optimize4) {
     EXPECT_EQ(100, counts[aIndex].select);
     EXPECT_EQ(10, counts[bIndex].select);
     EXPECT_EQ(5, counts[cIndex].select);
+
+    // check size of the joins
+    EXPECT_EQ(10, counts[aIndex].join);
+}
+
+TEST_F(JoinOptimizerTest, Optimize5) {
+    unordered_map<string, AndList*> selects;
+    unordered_map<string, unordered_map<string, AndList*> > joins;
+    Statistics stats;
+    vector<string> rels;
+    vector<TupleCount> counts;
+
+    stats.AddRel("A", 100);
+    stats.AddRel("B", 30);
+    stats.AddRel("C", 10);
+    stats.AddRel("D", 40);
+
+    stats.AddAtt("A", "x", 30);
+    stats.AddAtt("B", "x", 30);
+    stats.AddAtt("B", "y", 10);
+    stats.AddAtt("C", "y", 10);
+    stats.AddAtt("C", "z", 40);
+    stats.AddAtt("D", "z", 40);
+
+    // populate selects
+    selects.emplace("A", new AndList{NULL, NULL});
+    selects.emplace("B", new AndList{NULL, NULL});
+    selects.emplace("C", new AndList{NULL, NULL});
+    selects.emplace("D", new AndList{NULL, NULL});
+
+    unordered_map<string, AndList*> alist;
+    unordered_map<string, AndList*> blist;
+    unordered_map<string, AndList*> clist;
+    unordered_map<string, AndList*> dlist;
+
+    char* cnf1 = "(A.x = B.x)";
+    yy_scan_string(cnf1);
+    yyparse();
+    AndList* and1 = final;
+    alist.emplace("B", and1);
+    blist.emplace("A", and1);
+
+    char* cnf2 = "(B.y = C.y)";
+    yy_scan_string(cnf2);
+    yyparse();
+    AndList* and2 = final;
+    blist.emplace("C", and2);
+    clist.emplace("B", and2);
+
+    char* cnf3 = "(C.z = D.z)";
+    yy_scan_string(cnf3);
+    yyparse();
+    AndList* and3 = final;
+    clist.emplace("D", and3);
+    dlist.emplace("C", and3);
+
+    joins.emplace("A", alist);
+    joins.emplace("B", blist);
+    joins.emplace("C", clist);
+    joins.emplace("D", dlist);
+
+
+    JoinOptimizer opt;
+    opt.Optimize(selects, joins, stats, rels, counts);
+    EXPECT_EQ(4, rels.size());
+    int cIndex = indexOf(rels, "C");
+    int dIndex = indexOf(rels, "D");
+    int bIndex = indexOf(rels, "B");
+    int aIndex = indexOf(rels, "A");
+    // C or D can be first, doesn't matter
+    EXPECT_EQ(true, cIndex == 0 || cIndex == 1);
+    EXPECT_EQ(true, dIndex == 0 || dIndex == 1);
+    // B must be 3rd in the list
+    EXPECT_EQ(2, bIndex);
+    // A must be 4th in the list
+    EXPECT_EQ(3, aIndex);
+    EXPECT_EQ(4, counts.size());
+    // Ensure the counts of the selects are correct
+    EXPECT_EQ(100, counts[aIndex].select);
+    EXPECT_EQ(30, counts[bIndex].select);
+    EXPECT_EQ(10, counts[cIndex].select);
+    EXPECT_EQ(40, counts[dIndex].select);
+
+    // check the sizes of the joins
+    EXPECT_EQ(30, counts[aIndex].join);
+    EXPECT_EQ(10, counts[bIndex].join);
+}
+
+TEST_F(JoinOptimizerTest, Optimize6) {
+    unordered_map<string, AndList*> selects;
+    unordered_map<string, unordered_map<string, AndList*> > joins;
+    Statistics stats;
+    vector<string> rels;
+    vector<TupleCount> counts;
+
+    stats.AddRel("A", 20);
+    stats.AddRel("B", 30);
+    stats.AddRel("C", 100);
+    stats.AddRel("D", 10);
+
+    stats.AddAtt("A", "x", 20);
+    stats.AddAtt("B", "x", 20);
+    stats.AddAtt("B", "y", 30);
+    stats.AddAtt("C", "y", 30);
+    stats.AddAtt("C", "z", 10);
+    stats.AddAtt("D", "z", 10);
+
+    // populate selects
+    selects.emplace("A", new AndList{NULL, NULL});
+    selects.emplace("B", new AndList{NULL, NULL});
+    selects.emplace("C", new AndList{NULL, NULL});
+    selects.emplace("D", new AndList{NULL, NULL});
+
+    unordered_map<string, AndList*> alist;
+    unordered_map<string, AndList*> blist;
+    unordered_map<string, AndList*> clist;
+    unordered_map<string, AndList*> dlist;
+
+    char* cnf1 = "(A.x = B.x)";
+    yy_scan_string(cnf1);
+    yyparse();
+    AndList* and1 = final;
+    alist.emplace("B", and1);
+    blist.emplace("A", and1);
+
+    char* cnf2 = "(B.y = C.y)";
+    yy_scan_string(cnf2);
+    yyparse();
+    AndList* and2 = final;
+    blist.emplace("C", and2);
+    clist.emplace("B", and2);
+
+    char* cnf3 = "(C.z = D.z)";
+    yy_scan_string(cnf3);
+    yyparse();
+    AndList* and3 = final;
+    clist.emplace("D", and3);
+    dlist.emplace("C", and3);
+
+    joins.emplace("A", alist);
+    joins.emplace("B", blist);
+    joins.emplace("C", clist);
+    joins.emplace("D", dlist);
+
+
+    JoinOptimizer opt;
+    opt.Optimize(selects, joins, stats, rels, counts);
+    EXPECT_EQ(4, rels.size());
+    int aIndex = indexOf(rels, "A");
+    int bIndex = indexOf(rels, "B");
+    int cIndex = indexOf(rels, "C");
+    int dIndex = indexOf(rels, "D");
+    // C or D can be first, doesn't matter
+    EXPECT_EQ(true, aIndex == 0 || aIndex == 1);
+    EXPECT_EQ(true, bIndex == 0 || bIndex == 1);
+    // B must be 3rd in the list
+    EXPECT_EQ(2, cIndex);
+    // A must be 4th in the list
+    EXPECT_EQ(3, dIndex);
+
+    EXPECT_EQ(4, counts.size());
+    // Ensure the counts of the selects are correct
+    EXPECT_EQ(20, counts[aIndex].select);
+    EXPECT_EQ(30, counts[bIndex].select);
+    EXPECT_EQ(100, counts[cIndex].select);
+    EXPECT_EQ(10, counts[dIndex].select);
+
+    // check the sizes of the joins
+    EXPECT_EQ(30, counts[cIndex].join);
+    EXPECT_EQ(100, counts[dIndex].join);
 }
 
 // Test with 3 relations
@@ -331,16 +501,4 @@ TEST_F(JoinOptimizerTest, Verify3) {
     EXPECT_EQ(100, stats6.Estimate(and1, rels6, 4));
     // CDBA 
     EXPECT_EQ(100, stats7.Estimate(and1, rels6, 4));
-}
-
-TEST_F(JoinOptimizerTest, Optimize7) {
-    Statistics stats;
-    stats.AddRel("A", 100);
-    stats.AddAtt("A", "y", 10);
-    char* cnf1 = "";
-    yy_scan_string(cnf1);
-    yyparse();
-    AndList* and1 = final;
-    const char* rels[] = {"A"};
-    EXPECT_EQ(100, stats.Estimate(and1, rels, 1));
 }

@@ -74,6 +74,7 @@ void JoinOptimizer::Optimize(unordered_map<string, AndList*> &selects,
     // Start the recursion
     cout << "Starting..." << endl;
     Solve(set, relNames, mem, stats, joins);
+    cout << "Done solving" << endl;
     // now backtrack to figure out the solution
     // build the rels and count vectors
     cout << "Backtracking..." << endl;
@@ -168,9 +169,12 @@ void JoinOptimizer::Solve(vector<bool>& set,
     double minIndex = -1;
     // iterate through every subset
     for(int i = 0; i < indices.size(); ++i) {
+       cout << "loop here 1" << endl; 
         int index = indices[i];
         // Check that this join is valid at all
+       cout << "loop here 2" << endl; 
         AndList* andList = GetAndList(index, indices, relNames, joins); 
+       cout << "loop here 3" << endl; 
         if(andList == NULL) {
             // this is an invalid join, set the cost to 
             // be very large so it's not considered a valid solution
@@ -193,6 +197,11 @@ void JoinOptimizer::Solve(vector<bool>& set,
         set[index] = true;
     }
     cout << "Min index for set "; PrintSet(set, relNames); cout << minIndex << endl; 
+    if(minIndex == -1) {
+        // we didn't find a solution, this set is impossible
+        mem.SetSoln(set, numeric_limits<double>::max(), stats, -1, numeric_limits<double>::max()); 
+        return;
+    }
     // now we know which relation is optimal to join last
     // compute the soln to this set using the optimal sub-soln
     // store this soln in the mem
@@ -200,7 +209,7 @@ void JoinOptimizer::Solve(vector<bool>& set,
     Statistics* oldStatsPtr = &(mem.GetStats(set));
     Statistics& oldStats = *oldStatsPtr;
     cout << "here 7.5" << endl;
-    Statistics newStats = Statistics(oldStats);
+    Statistics& newStats = *new Statistics(oldStats);
     cout << "here 8" << endl; 
     // figure out which AndList goes with this join
     AndList* andList = GetAndList(minIndex, indices, relNames, joins); 
