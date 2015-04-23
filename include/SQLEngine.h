@@ -108,7 +108,7 @@ public:
 
 	/**
 	 * Removes table from associated structures. The objects will be cleaned up by this method.
-	 * This method assumes that the table exists.
+	 * This method assumes that the table exists. This method deletes sql.
 	 * @param sql			The SQL object that parsed the data for this call
 	 * @param table			The table that will be dropped
 	 */

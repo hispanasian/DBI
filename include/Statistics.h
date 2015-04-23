@@ -56,6 +56,12 @@ public:
 	virtual ~Statistics();
 
 	/**
+	 * Removes relName from the structure
+	 * @param relName	The name of the relation being removed
+	 */
+	virtual void RemoveRel(const char *relName);
+
+	/**
 	 * Adds (or replaces if it exists) a base relation to this structure and any other relations
 	 * that exist in the set contained by this relation.
 	 * @param relName	The name of the base relation

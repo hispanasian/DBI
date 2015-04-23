@@ -45,6 +45,11 @@ Statistics::~Statistics() {
 	// TODO Auto-generated destructor stub
 }
 
+void Statistics::RemoveRel(const char* relName) {
+	relations.erase(string(relName));
+	lookup.erase(string(relName));
+}
+
 void Statistics::AddRel(const char *relName, double numTuples) {
 	try {
 		set<string> &temp = relations.at(relName).set;

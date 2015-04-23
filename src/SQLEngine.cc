@@ -101,14 +101,29 @@ void SQLEngine::Insert(SQL *sql, std::string file, std::string table, DBFile &db
 	db.Open(tablepath.c_str());
 	db.Load(schema, file.c_str());
 	db.Close();
+
+	// Cleanup
+	delete sql;
 }
 
 void SQLEngine::DropTable(SQL *sql, string table) {
-
+	RawFile rfile;
+	DropTable(sql, table, rfile);
 }
 
 void SQLEngine::DropTable(SQL *sql, string table, RawFile &rfile) {
+	string tablepath = DBLocation(table);
+	string headerpath = tablepath;
+	headerpath.append(".header");
 
+	rfile.Remove(tablepath.c_str());
+	rfile.Remove(headerpath.c_str());
+
+	stats.RemoveRel(table.c_str());
+	relations.Remove(table);
+
+	// Cleanup
+	delete sql;
 }
 
 void SQLEngine::Query(SQL *sql) const {
