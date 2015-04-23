@@ -18,7 +18,7 @@ TEST_F(StatisticsTest, VerifyJoinSets1) {
 	stat.MergeSets("rel1", "rel3");
 	stat.MergeSets("rel1", "rel4");
 
-	char *relNames[] = { "rel1", "rel2", "rel3", "rel4", "rel5" };
+	const char *relNames[] = { "rel1", "rel2", "rel3", "rel4", "rel5" };
 
 	EXPECT_EQ(true, stat.VerifyJoinSets(relNames, 5));
 }
@@ -37,7 +37,7 @@ TEST_F(StatisticsTest, VerifyJoinSets2) {
 	stat.MergeSets("rel1", "rel3");
 	stat.MergeSets("rel1", "rel4");
 
-	char *relNames[] = { "rel1", "rel2", "rel3", "rel5" };
+	const char *relNames[] = { "rel1", "rel2", "rel3", "rel5" };
 
 	EXPECT_EQ(false, stat.VerifyJoinSets(relNames, 4));
 }
@@ -52,7 +52,7 @@ TEST_F(StatisticsTest, VerifyJoinSets3) {
 	stat.AddRel("rel4", 0);
 	stat.AddRel("rel5", 0);
 
-	char *relNames[] = { "rel1", "rel2", "rel3", "rel4", "rel5" };
+	const char *relNames[] = { "rel1", "rel2", "rel3", "rel4", "rel5" };
 
 	EXPECT_EQ(true, stat.VerifyJoinSets(relNames, 5));
 }
@@ -71,7 +71,7 @@ TEST_F(StatisticsTest, VerifyJoinSets4) {
 	stat.MergeSets("rel1", "rel3");
 	stat.MergeSets("rel4", "rel5");
 
-	char *relNames[] = { "rel1", "rel2", "rel3", "rel4", "rel5" };
+	const char *relNames[] = { "rel1", "rel2", "rel3", "rel4", "rel5" };
 
 	EXPECT_EQ(true, stat.VerifyJoinSets(relNames, 5));
 }
