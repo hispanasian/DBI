@@ -7,7 +7,7 @@
 using namespace std;
 
 void Memoizer::SetSoln(vector<bool>& set, double cost, Statistics& stats, int addedIndex, int outputSize) {
-    solns.emplace(set, new SolnData{cost, &stats, addedIndex, outputSize});
+    solns.insert(make_pair<vector<bool>&, SolnData*>(set, new SolnData{cost, &stats, addedIndex, outputSize}));
 }
 
 double Memoizer::GetCost(vector<bool>& set) {
@@ -15,7 +15,6 @@ double Memoizer::GetCost(vector<bool>& set) {
 }
 
 Statistics& Memoizer::GetStats(vector<bool>& set) {
-    cout << "Getting stats" << endl; 
     return *(solns.at(set)->stats);
 }
 
@@ -77,15 +76,24 @@ void JoinOptimizer::Optimize(unordered_map<string, AndList*> &selects,
     Solve(set, relNames, mem, stats, joins);
     // now backtrack to figure out the solution
     // build the rels and count vectors
-
+    cout << "Backtracking..." << endl;
     int index = mem.GetAddedIndex(set);
     while(index != -1) {
         set[index] = false;
+        PrintSet(set, relNames);
         // add this relation to our output list
         rels.push_back(relNames[index]);
         counts.push_back(TupleCount{mem.GetOutputSize(set), tupleCount[index]});
         index = mem.GetAddedIndex(set);
     }
+    // now add the counts from the first join
+    vector<int> indices; 
+    Indices(set, indices);
+    cout << indices.size() << endl;
+    rels.push_back(relNames[indices[0]]);
+    counts.push_back(TupleCount{0, tupleCount[indices[0]]});
+    rels.push_back(relNames[indices[1]]);
+    counts.push_back(TupleCount{0, tupleCount[indices[1]]});
 
     // reverse our lists
     reverse(rels.begin(), rels.end());
@@ -125,7 +133,8 @@ void JoinOptimizer::Solve(vector<bool>& set,
         // get a stats object from one of the relations
         // copy it
         cout << "here 3" << endl;
-        Statistics newStats = *new Statistics(stats);
+        Statistics* newStatsPtr = new Statistics(stats);
+        Statistics& newStats = *newStatsPtr;
         AndList* andList = GetAndList(indices[0], indices, relNames, joins); 
         if(andList == NULL) {
             cout << "Invalid join " << relNames[indices[0]] << " and " << relNames[indices[1]] << endl;
