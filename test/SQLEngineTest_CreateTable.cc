@@ -6,14 +6,16 @@
 #include <vector>
 #include <string>
 
+using ::testing::StrEq;
+
 /**
  * SQLEngineTest::CreateTable should create a Heap
  */
 TEST_F(SQLEngineTest, CreateTable1) {
-	StrictMock<MockDBFile> db;
+	MockDBFile db;
 
 	SQL *sql = new SQL(stat);
-	SQLEngine test(stat, relations, "test.cat");
+	SQLEngine test(stat, relations, "data/DB/10M/", "catalog");
 
 	vector<AttTypePair> *atts = new vector<AttTypePair>;
 	vector<string> *order = new vector<string>;
@@ -25,7 +27,8 @@ TEST_F(SQLEngineTest, CreateTable1) {
 
 	Schema relb (*atts);
 
-	EXPECT_CALL(db, Create("data/DB/10M/RelB", heap, NULL)).
+	EXPECT_CALL(db, Create(StrEq("data/DB/10M/RelB.db"), heap, NULL)).
+//	EXPECT_CALL(db, Create(_, _, _)).
 			WillOnce(Return(1));
 
 	EXPECT_CALL(db, Close()).
@@ -51,10 +54,10 @@ TEST_F(SQLEngineTest, CreateTable1) {
  * SQLEngineTest::CreateTable should create a Sorted DB
  */
 TEST_F(SQLEngineTest, CreateTable2) {
-	StrictMock<MockDBFile> db;
+	MockDBFile db;
 
 	SQL *sql = new SQL(stat);
-	SQLEngine test(stat, relations, "test.cat");
+	SQLEngine test(stat, relations, "data/DB/10M/", "catalog");
 
 	vector<AttTypePair> *atts = new vector<AttTypePair>;
 	vector<string> *order = new vector<string>;
@@ -67,7 +70,7 @@ TEST_F(SQLEngineTest, CreateTable2) {
 
 	Schema relb (*atts);
 
-	EXPECT_CALL(db, Create("data/DB/10M/RelB", sorted, NotNull())).
+	EXPECT_CALL(db, Create(StrEq("data/DB/10M/RelB.db"), sorted, NotNull())).
 			WillOnce(Return(1));
 
 	EXPECT_CALL(db, Close()).

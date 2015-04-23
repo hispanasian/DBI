@@ -28,6 +28,7 @@ protected:
 	Statistics stats;
 	RelationData relations;
 	std::string dbPath;
+	std::string schemaLocation;
 
 	virtual void CreateTable(SQL *sql, std::vector<AttTypePair> *atts, std::vector<std::string> *order,
 				std::string tableName, DB_Type type, DBFile &db);
@@ -55,7 +56,7 @@ public:
 	 */
 	SQLEngine(std::string startFile);
 
-	SQLEngine(const Statistics &_stats, const RelationData &_relations, const std::string &_dbPath);
+	SQLEngine(const Statistics &_stats, const RelationData &_relations, const std::string &_dbPath, const std::string &_schemaLocation);
 	virtual ~SQLEngine();
 
 	/**

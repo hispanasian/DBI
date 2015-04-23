@@ -31,6 +31,7 @@ using ::testing::SetArgPointee;
 using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Ref;
+using ::testing::StrEq;
 
 class SQLEngineTest: public::testing::Test {
 public:

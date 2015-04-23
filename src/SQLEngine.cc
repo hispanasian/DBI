@@ -6,6 +6,9 @@
  */
 
 #include "SQLEngine.h"
+#include "DBFile.h"
+#include "SortedDBFile.h"
+#include "Defs.h"
 
 SQLEngine::SQLEngine() {
 	// TODO Auto-generated constructor stub
@@ -18,7 +21,8 @@ SQLEngine::SQLEngine(string fileName) {
 }
 
 SQLEngine::SQLEngine(const Statistics &_stats, const RelationData &_relations,
-		const string &_dbPath): stats(_stats), relations(_relations), dbPath(_dbPath) {
+		const string &_dbPath, const std::string &_schemaLocation): stats(_stats),
+				relations(_relations), dbPath(_dbPath), schemaLocation(_schemaLocation) {
 
 }
 
@@ -46,7 +50,35 @@ void SQLEngine::CreateTable(SQL *sql, vector<AttTypePair> *atts, vector<string> 
 
 void SQLEngine::CreateTable(SQL *sql, vector<AttTypePair> *atts, vector<string> *order,
 			string tableName, DB_Type type, DBFile &db) {
+	// First, Populate Statistics
+	stats.AddRel(tableName.c_str(), 0);
 
+	for(int i = 0; i < atts->size(); i++) {
+		stats.AddAtt(tableName.c_str(), atts->at(i).Attribute().c_str(), -1);
+	}
+
+	// Next, add the relation to relations
+	Schema schema (*atts);
+	string dbLocation = dbPath;
+	dbLocation.append(tableName).append(".db");
+	relations.Insert(tableName, dbLocation, schemaLocation, schema);
+
+	// Lastly, create the new table
+	if(type == Sorted) {
+		int *runlen = new int(RUN_LENGTH);
+		OrderMaker *sortorder = new OrderMaker(&schema, order);
+		SortInfo *sort = new SortInfo(sortorder, runlen);
+		db.Create(dbLocation.c_str(), sorted, sort);
+	}
+	else if(type == Heap) db.Create(dbLocation.c_str(), heap, NULL);
+
+	// Close that thing
+	db.Close();
+
+	// Cleanup
+	delete sql;
+	delete atts;
+	delete order;
 }
 
 void SQLEngine::Insert(SQL *sql, string file, string table) {
