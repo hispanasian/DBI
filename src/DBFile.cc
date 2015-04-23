@@ -31,7 +31,7 @@ DBFile::~DBFile () {
 	delete delegate;
 }
 
-int DBFile::Create (char *f_path, fType f_type, void *startup) {
+int DBFile::Create (const char *f_path, fType f_type, void *startup) {
 	bool success = true;
 	bool rawOpen = false;
 

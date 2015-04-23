@@ -28,7 +28,7 @@ SortedDBFile::SortedDBFile(): GenericDBFile() {
 	getNextState = NoCNF;
 }
 
-SortedDBFile::SortedDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp, char *_f_path, SortInfo *_sortInfo):
+SortedDBFile::SortedDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp, const char *_f_path, SortInfo *_sortInfo):
 GenericDBFile(file, rfile, config, comp), f_path(_f_path), sortInfo(_sortInfo), cursor(new Page()) {
 	in = NULL;
 	out = NULL;

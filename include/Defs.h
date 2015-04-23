@@ -7,6 +7,7 @@
 
 #define PAGE_SIZE 131072
 #define PIPE_SIZE 100
+#define RUN_LENGTH 100
 
 
 enum Target {Left, Right, Literal};

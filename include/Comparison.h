@@ -6,7 +6,9 @@
 #include "File.h"
 #include "Comparison.h"
 #include "ComparisonEngine.h"
+#include "SQL.h"
 #include <string>
+#include <vector>
 
 
 // This stores an individual comparison that is part of a CNF
@@ -64,7 +66,10 @@ public:
 	// based on the attributes in order (relative to base).
 	// ie: OrderMaker will sort on the attributes provided by
 	// order but will use the context of base
-	OrderMaker(Schema *base, Schema *order);
+	OrderMaker(const Schema *base, const Schema *order);
+
+	// Similar to the above
+	OrderMaker(const Schema *base, const std::vector<std::string> *order);
 
 	// create an OrderMaker that can be used to sort records
 	// based upon str which is expected to have the following format:

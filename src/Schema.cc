@@ -57,7 +57,7 @@ int Schema :: GetNumAtts () const {
 	return numAtts;
 }
 
-Attribute *Schema :: GetAtts () {
+const Attribute *Schema :: GetAtts () const {
 	return myAtts;
 }
 

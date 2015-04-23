@@ -39,7 +39,7 @@ public:
 
 	// gets the set of attributes, but be careful with this, since it leads
 	// to aliasing!!!
-	Attribute *GetAtts ();
+	const Attribute *GetAtts () const;
 
 	// returns the number of attributes
 	int GetNumAtts () const;

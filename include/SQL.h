@@ -116,7 +116,7 @@ protected:
 	std::string att;
 	Type type;
 public:
-	AttTypePair(const std::string &_att, Type &_type): att(_att), type(_type) {}
+	AttTypePair(const std::string &_att, Type _type): att(_att), type(_type) {}
 
 	AttTypePair(const char* _att, int _type): att(std::string(_att)) {
 		if(_type == INT) type = Int;

@@ -62,7 +62,7 @@ public:
 	 * @param startup	Unknown
 	 * @return			1 if successful and 0 if failure.
 	 */
-	virtual int Create (char *fpath, fType file_type, void *startup);
+	virtual int Create (const char *fpath, fType file_type, void *startup);
 
     /**
 	 * Opens the file and associated header located at fpath and fpath.header respectively. This

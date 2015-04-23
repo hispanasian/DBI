@@ -64,7 +64,7 @@ int Record :: ComposeRecord (Schema *mySchema, const char *src) {
 	bits = NULL;
 
 	int n = mySchema->GetNumAtts();
-	Attribute *atts = mySchema->GetAtts();
+	const Attribute *atts = mySchema->GetAtts();
 
 	// this is the current position (int bytes) in the binary
 	// representation of the record that we are dealing with
@@ -170,7 +170,7 @@ int Record :: SuckNextRecord (Schema *mySchema, FILE *textFile) {
 	bits = NULL;
 
 	int n = mySchema->GetNumAtts();
-	Attribute *atts = mySchema->GetAtts();
+	const Attribute *atts = mySchema->GetAtts();
 
 	// this is the current position (int bytes) in the binary
 	// representation of the record that we are dealing with
@@ -447,7 +447,7 @@ void Record :: MergeRecords (Record *left, Record *right, int numAttsLeft, int n
 void Record :: Print (Schema *mySchema) {
 
 	int n = mySchema->GetNumAtts();
-	Attribute *atts = mySchema->GetAtts();
+	const Attribute *atts = mySchema->GetAtts();
 
 	// loop through all of the attributes
 	for (int i = 0; i < n; i++) {
@@ -493,7 +493,7 @@ void Record :: Print (Schema *mySchema) {
 std::string Record :: ToString (Schema *mySchema) {
 	std::string str = "";
 	int n = mySchema->GetNumAtts();
-	Attribute *atts = mySchema->GetAtts();
+	const Attribute *atts = mySchema->GetAtts();
 
 	// loop through all of the attributes
 	for (int i = 0; i < n; i++) {

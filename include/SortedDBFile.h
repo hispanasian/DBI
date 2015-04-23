@@ -50,7 +50,7 @@ friend class MockSOrtedDBFile;
 friend class PartialSortedDBFileMock;
 private:
 	SortInfo *sortInfo;
-	char *f_path;
+	const char *f_path;
 	Pipe *in;
 	Pipe *out; // The Pipe used to get the added Records
 	RWState rwState; // flag to denote reading/writing mode
@@ -116,7 +116,7 @@ private:
 	SortedDBFile();
 
 public:
-	SortedDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp, char *f_path, SortInfo *sortInfo);
+	SortedDBFile(File &file, RawFile &rfile, DBConfig &config, ComparisonEngine &comp, const char *f_path, SortInfo *sortInfo);
     virtual ~SortedDBFile();
 
     /**
