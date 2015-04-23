@@ -115,13 +115,15 @@ public:
 	virtual void DropTable(SQL *sql, std::string table);
 
 	/**
-	 * Runs the provided SQL query
+	 * Runs the provided SQL query after creating an execution plan for it. This method assumes
+	 * that sql::Parse has already been called.
 	 * @param sql			The SQL object that parsed the data for this call
 	 */
 	virtual void Query(SQL *sql) const;
 
 	/**
-	 * Returns a string that contains the QueryPlan for the query held by sql
+	 * Returns a string that contains the QueryPlan for the query held by sql. This method assumes
+	 * that sql::Parse has already been called.
 	 * @param sql			The SQL object that parsed the data for this call
 	 * @return 				A string that contains the QueryPlan for the query held by sql
 	 */
