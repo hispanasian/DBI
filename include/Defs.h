@@ -23,7 +23,7 @@ enum SQL_Command {
 	Set_Output = OUTPUT_SET,
 	Select = SELECT_TABLE,
 	Quit = QUIT_SQL,
-	Unknown
+	Unknown = -1
 };
 
 unsigned int Random_Generate();

@@ -126,7 +126,7 @@ void SQLEngine::DropTable(SQL *sql, string table, RawFile &rfile) {
 	delete sql;
 }
 
-void SQLEngine::Query(SQL *sql) const {
+void SQLEngine::Query(SQL *sql, FILE* file) const {
 
 }
 

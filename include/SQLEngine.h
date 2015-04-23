@@ -118,8 +118,9 @@ public:
 	 * Runs the provided SQL query after creating an execution plan for it. This method assumes
 	 * that sql::Parse has already been called.
 	 * @param sql			The SQL object that parsed the data for this call
+	 * @param file			The file that will take the resulting query
 	 */
-	virtual void Query(SQL *sql) const;
+	virtual void Query(SQL *sql, FILE* file) const;
 
 	/**
 	 * Returns a string that contains the QueryPlan for the query held by sql. This method assumes
