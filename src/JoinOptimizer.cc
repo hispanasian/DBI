@@ -1,12 +1,13 @@
 #include "JoinOptimizer.h"
 #include <iostream>
 #include <limits>
+#include <algorithm>
 
 
 using namespace std;
 
-void Memoizer::SetSoln(vector<bool>& set, double cost, Statistics& stats, vector<bool>& prevSet) {
-    solns.emplace(set, SolnData{cost, stats, prevSet});
+void Memoizer::SetSoln(vector<bool>& set, double cost, Statistics& stats, int addedIndex, int outputSize) {
+    solns.emplace(set, SolnData{cost, stats, addedIndex, outputSize});
 }
 
 double Memoizer::GetCost(vector<bool>& set) {
@@ -17,8 +18,12 @@ Statistics& Memoizer::GetStats(vector<bool>& set) {
     return solns.at(set).stats;
 }
 
-vector<bool>& Memoizer::GetPrev(vector<bool>& set) {
-    return solns.at(set).prevSet;
+int Memoizer::GetAddedIndex(vector<bool>& set) {
+    return solns.at(set).addedIndex;
+}
+
+int Memoizer::GetOutputSize(vector<bool>& set) {
+    return solns.at(set).outputSize;
 }
 
 bool Memoizer::Solved(vector<bool>& set) {
@@ -55,12 +60,14 @@ void JoinOptimizer::Optimize(unordered_map<string, AndList*> &selects,
     // create the set object
     vector<bool> set;
     vector<string> relNames;
+    vector<int> tupleCount;
     const char* names[1];
     for(auto it = selects.begin(); it != selects.end(); ++it) {
         // set up the solns to the individual relations
         relNames.push_back(it->first);
         set.push_back(true);
         names[0] = it->first.c_str();
+        tupleCount.push_back(stats.Estimate(it->second, names, 1));
         stats.Apply(it->second, names, 1);
     }
 
@@ -69,10 +76,27 @@ void JoinOptimizer::Optimize(unordered_map<string, AndList*> &selects,
     // now backtrack to figure out the solution
     // build the rels and count vectors
 
+    int index = mem.GetAddedIndex(set);
+    while(index != -1) {
+        set[index] = false;
+        // add this relation to our output list
+        rels.push_back(relNames[index]);
+        counts.push_back(TupleCount{mem.GetOutputSize(set), tupleCount[index]});
+        index = mem.GetAddedIndex(set);
+    }
+
+    // reverse our lists
+    reverse(rels.begin(), rels.end());
+    reverse(counts.begin(), counts.end());
 }
 
-void JoinOptimizer::Solve(vector<bool>& set, vector<string>& relNames, Memoizer& mem, Statistics& stats,
-                        unordered_map<string, unordered_map<string, AndList*> > &joins) {
+void JoinOptimizer::Solve(vector<bool>& set,
+                            vector<string>& relNames,
+                            Memoizer& mem,
+                            Statistics& stats,
+                            unordered_map<string,
+                            unordered_map<string,
+                            AndList*> > &joins) {
     // base case: we've already calculated this solution
     if(mem.Solved(set)) {
         return;
@@ -94,11 +118,12 @@ void JoinOptimizer::Solve(vector<bool>& set, vector<string>& relNames, Memoizer&
         // figure out the cost
         double newCost = newStats.Estimate(andList, names, indices.size());
         // Apply and join these 2 relations
+        // TODO: this will throw an exception!
         newStats.Apply(andList, names, indices.size());
         vector<bool> prevSet = set;
         set[indices[0]] = true;
         // place it in the memoizer
-        mem.SetSoln(set, newCost, newStats, set);
+        mem.SetSoln(set, newCost, newStats, -1, newCost);
         return;
     } 
 
@@ -132,15 +157,15 @@ void JoinOptimizer::Solve(vector<bool>& set, vector<string>& relNames, Memoizer&
     const char* names[indices.size()];
     // const char** names = GetRelNames(minIndex, set, relNames);
     GetRelNames(minIndex, indices, names, relNames);
-    double newCost = newStats.Estimate(andList, names, indices.size()) +
-                        mem.GetCost(set);
+    // TODO: will throw an exception
+    double joinSize = newStats.Estimate(andList, names, indices.size()); 
+    double newCost = joinSize + mem.GetCost(set);
         // Apply and join these 2 relations
         newStats.Apply(andList, names, indices.size());
     newStats.Apply(andList, names, indices.size());
     // store this data in the memoizer
-    vector<bool> prevSet = set;
     set[minIndex] = true;
-    mem.SetSoln(set, newCost, newStats, prevSet);
+    mem.SetSoln(set, newCost, newStats, minIndex, joinSize);
 }
 
 AndList* JoinOptimizer::GetAndList(const int index, const vector<int>& indices,

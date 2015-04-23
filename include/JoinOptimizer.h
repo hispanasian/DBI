@@ -16,24 +16,31 @@ using namespace std;
 struct SolnData {
     double cost;
     Statistics& stats;
-    vector<bool>& prevSet;
+    int addedIndex;
+    int outputSize;
 };
 
 class Memoizer {
 public:
     unordered_map<vector<bool>, SolnData> solns;
-    void SetSoln(vector<bool>& set, double cost, Statistics& stats, vector<bool>& prevSet);
+    void SetSoln(vector<bool>& set, double cost, Statistics& stats, int addedIndex, int outputSize); 
     double GetCost(vector<bool>& set);
     Statistics& GetStats(vector<bool>& set);
-    vector<bool>& GetPrev(vector<bool>& set);
+    int GetAddedIndex(vector<bool>& set);
+    int GetOutputSize(vector<bool>& set);
     bool Solved(vector<bool>& set); 
 };
 
 class JoinOptimizer {
 friend class JoinOptimizerTest;
 private:
-    void Solve(vector<bool>& set, vector<string>& relNames, Memoizer& mem, Statistics& stats,
-                        unordered_map<string, unordered_map<string, AndList*> > &joins); 
+    void Solve(vector<bool>& set,
+                vector<string>& relNames,
+                Memoizer& mem,
+                Statistics& stats,
+                unordered_map<string,
+                unordered_map<string,
+                AndList*> > &joins); 
     void Indices(const vector<bool>& set, vector<int>& inidices);
     bool SetsEqual(const vector<bool>& set1, const vector<bool>& set2); 
     AndList* GetAndList(const int index, const vector<int>& indices,
