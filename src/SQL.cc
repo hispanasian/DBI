@@ -13,19 +13,23 @@
 using namespace std;
 
 SQL::SQL(): function(NULL), relations(NULL), where(NULL), groupAtts(NULL), selectAtts(NULL),
-		selectDistinct(0), aggregateDistinct(0), relationSize(0) {}
+		create(NULL), selectDistinct(0), aggregateDistinct(0), relationSize(0), output(-1),
+		instruction(-1), file(NULL), table(NULL) {}
 
 SQL::SQL(const Statistics &_stat): stat(_stat), function(NULL), relations(NULL), where(NULL),
-		groupAtts(NULL), selectAtts(NULL), selectDistinct(0), aggregateDistinct(0), relationSize(0) {}
+		groupAtts(NULL), selectAtts(NULL), create(NULL), selectDistinct(0), aggregateDistinct(0),
+		relationSize(0), output(-1), instruction(-1), file(NULL), table(NULL)  {}
 
 SQL::SQL(const Statistics &_stat, int _relationSize): stat(_stat), function(NULL), relations(NULL),
-		where(NULL), groupAtts(NULL), selectAtts(NULL), selectDistinct(0), aggregateDistinct(0),
-		relationSize(_relationSize) {}
+		where(NULL), groupAtts(NULL), selectAtts(NULL), create(NULL), selectDistinct(0),
+		aggregateDistinct(0), relationSize(_relationSize), output(-1), instruction(-1),
+		file(NULL), table(NULL) {}
 
 SQL::SQL(const SQL &copyMe): function(copyMe.function), relations(copyMe.relations),
 		where(copyMe.where), groupAtts(copyMe.groupAtts), selectAtts(copyMe.selectAtts),
-		selectDistinct(copyMe.selectDistinct), aggregateDistinct(copyMe.aggregateDistinct),
-		relationSize(copyMe.relationSize) {}
+		create(createData), selectDistinct(copyMe.selectDistinct),
+		aggregateDistinct(copyMe.aggregateDistinct), relationSize(copyMe.relationSize),
+		output(outType), instruction(command), file(refFile), table(refTable)  {}
 
 SQL::~SQL() {
 	// TODO Auto-generated destructor stub
@@ -42,13 +46,13 @@ string SQL::GetSQLStatement() const {
 	return sql;
 }
 
-void SQL::Parse(const string &sql) {
+SQL_Command  SQL::Parse(const string &sql) {
 	this->sql = sql;
 	yysql_scan_string(this->sql.c_str());
-	Parse();
+	return Parse();
 }
 
-void SQL::Parse() {
+SQL_Command SQL::Parse() {
 	yysqlparse();
 
 	// Copy the structures
@@ -57,8 +61,13 @@ void SQL::Parse() {
 	where = boolean;
 	groupAtts = groupingAtts;
 	selectAtts = attsToSelect;
+	create = createData;
 	selectDistinct = distinctAtts;
 	aggregateDistinct = distinctFunc;
+	output = outType;
+	instruction = command;
+	file = refFile;
+	table = refTable;
 
 	// Make copy of aliases
 	vector<RelAliasPair> aliases;
@@ -67,6 +76,16 @@ void SQL::Parse() {
 		stat.CopyRel(aliases[i].Relation().c_str(), aliases[i].Alias().c_str());
 	}
 	relationSize = aliases.size();
+
+	switch (instruction) {
+	case CREATE: return Create_Table;
+	case INSERT_INTO: return Insert_Into;
+	case DROP: return Drop_Table;
+	case OUTPUT_SET: return Set_Output;
+	case SELECT_TABLE: return Select;
+	case QUIT_SQL: return Quit;
+	default: return Unknown;
+	}
 }
 
 void SQL::GetWhere(SelectMap &selects, JoinMap &joins) const {
@@ -275,5 +294,89 @@ void SQL::ParseTableList(TableList *list, vector<RelAliasPair> &pairs) const {
 	while(temp.size() > 0) {
 		pairs.push_back(temp.top());
 		temp.pop();
+	}
+}
+
+DB_Type SQL::GetCreateTable(vector<AttTypePair> &atts, vector<string> &order, string &tableName) const {
+	// First, let's verify the relation/table does not exist
+	tableName = string(table);
+	if(stat.NumTuples(tableName.c_str()) != -1)
+		throw invalid_argument("A table with the provided name already exists");
+
+	// Now, builds the table
+	atts.clear();
+	order.clear();
+	ParseCreateTable(create, atts, order);
+
+	// Lastly, return the type
+	if(create->type == SORTED_DB) return Sorted;
+	else if(create->type == HEAP_DB) return Heap;
+	else throw invalid_argument("Unknown Table type found");
+}
+
+void SQL::ParseCreateTable(const CreateTable *table, vector<AttTypePair> &atts,
+		vector<string> &order) const {
+	// First, lets build atts
+	stack<AttTypePair> tempAtts;
+	AttDesc *att = table->atts;
+	while(att != NULL) {
+		tempAtts.push(AttTypePair(att->name, att->type));
+		att = att->next;
+	}
+
+	while(tempAtts.size() > 0) {
+		atts.push_back(tempAtts.top());
+		tempAtts.pop();
+	}
+
+	// Now build/verify order
+	stack<string> tempOrder;
+	NameList *name = table->sort;
+	bool found = false;
+	while(name != NULL) {
+		tempOrder.push(string(name->name));
+
+		// Verify
+		found = false;
+		for(int i = 0; i < atts.size() && !found; i++) {
+			if(atts[i].Attribute().compare(tempOrder.top()) == 0 ) found = true;
+		}
+		if(!found) throw invalid_argument("Cannot sort on non-existing attribute");
+		name = name->next;
+	}
+
+	while(tempOrder.size() > 0) {
+		order.push_back(tempOrder.top());
+		tempOrder.pop();
+	}
+}
+
+void SQL::GetInsertInto(string &file, string &table) const {
+	if(this->file != NULL) file = string(this->file);
+	else throw invalid_argument("No file provided");
+
+	if(this->table != NULL) {
+		if(stat.NumTuples(this->table) != -1) table = string(this->table);
+		else throw invalid_argument("That Table does not exist");
+	}
+	else throw invalid_argument("No table provided");
+}
+
+string SQL::GetDropTable() const {
+	if(this->table != NULL){
+		if(stat.NumTuples(this->table) == -1) throw invalid_argument("Table does not exist");
+		return string(this->table);
+	}
+	else return string("");
+}
+
+Output_Type SQL::GetSetOutput(string &file) const {
+	switch(output) {
+	case SET_STDOUT: return Stdout;
+	case SET_NONE: return None;
+	case SET_FILE:
+		file = string(this->file);
+		return File_Path;
+	default: return None;
 	}
 }

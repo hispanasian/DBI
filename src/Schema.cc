@@ -206,6 +206,18 @@ Schema :: Schema (const Schema &left, const Schema &right) {
 	Join(&left, &right);
 }
 
+Schema :: Schema (const vector<AttTypePair> &atts) {
+	fileName = NULL;
+	numAtts = atts.size();
+	myAtts = new Attribute[numAtts];
+
+	for(int i = 0; i < numAtts; i++) {
+		myAtts[i].name = atts[i].Attribute();
+		myAtts[i].relation = "";
+		myAtts[i].myType = atts[i].GetType();
+	}
+}
+
 void Schema :: Copy (const Schema &copyMe) {
 	if(copyMe.fileName != NULL) fileName = strdup(copyMe.fileName);
 	else {

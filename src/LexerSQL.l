@@ -38,6 +38,32 @@ void close_lexical_parser_sql () { yysql_delete_buffer (yysql_buf_state); }
 
 %%
 
+"QUIT"			return(QUIT);
+
+"CREATE TABLE"	return(CREATE_TABLE);
+
+"HEAP"			return(HEAP);
+
+"SORTED ON"		return(SORTED);
+
+"INSERT"		return(INSERT);
+
+"INTO"			return(INTO);
+
+"DROP TABLE"	return(DROP_TABLE);
+
+"SET OUTPUT"	return(SET_OUTPUT);
+
+"STDOUT"		return(STDOUT);
+
+"NONE"			return(NONE);
+
+"INTEGER"		return(INTEGER);
+
+"DOUBLE"		return(DBL);
+
+"STRING"		return(STR);
+
 "SELECT"		return(SELECT);
 
 "FROM"			return(FROM);
@@ -78,6 +104,8 @@ void close_lexical_parser_sql () { yysql_delete_buffer (yysql_buf_state); }
 
 ","    	        return(',');
 
+";"				return(';');
+
 -?[0-9]+ 	    {yysqllval.actualChars = strdup(yysqltext);
   			return(Int); 
 		        }
@@ -90,9 +118,14 @@ void close_lexical_parser_sql () { yysql_delete_buffer (yysql_buf_state); }
   			return(Name);
 			}     
 
+						
 [A-Za-z][A-Za-z0-9_-]*\.[A-Za-z][A-Za-z0-9_-]* {yysqllval.actualChars = strdup(yysqltext);
   			return(QualifiedName);
-			}     
+			}
+			
+[A-Za-z0-9_\.\-\\\/]+ {yysqllval.actualChars = strdup(yysqltext);
+  			return(FileName);
+			}
 
 \'[^'\n]*\'            {/* take care of ' in a string */
                         if (yysqltext[yysqlleng - 2] == '\\') {

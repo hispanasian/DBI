@@ -11,6 +11,46 @@
 #define GREATER_THAN 6
 #define EQUALS 7
 
+// Commands
+#define CREATE 8
+#define INSERT_INTO 9
+#define DROP 10
+#define OUTPUT_SET 11
+#define SELECT_TABLE 12
+#define QUIT_SQL 13
+
+// Table types
+#define HEAP_DB 14
+#define SORTED_DB 15
+
+// Output types
+#define SET_STDOUT 16
+#define SET_FILE 17
+#define SET_NONE 18
+
+// Used by CREATE TABLE
+struct CreateTable {
+	// The type of database used to hold the table (HEAP or SORTED)
+	int type;
+
+	// The list of attributes
+	struct AttDesc *atts;
+
+	// The list of attributes that will be sorted on (in reverse order)
+	struct NameList *sort;
+};
+
+// The description of an attribute
+struct AttDesc {
+	// Int, Double, or String
+	int type;
+
+	// The attributes name
+	char *name;
+
+	struct AttDesc *next;
+};
+
 // used in computational (funcional) expressions
 struct FuncOperand {
 
