@@ -10,7 +10,7 @@
  */
 TEST_F(StatisticsTest, VerifyJoinAttributes1) {
 
-    char *relName[] = { "part",  "lineitem"};
+    const char *relName[] = { "part",  "lineitem"};
 
 	stat.AddRel(relName[0],200000);
 	stat.AddAtt(relName[0], "p_partkey",200000);
@@ -32,7 +32,7 @@ TEST_F(StatisticsTest, VerifyJoinAttributes1) {
  * CopyRel should return false the attributes from the cnf do not pertain to a relation in relName
  */
 TEST_F(StatisticsTest, VerifyJoinAttributes2) {
-    char *relName[] = {"supplier"};
+    const char *relName[] = {"supplier"};
 
 	stat.AddRel(relName[0],10000);
 	stat.AddAtt(relName[0], "s_suppkey",10000);
