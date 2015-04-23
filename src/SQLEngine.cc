@@ -38,6 +38,16 @@ const RelationData& SQLEngine::GetRelations() const {
 	return relations;
 }
 
+string SQLEngine::DBLocation(const std::string &table) const {
+	string path = dbPath;
+	path.append(table).append(".db");
+	return path;
+}
+
+string SQLEngine::DBLocation(const char* table) const {
+	return DBLocation(string(table));
+}
+
 SQL* SQLEngine::CreateSQL() const {
 	return new SQL(stats);
 }
@@ -59,8 +69,7 @@ void SQLEngine::CreateTable(SQL *sql, vector<AttTypePair> *atts, vector<string> 
 
 	// Next, add the relation to relations
 	Schema schema (*atts);
-	string dbLocation = dbPath;
-	dbLocation.append(tableName).append(".db");
+	string dbLocation = DBLocation(tableName);
 	relations.Insert(tableName, dbLocation, schemaLocation, schema);
 
 	// Lastly, create the new table
@@ -82,11 +91,23 @@ void SQLEngine::CreateTable(SQL *sql, vector<AttTypePair> *atts, vector<string> 
 }
 
 void SQLEngine::Insert(SQL *sql, string file, string table) {
+	DBFile db;
+	Insert(sql, file, table, db);
+}
+
+void SQLEngine::Insert(SQL *sql, std::string file, std::string table, DBFile &db) {
+	string tablepath = DBLocation(table);
+	Schema schema = relations[table].schema;
+	db.Open(tablepath.c_str());
+	db.Load(schema, file.c_str());
+	db.Close();
+}
+
+void SQLEngine::DropTable(SQL *sql, string table) {
 
 }
 
-
-void SQLEngine::DropTable(SQL *sql, string table) {
+void SQLEngine::DropTable(SQL *sql, string table, RawFile &rfile) {
 
 }
 

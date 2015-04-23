@@ -28,3 +28,11 @@ void SQLEngineTest::CreateTable(SQLEngine &eng, SQL *sql, vector<AttTypePair> *a
 		string tableName, DB_Type type, DBFile &db) {
 	eng.CreateTable(sql, atts, order, tableName, type, db);
 }
+
+void SQLEngineTest::Insert(SQLEngine &eng, SQL *sql, std::string file, std::string table, DBFile &db) {
+	eng.Insert(sql, file, table, db);
+}
+
+void SQLEngineTest::DropTable(SQLEngine &eng, SQL *sql, std::string table, RawFile &rfile) {
+	eng.DropTable(sql, table, rfile);
+}

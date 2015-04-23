@@ -43,6 +43,10 @@ public:
 
 	void CreateTable(SQLEngine &eng, SQL *sql, std::vector<AttTypePair> *atts, std::vector<std::string> *order,
 				std::string tableName, DB_Type type, DBFile &db);
+
+	virtual void Insert(SQLEngine &eng, SQL *sql, std::string file, std::string table, DBFile &db);
+
+	virtual void DropTable(SQLEngine &eng, SQL *sql, std::string table, RawFile &rfile);
 };
 
 #endif /* INCLUDE_SQLENGINETEST_H_ */

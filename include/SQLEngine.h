@@ -12,6 +12,7 @@
 #include "Statistics.h"
 #include "RelationData.h"
 #include "DBFile.h"
+#include "RawFile.h"
 
 /**
  * SQLEngine maintains and keeps track of all the data structures that are used to execute a SQL
@@ -32,6 +33,23 @@ protected:
 
 	virtual void CreateTable(SQL *sql, std::vector<AttTypePair> *atts, std::vector<std::string> *order,
 				std::string tableName, DB_Type type, DBFile &db);
+
+	virtual void Insert(SQL *sql, std::string file, std::string table, DBFile &db);
+
+	virtual void DropTable(SQL *sql, std::string table, RawFile &rfile);
+
+	/**
+	 * Returns the path to the database for table
+	 * @param	Returns the location of the database for table
+	 */
+	std::string DBLocation(const std::string &table) const;
+
+	/**
+	 * Returns the path to the database for table
+	 * @param	Returns the location of the database for table
+	 */
+	std::string DBLocation(const char* table) const;
+
 public:
 
 	/**
@@ -80,7 +98,8 @@ public:
 
 	/**
 	 * Inserts the file located at file into the table. The objects will be cleaned up by this
-	 * method. This method assumes that the table does exist.
+	 * method. This method assumes that the table does exist. This method assumes that the DB file
+	 * for table already exists (as well as its schema)
 	 * @param sql			The SQL object that parsed the data for this call
 	 * @param file			The path to the file from which the data will be loaded
 	 * @param table			The table in which the data at file will be loaded
