@@ -89,3 +89,38 @@ TEST_F(PrintVisitorTest, VisitProjectNode1) {
 	node.Visit(pv, (void*) &data);		
 	cout << ss.str();
 }
+
+TEST_F(PrintVisitorTest, VisitJoinNode1) {
+	stringstream ss;
+	PrintVisitor pv;
+	vector<AttTypePair> leftAtts;
+	leftAtts.push_back(AttTypePair("x", INT));
+	leftAtts.push_back(AttTypePair("y", DOUBLE));
+	leftAtts.push_back(AttTypePair("z", STRING));
+	Schema schemaLeft = Schema(leftAtts);
+	char *cnf = "(x = 0)";
+    yy_scan_string(cnf);
+    yyparse();
+    AndList* leftAnd = final;
+	SelectFileNode leftChild = SelectFileNode(0, schemaLeft, leftAnd, "left.bin");
+
+	vector<AttTypePair> rightAtts;
+	rightAtts.push_back(AttTypePair("a", INT));
+	rightAtts.push_back(AttTypePair("b", DOUBLE));
+	rightAtts.push_back(AttTypePair("c", STRING));
+	Schema schemaRight = Schema(rightAtts);
+	cnf = "(a = 0)";
+    yy_scan_string(cnf);
+    yyparse();
+    AndList* rightAnd = final;
+	SelectFileNode rightChild = SelectFileNode(1, schemaRight, rightAnd, "file.bin");
+
+	cnf = "(a = x)";
+    yy_scan_string(cnf);
+    yyparse();
+    AndList* joinAnd = final;
+	JoinNode node = JoinNode(2, &leftChild, 10, &rightChild, 100, joinAnd);	
+	PrintVisitorData data {ss};	
+	node.Visit(pv, (void*) &data);		
+	cout << ss.str();
+}
