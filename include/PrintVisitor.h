@@ -13,6 +13,7 @@ struct PrintVisitorData {
 class PrintVisitor: public OpVisitor {
 private:
 	void ToStringRelAtts(const vector<RelAttPair>& relAtts, stringstream& out); 
+	string FuncOperatorToString(const FuncOperator *func); 
 public:
 	PrintVisitor();
 	~PrintVisitor();

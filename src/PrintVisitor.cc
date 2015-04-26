@@ -70,7 +70,20 @@ void PrintVisitor::VisitDuplicateRemovalNode(DuplicateRemovalNode *node, void* a
 	ToStringRelAtts(node->duplicates, out);
 	out << endl;
 }
-void PrintVisitor::VisitSumNode(SumNode *node, void* arg) {}
+void PrintVisitor::VisitSumNode(SumNode *node, void* arg) {
+	node->child->Visit(*this, arg);	
+	PrintVisitorData* data = (PrintVisitorData*) arg;	
+	stringstream& out = data->out;
+	out << endl;
+	out << "-----Sum Op-----\n";
+	out << "  Input pipe ID: " << node->child->GetID() << endl;
+	out << "  Output pipe ID: " << node->GetID() << endl;
+	out << "  Output Schema:" << endl;
+	out << node->GetSchema()->ToString("    ");
+	out << "  Sum Function: " << endl;
+	out << "  " << FuncOperatorToString(node->funcOp);
+	out << endl;
+}
 void PrintVisitor::VisitGroupByNode(GroupByNode *node, void* arg) {}
 void PrintVisitor::VisitWriteOutNode(WriteOutNode *node, void* arg) {}
 
@@ -80,4 +93,29 @@ void PrintVisitor::ToStringRelAtts(const vector<RelAttPair>& relAtts, stringstre
 			<< (relAtts[i].Relation().compare("") == 0 ? "" : ".")
 			<< relAtts[i].Attribute() << endl;
 	}
+}
+
+string PrintVisitor::FuncOperatorToString(const FuncOperator *func) {
+	string temp;
+	if(func != NULL) {
+		// First, parse left child
+		temp.append(" ");
+		temp.append(FuncOperatorToString(func->leftOperator));
+
+		// Next, check root.
+		struct FuncOperand *op = func->leftOperand;
+		if(op != NULL) {
+			temp.append(op->value);
+			// Print the operator	
+		}
+		if(func->code == 42) temp.append("*");
+		else if(func->code == 43) temp.append("+");
+		else if(func->code == 44) temp.append("/");
+		else if(func->code == 45) temp.append("-");
+
+		// Finally, check right child
+		temp.append(FuncOperatorToString(func->right));
+		temp.append(" ");
+	}
+	return temp;
 }
