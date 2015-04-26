@@ -3,10 +3,19 @@
 PrintVisitor::PrintVisitor() {}
 PrintVisitor::~PrintVisitor() {}
 void PrintVisitor::VisitSelectPipeNode(SelectPipeNode *node, void* arg) {
+	node->child->Visit(*this, arg);	
 	PrintVisitorData* data = (PrintVisitorData*) arg;	
 	stringstream& out = data->out;
+	out << endl;
 	out << "Select Pipe Op\n";
+	out << "Input pipe ID " << node->child->GetID() << endl;
+	out << "Output pipe ID " << node->GetID() << endl;
+	out << "Output Schema:" << endl;
+	out << node->GetSchema()->ToString("\t");
+	out << "Select Pipe CNF:" << endl;
+	out << node->cnf.ToString();
 }
+
 void PrintVisitor::VisitSelectFileNode(SelectFileNode *node, void* arg) {
 	PrintVisitorData* data = (PrintVisitorData*) arg;	
 	stringstream& out = data->out;
@@ -18,6 +27,7 @@ void PrintVisitor::VisitSelectFileNode(SelectFileNode *node, void* arg) {
 	out << "Select File CNF:" << endl;
 	out << node->cnf.ToString();
 }
+
 void PrintVisitor::VisitProjectNode(ProjectNode *node, void* arg) {}
 void PrintVisitor::VisitJoinNode(JoinNode *node, void* arg) {}
 void PrintVisitor::VisitDuplicateRemovalNode(DuplicateRemovalNode *node, void* arg) {}
