@@ -36,7 +36,12 @@ void PrintVisitor::VisitProjectNode(ProjectNode *node, void* arg) {
 	out << "  Output pipe ID: " << node->GetID() << endl;
 	out << "  Output Schema:" << endl;
 	out << node->GetSchema()->ToString("    ");
-	out << "  Atts To Keep: " << "";
+	out << "  Atts To Keep: " << endl;;
+	for(int i = 0; i < node->attsToKeep.size(); ++i) {
+		out << "    " << node->attsToKeep[i].Relation() 
+			<< (node->attsToKeep[i].Relation().compare("") == 0 ? "" : ".")
+			<< node->attsToKeep[i].Attribute() << endl;
+	}
 	out << endl;
 }
 void PrintVisitor::VisitJoinNode(JoinNode *node, void* arg) {}
