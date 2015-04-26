@@ -384,21 +384,21 @@ void CNF :: Print () {
 }
 
 
-std::string CNF :: ToString () {
+std::string CNF :: ToString (const std::string& prefix) {
 	std::stringstream out;
 	for (int i = 0; i < numAnds; i++) {
 		
-		out << "(";
+		out << prefix << "(";
 		for (int j = 0; j < orLens[i]; j++) {
 			out << orList[i][j].ToString();
 			if (j < orLens[i] - 1)
 				out << " OR ";
 		}
-		out << ") ";
+		out << ")";
 		if (i < numAnds - 1)
-			out << " AND";
+			out << " AND\n";
 		else
-			out << "";
+			out << "\n";
 	}
 	return out.str();
 }

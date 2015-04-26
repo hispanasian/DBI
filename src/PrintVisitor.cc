@@ -12,8 +12,7 @@ void PrintVisitor::VisitSelectPipeNode(SelectPipeNode *node, void* arg) {
 	out << "  Output pipe ID: " << node->GetID() << endl;
 	out << "  Output Schema:" << endl;
 	out << node->GetSchema()->ToString("    ");
-	out << "  CNF: " << node->cnf.ToString();
-	out << endl;
+	out << "  CNF: " << node->cnf.ToString("");
 }
 
 void PrintVisitor::VisitSelectFileNode(SelectFileNode *node, void* arg) {
@@ -24,8 +23,7 @@ void PrintVisitor::VisitSelectFileNode(SelectFileNode *node, void* arg) {
 	out << "  Output pipe ID: " << node->GetID() << endl;
 	out << "  Output Schema:" << endl;
 	out << node->GetSchema()->ToString("    ");
-	out << "  CNF: " << node->cnf.ToString();
-	out << endl;
+	out << "  CNF: " << endl << node->cnf.ToString("    ");
 }
 
 void PrintVisitor::VisitProjectNode(ProjectNode *node, void* arg) {
@@ -33,13 +31,13 @@ void PrintVisitor::VisitProjectNode(ProjectNode *node, void* arg) {
 	PrintVisitorData* data = (PrintVisitorData*) arg;	
 	stringstream& out = data->out;
 	out << endl;
-	out << "Project Op\n";
-	out << "Input pipe ID " << node->child->GetID() << endl;
-	out << "Output pipe ID " << node->GetID() << endl;
-	out << "Output Schema:" << endl;
-	out << node->GetSchema()->ToString("\t");
-	out << "Atts To Keep:" << endl;
-	// out << node->cnf.ToString();
+	out << "-----Project Op-----\n";
+	out << "  Input pipe ID: " << node->child->GetID() << endl;
+	out << "  Output pipe ID: " << node->GetID() << endl;
+	out << "  Output Schema:" << endl;
+	out << node->GetSchema()->ToString("    ");
+	out << "  Atts To Keep: " << "";
+	out << endl;
 }
 void PrintVisitor::VisitJoinNode(JoinNode *node, void* arg) {}
 void PrintVisitor::VisitDuplicateRemovalNode(DuplicateRemovalNode *node, void* arg) {}
