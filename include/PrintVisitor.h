@@ -2,6 +2,12 @@
 #define PRINTVISTOR_H
 
 #include "OpNode.h"
+#include <iostream>
+using namespace std;
+
+struct PrintVisitorData {
+	stringstream& out;
+};
 
 class PrintVisitor: public OpVisitor {
 public:

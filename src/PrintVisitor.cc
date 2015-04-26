@@ -1,5 +1,7 @@
 #include "PrintVisitor.h"
 
+PrintVisitor::PrintVisitor() {}
+PrintVisitor::~PrintVisitor() {}
 void PrintVisitor::VisitSelectPipeNode(SelectPipeNode *node, void* arg) {}
 void PrintVisitor::VisitSelectFileNode(SelectFileNode *node, void* arg) {}
 void PrintVisitor::VisitProjectNode(ProjectNode *node, void* arg) {}

@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include "PrintVisitor.h"
 
 extern "C" struct YY_BUFFER_STATE *yy_scan_string(const char*);
 extern "C" struct YY_BUFFER_STATE *yysql_scan_string(const char*);
