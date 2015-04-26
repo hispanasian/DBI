@@ -124,3 +124,23 @@ TEST_F(PrintVisitorTest, VisitJoinNode1) {
 	node.Visit(pv, (void*) &data);		
 	cout << ss.str();
 }
+
+TEST_F(PrintVisitorTest, VisitDuplicateRemovalNode1) {
+	stringstream ss;
+	PrintVisitor pv;
+	vector<AttTypePair> atts;
+	atts.push_back(AttTypePair("x", INT));
+	atts.push_back(AttTypePair("y", DOUBLE));
+	atts.push_back(AttTypePair("z", STRING));
+	vector<RelAttPair> dupAtts;
+	dupAtts.push_back(RelAttPair("", "y"));
+	Schema schema = Schema(atts);
+	char *cnf = "(x = 0)";
+    yy_scan_string(cnf);
+    yyparse();
+	SelectFileNode child = SelectFileNode(0, schema, final, "file.bin");
+	DuplicateRemovalNode node = DuplicateRemovalNode(1, &child, dupAtts);
+	PrintVisitorData data {ss};	
+	node.Visit(pv, (void*) &data);		
+	cout << ss.str();
+}
