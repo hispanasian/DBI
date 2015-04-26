@@ -13,4 +13,5 @@ TEST_F(PrintVisitorTest, VisitSelectFileNode1) {
 	SelectFileNode node = SelectFileNode(0, schema, final, "file.bin");
 	PrintVisitorData data {ss};	
 	pv.VisitSelectFileNode(&node, (void*) &data);
+	cout << ss.str();
 }
