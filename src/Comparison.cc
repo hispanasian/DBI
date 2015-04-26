@@ -396,9 +396,9 @@ std::string CNF :: ToString () {
 		}
 		out << ") ";
 		if (i < numAnds - 1)
-			out << " AND\n";
+			out << " AND";
 		else
-			out << "\n";
+			out << "";
 	}
 	return out.str();
 }
