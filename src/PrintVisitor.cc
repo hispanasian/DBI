@@ -56,6 +56,7 @@ void PrintVisitor::VisitJoinNode(JoinNode *node, void* arg) {
 	out << "  CNF: " << endl << node->cnf.ToString("    ");
 	out << endl;
 }
+
 void PrintVisitor::VisitDuplicateRemovalNode(DuplicateRemovalNode *node, void* arg) {
 	node->child->Visit(*this, arg);	
 	PrintVisitorData* data = (PrintVisitorData*) arg;	
@@ -70,6 +71,7 @@ void PrintVisitor::VisitDuplicateRemovalNode(DuplicateRemovalNode *node, void* a
 	ToStringRelAtts(node->duplicates, out);
 	out << endl;
 }
+
 void PrintVisitor::VisitSumNode(SumNode *node, void* arg) {
 	node->child->Visit(*this, arg);	
 	PrintVisitorData* data = (PrintVisitorData*) arg;	
@@ -84,7 +86,23 @@ void PrintVisitor::VisitSumNode(SumNode *node, void* arg) {
 	out << "  " << FuncOperatorToString(node->funcOp);
 	out << endl;
 }
-void PrintVisitor::VisitGroupByNode(GroupByNode *node, void* arg) {}
+
+void PrintVisitor::VisitGroupByNode(GroupByNode *node, void* arg) {
+	node->child->Visit(*this, arg);	
+	PrintVisitorData* data = (PrintVisitorData*) arg;	
+	stringstream& out = data->out;
+	out << endl;
+	out << "-----Group By Op-----\n";
+	out << "  Input pipe ID: " << node->child->GetID() << endl;
+	out << "  Output pipe ID: " << node->GetID() << endl;
+	out << "  Output Schema:" << endl;
+	out << node->GetSchema()->ToString("    ");
+	out << "  Aggregate Function: " << endl;
+	out << "  " << FuncOperatorToString(node->funcOp) << endl;
+	out << "  OrderMaker: " << endl;
+	ToStringRelAtts(node->group, out);	
+	out << endl;
+}
 void PrintVisitor::VisitWriteOutNode(WriteOutNode *node, void* arg) {}
 
 void PrintVisitor::ToStringRelAtts(const vector<RelAttPair>& relAtts, stringstream& out) {

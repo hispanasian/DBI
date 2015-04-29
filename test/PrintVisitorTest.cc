@@ -171,3 +171,34 @@ TEST_F(PrintVisitorTest, VisitSumNode1) {
 	node.Visit(pv, (void*) &data);		
 	cout << ss.str();
 }
+
+// GroupByNode::GroupByNode(int id, OpNode *_child, const std::vector<RelAttPair> &_group,
+// 		const struct FuncOperator *_funcOp): OpNode(id),funcOp(_funcOp), group(_group) {
+TEST_F(PrintVisitorTest, VisitGroupByNode1) {
+	stringstream ss;
+	PrintVisitor pv;
+	vector<AttTypePair> atts;
+	atts.push_back(AttTypePair("x", INT));
+	atts.push_back(AttTypePair("y", DOUBLE));
+	atts.push_back(AttTypePair("z", STRING));
+	Schema schema = Schema(atts);
+	schema.SetRelation("A");
+	char *cnf = "(x = 0)";
+    yy_scan_string(cnf);
+    yyparse();
+	SelectFileNode child = SelectFileNode(0, schema, final, "file.bin");
+
+	vector<RelAttPair> group;
+	group.push_back(RelAttPair("A", "x"));
+
+	string sql = "SELECT SUM( (A.x * A.y) )";
+	sql.append(" FROM rel AS A");
+	sql.append(" WHERE (A.x = 5)");	
+	yysql_scan_string(sql.c_str());
+	yysqlparse();
+	GroupByNode node = GroupByNode(1, &child, group, finalFunction);
+
+	PrintVisitorData data {ss};	
+	node.Visit(pv, (void*) &data);		
+	cout << ss.str();
+}
