@@ -202,3 +202,19 @@ TEST_F(PrintVisitorTest, VisitGroupByNode1) {
 	node.Visit(pv, (void*) &data);		
 	cout << ss.str();
 }
+	// WriteOutNode(int id, OpNode *_child, FILE *_outFile);
+TEST_F(PrintVisitorTest, VisitWriteOutNode1) {
+	stringstream ss;
+	PrintVisitor pv;
+	vector<AttTypePair> atts;
+	atts.push_back(AttTypePair("x", INT));
+	atts.push_back(AttTypePair("y", DOUBLE));
+	atts.push_back(AttTypePair("z", STRING));
+	Schema schema = Schema(atts);
+	SelectFileNode child = SelectFileNode(0, schema, final, "file.bin");
+	FILE* file;
+	WriteOutNode node = WriteOutNode(1, &child, file);
+	PrintVisitorData data {ss};	
+	node.Visit(pv, (void*) &data);		
+	cout << ss.str();
+}

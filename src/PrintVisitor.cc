@@ -103,7 +103,17 @@ void PrintVisitor::VisitGroupByNode(GroupByNode *node, void* arg) {
 	ToStringRelAtts(node->group, out);	
 	out << endl;
 }
-void PrintVisitor::VisitWriteOutNode(WriteOutNode *node, void* arg) {}
+void PrintVisitor::VisitWriteOutNode(WriteOutNode *node, void* arg) {
+	node->child->Visit(*this, arg);	
+	PrintVisitorData* data = (PrintVisitorData*) arg;	
+	stringstream& out = data->out;
+	out << endl;
+	out << "-----WriteOut Op-----\n";
+	out << "  Input pipe ID: " << node->child->GetID() << endl;
+	out << "  Node ID: " << node->GetID() << endl;
+	out << "  Output Schema:" << endl;
+	out << node->GetSchema()->ToString("    ");
+}
 
 void PrintVisitor::ToStringRelAtts(const vector<RelAttPair>& relAtts, stringstream& out) {
 	for(int i = 0; i < relAtts.size(); ++i) {
