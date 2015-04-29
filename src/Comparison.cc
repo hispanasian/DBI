@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <iostream>
+#include <sstream>
 #include <stdlib.h>
 #include <string.h>
 #include <stdexcept>
@@ -61,6 +62,46 @@ void Comparison :: Print () {
 		cout << "(Double)";
 	else
 		cout << "(String)";
+}
+
+std::string Comparison :: ToString() {
+	std::stringstream out;
+	out << "Att " << whichAtt1 << " from ";
+
+	if (operand1 == Left)
+		out << "left record ";
+	else if (operand1 == Right)
+		out << "right record ";
+	else 
+		out << "literal record ";
+
+
+	if (op == LessThan)
+		out << "< ";
+	else if (op == GreaterThan)
+		out << "> ";
+	else
+		out << "= ";
+
+
+	out << "Att " << whichAtt2 << " from ";
+
+	if (operand2 == Left)
+		out << "left record ";
+	else if (operand2 == Right)
+		out << "right record ";
+	else
+		out << "literal record ";
+ 
+
+	if (attType == Int)
+		out << "(Int)";
+	else if (attType == Double)
+		out << "(Double)";
+	else
+		out << "(String)";
+
+	return out.str();
 }
 
 
@@ -330,7 +371,7 @@ void CNF :: Print () {
 		
 		cout << "( ";
 		for (int j = 0; j < orLens[i]; j++) {
-			orList[i][j].Print ();
+			orList[i][j].Print();
 			if (j < orLens[i] - 1)
 				cout << " OR ";
 		}
@@ -340,6 +381,26 @@ void CNF :: Print () {
 		else
 			cout << "\n";
 	}
+}
+
+
+std::string CNF :: ToString (const std::string& prefix) {
+	std::stringstream out;
+	for (int i = 0; i < numAnds; i++) {
+		
+		out << prefix << "(";
+		for (int j = 0; j < orLens[i]; j++) {
+			out << orList[i][j].ToString();
+			if (j < orLens[i] - 1)
+				out << " OR ";
+		}
+		out << ")";
+		if (i < numAnds - 1)
+			out << " AND\n";
+		else
+			out << "\n";
+	}
+	return out.str();
 }
 
 // this is a helper routine that writes out another field for the literal record and its schema
