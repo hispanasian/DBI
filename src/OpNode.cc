@@ -280,6 +280,13 @@ const Schema* GroupByNode::GetSchema() {
 		schema.Join(&agg, childsSchema);
 	}
 	else schema.Copy(*childsSchema);
+	// make the OrderMaker
+	vector<string> orderAtts;
+	for(int i = 0; i < group.size(); ++i) {
+		orderAtts.push_back(group[i].Attribute());
+	}
+	orderMaker = new OrderMaker(childsSchema, &orderAtts);
+	orderMaker->Print();
 
 
 	schemaReady = true;

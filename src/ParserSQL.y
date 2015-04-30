@@ -306,7 +306,7 @@ QUERY: SELECT WhatIWant FROM Tables ';'
 	groupingAtts = NULL;
 }
 
-| SELECT WhatIWant FROM Tables WHERE AndList GROUP BY Atts
+| SELECT WhatIWant FROM Tables WHERE AndList GROUP BY Atts ';'
 {
 	tables = $4;
 	boolean = $6;	

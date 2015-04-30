@@ -190,8 +190,9 @@ public:
 
 class GroupByNode: public OpNode {
 public:
-	Join op;
+	GroupBy op;
 	OpNode *child;
+	OrderMaker* orderMaker;
 	Function function;
 	const vector<RelAttPair> group;
 	const struct FuncOperator *funcOp;

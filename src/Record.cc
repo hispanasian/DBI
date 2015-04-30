@@ -47,14 +47,14 @@ int Record :: ComposeRecord (Schema *mySchema, const char *src) {
 	char *space = new (std::nothrow) char[PAGE_SIZE];
 	if (space == NULL)
 	{
-		cout << "ERROR : Not enough memory. EXIT !!!\n";
+		cout << "ERROR 6: Not enough memory. EXIT !!!\n";
 		exit(1);
 	}
 
 	char *recSpace = new (std::nothrow) char[PAGE_SIZE];
 	if (recSpace == NULL)
 	{
-		cout << "ERROR : Not enough memory. EXIT !!!\n";
+		cout << "ERROR 7: Not enough memory. EXIT !!!\n";
 		exit(1);
 	}
 
@@ -135,7 +135,7 @@ int Record :: ComposeRecord (Schema *mySchema, const char *src) {
 	bits = new (std::nothrow) char[currentPosInRec];
 	if (bits == NULL)
 	{
-		cout << "ERROR : Not enough memory. EXIT !!!\n";
+		cout << "ERROR 8: Not enough memory. EXIT !!!\n";
 		exit(1);
 	}
 
@@ -153,14 +153,14 @@ int Record :: SuckNextRecord (Schema *mySchema, FILE *textFile) {
 	char *space = new (std::nothrow) char[PAGE_SIZE];
 	if (space == NULL)
 	{
-		cout << "ERROR : Not enough memory. EXIT !!!\n";
+		cout << "ERROR 9: Not enough memory. EXIT !!!\n";
 		exit(1);
 	}
 
 	char *recSpace = new (std::nothrow) char[PAGE_SIZE];
 	if (recSpace == NULL)
 	{
-		cout << "ERROR : Not enough memory. EXIT !!!\n";
+		cout << "ERROR 10: Not enough memory. EXIT !!!\n";
 		exit(1);
 	}
 
@@ -240,7 +240,7 @@ int Record :: SuckNextRecord (Schema *mySchema, FILE *textFile) {
 	bits = new (std::nothrow) char[currentPosInRec];
 	if (bits == NULL)
 	{
-		cout << "ERROR : Not enough memory. EXIT !!!\n";
+		cout << "ERROR 11: Not enough memory. EXIT !!!\n";
 		exit(1);
 	}
 
@@ -270,7 +270,7 @@ void Record :: CopyBits(char *bits, int b_len) {
 	this->bits = new (std::nothrow) char[b_len];
 	if (this->bits == NULL)
 	{
-		cout << "ERROR : Not enough memory. EXIT !!!\n";
+		cout << "ERROR 12: Not enough memory. EXIT !!!\n";
 		exit(1);
 	}
 
@@ -293,7 +293,7 @@ void Record :: Copy (Record *copyMe) {
 	bits = new (std::nothrow) char[((int *) copyMe->bits)[0]];
 	if (bits == NULL)
 	{
-		cout << "ERROR : Not enough memory. EXIT !!!\n";
+		cout << "ERROR 13: Not enough memory. EXIT !!!\n";
 		exit(1);
 	}
 
@@ -320,7 +320,7 @@ void Record :: Project (int *attsToKeep, int numAttsToKeep, int numAttsNow) {
 	char *newBits = new (std::nothrow) char[totSpace];
 	if (newBits == NULL)
 	{
-		cout << "ERROR : Not enough memory. EXIT !!!\n";
+		cout << "ERROR 14: Not enough memory. EXIT !!!\n";
 		exit(1);
 	}
 
@@ -364,6 +364,10 @@ void Record :: Project (int *attsToKeep, int numAttsToKeep, int numAttsNow) {
 
 // consumes right record and leaves the left record as it is
 void Record :: MergeRecords (Record *left, Record *right, int numAttsLeft, int numAttsRight, int *attsToKeep, int numAttsToKeep, int startOfRight) {
+	cout << "numAttsLeft = " << numAttsLeft << endl;
+	cout << "numAttsRight = " << numAttsRight << endl;
+	cout << "numAttsToKeep = " << numAttsToKeep << endl;
+	cout << "startOfRight = " << startOfRight << endl;
 	delete [] bits;
 	bits = NULL;
 
@@ -402,7 +406,8 @@ void Record :: MergeRecords (Record *left, Record *right, int numAttsLeft, int n
 	bits = new (std::nothrow) char[totSpace+1];
 	if (bits == NULL)
 	{
-		cout << "ERROR : Not enough memory. EXIT !!!\n";
+		cout << totSpace+1 << endl;
+		cout << "ERROR 15: Not enough memory. EXIT !!!\n";
 		exit(1);
 	}
 

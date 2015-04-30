@@ -2,7 +2,7 @@
 #include "BigQ.h"
 
 GroupBy::GroupBy() {
-	pageLimit = 1;
+	pageLimit = 4;
 }
 
 GroupBy::~GroupBy() {}
