@@ -42,7 +42,6 @@ void Console::Start() {
 				cout << "Set Output" << endl;
 				break;
 			case Select: Query(sql);
-				cout << "Query" << endl;
 				break;
 			case Quit: quit = true;
 				cout << "Bye!" << endl;
@@ -85,10 +84,12 @@ void Console::DropTable(SQL *sql) {
 void Console::Query(SQL *sql) {
 	if(output == None) {
 		// Simply print the Query plan to the screen
+		cout << "QueryPlan" << endl;
 		cout << engine.QueryPlan(sql) << endl;
 	}
 	else {
 		// Run the query
+		cout << "Query" << endl;
 		engine.Query(sql, file);
 	}
 }
