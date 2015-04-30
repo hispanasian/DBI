@@ -30,7 +30,15 @@ void ExecutionVisitor::VisitProjectNode(ProjectNode *node, void* arg){
 		node->numAttsInput, node->numAttsOutput);
 }
 
-void ExecutionVisitor::VisitJoinNode(JoinNode *node, void* arg){}
+void ExecutionVisitor::VisitJoinNode(JoinNode *node, void* arg){
+	node->leftChild->Visit(*this, arg);	
+	node->rightChild->Visit(*this, arg);	
+	ExecutionVisitorData* data = (ExecutionVisitorData*) arg;
+	Pipe* pipe = new Pipe();
+	data->pipes.emplace(node->GetID(), pipe);
+	node->op.Run(*data->pipes.at(node->leftChild->GetID()), *data->pipes.at(node->rightChild->GetID()),
+		*pipe, node->cnf, node->literal);
+}
 void ExecutionVisitor::VisitDuplicateRemovalNode(DuplicateRemovalNode *node, void* arg){
 	node->child->Visit(*this, arg);
 	ExecutionVisitorData* data = (ExecutionVisitorData*) arg;

@@ -364,10 +364,10 @@ void Record :: Project (int *attsToKeep, int numAttsToKeep, int numAttsNow) {
 
 // consumes right record and leaves the left record as it is
 void Record :: MergeRecords (Record *left, Record *right, int numAttsLeft, int numAttsRight, int *attsToKeep, int numAttsToKeep, int startOfRight) {
-	cout << "numAttsLeft = " << numAttsLeft << endl;
-	cout << "numAttsRight = " << numAttsRight << endl;
-	cout << "numAttsToKeep = " << numAttsToKeep << endl;
-	cout << "startOfRight = " << startOfRight << endl;
+	// cout << "numAttsLeft = " << numAttsLeft << endl;
+	// cout << "numAttsRight = " << numAttsRight << endl;
+	// cout << "numAttsToKeep = " << numAttsToKeep << endl;
+	// cout << "startOfRight = " << startOfRight << endl;
 	delete [] bits;
 	bits = NULL;
 

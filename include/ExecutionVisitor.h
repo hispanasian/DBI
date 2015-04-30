@@ -11,9 +11,6 @@ struct ExecutionVisitorData {
 };
 
 class ExecutionVisitor: public OpVisitor {
-// private:
-// 	void ToStringRelAtts(const vector<RelAttPair>& relAtts, stringstream& out); 
-// 	string FuncOperatorToString(const FuncOperator *func); 
 public:
 	ExecutionVisitor();
 	~ExecutionVisitor();
