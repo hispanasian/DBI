@@ -34,15 +34,25 @@ void QueryPlanner::Plan(const SQL &sql, const RelationData &relData, FILE* outFi
 	sql.GetTables(pair);
 
 	for(int i = 0; i < pair.size(); i++) {
-		aliasData.Insert(pair[i].Alias(), relData[pair[i].Relation()]);
+		// cout << "pair[i].Alias() = " << pair[i].Alias() << endl;
+		RelationMetaData metaData = relData[pair[i].Relation()];
+		Schema* aliasedSchema = new Schema(metaData.schema);
+		aliasedSchema->SetRelation(pair[i].Alias().c_str());
+		aliasData.Insert(pair[i].Alias(), metaData.dbLocation, metaData.schemaLocation, *aliasedSchema);
 	}
 
 	// Make the plan in order
+	// cout << "here 1" << endl;
 	plan = PlanSelectJoins(sql, aliasData, opt);
+	// cout << "here 2" << endl;
 	plan = PlanDistinct(sql, plan);
+	// cout << "here 3" << endl;
 	plan = PlanAggregation(sql, plan);
+	// cout << "here 4" << endl;
 	plan = PlanProject(sql, plan);
+	// cout << "here 5" << endl;
 	plan = PlanOutput(sql, plan, outFile);
+	// cout << "here 6" << endl;
 }
 
 ExecutionPlan* QueryPlanner::PlanSelectJoins(const SQL &sql, const RelationData &relData,
@@ -52,8 +62,11 @@ ExecutionPlan* QueryPlanner::PlanSelectJoins(const SQL &sql, const RelationData 
 	vector<string> rels;
 	vector<TupleCount> counts;
 
+	// cout << "here 1.1" << endl;
 	sql.GetWhere(selects, joins);
+	// cout << "here 1.2" << endl;
 	opt.Optimize(selects, joins, sql.GetStatistics(), rels, counts);
+	// cout << "here 1.3" << endl;
 
 	int id = 0; // also size
 	OpNode *sel = NULL;

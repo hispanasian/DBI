@@ -8,7 +8,6 @@
 using namespace std;
 
 int Schema :: Find (const char *attName) const {
-
 	for (int i = 0; i < numAtts; i++) {
 		if (!myAtts[i].name.compare(attName) ||
 				!string(myAtts[i].relation).append(".").append(myAtts[i].name).compare(attName) ) {
