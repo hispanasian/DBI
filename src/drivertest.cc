@@ -22,10 +22,13 @@ int main(int argc, char const *argv[]) {
 	string dbLocation = "data/DB/10M/";
 	Statistics stats = Statistics();
 	RelationData relations = RelationData();
+	char* rels[] = {"supplier", "nation", "region", "customer", "part", "partsupp", "orders", "lineitem"};
 
 
 	// add some relations
-	setupRelation("nation", catalogFName, dbLocation+"nation.bin", relations, stats);
+	for(int i = 0; i < 8; ++i) {
+		setupRelation(rels[i], catalogFName, dbLocation+string(rels[i])+".bin", relations, stats);
+	}
 
 	SQLEngine engine = SQLEngine(stats, relations, dbLocation, string(catalogFName));
 

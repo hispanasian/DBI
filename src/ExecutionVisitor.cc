@@ -28,7 +28,15 @@ void ExecutionVisitor::VisitProjectNode(ProjectNode *node, void* arg){
 		node->numAttsInput, node->numAttsOutput);
 }
 void ExecutionVisitor::VisitJoinNode(JoinNode *node, void* arg){}
-void ExecutionVisitor::VisitDuplicateRemovalNode(DuplicateRemovalNode *node, void* arg){}
+void ExecutionVisitor::VisitDuplicateRemovalNode(DuplicateRemovalNode *node, void* arg){
+	node->child->Visit(*this, arg);
+	ExecutionVisitorData* data = (ExecutionVisitorData*) arg;
+	Pipe* pipe = new Pipe();
+	data->pipes.emplace(node->GetID(), pipe);
+	Schema& copy = *new Schema(*node->GetSchema());
+	Schema& duplicates = *new Schema(copy, node->duplicates);
+	node->op.Run(*data->pipes.at(node->child->GetID()), *pipe, duplicates);
+}
 void ExecutionVisitor::VisitSumNode(SumNode *node, void* arg){}
 void ExecutionVisitor::VisitGroupByNode(GroupByNode *node, void* arg){}
 void ExecutionVisitor::VisitWriteOutNode(WriteOutNode *node, void* arg){
