@@ -58,22 +58,22 @@ QueryPlannerTest::QueryPlannerTest() {
 	// Plan 1
 	select = "SELECT A.a, B.a, C.c, D.d, E.b ";
 	select.append(" FROM RelA AS A, RelB AS B, RelC AS C, RelD AS D, RelE AS E ");
-	select.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a) AND (B.b = C.c) AND (C.c = D.d) AND (D.d = E.e) ");
+	select.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a) AND (B.b = C.c) AND (C.c = D.d) AND (D.d = E.e); ");
 
 	// Plan 2
 	selectDistinct = "SELECT DISTINCT A.a, B.a, C.c, D.d, E.b ";
 	selectDistinct.append(" FROM RelA AS A, RelB AS B, RelC AS C, RelD AS D, RelE AS E ");
-	selectDistinct.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a) AND (B.b = C.c) AND (C.c = D.d) AND (D.d = E.e) ");
+	selectDistinct.append(" WHERE (A.a = 5 OR A.c = 6) AND (A.a = B.a) AND (B.b = C.c) AND (C.c = D.d) AND (D.d = E.e); ");
 
 	// Plan 3
 	sum = "SELECT SUM (A.b + 3) ";
 	sum.append(" FROM RelA AS A ");
-	sum.append(" WHERE (A.b > 0)  ");
+	sum.append(" WHERE (A.b > 0);  ");
 
 	// Plan 4
 	sumDistinct = "SELECT SUM DISTINCT (A.b + 3 ) ";
 	sumDistinct.append(" FROM RelA AS A ");
-	sumDistinct.append(" WHERE (A.b > 0)  ");
+	sumDistinct.append(" WHERE (A.b > 0);  ");
 
 	// Plan 5
 	groupBy = "SELECT A.a, B.a ";

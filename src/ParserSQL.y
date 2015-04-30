@@ -292,7 +292,7 @@ Output: STDOUT
 	outType = SET_FILE;
 };
 
-QUERY: SELECT WhatIWant FROM Tables WHERE AndList
+QUERY: SELECT WhatIWant FROM Tables WHERE AndList ';'
 {
 	tables = $4;
 	boolean = $6;	
@@ -346,29 +346,29 @@ Function: SUM '(' CompoundExp ')'
 	finalFunction = $4;
 };
 
-Atts: Name
+Atts: QualifiedName
 {
 	$$ = (struct NameList *) malloc (sizeof (struct NameList));
 	$$->name = $1;
 	$$->next = NULL;
 } 
 
-| Atts ',' Name
+| Atts ',' QualifiedName
 {
 	$$ = (struct NameList *) malloc (sizeof (struct NameList));
 	$$->name = $3;
 	$$->next = $1;
+}
+
+| Name
+{
+	yysqlerror($1);
+}
+
+| Atts ',' Name
+{
+	yysqlerror($3);
 };
-
-//| Name
-//{
-	//yysqlerror($1);
-//}
-
-//| Atts ',' Name
-//{
-//	yysqlerror($3);
-//}
 
 Tables: Name AS Name 
 {

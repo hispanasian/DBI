@@ -30,9 +30,9 @@ TEST_F(SQLTest, ParseTableList1) {
 	stat.AddAtt(relName[1], "b3",7);
 	stat.AddRel(relName[2],6001215);
 
-	string sql = "SELECT A.a1, b1, b2 ";
+	string sql = "SELECT A.a1, B.b1, B.b2 ";
 	sql.append(" FROM A AS a, B AS b, C AS c ");
-	sql.append(" WHERE (A.a1 = 5)");
+	sql.append(" WHERE (A.a1 = 5);");
 
 	yysql_scan_string(sql.c_str());
 	yysqlparse();
@@ -68,7 +68,7 @@ TEST_F(SQLTest, ParseTableList2) {
 
 	string sql = "SELECT A.a1 ";
 	sql.append(" FROM A AS a ");
-	sql.append(" WHERE (A.a1 = 5)");
+	sql.append(" WHERE (A.a1 = 5);");
 
 	yysql_scan_string(sql.c_str());
 	yysqlparse();
@@ -99,7 +99,7 @@ TEST_F(SQLTest, ParseTableList3) {
 
 	string sql = "SELECT a5 ";
 	sql.append(" FROM rel AS A ");
-	sql.append(" WHERE (A.a1 = 5)");
+	sql.append(" WHERE (A.a1 = 5);");
 
 	yysql_scan_string(sql.c_str());
 	yysqlparse();

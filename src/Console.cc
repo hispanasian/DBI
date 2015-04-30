@@ -25,10 +25,14 @@ void Console::Start() {
 	bool quit = false;
 	Output_Type output = None;
 	FILE *file;
-
+	string buff;
 	while(!quit) {
+		buff.clear();
+		getline(cin, buff, ';');
+		cout << buff << endl;
+		buff.append(";");
 		try {
-			switch(sql->Parse()) {
+			switch(sql->Parse(buff)) {
 			case Create_Table: CreateTable(sql);
 				cout << "Create Table" << endl;
 				break;
