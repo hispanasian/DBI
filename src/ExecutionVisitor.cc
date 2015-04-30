@@ -35,7 +35,11 @@ void ExecutionVisitor::VisitDuplicateRemovalNode(DuplicateRemovalNode *node, voi
 	data->pipes.emplace(node->GetID(), pipe);
 	Schema& copy = *new Schema(*node->GetSchema());
 	Schema& duplicates = *new Schema(copy, node->duplicates);
-	node->op.Run(*data->pipes.at(node->child->GetID()), *pipe, duplicates);
+	// Schema& childCopy = *new Schema(*node->child->GetSchema());
+	cout << copy.ToString() << endl;
+	cout << duplicates.ToString() << endl;
+	node->op.Run(*data->pipes.at(node->child->GetID()), *pipe, copy, duplicates);
+	// node->op.Run(*data->pipes.at(node->child->GetID()), *pipe, childCopy, copy);
 }
 void ExecutionVisitor::VisitSumNode(SumNode *node, void* arg){
 	node->child->Visit(*this, arg);
