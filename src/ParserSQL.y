@@ -292,7 +292,14 @@ Output: STDOUT
 	outType = SET_FILE;
 };
 
-QUERY: SELECT WhatIWant FROM Tables WHERE AndList ';'
+QUERY: SELECT WhatIWant FROM Tables ';'
+{
+	tables = $4;
+	boolean = NULL;	
+	groupingAtts = NULL;
+}
+
+| SELECT WhatIWant FROM Tables WHERE AndList ';'
 {
 	tables = $4;
 	boolean = $6;	
