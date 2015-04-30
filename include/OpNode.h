@@ -114,6 +114,8 @@ public:
 	OpNode *child;
 	vector<RelAttPair> attsToKeep;
 	int *keepMe;
+	int numAttsInput;
+	int numAttsOutput;
 
 	/**
 	 * This method assumes that attsToKeep only provides the attributes that are listed
@@ -208,7 +210,7 @@ public:
 
 class WriteOutNode: public OpNode {
 public:
-	Join op;
+	WriteOut op;
 	OpNode *child;
 	FILE *outFile;
 
@@ -216,6 +218,7 @@ public:
 	virtual ~WriteOutNode();
 	void Visit(OpVisitor &visitor, void* arg);
 	const Schema* GetSchema();
+	Schema* GetSchemaNonConst();
 	void WaitUntilDone();
 };
 

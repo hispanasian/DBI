@@ -17,15 +17,15 @@ void setupRelation(char* rel, char* catalogFName, const string& dbLocation,
 }
 
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
 	char* catalogFName = "data/catalog";	
 	string dbLocation = "data/DB/10M/";
 	Statistics stats = Statistics();
 	RelationData relations = RelationData();
 
+
 	// add some relations
-	setupRelation("nation", catalogFName, dbLocation, relations, stats);
+	setupRelation("nation", catalogFName, dbLocation+"nation.bin", relations, stats);
 
 	SQLEngine engine = SQLEngine(stats, relations, dbLocation, string(catalogFName));
 

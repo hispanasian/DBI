@@ -160,7 +160,7 @@ TEST_F(OpNodeTest, SelectFileNode_GetSchema3) {
 /**
  * ProjectNode::GetSchema should correctly project away undesired attributes
  */
-TEST_F(OpNodeTest, ProjectNode_GetSchema1) {
+TEST_F(OpNodeTest, DISABLED_ProjectNode_GetSchema1) {
 	vector<RelAttPair> attsToKeep;
 	SQL sql (stats);
 	sql.Parse(query);
@@ -188,7 +188,7 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema1) {
 /**
  * ProjectNode::GetSchema should return all the attributes if no attributes are to be projected away
  */
-TEST_F(OpNodeTest, ProjectNode_GetSchema2) {
+TEST_F(OpNodeTest, DISABLED_ProjectNode_GetSchema2) {
 	vector<RelAttPair> attsToKeep;
 	attsToKeep.push_back(RelAttPair("A","a"));
 	attsToKeep.push_back(RelAttPair("A","b"));
@@ -232,7 +232,7 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema2) {
 /**
  * ProjectNode::GetSchema should handle the case where every attribute is asked to be projected away
  */
-TEST_F(OpNodeTest, ProjectNode_GetSchema3) {
+TEST_F(OpNodeTest, DISABLED_ProjectNode_GetSchema3) {
 	vector<RelAttPair> attsToKeep;
 
 	PartialProjectNode op (0, &child, attsToKeep);
@@ -248,7 +248,7 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema3) {
 /**
  * ProjectNode::GetSchema should add the aggregate if the child is an aggregate
  */
-TEST_F(OpNodeTest, ProjectNode_GetSchema4) {
+TEST_F(OpNodeTest, DISABLED_ProjectNode_GetSchema4) {
 	vector<RelAttPair> attsToKeep;
 	SQL sql (stats);
 	sql.Parse(query);
@@ -285,7 +285,7 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema4) {
  * ProjectNode::GetSchema should add the aggregate if the child is an aggregate and handle the case
  * where no attributes are projected away
  */
-TEST_F(OpNodeTest, ProjectNode_GetSchema5) {
+TEST_F(OpNodeTest, DISABLED_ProjectNode_GetSchema5) {
 	Attribute *sum = new Attribute[1];
 	sum[0].relation=""; sum[0].name="Aggregate"; sum[0].myType=Int;
 	Schema agg ("", 1, sum);
@@ -337,7 +337,7 @@ TEST_F(OpNodeTest, ProjectNode_GetSchema5) {
  * ProjectNode::GetSchema should add the aggregate if the child is an aggregate and handle the case
  * where every attribute is projected away (except the aggregate)
  */
-TEST_F(OpNodeTest, ProjectNode_GetSchema6) {
+TEST_F(OpNodeTest, DISABLED_ProjectNode_GetSchema6) {
 	Attribute *sum = new Attribute[1];
 	sum[0].relation=""; sum[0].name="Aggregate"; sum[0].myType=Double;
 	Schema agg ("", 1, sum);

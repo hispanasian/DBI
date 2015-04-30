@@ -87,7 +87,8 @@ void SelectFileNode::WaitUntilDone() {
 ProjectNode::ProjectNode(int id, OpNode *_child, const vector<RelAttPair> &_attsToKeep): OpNode(id),
 		attsToKeep(_attsToKeep) {
 	child = _child;
-	keepMe = NULL;
+	keepMe = new int[attsToKeep.size()];
+	GetSchema();
 }
 
 ProjectNode::~ProjectNode() {
@@ -96,7 +97,6 @@ ProjectNode::~ProjectNode() {
 
 void ProjectNode::Visit(OpVisitor &visitor, void* arg) {
 	visitor.VisitProjectNode(this, arg);
-	keepMe = NULL;
 }
 
 const Schema* ProjectNode::GetSchema() {
@@ -119,6 +119,16 @@ const Schema* ProjectNode::GetSchema() {
 			temp.Copy(prev);
 		}
 		attsToKeep.push_back(prev);
+	}
+	numAttsOutput = attsToKeep.size();
+	numAttsInput = childsSchema->GetNumAtts();
+	for(int i = 0; i < attsToKeep.size(); ++i) {
+		int index = childsSchema->Find(attsToKeep[i].Attribute().c_str());	
+		if(index == -1) {
+			cout << "Could not find attribute " << attsToKeep[i].Attribute() << " in Project";
+			throw std::runtime_error("Could not find attribute in Project");
+		}
+		keepMe[i] = index;
 	}
 	schema.Filter(*childsSchema, attsToKeep);
 

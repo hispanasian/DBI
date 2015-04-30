@@ -6,7 +6,8 @@
 using namespace std;
 
 struct ExecutionVisitorData {
-	stringstream& out;
+	unordered_map<int, Pipe*>& pipes;
+	vector<DBFile*>& files;
 };
 
 class ExecutionVisitor: public OpVisitor {
