@@ -30,16 +30,22 @@ void Console::Start() {
 		try {
 			switch(sql->Parse()) {
 			case Create_Table: CreateTable(sql);
+				cout << "Create Table" << endl;
 				break;
 			case Insert_Into: Insert(sql);
+				cout << "Insert" << endl;
 				break;
 			case Drop_Table: DropTable(sql);
+				cout << "Drop Table" << endl;
 				break;
 			case Set_Output: SetOutput(sql);
+				cout << "Set Output" << endl;
 				break;
 			case Select: Query(sql);
+				cout << "Query" << endl;
 				break;
 			case Quit: quit = true;
+				cout << "Bye!" << endl;
 				break;
 			default: cerr << "unknown command" << endl;
 				break;

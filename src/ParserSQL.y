@@ -158,7 +158,7 @@ SQL: CREATE_TABLE TableData
 	refFile = $2;
 }
 
-| QUIT
+| QUIT ';'
 {
 	finalFunction = NULL;
 	tables = NULL;
@@ -346,29 +346,29 @@ Function: SUM '(' CompoundExp ')'
 	finalFunction = $4;
 };
 
-Atts: QualifiedName
+Atts: Name
 {
 	$$ = (struct NameList *) malloc (sizeof (struct NameList));
 	$$->name = $1;
 	$$->next = NULL;
 } 
 
-| Atts ',' QualifiedName
+| Atts ',' Name
 {
 	$$ = (struct NameList *) malloc (sizeof (struct NameList));
 	$$->name = $3;
 	$$->next = $1;
-}
+};
 
-| Name
-{
-	yysqlerror($1);
-}
+//| Name
+//{
+	//yysqlerror($1);
+//}
 
-| Atts ',' Name
-{
-	yysqlerror($3);
-}
+//| Atts ',' Name
+//{
+//	yysqlerror($3);
+//}
 
 Tables: Name AS Name 
 {
