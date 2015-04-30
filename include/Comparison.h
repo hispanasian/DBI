@@ -36,6 +36,8 @@ public:
 
 	// print to the screen
 	void Print ();
+
+	std::string ToString(); 
 };
 
 
@@ -130,6 +132,9 @@ public:
 
 	// print the comparison structure to the screen
 	virtual void Print ();
+
+	// virtual std::string ToString (); 
+	std::string ToString (const std::string& prefix); 
 
         // this takes a parse tree for a CNF and converts it into a 2-D
         // matrix storing the same CNF expression.  This function is applicable
