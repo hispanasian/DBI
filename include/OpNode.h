@@ -172,7 +172,7 @@ public:
 
 class SumNode: public OpNode {
 public:
-	Join op;
+	Sum op;
 	OpNode *child;
 	Function function;
 	Record literal;
