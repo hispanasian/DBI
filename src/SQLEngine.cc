@@ -10,7 +10,6 @@
 #include "SortedDBFile.h"
 #include "Defs.h"
 #include "QueryPlanner.h"
-#include "PrintVisitor.h"
 
 SQLEngine::SQLEngine() {
 	// TODO Auto-generated constructor stub
@@ -129,19 +128,27 @@ void SQLEngine::DropTable(SQL *sql, string table, RawFile &rfile) {
 }
 
 void SQLEngine::Query(SQL *sql, FILE* file) const {
-
+	OpNode* tree = MakePlan(sql, file);	
+	// stringstream ss;
+	// PrintVisitorData data {ss};	
+	// PrintVisitor pv;
+	// tree->Visit(pv, (void*) &data);	
 }
 
 string SQLEngine::QueryPlan(SQL *sql) const {
-	QueryPlanner planner;
-	OpNode *tree;
-	SelectMap selects;
-	JoinMap joins;
-	planner.Plan(*sql, relations, NULL);
-	tree = (planner.GetPlan())->tree;
+	OpNode* tree = MakePlan(sql, NULL);	
 	stringstream ss;
 	PrintVisitorData data {ss};	
 	PrintVisitor pv;
 	tree->Visit(pv, (void*) &data);	
 	return ss.str();
+}
+
+OpNode* SQLEngine::MakePlan(SQL* sql, FILE* file) const {
+	QueryPlanner planner;
+	OpNode *tree;
+	SelectMap selects;
+	JoinMap joins;
+	planner.Plan(*sql, relations, file);
+	return (planner.GetPlan())->tree;
 }

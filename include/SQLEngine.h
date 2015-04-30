@@ -13,6 +13,7 @@
 #include "RelationData.h"
 #include "DBFile.h"
 #include "RawFile.h"
+#include "PrintVisitor.h"
 
 /**
  * SQLEngine maintains and keeps track of all the data structures that are used to execute a SQL
@@ -49,6 +50,7 @@ protected:
 	 * @param	Returns the location of the database for table
 	 */
 	std::string DBLocation(const char* table) const;
+	OpNode* MakePlan(SQL* sql, FILE* file) const; 
 
 public:
 

@@ -27,6 +27,7 @@ void Console::Start() {
 	FILE *file;
 	string buff;
 	while(!quit) {
+		cout << "> ";
 		buff.clear();
 		getline(cin, buff, ';');
 		cout << buff << endl;
