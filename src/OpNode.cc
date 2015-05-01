@@ -290,7 +290,7 @@ const Schema* GroupByNode::GetSchema() {
 		orderAtts.push_back(group[i].Attribute());
 	}
 	orderMaker = new OrderMaker(childsSchema, &orderAtts);
-	orderMaker->Print();
+	// orderMaker->Print();
 
 
 	schemaReady = true;
