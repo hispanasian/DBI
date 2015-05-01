@@ -104,14 +104,13 @@ void Console::SetOutput(SQL *sql) {
 	output = sql->GetSetOutput(fpath);
 
 	if(file != NULL && file != stdout) fclose(file);
-	delete file;
 	file = NULL;
 	switch (output) {
-		file = fopen(fpath.c_str(), "a");
 	case Stdout:
 		file = stdout;
 		break;
 	case File_Path:
+		file = fopen(fpath.c_str(), "a");
 		break;
 	case None:
 		// Do nothing

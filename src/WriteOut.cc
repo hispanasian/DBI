@@ -33,7 +33,6 @@ void WriteOut::Write(Pipe &inPipe, FILE *outFile, Schema &mySchema) {
 }
 
 void WriteOut::Write(Pipe &inPipe, FILE *outFile, Schema &mySchema, RawFile &file, Record &rec) {
-	file.Open(outFile);
 	while(inPipe.Remove(&rec)) {
 		file.Append(rec.ToString(&mySchema));
 	}
