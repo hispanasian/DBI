@@ -211,7 +211,6 @@ void File :: AddPage (Page *addMe, off_t whichPage) {
 	}
 
 	// now write the page
-	cout << "PAGE_SIZE " << PAGE_SIZE << endl;
 	char *bits = new (std::nothrow) char[PAGE_SIZE];
 	if (bits == NULL)
 	{
