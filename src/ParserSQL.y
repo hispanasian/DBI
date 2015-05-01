@@ -158,7 +158,7 @@ SQL: CREATE_TABLE TableData
 	refFile = $2;
 }
 
-| QUIT
+| QUIT ';'
 {
 	finalFunction = NULL;
 	tables = NULL;
@@ -292,14 +292,21 @@ Output: STDOUT
 	outType = SET_FILE;
 };
 
-QUERY: SELECT WhatIWant FROM Tables WHERE AndList
+QUERY: SELECT WhatIWant FROM Tables ';'
+{
+	tables = $4;
+	boolean = NULL;	
+	groupingAtts = NULL;
+}
+
+| SELECT WhatIWant FROM Tables WHERE AndList ';'
 {
 	tables = $4;
 	boolean = $6;	
 	groupingAtts = NULL;
 }
 
-| SELECT WhatIWant FROM Tables WHERE AndList GROUP BY Atts
+| SELECT WhatIWant FROM Tables WHERE AndList GROUP BY Atts ';'
 {
 	tables = $4;
 	boolean = $6;	
@@ -368,7 +375,7 @@ Atts: QualifiedName
 | Atts ',' Name
 {
 	yysqlerror($3);
-}
+};
 
 Tables: Name AS Name 
 {

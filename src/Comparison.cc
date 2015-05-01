@@ -117,7 +117,7 @@ OrderMaker :: OrderMaker(Schema *schema) {
 	numAtts = 0;
 
 	int n = schema->GetNumAtts();
-	Attribute *atts = schema->GetAtts();
+	const Attribute *atts = schema->GetAtts();
 
 	for (int i = 0; i < n; i++) {
 		if (atts[i].myType == Int) {
@@ -146,10 +146,10 @@ OrderMaker :: OrderMaker(Schema *schema) {
 	}
 }
 
-OrderMaker :: OrderMaker(Schema *base, Schema *order) {
+OrderMaker :: OrderMaker(const Schema *base, const Schema *order) {
 	numAtts = order->GetNumAtts();
 
-	Attribute *atts = order->GetAtts();
+	const Attribute *atts = order->GetAtts();
 	int n = order->GetNumAtts();
 	int index = -1;
 	Type type;
@@ -160,6 +160,25 @@ OrderMaker :: OrderMaker(Schema *base, Schema *order) {
 		type = base->FindType(atts[i].relation.c_str(), atts[i].name.c_str());
 
 		if(index == -1 || type != atts[i].myType)
+			throw invalid_argument("Non existent attribute found in order (OrderMaker(schema*, schema*))");
+		whichAtts[i] = index;
+		whichTypes[i] = type;
+	}
+}
+
+OrderMaker :: OrderMaker(const Schema *base, const vector<string> *order) {
+	numAtts = order->size();
+
+	int n = order->size();
+	int index = -1;
+	Type type;
+
+	// look through each attribute in order and find it in base
+	for(int i = 0; i < n; i++) {
+		index = base->Find(order->at(i).c_str());
+		type = base->FindType(order->at(i).c_str());
+
+		if(index == -1)
 			throw invalid_argument("Non existent attribute found in order (OrderMaker(schema*, schema*))");
 		whichAtts[i] = index;
 		whichTypes[i] = type;
@@ -491,7 +510,7 @@ void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *le
 
 				// it is not there!  So there is an error in the query
                                 } else {
-					cout << "ERROR: Could not find attribute " <<
+					cout << "ERROR: 1 Could not find attribute " <<
 						myOr->left->left->value << "\n";
 					throw invalid_argument("Could not find an attribute");
 					exit (1);	
@@ -548,7 +567,7 @@ void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *le
 
 				// it is not there!  So there is an error in the query
                                 } else {
-					cout << "ERROR: Could not find attribute " << myOr->left->right->value << "\n";
+					cout << "ERROR: 2 Could not find attribute " << myOr->left->right->value << "\n";
 					throw invalid_argument("Could not find an attribute");
 					exit (1);	
 				}
@@ -692,7 +711,8 @@ void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *my
 
 				// it is not there!  So there is an error in the query
                                 } else {
-					cout << "ERROR: Could not find attribute " <<
+                    cout << mySchema->ToString() << endl;
+					cout << "ERROR: 3 Could not find attribute " <<
 						myOr->left->left->value << "\n";
 					throw invalid_argument("Could not find an attribute");
 					exit (1);	
@@ -742,7 +762,7 @@ void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *my
 
 				// it is not there!  So there is an error in the query
                                 } else {
-					cout << "ERROR: Could not find attribute " << myOr->left->right->value << "\n";
+					cout << "ERROR: 4 Could not find attribute " << myOr->left->right->value << "\n";
 					throw invalid_argument("Could not find an attribute");
 					exit (1);	
 				}

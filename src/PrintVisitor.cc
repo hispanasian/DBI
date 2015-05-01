@@ -128,7 +128,9 @@ string PrintVisitor::FuncOperatorToString(const FuncOperator *func) {
 	if(func != NULL) {
 		// First, parse left child
 		temp.append(" ");
-		temp.append(FuncOperatorToString(func->leftOperator));
+		if(func->leftOperator != NULL) {
+			temp.append(FuncOperatorToString(func->leftOperator));
+		}
 
 		// Next, check root.
 		struct FuncOperand *op = func->leftOperand;
@@ -142,7 +144,9 @@ string PrintVisitor::FuncOperatorToString(const FuncOperator *func) {
 		else if(func->code == 45) temp.append("-");
 
 		// Finally, check right child
-		temp.append(FuncOperatorToString(func->right));
+		if(func->right != NULL) {
+			temp.append(FuncOperatorToString(func->right));
+		}
 		temp.append(" ");
 	}
 	return temp;

@@ -348,7 +348,7 @@ TEST_F(SQLTest, ParseWhere8) {
  * GetWhere should handle still create AndLists for Relations that are not mentioned in the
  * where clause (ie, they were in the FROM clause).
  */
-TEST_F(SQLTest, ParseWhere9) {
+TEST_F(SQLTest, DISABLED_ParseWhere9) {
 	stat.AddRel("RelA", 0);
 	stat.AddRel("RelB", 0);
 

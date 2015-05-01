@@ -33,7 +33,7 @@ void DuplicateRemoval::Run(Pipe &inPipe, Pipe &outPipe, Schema &mySchema, Schema
 		OrderMaker order = OrderMaker(&(data->schema), &(data->duplicates));
 		BigQ q = BigQ(data->in, sortedRecs, order, data->op.GetPageLimit());
 
-		data->op.Remove(sortedRecs, data->out, data->schema);
+		data->op.Remove(sortedRecs, data->out, data->schema, data->duplicates);
 		delete data;
 	}, (void*) data);
 	if(thread_id) {

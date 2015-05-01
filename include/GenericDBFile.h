@@ -38,7 +38,7 @@ protected:
 	 * The Load logic will be put in here. The existence of this function is purely for testing
 	 * purposes (to Mock record).
 	 */
-	virtual void Load (Schema &myschema, char *loadpath, Record &record);
+	virtual void Load (Schema &myschema, const char *loadpath, Record &record);
 
 public:
 	// GenericDBFile() : file(myFile), rfile(myRFile), config(myConfig), comp(myComp){}

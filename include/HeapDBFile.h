@@ -29,7 +29,7 @@ private:
 	 * The Load logic will be put in here. The existence of this function is purely for testing
 	 * purposes (to Mock record).
 	 */
-	virtual void Load (Schema &myschema, char *loadpath, Record &record);
+	virtual void Load (Schema &myschema, const char *loadpath, Record &record);
 	HeapDBFile();
 
 public:
@@ -41,7 +41,7 @@ public:
 	 * @param myschema	The schema of the file being loaded to memory
 	 * @param loadpath	The path to the file being loaded
 	 */
-	virtual void Load (Schema &myschema, char *loadpath);
+	virtual void Load (Schema &myschema, const char *loadpath);
 
 	/**
 	 * Moves the pointer from the current record to the first record of the first page.

@@ -48,3 +48,7 @@ string RelationData::ToString() const {
 	}
 	return out;
 }
+
+void RelationData::Remove(const std::string &rel) {
+	data.erase(rel);
+}

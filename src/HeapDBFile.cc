@@ -32,12 +32,12 @@ HeapDBFile::~HeapDBFile () {
 	delete last;
 }
 
-void HeapDBFile::Load (Schema &f_schema, char *loadpath) {
+void HeapDBFile::Load (Schema &f_schema, const char *loadpath) {
 	Record record;
 	Load(f_schema, loadpath, record);
 }
 
-void HeapDBFile::Load (Schema &f_schema, char *loadpath, Record &record) {
+void HeapDBFile::Load (Schema &f_schema, const char *loadpath, Record &record) {
 	if(!rfile.FileExists(loadpath)) throw std::runtime_error(loadpath + std::string(" could not be found."));
 	// File exists
 	FILE *file = fopen(loadpath, "r");

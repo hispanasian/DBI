@@ -87,7 +87,8 @@ void SelectFileNode::WaitUntilDone() {
 ProjectNode::ProjectNode(int id, OpNode *_child, const vector<RelAttPair> &_attsToKeep): OpNode(id),
 		attsToKeep(_attsToKeep) {
 	child = _child;
-	keepMe = NULL;
+	keepMe = new int[attsToKeep.size()];
+	GetSchema();
 }
 
 ProjectNode::~ProjectNode() {
@@ -96,7 +97,6 @@ ProjectNode::~ProjectNode() {
 
 void ProjectNode::Visit(OpVisitor &visitor, void* arg) {
 	visitor.VisitProjectNode(this, arg);
-	keepMe = NULL;
 }
 
 const Schema* ProjectNode::GetSchema() {
@@ -119,6 +119,16 @@ const Schema* ProjectNode::GetSchema() {
 			temp.Copy(prev);
 		}
 		attsToKeep.push_back(prev);
+	}
+	numAttsOutput = attsToKeep.size();
+	numAttsInput = childsSchema->GetNumAtts();
+	for(int i = 0; i < attsToKeep.size(); ++i) {
+		int index = childsSchema->Find(attsToKeep[i].Attribute().c_str());	
+		if(index == -1) {
+			cout << "Could not find attribute " << attsToKeep[i].Attribute() << " in Project";
+			throw std::runtime_error("Could not find attribute in Project");
+		}
+		keepMe[i] = index;
 	}
 	schema.Filter(*childsSchema, attsToKeep);
 
@@ -267,9 +277,20 @@ const Schema* GroupByNode::GetSchema() {
 		if(function.ReturnsInt()) atts[0].myType = Int;
 		else atts[0].myType = Double;
 		Schema agg("", 1, atts);
-		schema.Join(&agg, childsSchema);
+		Schema groupingAtts;
+		groupingAtts.Filter(*childsSchema, group);
+		schema.Join(&agg, &groupingAtts);
 	}
-	else schema.Copy(*childsSchema);
+	else {
+		schema.Copy(*childsSchema);
+	}
+	// make the OrderMaker
+	vector<string> orderAtts;
+	for(int i = 0; i < group.size(); ++i) {
+		orderAtts.push_back(group[i].Attribute());
+	}
+	orderMaker = new OrderMaker(childsSchema, &orderAtts);
+	// orderMaker->Print();
 
 
 	schemaReady = true;

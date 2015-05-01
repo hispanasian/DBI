@@ -47,6 +47,8 @@ public:
 
 	void Insert(const std::string &rel, const RelationMetaData &copy);
 
+	void Remove(const std::string &rel);
+
 	const RelationMetaData& operator [](std::string rel) const { return data.at(rel); }
 
 	std::string ToString() const;

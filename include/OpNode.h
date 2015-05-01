@@ -114,6 +114,8 @@ public:
 	OpNode *child;
 	vector<RelAttPair> attsToKeep;
 	int *keepMe;
+	int numAttsInput;
+	int numAttsOutput;
 
 	/**
 	 * This method assumes that attsToKeep only provides the attributes that are listed
@@ -170,7 +172,7 @@ public:
 
 class SumNode: public OpNode {
 public:
-	Join op;
+	Sum op;
 	OpNode *child;
 	Function function;
 	Record literal;
@@ -188,8 +190,9 @@ public:
 
 class GroupByNode: public OpNode {
 public:
-	Join op;
+	GroupBy op;
 	OpNode *child;
+	OrderMaker* orderMaker;
 	Function function;
 	const vector<RelAttPair> group;
 	const struct FuncOperator *funcOp;
@@ -208,7 +211,7 @@ public:
 
 class WriteOutNode: public OpNode {
 public:
-	Join op;
+	WriteOut op;
 	OpNode *child;
 	FILE *outFile;
 
@@ -216,6 +219,7 @@ public:
 	virtual ~WriteOutNode();
 	void Visit(OpVisitor &visitor, void* arg);
 	const Schema* GetSchema();
+	Schema* GetSchemaNonConst();
 	void WaitUntilDone();
 };
 

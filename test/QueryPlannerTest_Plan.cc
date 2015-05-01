@@ -217,7 +217,7 @@ TEST_F(QueryPlannerTest, Plan4) {
  * QueryPlanner::Plan should produce a plan for a basic GroiupBy statement with only two relations
  * (two selections)
  */
-TEST_F(QueryPlannerTest, Plan5) {
+TEST_F(QueryPlannerTest, DISABLED_Plan5) {
 	QueryPlanner planner;
 	OpNode *tree;
 	SelectMap selects;
@@ -248,7 +248,7 @@ TEST_F(QueryPlannerTest, Plan5) {
  * QueryPlanner::Plan should produce a plan for a basic GroiupBySum statement with only one relation
  * (one selection)
  */
-TEST_F(QueryPlannerTest, Plan6) {
+TEST_F(QueryPlannerTest, DISABLED_Plan6) {
 	QueryPlanner planner;
 	OpNode *tree;
 	SelectMap selects;
@@ -291,7 +291,7 @@ TEST_F(QueryPlannerTest, Plan6) {
  * QueryPlanner::Plan should produce a plan for a basic GroiupByDistinct statement with only two
  * relations (two selections)
  */
-TEST_F(QueryPlannerTest, Plan7) {
+TEST_F(QueryPlannerTest, DISABLED_Plan7) {
 	QueryPlanner planner;
 	OpNode *tree;
 	SelectMap selects;
@@ -321,7 +321,7 @@ TEST_F(QueryPlannerTest, Plan7) {
  * QueryPlanner::Plan should produce a plan for a basic GroiupByDistinctSum statement with only
  * two relations (two selections)
  */
-TEST_F(QueryPlannerTest, Plan8) {
+TEST_F(QueryPlannerTest, DISABLED_Plan8) {
 	QueryPlanner planner;
 	OpNode *tree;
 	SelectMap selects;
