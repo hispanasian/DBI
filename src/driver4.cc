@@ -75,7 +75,7 @@ char *fileName = "Statistics.txt";
 void q0 (){
 
 	Statistics s;
-        char *relName[] = {"supplier","partsupp"};
+        const char *relName[] = {"supplier","partsupp"};
 
 	
 	s.AddRel(relName[0],10000);
@@ -113,7 +113,7 @@ void q0 (){
 void q1 (){
 
 	Statistics s;
-        char *relName[] = {"lineitem"};
+        const char *relName[] = {"lineitem"};
 
 	s.AddRel(relName[0],6001215);
 	s.AddAtt(relName[0], "l_returnflag",3);
@@ -143,7 +143,7 @@ void q1 (){
 void q2 (){
 
 	Statistics s;
-        char *relName[] = {"orders","customer","nation"};
+        const char *relName[] = {"orders","customer","nation"};
 
 	
 	s.AddRel(relName[0],1500000);
@@ -182,7 +182,7 @@ void q2 (){
 void q3 (){
 
 	Statistics s;
-	char *relName[] = {"supplier","customer","nation"};
+	const char *relName[] = {"supplier","customer","nation"};
 	
 	s.AddRel(relName[0],10000);
 	s.AddAtt(relName[0], "s_nationkey",25);
@@ -199,19 +199,19 @@ void q3 (){
 	s.CopyRel("supplier","s");
 	s.CopyRel("customer","c");
 
-	char *set1[] ={"s","n1"};
+	const char *set1[] ={"s","n1"};
 	char *cnf = "(s.s_nationkey = n1.n_nationkey)";
 	yy_scan_string(cnf);
 	yyparse();	
 	s.Apply(final, set1, 2);
 	
-	char *set2[] ={"c","n2"};
+	const char *set2[] ={"c","n2"};
 	cnf = "(c.c_nationkey = n2.n_nationkey)";
 	yy_scan_string(cnf);
 	yyparse();
 	s.Apply(final, set2, 2);
 
-	char *set3[] = {"c","s","n1","n2"};
+	const char *set3[] = {"c","s","n1","n2"};
 	cnf = " (n1.n_nationkey = n2.n_nationkey )";
 	yy_scan_string(cnf);
 	yyparse();
@@ -230,7 +230,7 @@ void q3 (){
 void q4 (){
 
 	Statistics s;
-        char *relName[] = { "part", "partsupp", "supplier", "nation", "region"};
+        const char *relName[] = { "part", "partsupp", "supplier", "nation", "region"};
 
 	s.AddRel(relName[0],200000);
 	s.AddAtt(relName[0], "p_partkey",200000);
@@ -258,7 +258,7 @@ void q4 (){
 	s.CopyRel("nation","n");
 	s.CopyRel("region","r");
 
-	char *shortRelName[] = { "p", "ps", "s", "n", "r"};
+	const char *shortRelName[] = { "p", "ps", "s", "n", "r"};
 
 	char *cnf = "(p.p_partkey=ps.ps_partkey) AND (p.p_size = 2)";
 	yy_scan_string(cnf);
@@ -295,7 +295,7 @@ void q4 (){
 void q5 (){
 
 	Statistics s;
-        char *relName[] = { "customer", "orders", "lineitem"};
+        const char *relName[] = { "customer", "orders", "lineitem"};
 
 	s.AddRel(relName[0],150000);
 	s.AddAtt(relName[0], "c_custkey",150000);
@@ -336,7 +336,7 @@ void q5 (){
 void q6 (){
 
 	Statistics s;
-        char *relName[] = { "partsupp", "supplier", "nation"};
+        const char *relName[] = { "partsupp", "supplier", "nation"};
 
 //	s.Read(fileName);
 	
@@ -376,7 +376,7 @@ void q6 (){
 void q7(){
 
 	Statistics s;
-        char *relName[] = { "orders", "lineitem"};
+        const char *relName[] = { "orders", "lineitem"};
 
 //	s.Read(fileName);
 	
@@ -409,7 +409,7 @@ void q7(){
 void q8 (){
 
 	Statistics s;
-        char *relName[] = { "part",  "partsupp"};
+        const char *relName[] = { "part",  "partsupp"};
 
 //	s.Read(fileName);
 	
@@ -440,7 +440,7 @@ void q8 (){
 void q9(){
 
 	Statistics s;
-        char *relName[] = { "part",  "partsupp","supplier"};
+        const char *relName[] = { "part",  "partsupp","supplier"};
 
 	
 	s.AddRel(relName[0],200000);
@@ -478,7 +478,7 @@ void q9(){
 void q10 (){
 
 	Statistics s;
-        char *relName[] = { "customer", "orders", "lineitem","nation"};
+        const char *relName[] = { "customer", "orders", "lineitem","nation"};
 
 //	s.Read(fileName);
 	
@@ -524,7 +524,7 @@ void q10 (){
 void q11 (){
 
 	Statistics s;
-        char *relName[] = { "part",  "lineitem"};
+        const char *relName[] = { "part",  "lineitem"};
 
 //	s.Read(fileName);
 	

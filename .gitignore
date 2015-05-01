@@ -114,6 +114,9 @@ src/y.tab.c
 include/yyfunc.tab.h
 src/lex.yyfunc.c
 src/yyfunc.tab.c
+include/yysql.tab.h
+src/lex.yysql.c
+src/yysql.tab.c
 
 ### Eclipse ###
 .cproject

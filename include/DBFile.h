@@ -48,7 +48,7 @@ private:
 	 * The Load logic will be put in here. The existence of this function is purely for testing
 	 * purposes (to Mock record).
 	 */
-	virtual void Load (Schema &myschema, char *loadpath, Record &record);
+	virtual void Load (Schema &myschema, const char *loadpath, Record &record);
 
 public:
 	DBFile ();
@@ -62,7 +62,7 @@ public:
 	 * @param startup	Unknown
 	 * @return			1 if successful and 0 if failure.
 	 */
-	virtual int Create (char *fpath, fType file_type, void *startup);
+	virtual int Create (const char *fpath, fType file_type, void *startup);
 
     /**
 	 * Opens the file and associated header located at fpath and fpath.header respectively. This
@@ -70,7 +70,7 @@ public:
 	 * @param fpath	The path to the DBFile
 	 * @return 		1 if successful and 0 if failure.
 	 */
-	virtual int Open (char *fpath);
+	virtual int Open (const char *fpath);
 
 	/**
 	 * Closes the file held by this object.
@@ -83,7 +83,7 @@ public:
 	 * @param myschema	The schema of the file being loaded to memory
 	 * @param loadpath	The path to the file being loaded
 	 */
-	virtual void Load (Schema &myschema, char *loadpath);
+	virtual void Load (Schema &myschema, const char *loadpath);
 
 	/**
 	 * Moves the pointer from the current record to the first record of the first page.

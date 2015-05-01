@@ -3,6 +3,7 @@
 
 #include <gmock/gmock.h>
 #include <vector>
+#include <unordered_map>
 #include "Record.h"
 #include "File.h"
 #include "RawFile.h"
@@ -30,6 +31,9 @@
 #include "GroupBy.h"
 #include "Join.h"
 #include "Expression.h"
+#include "OpNode.h"
+#include "SQL.h"
+#include "JoinOptimizer.h"
 
 class MockRecord: public Record {
 public:
@@ -136,13 +140,13 @@ public:
 class MockDBFile: public DBFile {
 public:
 //	virtual int Create (char *fpath, fType file_type, void *startup);
-	MOCK_METHOD3(Create, int(char *fpath, fType file_type, void *startup));
+	MOCK_METHOD3(Create, int(const char *fpath, fType file_type, void *startup));
 //	virtual int Open (char *fpath);
-	MOCK_METHOD1(Open, int(char *fpath));
+	MOCK_METHOD1(Open, int(const char *fpath));
 //	virtual int Close ();
 	MOCK_METHOD0(Close, int());
 //	virtual void Load (Schema &myschema, char *loadpath);
-	MOCK_METHOD2(Load, void(Schema &myschema, char *loadpath));
+	MOCK_METHOD2(Load, void(Schema &myschema, const char *loadpath));
 //	virtual void MoveFirst ();
 	MOCK_METHOD0(MoveFirst, void());
 //	virtual void Add (Record &addme);
@@ -250,7 +254,7 @@ public:
 class MockGenericDBFile: public GenericDBFile {
 public:
 //	virtual void Load (Schema &myschema, char *loadpath);
-	MOCK_METHOD2(Load, void(Schema &myschema, char *loadpath));
+	MOCK_METHOD2(Load, void(Schema &myschema, const char *loadpath));
 //	virtual void MoveFirst ();
 	MOCK_METHOD0(MoveFirst, void());
 //	virtual void Add (Record &addme);
@@ -270,7 +274,7 @@ public:
 class MockHeapDBFile: public HeapDBFile {
 public:
 //	virtual void Load (Schema &myschema, char *loadpath);
-	MOCK_METHOD2(Load, void(Schema &myschema, char *loadpath));
+	MOCK_METHOD2(Load, void(Schema &myschema, const char *loadpath));
 //	virtual void MoveFirst ();
 	MOCK_METHOD0(MoveFirst, void());
 //	virtual void Add (Record &addme);
@@ -290,7 +294,7 @@ public:
 class MockSortedDBFile: public SortedDBFile {
 public:
 //	virtual void Load (Schema &myschema, char *loadpath);
-	MOCK_METHOD2(Load, void(Schema &myschema, char *loadpath));
+	MOCK_METHOD2(Load, void(Schema &myschema, const char *loadpath));
 //	virtual void MoveFirst ();
 	MOCK_METHOD0(MoveFirst, void());
 //	virtual void Add (Record &addme);
@@ -324,7 +328,7 @@ public:
 class MockTreeDBFile: public TreeDBFile {
 public:
 //	virtual void Load (Schema &myschema, char *loadpath);
-	MOCK_METHOD2(Load, void(Schema &myschema, char *loadpath));
+	MOCK_METHOD2(Load, void(Schema &myschema, const char *loadpath));
 //	virtual void MoveFirst ();
 	MOCK_METHOD0(MoveFirst, void());
 //	virtual void Add (Record &addme);
@@ -567,6 +571,61 @@ public:
 
 	// virtual double Denominator() = 0;
 	MOCK_METHOD0(Denominator, double());
+};
+
+class MockOpNode : public OpNode {
+public:
+	MOCK_METHOD0(GetID, int());
+	MOCK_METHOD0(GetSchema, const Schema*());
+
+};
+
+class MockSQL: public SQL {
+public:
+//	virtual const struct FuncOperator* Function() const;
+	MOCK_METHOD0(Function, const FuncOperator*());
+//	virtual const Statistics& GetStatistics() const;
+	MOCK_METHOD0(GetStatistics, const Statistics&());
+//	virtual void Parse(const std::string &sql);
+	MOCK_METHOD1(Parse, void(const std::string));
+//	virtual void Parse();
+	MOCK_METHOD0(Parse, SQL_Command());
+//	virtual void GetWhere(SelectMap &selects, JoinMap &joins);
+	MOCK_METHOD2(GetWhere, void(SelectMap &selects, JoinMap &joins));
+//	virtual void GetGroup(std::vector<RelAttPair> &pairs);
+	MOCK_METHOD1(GetGroup, void(std::vector<RelAttPair> &pairs));
+//	virtual void GetSelect(std::vector<RelAttPair> &pairs);
+	MOCK_METHOD1(GetSelect, void(std::vector<RelAttPair> &pairs));
+//	virtual void GetTables(std::vector<RelAliasPair> &pairs);
+	MOCK_METHOD1(GetTables, void(std::vector<RelAliasPair> &pairs));
+//	virtual void GetFunctionAttributes(std::vector<RelAttPair> &pair);
+	MOCK_METHOD1(GetFunctionAttributes, void(std::vector<RelAttPair> &pair));
+//	virtual bool DistinctAggregate();
+	MOCK_METHOD0(DistinctAggregate, bool());
+//	virtual bool DistinctSelect();
+	MOCK_METHOD0(DistinctSelect, bool());
+//	virtual void ParseWhere(struct AndList *where, SelectMap &selects, JoinMap &joins);
+	MOCK_METHOD3(ParseWhere, void(struct AndList *where, SelectMap &selects, JoinMap &joins));
+//	virtual void ParseNameList(struct NameList *list, std::vector<RelAttPair> &pair);
+	MOCK_METHOD2(ParseNameList, void(struct NameList *list, std::vector<RelAttPair> &pair));
+//	virtual void ParseFuncOperator(FuncOperator *func, std::vector<RelAttPair> &pair);
+	MOCK_METHOD2(ParseFuncOperator, void(FuncOperator *func, std::vector<RelAttPair> &pair));
+//	virtual void ParseTableList(TableList *list, std::vector<RelAliasPair> &pairs);
+	MOCK_METHOD2(ParseTableList, void(TableList *list, std::vector<RelAliasPair> &pairs));
+};
+
+class MockJoinOptimizer: public JoinOptimizer {
+public:
+//   void Optimize(unordered_map<string, AndList*> &selects,
+//                       unordered_map<string, unordered_map<string, AndList*> > &joins,
+//                       Statistics& stats,
+//                       vector<string> &rels,
+//                       vector<TupleCount> &counts);
+   MOCK_METHOD5(Optimize, void(unordered_map<string, AndList*> &selects,
+                       unordered_map<string, unordered_map<string, AndList*> > &joins,
+                       const Statistics& stats,
+                       vector<string> &rels,
+                       vector<TupleCount> &counts));
 };
 
 #endif

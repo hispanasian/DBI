@@ -79,6 +79,7 @@ void TPMMS::RunToFile(off_t &totalPageCount) {
 	}
 
 	// Write out the last page
+	// cout << "totalPageCount = " << totalPageCount << endl;
 	file.AddPage(&page, totalPageCount);
 	++totalPageCount;
 	page.EmptyItOut();

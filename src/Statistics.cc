@@ -45,6 +45,11 @@ Statistics::~Statistics() {
 	// TODO Auto-generated destructor stub
 }
 
+void Statistics::RemoveRel(const char* relName) {
+	relations.erase(string(relName));
+	lookup.erase(string(relName));
+}
+
 void Statistics::AddRel(const char *relName, double numTuples) {
 	try {
 		set<string> &temp = relations.at(relName).set;
@@ -142,7 +147,7 @@ void Statistics::Write(char *fromWhere, RawFile &file) {
 	file.Close();
 }
 
-void Statistics::CopyRel(char *oldName, char *newName) {
+void Statistics::CopyRel(const char *oldName, const char *newName) {
 	relations[newName].numTuples = relations.at(oldName).numTuples;
 
 	for(auto it = relations.at(oldName).atts.begin(); it != relations.at(oldName).atts.end(); ++it) {
@@ -153,7 +158,7 @@ void Statistics::CopyRel(char *oldName, char *newName) {
 	relations[newName].set.insert(newName);
 }
 
-void Statistics::AddAtt(char *relName, char *attName, double numDistincts) {
+void Statistics::AddAtt(const char *relName, const char *attName, double numDistincts) {
 	relations.at(relName).atts[attName] = numDistincts;
 
 	try {
@@ -165,7 +170,7 @@ void Statistics::AddAtt(char *relName, char *attName, double numDistincts) {
 	}
 }
 
-double Statistics::NumTuples(const char *relName) {
+double Statistics::NumTuples(const char *relName) const {
 	try {
 		return relations.at(relName).numTuples;
 	}
@@ -175,7 +180,7 @@ double Statistics::NumTuples(const char *relName) {
 	}
 }
 
-double Statistics::NumDistincts(const char *relName, const char *attName) {
+double Statistics::NumDistincts(const char *relName, const char *attName) const {
 	try {
 		if(relations.at(relName).atts.at(attName) == -1) return relations.at(relName).numTuples;
 		else return relations.at(relName).atts.at(attName);
@@ -185,12 +190,16 @@ double Statistics::NumDistincts(const char *relName, const char *attName) {
 	}
 }
 
-double Statistics::ApplyAndCompute(struct AndList *parseTree, char *relNames[], int numToJoin) {
+double Statistics::ApplyAndCompute(struct AndList *parseTree, const char *relNames[], int numToJoin) {
 	// first verfiy that this join can take place
 	if(!VerifyJoin(parseTree, relNames, numToJoin)) {
 		throw std::runtime_error("Statistics::ApplyAndCompute: cannot perform join");
 	}
-
+	// handle the case where there is just one relation
+	// and no condition on its selection
+	if(parseTree->left == NULL && numToJoin == 1) {
+		return NumTuples(relNames[0]);
+	}
 	// now do the join
 	set<string> relations;
 	AndList* curr = parseTree;
@@ -200,7 +209,7 @@ double Statistics::ApplyAndCompute(struct AndList *parseTree, char *relNames[], 
 		// calculate which tuples are merged from this OrList
 		// compute how many tuples this relation will have
 		numTuples = Join(curr->left, relations);
-		
+
 		// merge these relations
 		auto it = relations.begin();
 		auto first = *it;
@@ -218,12 +227,12 @@ double Statistics::ApplyAndCompute(struct AndList *parseTree, char *relNames[], 
 	return numTuples;
 }
 
-void  Statistics::Apply(struct AndList *parseTree, char *relNames[], int numToJoin)
+void  Statistics::Apply(struct AndList *parseTree, const char *relNames[], int numToJoin)
 {
 	ApplyAndCompute(parseTree, relNames, numToJoin);
 }
 
-double Statistics::Estimate(struct AndList *parseTree, char **relNames, int numToJoin)
+double Statistics::Estimate(struct AndList *parseTree, const char **relNames, int numToJoin)
 {
 	Statistics copy(*this);
 	return copy.ApplyAndCompute(parseTree, relNames, numToJoin);
@@ -248,14 +257,14 @@ void Statistics::MergeSets(std::string rel1, std::string rel2) {
 	}
 }
 
-bool Statistics::VerifyJoin(struct AndList *parseTree, char **relNames, int numToJoin) {
+bool Statistics::VerifyJoin(struct AndList *parseTree, const char **relNames, int numToJoin) {
 	bool atts = VerifyJoinAttributes(parseTree, relNames, numToJoin);
 	bool sets = VerifyJoinSets(relNames, numToJoin);
 
 	return  atts && sets;
 }
 
-bool Statistics::VerifyJoinAttributes(struct AndList *parseTree, char **relNames, int numToJoin) {
+bool Statistics::VerifyJoinAttributes(struct AndList *parseTree, const char **relNames, int numToJoin) {
 	struct AndList *andList = parseTree;
 	struct OrList *orList = NULL;
 	struct Operand *leftOp;
@@ -290,7 +299,7 @@ bool Statistics::VerifyJoinAttributes(struct AndList *parseTree, char **relNames
 	return true;
 }
 
-bool Statistics::VerifyJoinSets(char **relNames, int numToJoin) {
+bool Statistics::VerifyJoinSets(const char **relNames, int numToJoin) {
 	// Create a set that will hold every relation from every set that contains any relation in
 	// relNames
 	set<string> superset;
@@ -310,7 +319,7 @@ bool Statistics::VerifyJoinSets(char **relNames, int numToJoin) {
 	return superset.empty();
 }
 
-bool Statistics::ParseOperand(string operand, vector<string> &out) {
+bool Statistics::ParseOperand(string operand, vector<string> &out) const {
 	string relation;
 	string attribute;
 	out.clear();
@@ -336,7 +345,7 @@ bool Statistics::ParseOperand(string operand, vector<string> &out) {
 	return true;
 }
 
-string Statistics::RelLookup(string att) {
+string Statistics::RelLookup(string att) const {
 	try {
 		return lookup.at(att);
 	}
@@ -379,7 +388,7 @@ void Statistics::MakeExpression(ComparisonOp op, std::vector<Expression*>& expre
 		expressions.push_back(be);
 		relations.insert(leftOp[0]);
 		relations.insert(rightOp[0]);
-	} else { 
+	} else {
 		// this is a unary expression
 		Operand* nameOp = IsName(op.left->code) ? op.left : op.right;
 		Operand* litOp = IsLiteral(op.left->code) ? op.left : op.right;
@@ -406,10 +415,12 @@ bool Statistics::IsName(int code) { return code == NAME; }
 double Statistics::Join(OrList* orList, std::set<std::string>& relations) {
 	OrList* curr = orList;
 	vector<Expression*> expressions;
-	while(curr != NULL) {
+
+	while(curr != NULL && curr->left != NULL) {
 		MakeExpression(*curr->left, expressions, relations);
 		curr = curr->rightOr;
 	}
+
 	CombineExpressions(expressions);
 	// TODO: delete the expressions here?
 	return ComputeNumTuples(expressions);
@@ -444,4 +455,8 @@ double Statistics::ComputeNumTuples(std::vector<Expression*>& expressions) {
 	sum -= expressions[0]->Numerator() / denominator;
 
 	return sum;
+}
+
+int Statistics::RelationSize() {
+	return relations.size();
 }

@@ -31,7 +31,7 @@ DBFile::~DBFile () {
 	delete delegate;
 }
 
-int DBFile::Create (char *f_path, fType f_type, void *startup) {
+int DBFile::Create (const char *f_path, fType f_type, void *startup) {
 	bool success = true;
 	bool rawOpen = false;
 
@@ -93,7 +93,7 @@ int DBFile::Create (char *f_path, fType f_type, void *startup) {
 	return success;
 }
 
-int DBFile::Open (char *f_path) {
+int DBFile::Open (const char *f_path) {
 	bool success = true;
 	bool rawOpen = false;
 	
@@ -164,12 +164,12 @@ int DBFile::Close () {
 	return success;
 }
 
-void DBFile::Load (Schema &f_schema, char *loadpath) {
+void DBFile::Load (Schema &f_schema, const char *loadpath) {
 	Record record;
 	Load(f_schema, loadpath, record);
 }
 
-void DBFile::Load (Schema &f_schema, char *loadpath, Record &record) { delegate->Load(f_schema, loadpath, record); }
+void DBFile::Load (Schema &f_schema, const char *loadpath, Record &record) { delegate->Load(f_schema, loadpath, record); }
 
 
 void DBFile::MoveFirst () { delegate->MoveFirst(); }

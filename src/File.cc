@@ -18,7 +18,7 @@ Page :: Page () {
 	myRecs = new (std::nothrow) TwoWayList<Record>;
 	if (myRecs == NULL)
 	{
-		cout << "ERROR : Not enough memory. EXIT !!!\n";
+		cout << "ERROR 4: Not enough memory. EXIT !!!\n";
 		exit(1);
 	}
 }
@@ -131,7 +131,7 @@ void Page :: FromBinary (char *bits) {
 	Record *temp = new (std::nothrow) Record();
 	if (temp == NULL)
 	{
-		cout << "ERROR : Not enough memory. EXIT !!!\n";
+		cout << "ERROR 3: Not enough memory. EXIT !!!\n";
 		exit(1);
 	}
 
@@ -178,7 +178,7 @@ void File :: GetPage (Page *putItHere, off_t whichPage) {
 	char *bits = new (std::nothrow) char[PAGE_SIZE];
 	if (bits == NULL)
 	{
-		cout << "ERROR : Not enough memory. EXIT !!!\n";
+		cout << "ERROR 2: Not enough memory. EXIT !!!\n";
 		exit(1);
 	}
 
@@ -214,7 +214,7 @@ void File :: AddPage (Page *addMe, off_t whichPage) {
 	char *bits = new (std::nothrow) char[PAGE_SIZE];
 	if (bits == NULL)
 	{
-		cout << "ERROR : Not enough memory. EXIT !!!\n";
+		cout << "ERROR 1: Not enough memory. EXIT !!!\n";
 		exit(1);
 	}
 

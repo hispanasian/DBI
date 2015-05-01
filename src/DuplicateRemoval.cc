@@ -19,17 +19,21 @@ void DuplicateRemoval::Use_n_Pages (int n) {
 }
 
 void DuplicateRemoval::Run(Pipe &inPipe, Pipe &outPipe, Schema &mySchema) {
-	DuplicateRemovalData *data = new DuplicateRemovalData { inPipe, outPipe, mySchema, *this };
+	Run(inPipe, outPipe, mySchema, mySchema);
+}
+
+void DuplicateRemoval::Run(Pipe &inPipe, Pipe &outPipe, Schema &mySchema, Schema &duplicates) {
+	DuplicateRemovalData *data = new DuplicateRemovalData { inPipe, outPipe, mySchema, duplicates, *this };
 
 	thread_id = pthread_create(&worker, NULL, [] (void* args) -> void* {
 		DuplicateRemovalData *data = (DuplicateRemovalData*)args;
 
 		// Sort the input data
 		Pipe sortedRecs;
-		OrderMaker order = OrderMaker(&(data->schema));
+		OrderMaker order = OrderMaker(&(data->schema), &(data->duplicates));
 		BigQ q = BigQ(data->in, sortedRecs, order, data->op.GetPageLimit());
 
-		data->op.Remove(sortedRecs, data->out, data->schema);
+		data->op.Remove(sortedRecs, data->out, data->schema, data->duplicates);
 		delete data;
 	}, (void*) data);
 	if(thread_id) {
@@ -42,6 +46,14 @@ void DuplicateRemoval::Remove(Pipe &inPipe, Pipe &outPipe, Schema &mySchema) {
 	Record prev;
 	ComparisonEngine comp;
 	OrderMaker order = OrderMaker(&mySchema);
+	Remove(inPipe, outPipe, mySchema, rec, prev, comp, order);
+}
+
+void DuplicateRemoval::Remove(Pipe &inPipe, Pipe &outPipe, Schema &mySchema, Schema &duplicates) {
+	Record rec;
+	Record prev;
+	ComparisonEngine comp;
+	OrderMaker order = OrderMaker(&mySchema, &duplicates);
 	Remove(inPipe, outPipe, mySchema, rec, prev, comp, order);
 }
 

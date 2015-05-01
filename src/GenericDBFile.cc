@@ -27,7 +27,7 @@ int GenericDBFile::GetLength() {
 	return max(zero, file.GetLength()-1);
 }
 
-void  GenericDBFile::Load (Schema &myschema, char *loadpath, Record &record){}
+void  GenericDBFile::Load (Schema &myschema, const char *loadpath, Record &record){}
 
 
 /**

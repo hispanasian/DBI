@@ -6,7 +6,9 @@
 #include "File.h"
 #include "Comparison.h"
 #include "ComparisonEngine.h"
+#include "SQL.h"
 #include <string>
+#include <vector>
 
 
 // This stores an individual comparison that is part of a CNF
@@ -34,6 +36,8 @@ public:
 
 	// print to the screen
 	void Print ();
+
+	std::string ToString(); 
 };
 
 
@@ -61,9 +65,20 @@ public:
 	OrderMaker(Schema *schema);
 
 	// create an OrderMaker that can be used to sort records
+	// based on the attributes in order (relative to base).
+	// ie: OrderMaker will sort on the attributes provided by
+	// order but will use the context of base
+	OrderMaker(const Schema *base, const Schema *order);
+
+	// Similar to the above
+	OrderMaker(const Schema *base, const std::vector<std::string> *order);
+
+	// create an OrderMaker that can be used to sort records
 	// based upon str which is expected to have the following format:
 	// OrderMaker = (whichAtt whichType)*
 	OrderMaker(std::string str);
+
+	virtual ~OrderMaker();
 
 	// gets the number of attributes
 	virtual int GetNumAtts();
@@ -118,15 +133,18 @@ public:
 	// print the comparison structure to the screen
 	virtual void Print ();
 
+	// virtual std::string ToString (); 
+	std::string ToString (const std::string& prefix); 
+
         // this takes a parse tree for a CNF and converts it into a 2-D
         // matrix storing the same CNF expression.  This function is applicable
         // specifically to the case where there are two relations involved
-        virtual void GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema,
-		Schema *rightSchema, Record &literal);
+        virtual void GrowFromParseTree (const struct AndList *parseTree, const Schema *leftSchema,
+		const Schema *rightSchema, Record &literal);
 
         // version of the same function, except that it is used in the case of
         // a relational selection over a single relation so only one schema is used
-        virtual void GrowFromParseTree (struct AndList *parseTree, Schema *mySchema,
+        virtual void GrowFromParseTree (const struct AndList *parseTree, const Schema *mySchema,
 		Record &literal);
 
 };

@@ -16,6 +16,9 @@
 #include "ParseTree.h"
 #include "Expression.h"
 
+//typedef std::pair<std::string, AndList*> OrPair;
+//typedef std::pair<std::string, std::string> RelAttPair;
+
 struct StatData {
 	double numTuples;
 	std::unordered_map<std::string, int> atts;
@@ -51,6 +54,12 @@ public:
 	Statistics();
 	Statistics(const Statistics &copyMe);
 	virtual ~Statistics();
+
+	/**
+	 * Removes relName from the structure
+	 * @param relName	The name of the relation being removed
+	 */
+	virtual void RemoveRel(const char *relName);
 
 	/**
 	 * Adds (or replaces if it exists) a base relation to this structure and any other relations
@@ -91,7 +100,7 @@ public:
 	 * @param oldName	The name of the relation to be copied
 	 * @param newName	The name of the relation that will contain the copy of oldName
 	 */
-	virtual void CopyRel(char *oldName, char *newName);
+	virtual void CopyRel(const char *oldName, const char *newName);
 
     /**
 	 * Adds (or replaces if it exists) an attribute to this structure. A numDistincts of -1 will
@@ -102,14 +111,14 @@ public:
 	 * @param attName	The attribute's name
 	 * @numDistincts	The number of distinct attributes
 	 */
-	virtual void AddAtt(char *relName, char *attName, double numDistincts);
+	virtual void AddAtt(const char *relName, const char *attName, double numDistincts);
 
 	/**
 	 * Returns the number of tuples in the provided relName.
 	 * @param relName	The name of the relation whose statistics are being requested
 	 * @return			The number of tuples in relName or -1 if no such relation exists
 	 */
-	virtual double NumTuples(const char *relName);
+	virtual double NumTuples(const char *relName) const;
 
 	/**
 	 * Returns the number of distinct tuples in the given attribute. This will return null if
@@ -118,7 +127,7 @@ public:
 	 * @param attName	The name of the attribute being queried or -1 if neither the relation nor
 	 * 					attribute exist
 	 */
-	virtual double NumDistincts(const char *relName, const char *attName);
+	virtual double NumDistincts(const char *relName, const char *attName) const;
 
 	/**
 	 * Merges the sets containing rel1 and rel2. This will do nothing if both rel1 and rel2 are
@@ -139,13 +148,13 @@ public:
 	 * @param numToJoin	The number of relations in relNames
 	 * @return True if the join is valid.
 	 */
-	virtual bool VerifyJoin(struct AndList *parseTree, char **relNames, int numToJoin);
+	virtual bool VerifyJoin(struct AndList *parseTree, const char **relNames, int numToJoin);
 
 	/**
 	 * Checks to see if the attributes listed in parseTree belong to the relations in relNames.
 	 * @return True if the above is true.
 	 */
-	virtual bool VerifyJoinAttributes(struct AndList *parseTree, char **relNames, int numToJoin);
+	virtual bool VerifyJoinAttributes(struct AndList *parseTree, const char **relNames, int numToJoin);
 
 	/**
 	 * Checks to see if the relations in relNames all completely belong to the same set(s). Ie,
@@ -155,7 +164,7 @@ public:
 	 * @param numToJoin	The number of relations in relNames
 	 * @return True if the join is valid.
 	 */
-	virtual bool VerifyJoinSets(char **relNames, int numToJoin);
+	virtual bool VerifyJoinSets(const char **relNames, int numToJoin);
 
 	/**
 	 * Parses the operand and puts the relation and attribute in out. The format of the operand
@@ -172,14 +181,14 @@ public:
 	 * @param out		The vector that will hold the resulting relation and attribute
 	 * @return			True if the operand can be parsed and the attribute can be found
 	 */
-	virtual bool ParseOperand(std::string operand, std::vector<std::string> &out);
+	virtual bool ParseOperand(std::string operand, std::vector<std::string> &out) const;
 
 	/**
 	 * Returns the relation associated with att
 	 * @param att	The attribute being looked up
 	 * @return		The relation associated with att. Empty if no relation exists.
 	 */
-	virtual std::string RelLookup(std::string att);
+	virtual std::string RelLookup(std::string att) const;
 
 	/**
 	 *  Returns the set with the associated relation
@@ -189,7 +198,7 @@ public:
 	virtual std::set<std::string> GetSet(std::string rel);
 
 	/**
-	 *	Parses the given comparison op, creates an appropriate Expression and appends it 
+	 *	Parses the given comparison op, creates an appropriate Expression and appends it
 	 *	to the expression list. Adds all relations referenced in the created Expression
 	 *	to the set of relations.
 	 *	If the expression is a comparison between 2 literals, this method throws and exception.
@@ -228,19 +237,25 @@ public:
  	 * Verifies that the specified join can happen. Modifies the internal representation
  	 * of the sets of relations and returns the number of tuples in the resulting join relation.
  	 */
- 	virtual double ApplyAndCompute(struct AndList *parseTree, char *relNames[], int numToJoin);
+ 	virtual double ApplyAndCompute(struct AndList *parseTree, const char *relNames[], int numToJoin);
 
  	/*
 	 * Simulates a join across the specified relations using the given AndList
 	 * and modifies the sets of relations to reflect the joined relations
  	*/
- 	virtual void  Apply(struct AndList *parseTree, char *relNames[], int numToJoin);
+ 	virtual void  Apply(struct AndList *parseTree, const char *relNames[], int numToJoin);
 
 	/*
 	 * Simulates a join across the specified relations using the given AndList
 	 * does not modify the sets, but returns the number of tuples in the resulting relations.
  	*/
-	virtual double Estimate(struct AndList *parseTree, char **relNames, int numToJoin);
+	virtual double Estimate(struct AndList *parseTree, const char **relNames, int numToJoin);
+
+	/*
+	 * Returns the number of relations in this Statistics object
+	 * @return	the number of relations in this Statistics object
+	*/
+	virtual int RelationSize();
 };
 
 #endif /* INCLUDE_STATISTICS_H_ */

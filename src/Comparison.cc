@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <iostream>
+#include <sstream>
 #include <stdlib.h>
 #include <string.h>
 #include <stdexcept>
@@ -63,6 +64,46 @@ void Comparison :: Print () {
 		cout << "(String)";
 }
 
+std::string Comparison :: ToString() {
+	std::stringstream out;
+	out << "Att " << whichAtt1 << " from ";
+
+	if (operand1 == Left)
+		out << "left record ";
+	else if (operand1 == Right)
+		out << "right record ";
+	else 
+		out << "literal record ";
+
+
+	if (op == LessThan)
+		out << "< ";
+	else if (op == GreaterThan)
+		out << "> ";
+	else
+		out << "= ";
+
+
+	out << "Att " << whichAtt2 << " from ";
+
+	if (operand2 == Left)
+		out << "left record ";
+	else if (operand2 == Right)
+		out << "right record ";
+	else
+		out << "literal record ";
+ 
+
+	if (attType == Int)
+		out << "(Int)";
+	else if (attType == Double)
+		out << "(Double)";
+	else
+		out << "(String)";
+
+	return out.str();
+}
+
 
 
 
@@ -70,11 +111,13 @@ OrderMaker :: OrderMaker() {
 	numAtts = 0;
 }
 
+OrderMaker :: ~OrderMaker() {}
+
 OrderMaker :: OrderMaker(Schema *schema) {
 	numAtts = 0;
 
 	int n = schema->GetNumAtts();
-	Attribute *atts = schema->GetAtts();
+	const Attribute *atts = schema->GetAtts();
 
 	for (int i = 0; i < n; i++) {
 		if (atts[i].myType == Int) {
@@ -94,13 +137,52 @@ OrderMaker :: OrderMaker(Schema *schema) {
         }
 
 	// and finally the strings
-        for (int i = 0; i < n; i++) {
-                if (atts[i].myType == String) {
-                        whichAtts[numAtts] = i;
-                        whichTypes[numAtts] = String;
-                        numAtts++;
-                }
-        }
+	for (int i = 0; i < n; i++) {
+			if (atts[i].myType == String) {
+					whichAtts[numAtts] = i;
+					whichTypes[numAtts] = String;
+					numAtts++;
+			}
+	}
+}
+
+OrderMaker :: OrderMaker(const Schema *base, const Schema *order) {
+	numAtts = order->GetNumAtts();
+
+	const Attribute *atts = order->GetAtts();
+	int n = order->GetNumAtts();
+	int index = -1;
+	Type type;
+
+	// look through each attribute in order and find it in base
+	for(int i = 0; i < n; i++) {
+		index = base->Find(atts[i].relation.c_str(), atts[i].name.c_str());
+		type = base->FindType(atts[i].relation.c_str(), atts[i].name.c_str());
+
+		if(index == -1 || type != atts[i].myType)
+			throw invalid_argument("Non existent attribute found in order (OrderMaker(schema*, schema*))");
+		whichAtts[i] = index;
+		whichTypes[i] = type;
+	}
+}
+
+OrderMaker :: OrderMaker(const Schema *base, const vector<string> *order) {
+	numAtts = order->size();
+
+	int n = order->size();
+	int index = -1;
+	Type type;
+
+	// look through each attribute in order and find it in base
+	for(int i = 0; i < n; i++) {
+		index = base->Find(order->at(i).c_str());
+		type = base->FindType(order->at(i).c_str());
+
+		if(index == -1)
+			throw invalid_argument("Non existent attribute found in order (OrderMaker(schema*, schema*))");
+		whichAtts[i] = index;
+		whichTypes[i] = type;
+	}
 }
 
 OrderMaker :: OrderMaker(std::string str) {
@@ -308,7 +390,7 @@ void CNF :: Print () {
 		
 		cout << "( ";
 		for (int j = 0; j < orLens[i]; j++) {
-			orList[i][j].Print ();
+			orList[i][j].Print();
 			if (j < orLens[i] - 1)
 				cout << " OR ";
 		}
@@ -318,6 +400,26 @@ void CNF :: Print () {
 		else
 			cout << "\n";
 	}
+}
+
+
+std::string CNF :: ToString (const std::string& prefix) {
+	std::stringstream out;
+	for (int i = 0; i < numAnds; i++) {
+		
+		out << prefix << "(";
+		for (int j = 0; j < orLens[i]; j++) {
+			out << orList[i][j].ToString();
+			if (j < orLens[i] - 1)
+				out << " OR ";
+		}
+		out << ")";
+		if (i < numAnds - 1)
+			out << " AND\n";
+		else
+			out << "\n";
+	}
+	return out.str();
 }
 
 // this is a helper routine that writes out another field for the literal record and its schema
@@ -344,8 +446,8 @@ void AddLitToFile (int &numFieldsInLiteral, FILE *outRecFile, FILE *outSchemaFil
 
 
 
-void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema, 
-	Schema *rightSchema, Record &literal) {
+void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *leftSchema,
+	const Schema *rightSchema, Record &literal) {
 
 	CNF &cnf = *this;
 
@@ -408,8 +510,9 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema,
 
 				// it is not there!  So there is an error in the query
                                 } else {
-					cout << "ERROR: Could not find attribute " <<
+					cout << "ERROR: 1 Could not find attribute " <<
 						myOr->left->left->value << "\n";
+					throw invalid_argument("Could not find an attribute");
 					exit (1);	
 				}
 
@@ -464,7 +567,8 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema,
 
 				// it is not there!  So there is an error in the query
                                 } else {
-					cout << "ERROR: Could not find attribute " << myOr->left->right->value << "\n";
+					cout << "ERROR: 2 Could not find attribute " << myOr->left->right->value << "\n";
+					throw invalid_argument("Could not find an attribute");
 					exit (1);	
 				}
 
@@ -505,6 +609,7 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema,
 			if (typeLeft != typeRight) {
 				cerr << "ERROR! Type mismatch in CNF.  " << myOr->left->left->value << " and "
 					<< myOr->left->right->value << " were found to not match.\n";
+				throw invalid_argument("Type mismatch in CNF");
 				exit (1);
 			}
 
@@ -550,7 +655,7 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *leftSchema,
 
 
 // this is the version that only deals with unary relational selection predicates
-void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *mySchema, 
+void CNF :: GrowFromParseTree (const struct AndList *parseTree, const Schema *mySchema,
 	Record &literal) {
 
 	CNF &cnf = *this;
@@ -606,8 +711,10 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *mySchema,
 
 				// it is not there!  So there is an error in the query
                                 } else {
-					cout << "ERROR: Could not find attribute " <<
+                    cout << mySchema->ToString() << endl;
+					cout << "ERROR: 3 Could not find attribute " <<
 						myOr->left->left->value << "\n";
+					throw invalid_argument("Could not find an attribute");
 					exit (1);	
 				}
 
@@ -655,7 +762,8 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *mySchema,
 
 				// it is not there!  So there is an error in the query
                                 } else {
-					cout << "ERROR: Could not find attribute " << myOr->left->right->value << "\n";
+					cout << "ERROR: 4 Could not find attribute " << myOr->left->right->value << "\n";
+					throw invalid_argument("Could not find an attribute");
 					exit (1);	
 				}
 
@@ -695,6 +803,7 @@ void CNF :: GrowFromParseTree (struct AndList *parseTree, Schema *mySchema,
 			if (typeLeft != typeRight) {
 				cerr << "ERROR! Type mismatch in CNF.  " << myOr->left->left->value << " and "
 					<< myOr->left->right->value << " were found to not match.\n";
+				throw invalid_argument("Type mismatch in CNF");
 				exit (1);
 			}
 
