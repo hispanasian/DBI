@@ -277,9 +277,13 @@ const Schema* GroupByNode::GetSchema() {
 		if(function.ReturnsInt()) atts[0].myType = Int;
 		else atts[0].myType = Double;
 		Schema agg("", 1, atts);
-		schema.Join(&agg, childsSchema);
+		Schema groupingAtts;
+		groupingAtts.Filter(*childsSchema, group);
+		schema.Join(&agg, &groupingAtts);
 	}
-	else schema.Copy(*childsSchema);
+	else {
+		schema.Copy(*childsSchema);
+	}
 	// make the OrderMaker
 	vector<string> orderAtts;
 	for(int i = 0; i < group.size(); ++i) {
