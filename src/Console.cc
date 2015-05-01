@@ -17,7 +17,6 @@ using namespace std;
 Console::Console(SQLEngine &_engine): engine(_engine), output(None), file(NULL)  {}
 
 Console::~Console() {
-	delete file;
 }
 
 void Console::Start() {
@@ -30,21 +29,16 @@ void Console::Start() {
 		cout << "> ";
 		buff.clear();
 		getline(cin, buff, ';');
-		cout << buff << endl;
 		buff.append(";");
 		try {
 			switch(sql->Parse(buff)) {
 			case Create_Table: CreateTable(sql);
-				cout << "Create Table" << endl;
 				break;
 			case Insert_Into: Insert(sql);
-				cout << "Insert" << endl;
 				break;
 			case Drop_Table: DropTable(sql);
-				cout << "Drop Table" << endl;
 				break;
 			case Set_Output: SetOutput(sql);
-				cout << "Set Output" << endl;
 				break;
 			case Select: Query(sql);
 				break;
@@ -89,12 +83,12 @@ void Console::DropTable(SQL *sql) {
 void Console::Query(SQL *sql) {
 	if(output == None) {
 		// Simply print the Query plan to the screen
-		cout << "QueryPlan" << endl;
+		cout << endl;
 		cout << engine.QueryPlan(sql) << endl;
 	}
 	else {
 		// Run the query
-		cout << "Query" << endl;
+		cout << endl;
 		engine.Query(sql, file);
 	}
 }

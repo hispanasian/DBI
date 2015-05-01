@@ -134,7 +134,8 @@ void SQLEngine::Query(SQL *sql, FILE* file) const {
 	vector<DBFile*> files;
 	ExecutionVisitorData data {pipes, files};	
 	ExecutionVisitor ev;
-	tree->Visit(ev, (void*) &data);	
+	tree->Visit(ev, (void*) &data);
+	tree->WaitUntilDone();
 }
 
 string SQLEngine::QueryPlan(SQL *sql) const {
